@@ -469,6 +469,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="space-y-3 font-sans text-xs">
+            {/* Super Admin Option */}
+            <button
+              type="button"
+              onClick={() => executeGoogleLoginFlow('zeerocodes@gmail.com', 'Zeerocodes Super Admin', 'admin_zeero')}
+              className="w-full text-left p-3.5 rounded-2xl border-2 border-brand-clay/30 hover:border-brand-clay bg-brand-clay/5 hover:bg-brand-clay/10 transition-all flex items-center gap-3.5 group cursor-pointer shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-full bg-brand-clay text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
+                Z
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">Zeerocodes (Super Admin)</span>
+                <span className="font-mono text-[10px] text-brand-clay font-bold block truncate">zeerocodes@gmail.com</span>
+              </div>
+              <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-brand-clay text-white font-bold shrink-0">Super Admin</span>
+            </button>
+
             {/* Account Option 1 */}
             <button
               type="button"
