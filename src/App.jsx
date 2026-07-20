@@ -1022,60 +1022,6 @@ export default function App() {
     return () => ctx.revert();
   }, [currentView, currentUser]);
 
-  // Protocol pin ScrollTrigger stacks
-  useLayoutEffect(() => {
-    if (currentView !== 'home') return;
-    let ctx = gsap.context(() => {
-      const cards = gsap.utils.toArray('.protocol-stack');
-      if (cards.length === 0) return;
-      if (!document.querySelector('#protocol')) return;
-
-      // Position cards 1 and 2 below card 0 initially
-      gsap.set(cards.slice(1), { yPercent: 100 });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#protocol',
-          start: 'top top',
-          end: () => `+=${window.innerHeight * 2}`,
-          pin: true,
-          scrub: true,
-          anticipatePin: 1
-        }
-      });
-
-      // Animate Card 1 sliding up over Card 0
-      tl.to(cards[1], {
-        yPercent: 0,
-        ease: 'none',
-        duration: 1
-      });
-      tl.to(cards[0], {
-        scale: 0.9,
-        filter: 'blur(10px)',
-        opacity: 0.55,
-        ease: 'none',
-        duration: 1
-      }, '<');
-
-      // Animate Card 2 sliding up over Card 1
-      tl.to(cards[2], {
-        yPercent: 0,
-        ease: 'none',
-        duration: 1
-      });
-      tl.to(cards[1], {
-        scale: 0.9,
-        filter: 'blur(10px)',
-        opacity: 0.55,
-        ease: 'none',
-        duration: 1
-      }, '<');
-
-    });
-    return () => ctx.revert();
-  }, [currentView, currentUser]);
-
   return (
     <div className="relative min-h-screen bg-brand-cream text-brand-charcoal overflow-x-hidden selection:bg-brand-clay selection:text-white">
       
