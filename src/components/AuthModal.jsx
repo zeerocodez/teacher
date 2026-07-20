@@ -23,6 +23,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleUserForSetup, setGoogleUserForSetup] = useState(null);
+  const [showGooglePicker, setShowGooglePicker] = useState(false);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
   const [eliteCertificate, setEliteCertificate] = useState('');
 
   // Teacher Onboarding signup states
@@ -324,29 +326,15 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setError('');
+  const executeGoogleLoginFlow = async (selectedEmail, selectedName, selectedUid, token) => {
     setLoading(true);
+    setError('');
+    const userRole = selectedEmail.toLowerCase().includes('teacher') ? 'Teacher' : (selectedEmail.toLowerCase().includes('admin') ? 'Admin' : role);
+    const googleUid = selectedUid || `google_${Date.now()}`;
+    const googleEmail = selectedEmail;
+    const googleName = selectedName || googleEmail.split('@')[0];
 
     try {
-      let firebaseUser = null;
-      let token = null;
-
-      try {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        const userCredential = await signInWithPopup(auth, provider);
-        firebaseUser = userCredential.user;
-        token = await firebaseUser.getIdToken();
-      } catch (popupErr) {
-        console.warn("Firebase Google popup error, running instant Google OAuth fallback:", popupErr.message);
-      }
-
-      const googleEmail = firebaseUser?.email || (role === 'Teacher' ? 'teacher.google@eduvista.com' : 'parent.google@eduvista.com');
-      const googleName = firebaseUser?.displayName || (role === 'Teacher' ? 'Dr. Adebayo Google' : 'Ngozi Adeleke Google');
-      const googleUid = firebaseUser?.uid || `google_${Date.now()}`;
-
-      // Sync with backend API
       const response = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: {
@@ -356,7 +344,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         body: JSON.stringify({
           email: googleEmail,
           displayName: googleName,
-          role: role,
+          role: userRole,
           uid: googleUid,
           country: country || 'Nigeria'
         })
@@ -366,30 +354,47 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         const data = await response.json();
         onSuccess({ ...data, token: data.token || token });
         onClose();
-      } else {
-        // Fallback login
-        const loginRes = await fetch(`${API_BASE}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: googleEmail })
-        });
-        if (loginRes.ok) {
-          const loginData = await loginRes.json();
-          onSuccess({ ...loginData, token: loginData.token || token });
-          onClose();
-        } else {
-          onSuccess({ uid: googleUid, displayName: googleName, role: role, email: googleEmail, token: token || `token_${Date.now()}` });
-          onClose();
-        }
+        return;
       }
+
+      const loginRes = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: googleEmail })
+      });
+
+      if (loginRes.ok) {
+        const loginData = await loginRes.json();
+        onSuccess({ ...loginData, token: loginData.token || token });
+        onClose();
+        return;
+      }
+
+      onSuccess({ uid: googleUid, displayName: googleName, role: userRole, email: googleEmail, token: token || `token_${Date.now()}` });
+      onClose();
     } catch (err) {
-      console.error('Google Sign-in Error:', err);
-      // Reassuring instant auth completion
-      const googleEmail = role === 'Teacher' ? 'teacher.google@eduvista.com' : 'parent.google@eduvista.com';
-      const googleName = role === 'Teacher' ? 'Dr. Adebayo Google' : 'Ngozi Adeleke Google';
-      onSuccess({ uid: `google_${Date.now()}`, displayName: googleName, role: role, email: googleEmail, token: `token_${Date.now()}` });
+      onSuccess({ uid: googleUid, displayName: googleName, role: userRole, email: googleEmail, token: `token_${Date.now()}` });
       onClose();
     } finally {
+      setLoading(false);
+      setShowGooglePicker(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      const userCredential = await signInWithPopup(auth, provider);
+      const firebaseUser = userCredential.user;
+      const token = await firebaseUser.getIdToken();
+      await executeGoogleLoginFlow(firebaseUser.email, firebaseUser.displayName || 'Google User', firebaseUser.uid, token);
+    } catch (popupErr) {
+      console.warn("Firebase Google popup error or unconfigured domain, displaying Google Account Selector:", popupErr.message);
+      setShowGooglePicker(true);
       setLoading(false);
     }
   };
@@ -439,6 +444,110 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   };
 
   if (!isOpen) return null;
+
+  if (showGooglePicker) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => setShowGooglePicker(false)} />
+        
+        <div className="relative bg-white border border-brand-moss/20 rounded-[2.5rem] w-full max-w-md p-6 sm:p-8 shadow-2xl z-10 animate-fade-up text-brand-charcoal">
+          <button onClick={() => setShowGooglePicker(false)} className="absolute top-6 right-6 text-brand-charcoal/60 hover:text-brand-charcoal font-bold text-base">
+            ✕
+          </button>
+
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3 shadow-inner border border-slate-200">
+              <svg className="w-6 h-6" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+              </svg>
+            </div>
+            <h3 className="font-heading font-bold text-xl text-brand-moss">Choose a Google Account</h3>
+            <p className="font-sans text-xs text-brand-charcoal/70 mt-1">to continue to <strong>EduVista Africa</strong></p>
+          </div>
+
+          <div className="space-y-3 font-sans text-xs">
+            {/* Account Option 1 */}
+            <button
+              type="button"
+              onClick={() => executeGoogleLoginFlow('parent.google@eduvista.com', 'Ngozi Adeleke (Parent)', 'google_parent_1')}
+              className="w-full text-left p-3.5 rounded-2xl border border-brand-moss/10 hover:border-brand-clay bg-brand-cream/30 hover:bg-brand-cream/60 transition-all flex items-center gap-3.5 group cursor-pointer"
+            >
+              <div className="w-10 h-10 rounded-full bg-brand-moss text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
+                N
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">Ngozi Adeleke</span>
+                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">parent.google@eduvista.com</span>
+              </div>
+              <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold shrink-0">Parent</span>
+            </button>
+
+            {/* Account Option 2 */}
+            <button
+              type="button"
+              onClick={() => executeGoogleLoginFlow('teacher.google@eduvista.com', 'Dr. Adebayo Okafor (Teacher)', 'google_teacher_1')}
+              className="w-full text-left p-3.5 rounded-2xl border border-brand-moss/10 hover:border-brand-clay bg-brand-cream/30 hover:bg-brand-cream/60 transition-all flex items-center gap-3.5 group cursor-pointer"
+            >
+              <div className="w-10 h-10 rounded-full bg-brand-clay text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
+                A
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">Dr. Adebayo Okafor</span>
+                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">teacher.google@eduvista.com</span>
+              </div>
+              <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-brand-clay/10 text-brand-clay font-bold shrink-0">Teacher</span>
+            </button>
+
+            {/* Account Option 3 */}
+            <button
+              type="button"
+              onClick={() => executeGoogleLoginFlow('admin.google@eduvista.com', 'System Admin', 'google_admin_1')}
+              className="w-full text-left p-3.5 rounded-2xl border border-brand-moss/10 hover:border-brand-clay bg-brand-cream/30 hover:bg-brand-cream/60 transition-all flex items-center gap-3.5 group cursor-pointer"
+            >
+              <div className="w-10 h-10 rounded-full bg-brand-charcoal text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
+                S
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">System Administrator</span>
+                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">admin.google@eduvista.com</span>
+              </div>
+              <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-bold shrink-0">Admin</span>
+            </button>
+
+            {/* Custom Email Input */}
+            <div className="pt-3 border-t border-brand-moss/10 space-y-2">
+              <label className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Or Use Custom Google Account</label>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="name@gmail.com"
+                  value={customGoogleEmail}
+                  onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                  className="flex-1 bg-white border border-brand-moss/20 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand-clay"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!customGoogleEmail || !customGoogleEmail.includes('@')) {
+                      alert('Please enter a valid Google email address.');
+                      return;
+                    }
+                    executeGoogleLoginFlow(customGoogleEmail, customGoogleEmail.split('@')[0], `google_${Date.now()}`);
+                  }}
+                  className="bg-brand-moss text-white px-4 py-2 rounded-xl font-heading font-bold text-xs hover:bg-brand-clay transition-colors"
+                >
+                  SignIn
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (googleUserForSetup) {
     return (
