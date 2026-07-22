@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { 
   Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, 
   Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, 
@@ -764,7 +765,7 @@ export default function Academy({
                   onSubmit={(e) => {
                     e.preventDefault();
                     if (!academyWhatsapp || !academySubjects || !academyMotivation) {
-                      alert("Please fill all required onboarding fields.");
+                      toast.error("Please fill all required onboarding fields.");
                       return;
                     }
                     setOnboardingStep('payment');

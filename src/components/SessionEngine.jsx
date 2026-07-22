@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { Play, Pause, AlertTriangle, CheckCircle, Video, MessageSquare, Edit3, Trash2, Send, Star } from 'lucide-react';
 
 export default function SessionEngine({ 
@@ -407,7 +408,7 @@ export default function SessionEngine({
                     {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                   </button>
                   <button
-                    onClick={() => alert("Dispute lodged. A support specialist is joining within 5 minutes. Escrow funds locked.")}
+                    onClick={() => toast.error("Dispute lodged. A support specialist is joining within 5 minutes. Escrow funds locked.")}
                     className="btn-magnetic p-3 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10"
                     title="Raise Dispute"
                   >

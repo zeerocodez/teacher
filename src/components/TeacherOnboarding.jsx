@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { Sparkles, ArrowRight, ArrowLeft, CheckCircle, ShieldCheck, Video, Calendar, BookOpen, User } from 'lucide-react';
 import TutorAgreementModal from './TutorAgreementModal';
 
@@ -69,7 +70,7 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
     if (!uploadPreset) {
-      alert("Cloudinary upload preset is not configured. Pasting a direct URL is supported as a fallback.");
+      toast.error("Cloudinary upload preset is not configured. Pasting a direct URL is supported as a fallback.");
       return;
     }
 
@@ -104,22 +105,22 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
             if (errRes.error && errRes.error.message) {
               errMsg = errRes.error.message;
             }
-          } catch(e) {}
-          alert("Cloudinary upload failed: " + errMsg + ". Using local temporary URL so you can proceed.");
+          } catch(e) { /* ignore JSON parse error */ }
+          toast.error("Cloudinary upload failed: " + errMsg + ". Using local temporary URL so you can proceed.");
           setter(URL.createObjectURL(file));
         }
         setUploadingState({ type: null, progress: 0 });
       };
 
       xhr.onerror = () => {
-        alert("Network error occurred during upload.");
+        toast.error("Network error occurred during upload.");
         setUploadingState({ type: null, progress: 0 });
       };
 
       xhr.send(formData);
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Error occurred during upload.");
+      toast.error("Error occurred during upload.");
       setUploadingState({ type: null, progress: 0 });
     }
   };

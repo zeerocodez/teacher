@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Sparkles, Trophy, Flame, Award, BarChart3, Calendar, FileText, CheckCircle2, Clock, PlayCircle, FolderOpen, ArrowRight, User, Download } from 'lucide-react';
 
 export default function StudentPortal({ currentUser, selectedCurrency, formatCurrency, convertMinor, onBack }) {
@@ -397,13 +398,13 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
                           </div>
                           <div className="flex gap-2 w-full sm:w-auto">
                             <button
-                              onClick={() => alert('Starting Zoom session... Redirecting to virtual classroom...')}
+                              onClick={() => toast.success('Starting Zoom session... Redirecting to virtual classroom...')}
                               className="flex-1 sm:flex-none py-2 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-[10px] uppercase tracking-wider text-center"
                             >
                               Join Session
                             </button>
                             <button
-                              onClick={() => alert('Event added to Google Calendar!')}
+                              onClick={() => toast.success('Event added to Google Calendar!')}
                               className="py-2 px-3 border border-brand-moss/10 hover:bg-brand-moss/5 rounded-xl font-heading text-brand-charcoal font-bold text-[10px] uppercase tracking-wider text-center"
                             >
                               Add to Calendar

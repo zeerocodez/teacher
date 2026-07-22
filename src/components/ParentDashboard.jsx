@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { 
   Sparkles, 
   BarChart2, 
@@ -329,7 +330,7 @@ export default function ParentDashboard({
     const rawVal = topupAmount === 'custom' ? customAmount : topupAmount;
     const amountNum = parseFloat(rawVal || 0);
     if (isNaN(amountNum) || amountNum <= 0) {
-      alert("Please enter a valid deposit amount.");
+      toast.error("Please enter a valid deposit amount.");
       return;
     }
 
@@ -974,7 +975,7 @@ export default function ParentDashboard({
                               </button>
                             )}
                             <button
-                              onClick={() => alert('Event added to Google Calendar!')}
+                              onClick={() => toast.success('Event added to Google Calendar!')}
                               className="py-1.5 px-3 border border-brand-moss/10 hover:bg-brand-moss/5 rounded-xl font-heading text-brand-charcoal font-bold text-[10px] uppercase tracking-wider text-center transition-colors"
                             >
                               Add to Calendar
@@ -1862,7 +1863,7 @@ export default function ParentDashboard({
             </div>
 
             <button
-              onClick={() => alert('Evidence Log PDF downloaded successfully. File hash: sha256-4b2a8d...')}
+              onClick={() => toast.success('Evidence Log PDF downloaded successfully. File hash: sha256-4b2a8d...')}
               className="btn-magnetic w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md"
             >
               <Download className="w-4 h-4" /> Download Evidence PDF

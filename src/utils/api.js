@@ -23,7 +23,7 @@ export const fetchApi = async (endpoint, options = {}) => {
     let data = null;
     try {
         data = await response.json();
-    } catch(e) {}
+    } catch(e) { /* ignore JSON parse error */ }
 
     if (!response.ok) {
       const errorMsg = data?.error || response.statusText || "An unexpected error occurred.";

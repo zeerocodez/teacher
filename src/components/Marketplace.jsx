@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { Search, Star, ShieldCheck, CheckCircle2, Award, Zap, HelpCircle, Play } from 'lucide-react';
 
 export default function Marketplace({ 
@@ -401,7 +402,7 @@ export default function Marketplace({
                   </button>
                   <a
                     href="#chat"
-                    onClick={(e) => { e.preventDefault(); alert(`Simulated Chat with ${teacher.name}. Interface is active in parent/teacher dashboards.`); }}
+                    onClick={(e) => { e.preventDefault(); toast.success(`Simulated Chat with ${teacher.name}. Interface is active in parent/teacher dashboards.`); }}
                     className="btn-magnetic border border-brand-moss/20 text-brand-moss font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center hover:bg-brand-moss/5"
                   >
                     Message

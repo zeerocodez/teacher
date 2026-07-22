@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
 import { X, Calendar, CreditCard, Shield, Clock, Lock } from 'lucide-react';
 
 export default function BookingModal({ 
@@ -221,7 +222,7 @@ export default function BookingModal({
   const handleOtpVerifySubmit = (e) => {
     e.preventDefault();
     if (!otpCode || otpCode.length < 4) {
-      alert("Please enter a valid verification code.");
+      toast.error("Please enter a valid verification code.");
       return;
     }
 

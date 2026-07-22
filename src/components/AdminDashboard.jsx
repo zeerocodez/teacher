@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { 
   ShieldCheck, 
   UserCheck, 
@@ -170,15 +171,15 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         })
       });
       if (res.ok) {
-        alert(`Welcome email successfully queued for ${targetUser.displayName} (${targetUser.email})`);
+        toast.success(`Welcome email successfully queued for ${targetUser.displayName} (${targetUser.email})`);
         fetchEmailData();
       } else {
         const data = await res.json();
-        alert(`Failed to send email: ${data.error}`);
+        toast.error(`Failed to send email: ${data.error}`);
       }
     } catch (err) {
       console.error(err);
-      alert("Network connection error sending welcome email.");
+      toast.error("Network connection error sending welcome email.");
     } finally {
       setSendingWelcome(false);
     }
@@ -187,7 +188,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   const handleSendNotification = async (e) => {
     e.preventDefault();
     if (!notifTitle.trim() || !notifBody.trim()) {
-      alert("Title and message are required.");
+      toast.error("Title and message are required.");
       return;
     }
     
@@ -203,17 +204,17 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         })
       });
       if (res.ok) {
-        alert("Notification & email update broadcast successfully completed.");
+        toast.success("Notification & email update broadcast successfully completed.");
         setNotifTitle('');
         setNotifBody('');
         fetchEmailData();
       } else {
         const data = await res.json();
-        alert(`Failed to send notification: ${data.error}`);
+        toast.error(`Failed to send notification: ${data.error}`);
       }
     } catch (err) {
       console.error(err);
-      alert("Network connection error broadcasting notification.");
+      toast.error("Network connection error broadcasting notification.");
     } finally {
       setSendingNotif(false);
     }
@@ -346,14 +347,14 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
       });
       const data = await res.json();
       if (res.ok) {
-        alert(`✓ ${data.message}`);
+        toast.success(`✓ ${data.message}`);
         setDisputes(prev => prev.map(d => d.id === disputeId ? { ...d, status: action === 'refund_parent' ? 'Resolved - Refunded' : 'Resolved - Released' } : d));
       } else {
-        alert(`Error: ${data.error}`);
+        toast.error(`Error: ${data.error}`);
       }
     } catch (err) {
       console.error(err);
-      alert("Dispute resolved (Sandbox Mode).");
+      toast.success("Dispute resolved (Sandbox Mode).");
       setDisputes(prev => prev.map(d => d.id === disputeId ? { ...d, status: action === 'refund_parent' ? 'Resolved - Refunded' : 'Resolved - Released' } : d));
     }
   };

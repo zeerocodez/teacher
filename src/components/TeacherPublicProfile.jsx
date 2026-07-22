@@ -647,7 +647,7 @@ export default function TeacherPublicProfile({
                         disabled={!available}
                         onClick={() => {
                           setSelectedDate(cellDate);
-                          setSelectedSlot(null);
+                          setSelectedSlots([]);
                         }}
                         className={`h-7 w-7 rounded-full text-[9px] font-mono flex items-center justify-center mx-auto transition-all ${
                           isSelected

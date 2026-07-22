@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { X, Mail, User, Shield, Lock, Phone, Link2, Clock, Video, FileText, Camera, Globe, DollarSign, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
@@ -61,7 +62,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           const objectUrl = URL.createObjectURL(file);
           setter(objectUrl);
           setUploadingState({ type: null, progress: 0 });
-          alert(`✓ Upload Simulation: File "${file.name}" uploaded successfully!`);
+          toast.success(`✓ Upload Simulation: File "${file.name}" uploaded successfully!`);
         }, 800);
       }, 500);
       return;
@@ -97,20 +98,20 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
               errMsg = errRes.error.message;
             }
           } catch(e) {}
-          alert("Cloudinary upload failed: " + errMsg);
+          toast.error("Cloudinary upload failed: " + errMsg);
         }
         setUploadingState({ type: null, progress: 0 });
       };
 
       xhr.onerror = () => {
-        alert("Network error occurred during upload.");
+        toast.error("Network error occurred during upload.");
         setUploadingState({ type: null, progress: 0 });
       };
 
       xhr.send(formData);
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Error occurred during upload.");
+      toast.error("Error occurred during upload.");
       setUploadingState({ type: null, progress: 0 });
     }
   };
@@ -555,7 +556,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   type="button"
                   onClick={() => {
                     if (!customGoogleEmail || !customGoogleEmail.includes('@')) {
-                      alert('Please enter a valid Google email address.');
+                      toast.error('Please enter a valid Google email address.');
                       return;
                     }
                     executeGoogleLoginFlow(customGoogleEmail, customGoogleEmail.split('@')[0], `google_${Date.now()}`);

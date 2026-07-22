@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon } from 'lucide-react';
 
 export default function TeacherDashboard({
@@ -266,17 +267,17 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       });
       if (response.ok) {
         fetchData();
-        alert(`Booking request successfully ${action === 'Confirm' ? 'approved and scheduled' : 'rejected'}.`);
+        toast.success(`Booking request successfully ${action === 'Confirm' ? 'approved and scheduled' : 'rejected'}.`);
       }
     } catch (err) {
       console.error('Error responding to booking:', err);
       // Fallback
       if (action === 'Confirm') {
         setBookingRequests(prev => prev.filter(s => s.id !== sessionId));
-        alert('Booking successfully confirmed (Local Sandbox Fallback).');
+        toast.success('Booking successfully confirmed (Local Sandbox Fallback).');
       } else {
         setBookingRequests(prev => prev.filter(s => s.id !== sessionId));
-        alert('Booking successfully rejected (Local Sandbox Fallback).');
+        toast.success('Booking successfully rejected (Local Sandbox Fallback).');
       }
     }
   };
@@ -306,15 +307,15 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         headers: getAuthHeaders()
       });
       if (res.ok) {
-        alert("✓ Session marked as complete! 24-hour escrow auto-release countdown started.");
+        toast.success("✓ Session marked as complete! 24-hour escrow auto-release countdown started.");
         fetchData();
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to complete session.");
+        toast.error(data.error || "Failed to complete session.");
       }
     } catch (err) {
       console.error(err);
-      alert("Session marked complete (Sandbox Mode).");
+      toast.success("Session marked complete (Sandbox Mode).");
       fetchData();
     }
   };
@@ -361,7 +362,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
   const handleSubmitClassLink = async (sessionId) => {
     const classLink = classLinkInputs[sessionId];
     if (!classLink) {
-      alert("Please enter a valid class link.");
+      toast.error("Please enter a valid class link.");
       return;
     }
     setSubmittingClassLink(sessionId);
@@ -373,14 +374,14 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       });
       if (res.ok) {
         fetchData();
-        alert("Class link saved successfully!");
+        toast.success("Class link saved successfully!");
       } else {
         const errorData = await res.json();
-        alert(errorData.error || "Failed to submit link.");
+        toast.error(errorData.error || "Failed to submit link.");
       }
     } catch (err) {
       console.error(err);
-      alert("Error submitting class link.");
+      toast.error("Error submitting class link.");
     } finally {
       setSubmittingClassLink(null);
     }
@@ -1468,7 +1469,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                     <div className="flex flex-col justify-end">
                       <button
                         type="button"
-                        onClick={() => alert('Simulated: Audio feedback recorded. File feedback_audio_dsp.mp3 attached.')}
+                        onClick={() => toast.success('Simulated: Audio feedback recorded. File feedback_audio_dsp.mp3 attached.')}
                         className="py-2.5 bg-brand-cream/10 hover:bg-brand-cream/15 text-white border border-brand-cream/20 rounded-xl font-mono text-[9px] uppercase tracking-wider font-bold text-center flex items-center justify-center gap-1 cursor-pointer"
                       >
                         🎤 Voice Note Feedback
@@ -1525,7 +1526,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                   <pre className="whitespace-pre-wrap leading-relaxed">{aiReportContent}</pre>
                   <button
                     type="button"
-                    onClick={() => { alert('Draft Report successfully published and sent to parent dashboard!'); setAiReportContent(''); }}
+                    onClick={() => { toast.success('Draft Report successfully published and sent to parent dashboard!'); setAiReportContent(''); }}
                     className="w-full py-2 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-lg font-heading text-[9px] uppercase tracking-wider font-bold"
                   >
                     ✓ Publish Draft to Parent
@@ -1781,7 +1782,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                     className="flex-1 bg-brand-cream/50 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs font-mono select-all focus:outline-none"
                   />
                   <button
-                    onClick={() => { navigator.clipboard.writeText(`https://eduvista.com/register?ref=${currentUser.uid}`); alert('Referral link copied to clipboard!'); }}
+                    onClick={() => { navigator.clipboard.writeText(`https://eduvista.com/register?ref=${currentUser.uid}`); toast.success('Referral link copied to clipboard!'); }}
                     className="bg-brand-clay text-white px-4 py-2 rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-sm hover:bg-brand-clay/90"
                   >
                     Copy Link
@@ -1972,7 +1973,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
               <button
                 onClick={() => {
                   setRoster(prev => prev.map(s => s.uid === selectedRosterStudent.uid ? { ...s, note: rosterNoteInput } : s));
-                  alert('Private student progress notes updated successfully!');
+                  toast.success('Private student progress notes updated successfully!');
                   setSelectedRosterStudent(null);
                 }}
                 className="flex-1 bg-brand-moss hover:bg-brand-clay text-white rounded-xl py-3 font-heading font-bold uppercase tracking-wider text-xs"
@@ -2026,7 +2027,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
             </div>
 
             <button
-              onClick={() => alert('Clock Log evidence PDF exported and downloaded successfully!')}
+              onClick={() => toast.success('Clock Log evidence PDF exported and downloaded successfully!')}
               className="btn-magnetic w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md"
             >
               <Download className="w-4 h-4" /> Download Evidence PDF
