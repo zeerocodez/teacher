@@ -201,20 +201,27 @@ async function persistDocumentDelete(collection, id) {
 
 function initFirestore() {
   if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
-    let pk = process.env.FIREBASE_PRIVATE_KEY;
-    if (pk.startsWith('"') && pk.endsWith('"')) {
-      pk = pk.slice(1, -1);
+    try {
+      let pk = process.env.FIREBASE_PRIVATE_KEY;
+      if (pk.startsWith('"') && pk.endsWith('"')) {
+        pk = pk.slice(1, -1);
+      }
+      const serviceAccount = {
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: pk.replace(/\\n/g, '\n')
+      };
+      initializeApp({ credential: cert(serviceAccount) });
+      firestoreDb = getFirestore();
+      isFirestore = true;
+      console.log("Database Migration: Connected to Firebase using environment variables.");
+      return;
+    } catch (err) {
+      console.error("Failed to initialize Firebase with env vars:", err);
+      dbInitError = "Env Init Error: " + err.message + "\n" + err.stack;
+      isFirestore = false;
+      return;
     }
-    const serviceAccount = {
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: pk.replace(/\\n/g, '\n')
-    };
-    initializeApp({ credential: cert(serviceAccount) });
-    firestoreDb = getFirestore();
-    isFirestore = true;
-    console.log("Database Migration: Connected to Firebase using environment variables.");
-    return;
   }
 
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
