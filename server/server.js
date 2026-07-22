@@ -728,37 +728,6 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
   res.json(user);
 });
 
-// POST onboard new teacher
-app.post('/api/teachers/onboard', authenticateToken, requireRole(['Teacher']), async (req, res) => {
-  const payload = req.body;
-  if (!payload || !payload.uid) {
-    return res.status(400).json({ error: "Invalid payload." });
-  }
-
-  const existingTeacher = db.findOne('teachers', t => t.uid === payload.uid || t.id === payload.uid);
-  let updatedTeacher;
-  
-  if (existingTeacher) {
-    updatedTeacher = await db.update('teachers', existingTeacher.id, {
-      ...payload,
-      status: "pending_approval"
-    });
-  } else {
-    updatedTeacher = await db.insert('teachers', {
-      ...payload,
-      status: "pending_approval"
-    });
-  }
-
-  // Sync user display name if changed
-  const existingUser = db.findOne('users', u => u.uid === payload.uid);
-  if (existingUser && payload.name && existingUser.displayName !== payload.name) {
-    await db.update('users', existingUser.id, { displayName: payload.name });
-  }
-
-  res.json(updatedTeacher);
-});
-
 
 
 // --- 2. TEACHER ENDPOINTS ---
@@ -942,6 +911,14 @@ app.post('/api/teachers/onboard', authenticateToken, requireRole(['Teacher']), r
     });
   }
 
+  // Notify Teacher of pending verification
+  const teacherUser = db.findOne('users', u => u.uid === uid);
+  if (teacherUser && teacherUser.email) {
+    sendTransactionalEmail(teacherUser.email, "Application Received - Pending Verification", "alert", {
+      message: `Hello ${sanitizeText(name)},\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status.`
+    });
+  }
+
   res.json(updated);
 });
 
@@ -1035,6 +1012,16 @@ app.post('/api/admin/applications/respond', authenticateToken, requireRole(['Adm
       ? "Welcome to EduVista! Your teacher onboarding profile is approved and live."
       : "Your onboarding application was declined. Please verify your credentials and submit again."
   );
+
+  // Send email to teacher
+  if (user && user.email) {
+    const subject = action === "Approve" ? "Teacher Application Approved!" : "Teacher Application Update";
+    const message = action === "Approve"
+      ? `Hello ${teacher.name},\n\nCongratulations! Your teacher onboarding application has been approved. You are now live on the EduBridge platform and can start accepting students.`
+      : `Hello ${teacher.name},\n\nUnfortunately, your teacher application was declined at this time. Please verify your credentials and submit again or contact support for more details.`;
+      
+    sendTransactionalEmail(user.email, subject, "alert", { message });
+  }
 
   res.json(updated);
 });

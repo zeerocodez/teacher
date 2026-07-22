@@ -1439,7 +1439,7 @@ export default function App() {
                 onComplete={(profile) => {
                   setIsTutorOnboarding(false);
                   fetchInitialData();
-                  alert("Application submitted successfully! Your account status is now Pending Approval.");
+                  alert("Your application is pending verification on the platform. Please check your email for updates.");
                 }}
                 onBack={() => setCurrentView('home')}
               />
