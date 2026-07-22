@@ -53,26 +53,14 @@ app.use(async (req, res, next) => {
 const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 app.use(cors({
   origin: (origin, callback) => {
-    if (
-      !origin || 
-      origin === clientOrigin || 
-      origin === 'http://localhost:5173' || 
-      origin === 'http://localhost:4173' || 
-      origin.endsWith('.vercel.app') || 
-      origin.endsWith('.ngrok-free.dev') || 
-      origin.endsWith('.ngrok.io') || 
-      origin.includes('ngrok-free.dev')
-    ) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    callback(null, true); // Allow all origins to prevent 500 HTML errors on custom domains
   },
   credentials: true
 }));
 
 // Configure express.json to capture rawBody for webhook signature verification
 app.use(express.json({
+  limit: '10mb',
   verify: (req, res, buf) => {
     req.rawBody = buf.toString();
   }
