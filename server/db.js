@@ -199,6 +199,19 @@ async function persistDocumentDelete(collection, id) {
 }
 
 function initFirestore() {
+  if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+    const serviceAccount = {
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    };
+    initializeApp({ credential: cert(serviceAccount) });
+    firestoreDb = getFirestore();
+    isFirestore = true;
+    console.log("Database Migration: Connected to Firebase using environment variables.");
+    return;
+  }
+
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
   let serviceAccountPath = null;
   
@@ -220,11 +233,12 @@ function initFirestore() {
       const serviceAccountFile = files.find(f => f.startsWith('edubridgez-firebase-adminsdk-') && f.endsWith('.json'));
       if (serviceAccountFile) {
         serviceAccountPath = path.join(parentDir, serviceAccountFile);
-        console.log(`Database Migration: Found Firebase service account key file in parent dir: ${serviceAccountFile}`);
+        console.log(`Database Migration: Found Firebase service account key file in parent: ${serviceAccountFile}`);
       }
     } catch (err) {}
   }
 
+  // 3. Fallback default
   if (!serviceAccountPath) {
     serviceAccountPath = path.join(process.cwd(), 'edubridgez-firebase-adminsdk-fbsvc-d56360976c.json');
   }

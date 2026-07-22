@@ -386,8 +386,10 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
 });
 app.get('/api/debug/db', async (req, res) => {
   try {
+    const users = db.find('users') || [];
     res.json({
-      envKeys: Object.keys(process.env).filter(k => k.includes('FIRE') || k.includes('VERCEL'))
+      userCount: users.length,
+      users: users.map(u => ({ email: u.email, role: u.role, uid: u.uid }))
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
