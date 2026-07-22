@@ -477,12 +477,12 @@ export default function App() {
     if (location.pathname === '/') {
       ScrollTrigger.refresh();
     }
-  }, [currentView]);
+  }, [location.pathname]);
 
   // Scroll to top when view changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [currentView]);
+  }, [location.pathname]);
 
   // Smooth scroll helper for homepage sections
   const scrollToSection = (id) => (e) => {
@@ -992,7 +992,7 @@ export default function App() {
       }
     });
     return () => ctx.revert();
-  }, [currentView, currentUser]);
+  }, [location.pathname, currentUser]);
 
   // GSAP trust section scroll entrances
   useLayoutEffect(() => {
@@ -1017,7 +1017,7 @@ export default function App() {
       }
     });
     return () => ctx.revert();
-  }, [currentView, currentUser]);
+  }, [location.pathname, currentUser]);
 
   return (
     <div className="relative min-h-screen bg-brand-cream text-brand-charcoal overflow-x-hidden selection:bg-brand-clay selection:text-white">

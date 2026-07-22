@@ -1,6 +1,9 @@
 import React, { Suspense } from 'react';
 import { 
-  ArrowRight, ShieldCheck, BookOpen, Star, Sparkles 
+  ShieldCheck, Layers, Globe, Calendar, Cpu, CheckCircle2, 
+  ArrowRight, Lock, Activity, Sparkles, Star, BookOpen, 
+  ChevronRight, TrendingUp, DollarSign, Bell, MessageSquare, 
+  Send, X, HelpCircle, Mail, User, Play 
 } from 'lucide-react';
 import heroImage from '../assets/hero.jpg';
 
