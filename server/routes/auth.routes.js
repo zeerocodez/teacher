@@ -139,6 +139,15 @@ router.post('/register', authRateLimiter, async (req, res) => {
       balance: 0, // Real-world balance defaults to 0 kobo NGN (requires paystack top-up)
       escrow: 0
     });
+
+    // Notify Admins of the new parent registration
+    const admins = db.find('users', u => u.role === 'Admin');
+    for (const admin of admins) {
+      await createNotification(admin.uid, 'system', 'New Parent Registration', `${sanitizedDisplayName} has joined as a Parent from ${sanitizedCountry}.`);
+      sendTransactionalEmail(admin.email, "New Parent Registration", "alert", {
+        message: `A new parent, ${sanitizedDisplayName} from ${sanitizedCountry}, has successfully registered on the platform. Email: ${sanitizedEmail}`
+      });
+    }
   }
 
   const token = jwt.sign({ uid, role: finalRole, email: sanitizedEmail }, JWT_SECRET, { expiresIn: '7d' });

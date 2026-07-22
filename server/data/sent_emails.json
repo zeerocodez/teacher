@@ -467,5 +467,137 @@
       "request_id": "2d6f.5b61d007241c6214.m1.bf4275c0-85b3-11f1-89fd-525400a229b1.19f89423f1c",
       "object": "email"
     }
+  },
+  {
+    "id": "email_d45c3cd9-5017-4823-b022-0ed97d0c0d4e",
+    "to": "parent_1784714956902@test.com",
+    "subject": "Welcome to EduVista Africa!",
+    "template": "welcome",
+    "body": "Welcome to EduVista Africa, Mr. John Doe (Parent)!\n\nYour parental hub has been successfully created.\n\nNext Steps:\n1. Verify Email: http://localhost:5173/verify-email?token=75862159ab2103106a14bf806f532124\n2. Browse vetted tutors based on subject and curriculum.\n3. Schedule secure lessons backed by our timed escrow protection.\n\nBest regards,\nEduVista Africa Support",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Welcome to EduVista Africa!</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n        <div style=\"text-align: center; margin-bottom: 25px;\">\n          <span class=\"badge\" style=\"letter-spacing: 1px; text-transform: uppercase;\">Parental Hub</span>\n        </div>\n        <h2 style=\"font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;\">Unlocking Academic Excellence.</h2>\n        <p>Welcome to EduVista Africa, <strong>Mr. John Doe (Parent)</strong>. Your family portal has been successfully created.</p>\n        \n        <div style=\"background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 20px; margin: 25px 0;\">\n          <h3 style=\"color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;\">Get Started in Minutes:</h3>\n          <ol style=\"padding-left: 20px; margin: 0; color: #1A1A1A; line-height: 1.6;\">\n            <li style=\"margin-bottom: 8px;\"><strong>Verify Email:</strong> Secure your account credentials by verifying your email below.</li>\n            <li style=\"margin-bottom: 8px;\"><strong>Discover Educators:</strong> Browse and filter vetted tutors based on subject, curriculum, and rate.</li>\n            <li style=\"margin-bottom: 0;\"><strong>Book Lessons:</strong> Fund and schedule interactive 1-on-1 virtual sessions under our timed-escrow protection scheme.</li>\n          </ol>\n        </div>\n\n        <p style=\"color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;\">\n          Every lesson is backed by the EduVista Escrow System — funds are only released to the tutor once the classroom timer records a successful lesson completion.\n        </p>\n        \n        <div style=\"text-align: center;\">\n          <a class=\"button\" href=\"http://localhost:5173/verify-email?token=75862159ab2103106a14bf806f532124\">Verify Account & Explore Tutors</a>\n        </div>\n        <p style=\"margin-top: 30px; font-size: 14px;\">Warm regards,<br>The EduVista Team</p>\n      \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "displayName": "Mr. John Doe (Parent)",
+      "role": "Parent"
+    },
+    "sentAt": "2026-07-22T10:09:21.882Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.6985fec1-85b5-11f1-b08a-5254009dfd0a.19f894d28a9",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_292c60ea-11a3-470b-a0ff-849f7d79665b",
+    "to": "admin@eduvista.com",
+    "subject": "New Parent Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Parent Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com"
+    },
+    "sentAt": "2026-07-22T10:11:01.383Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.a4d1be60-85b5-11f1-be69-525400114fe6.19f894ead46",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_2ad70dab-a79d-4111-8655-3df0d8db1728",
+    "to": "zeerocodes@gmail.com",
+    "subject": "New Parent Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Parent Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com"
+    },
+    "sentAt": "2026-07-22T10:11:01.961Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.a53cb530-85b5-11f1-95d0-5254001dc20d.19f894eb003",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_7a1bea96-22d9-44a5-82c6-d37fd94ac4ce",
+    "to": "morichcare@gmail.com",
+    "subject": "New Parent Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Parent Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new parent, Mr. John Doe (Parent) from Nigeria, has successfully registered on the platform. Email: parent_1784715058862@test.com"
+    },
+    "sentAt": "2026-07-22T10:11:02.472Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.a5894e90-85b5-11f1-93af-5254005934b4.19f894eb1f9",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_ed8d3a60-4c1c-4e80-bc31-5fd44040cd4d",
+    "to": "parent_1784715058862@test.com",
+    "subject": "Welcome to EduVista Africa!",
+    "template": "welcome",
+    "body": "Welcome to EduVista Africa, Mr. John Doe (Parent)!\n\nYour parental hub has been successfully created.\n\nHere is what you can expect and your next steps:\n\n1. Verify Email: http://localhost:5173/verify-email?token=ff7644072516e21343d2436519f5575e\n2. Top Up Wallet: Add funds to your secure wallet to pay for lessons.\n3. Discover Tutors: Browse vetted educators by subject, rate, and curriculum.\n4. Book Lessons: Schedule 1-on-1 virtual sessions securely.\n\nEvery lesson is backed by the EduVista Escrow System.\n\nBest regards,\nEduVista Africa Support",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Welcome to EduVista Africa!</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n        <div style=\"text-align: center; margin-bottom: 25px;\">\n          <span class=\"badge\" style=\"letter-spacing: 1px; text-transform: uppercase;\">Parental Hub</span>\n        </div>\n        <h2 style=\"font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;\">Unlocking Academic Excellence.</h2>\n        <p>Welcome to EduVista Africa, <strong>Mr. John Doe (Parent)</strong>. Your family portal has been successfully created.</p>\n        \n        <p style=\"color: #4A4A4A; font-size: 14px; line-height: 1.5;\">Here is exactly what you can expect and your next steps to get started with finding the perfect tutor for your child:</p>\n\n        <div style=\"background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 20px; margin: 25px 0;\">\n          <h3 style=\"color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;\">Step-by-Step Instructions:</h3>\n          <ol style=\"padding-left: 20px; margin: 0; color: #1A1A1A; line-height: 1.6;\">\n            <li style=\"margin-bottom: 8px;\"><strong>Verify Email:</strong> First, secure your account credentials by clicking the verification link below.</li>\n            <li style=\"margin-bottom: 8px;\"><strong>Top Up Wallet:</strong> Add funds to your secure digital wallet. These funds will be used to safely book tutors.</li>\n            <li style=\"margin-bottom: 8px;\"><strong>Discover Educators:</strong> Browse and filter our strictly vetted tutors based on subject, curriculum, and rate.</li>\n            <li style=\"margin-bottom: 0;\"><strong>Book Lessons:</strong> Schedule interactive 1-on-1 virtual sessions.</li>\n          </ol>\n        </div>\n\n        <p style=\"color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;\">\n          <strong>What to expect during a session:</strong> Every lesson is backed by the EduVista Escrow System — your funds are safely locked when booking, and are only released to the tutor once the classroom timer records a successful lesson completion.\n        </p>\n        \n        <div style=\"text-align: center;\">\n          <a class=\"button\" href=\"http://localhost:5173/verify-email?token=ff7644072516e21343d2436519f5575e\">Verify Account & Explore Tutors</a>\n        </div>\n        <p style=\"margin-top: 30px; font-size: 14px;\">Warm regards,<br>The EduVista Team</p>\n      \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "displayName": "Mr. John Doe (Parent)",
+      "role": "Parent"
+    },
+    "sentAt": "2026-07-22T10:11:02.548Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.a58ef3e0-85b5-11f1-b08a-5254009dfd0a.19f894eb21e",
+      "object": "email"
+    }
   }
 ]

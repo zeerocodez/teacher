@@ -203,7 +203,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVista Team</p>
       `);
     } else {
-      body = `Welcome to EduVista Africa, ${templateData.displayName}!\n\nYour parental hub has been successfully created.\n\nNext Steps:\n1. Verify Email: ${verificationUrl}\n2. Browse vetted tutors based on subject and curriculum.\n3. Schedule secure lessons backed by our timed escrow protection.\n\nBest regards,\nEduVista Africa Support`;
+      body = `Welcome to EduVista Africa, ${templateData.displayName}!\n\nYour parental hub has been successfully created.\n\nHere is what you can expect and your next steps:\n\n1. Verify Email: ${verificationUrl}\n2. Top Up Wallet: Add funds to your secure wallet to pay for lessons.\n3. Discover Tutors: Browse vetted educators by subject, rate, and curriculum.\n4. Book Lessons: Schedule 1-on-1 virtual sessions securely.\n\nEvery lesson is backed by the EduVista Escrow System.\n\nBest regards,\nEduVista Africa Support`;
       htmlBody = getHtmlWrapper(subject, `
         <div style="text-align: center; margin-bottom: 25px;">
           <span class="badge" style="letter-spacing: 1px; text-transform: uppercase;">Parental Hub</span>
@@ -211,17 +211,20 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <h2 style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;">Unlocking Academic Excellence.</h2>
         <p>Welcome to EduVista Africa, <strong>${templateData.displayName}</strong>. Your family portal has been successfully created.</p>
         
+        <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5;">Here is exactly what you can expect and your next steps to get started with finding the perfect tutor for your child:</p>
+
         <div style="background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 20px; margin: 25px 0;">
-          <h3 style="color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;">Get Started in Minutes:</h3>
+          <h3 style="color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;">Step-by-Step Instructions:</h3>
           <ol style="padding-left: 20px; margin: 0; color: #1A1A1A; line-height: 1.6;">
-            <li style="margin-bottom: 8px;"><strong>Verify Email:</strong> Secure your account credentials by verifying your email below.</li>
-            <li style="margin-bottom: 8px;"><strong>Discover Educators:</strong> Browse and filter vetted tutors based on subject, curriculum, and rate.</li>
-            <li style="margin-bottom: 0;"><strong>Book Lessons:</strong> Fund and schedule interactive 1-on-1 virtual sessions under our timed-escrow protection scheme.</li>
+            <li style="margin-bottom: 8px;"><strong>Verify Email:</strong> First, secure your account credentials by clicking the verification link below.</li>
+            <li style="margin-bottom: 8px;"><strong>Top Up Wallet:</strong> Add funds to your secure digital wallet. These funds will be used to safely book tutors.</li>
+            <li style="margin-bottom: 8px;"><strong>Discover Educators:</strong> Browse and filter our strictly vetted tutors based on subject, curriculum, and rate.</li>
+            <li style="margin-bottom: 0;"><strong>Book Lessons:</strong> Schedule interactive 1-on-1 virtual sessions.</li>
           </ol>
         </div>
 
         <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;">
-          Every lesson is backed by the EduVista Escrow System — funds are only released to the tutor once the classroom timer records a successful lesson completion.
+          <strong>What to expect during a session:</strong> Every lesson is backed by the EduVista Escrow System — your funds are safely locked when booking, and are only released to the tutor once the classroom timer records a successful lesson completion.
         </p>
         
         <div style="text-align: center;">
