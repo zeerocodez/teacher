@@ -384,8 +384,17 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
   }
   res.json(user);
 });
-
-
+app.get('/api/debug/db', async (req, res) => {
+  try {
+    const users = db.find('users') || [];
+    res.json({
+      userCount: users.length,
+      users: users.map(u => ({ email: u.email, role: u.role, uid: u.uid }))
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 import teacherRoutes from './routes/teacher.routes.js';
 app.use('/api/teachers', teacherRoutes);
