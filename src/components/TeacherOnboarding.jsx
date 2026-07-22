@@ -105,7 +105,8 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
               errMsg = errRes.error.message;
             }
           } catch(e) {}
-          alert("Cloudinary upload failed: " + errMsg);
+          alert("Cloudinary upload failed: " + errMsg + ". Using local temporary URL so you can proceed.");
+          setter(URL.createObjectURL(file));
         }
         setUploadingState({ type: null, progress: 0 });
       };
