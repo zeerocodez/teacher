@@ -31,6 +31,7 @@ import heroImage from './assets/hero.jpg';
 import { translations } from './locales/i18n';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { Routes, Route, useNavigate, useLocation, Navigate, Link } from 'react-router-dom';
 import BrandLogo from './components/BrandLogo';
 import Home from './pages/Home';
 
