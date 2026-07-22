@@ -270,8 +270,8 @@ export async function connectDb() {
 
   if (isFirestore) {
     try {
-      // Load all collections into cache
-      for (const col of collections) {
+      // Load all collections into cache in parallel to prevent cold-start timeouts
+      await Promise.all(collections.map(async (col) => {
         const snapshot = await firestoreDb.collection(col).get();
         const docs = [];
         snapshot.forEach(doc => {
@@ -279,7 +279,7 @@ export async function connectDb() {
         });
         CACHE[col] = docs;
         console.log(`Database Migration: Loaded ${CACHE[col].length} documents for collection '${col}' from Firestore.`);
-      }
+      }));
     } catch (err) {
       console.error("Database Migration: Firestore loading failed, falling back to local JSON database:", err);
       isFirestore = false;
@@ -294,8 +294,8 @@ export async function connectDb() {
         isMongo = true;
         console.log("Database Migration: Connected to MongoDB successfully.");
         
-        // Load all collections into cache
-        for (const col of collections) {
+        // Load all collections into cache in parallel
+        await Promise.all(collections.map(async (col) => {
           const Model = getModel(col);
           const docs = await Model.find({}).lean();
           CACHE[col] = docs.map(d => {
@@ -306,7 +306,7 @@ export async function connectDb() {
             return cleanDoc;
           });
           console.log(`Database Migration: Loaded ${CACHE[col].length} documents for collection '${col}' from MongoDB.`);
-        }
+        }));
       } catch (err) {
         console.error("Database Migration: MongoDB connection failed, falling back to local JSON database:", err);
         isMongo = false;
