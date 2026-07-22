@@ -390,6 +390,7 @@ app.get('/api/debug/db', async (req, res) => {
     const users = db.find('users') || [];
     res.json({
       dbInitError: typeof dbInitError !== 'undefined' ? dbInitError : null,
+      projectId: process.env.FIREBASE_PROJECT_ID,
       userCount: users.length,
       users: users.map(u => ({ email: u.email, role: u.role, uid: u.uid }))
     });
