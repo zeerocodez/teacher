@@ -79,7 +79,7 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
     formData.append('file', file);
     formData.append('upload_preset', uploadPreset);
 
-    const resourceType = type === 'video' ? 'video' : (type === 'raw' ? 'raw' : 'auto');
+    const resourceType = 'auto';
 
     try {
       const xhr = new XMLHttpRequest();
@@ -98,7 +98,14 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
           setter(response.secure_url);
         } else {
           console.error(xhr.responseText);
-          alert("Cloudinary upload failed: " + xhr.statusText);
+          let errMsg = xhr.statusText;
+          try {
+            const errRes = JSON.parse(xhr.responseText);
+            if (errRes.error && errRes.error.message) {
+              errMsg = errRes.error.message;
+            }
+          } catch(e) {}
+          alert("Cloudinary upload failed: " + errMsg);
         }
         setUploadingState({ type: null, progress: 0 });
       };
