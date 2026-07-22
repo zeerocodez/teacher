@@ -123,6 +123,11 @@ router.post('/register', authRateLimiter, async (req, res) => {
         message: `A new teacher, ${sanitizedDisplayName} (@${finalUsername}) from ${sanitizedCountry}, has registered directly and uploaded their credentials. WhatsApp: ${whatsapp || 'Not provided'}, LinkedIn: ${linkedin || 'Not provided'}. Please contact and vet them.`
       });
     }
+
+    // Notify Teacher of pending verification
+    sendTransactionalEmail(sanitizedEmail, "Application Received - Pending Verification", "alert", {
+      message: `Hello ${sanitizedDisplayName},\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status.`
+    });
   } else if (finalRole === "Parent") {
     await db.insert('parents', {
       uid,

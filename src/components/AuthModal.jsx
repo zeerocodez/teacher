@@ -253,36 +253,21 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         });
         if (response.ok) {
           const data = await response.json();
+          if (activeTab === 'register' && role === 'Teacher') {
+            toast.success("Your application is pending verification on the platform. Please check your email for updates.");
+          }
           onSuccess(data);
           onClose();
+          return;
+        } else {
+          const errData = await response.json();
+          setError(errData.error || 'Authentication failed on backend.');
+          setLoading(false);
           return;
         }
       } catch (backendErr) {
         console.warn("Backend login fallback failed:", backendErr);
-      }
-
-      // Fallback local simulation if backend offline or Firebase not setup
-      if (activeTab === 'login') {
-        const lowerEmail = email.toLowerCase();
-        if (lowerEmail.includes('parent')) {
-          onSuccess({ uid: 'parent_1', displayName: 'Ngozi Adeleke', role: 'Parent', email, country: 'Nigeria' });
-          onClose();
-        } else if (lowerEmail.includes('teacher')) {
-          onSuccess({ uid: 'teacher_1', displayName: 'Mr. Adebayo Okafor', role: 'Teacher', email, country: 'Nigeria' });
-          onClose();
-        } else if (lowerEmail.includes('student')) {
-          onSuccess({ uid: 'student_1', displayName: 'Tunde Okafor', role: 'Student', email });
-          onClose();
-        } else if (lowerEmail === 'zeerocodes@gmail.com' || lowerEmail.includes('admin')) {
-          onSuccess({ uid: 'admin_1', displayName: 'System Admin', role: 'Admin', email });
-          onClose();
-        } else {
-          setError(err.message || 'Simulated error: use parent@eduvista.com, teacher@eduvista.com, student@eduvista.com or admin@eduvista.com');
-        }
-      } else {
-        const mockUid = `user_${Date.now()}`;
-        onSuccess({ uid: mockUid, displayName: name, role, email, country });
-        onClose();
+        setError('Network Error. Unable to reach backend server.');
       }
     } finally {
       setLoading(false);
