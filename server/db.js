@@ -311,6 +311,7 @@ export async function connectDb() {
       }));
     } catch (err) {
       console.error("Database Migration: Firestore loading failed, falling back to local JSON database:", err);
+      dbInitError = "Fetch Error: " + err.message;
       isFirestore = false;
       loadFromJsonFiles();
     }
