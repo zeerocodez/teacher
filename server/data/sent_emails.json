@@ -231,5 +231,241 @@
       "request_id": "2d6f.5b61d007241c6214.m1.d76c4220-81c6-11f1-ad6a-fae9afc80e45.19f6f887f42",
       "object": "email"
     }
+  },
+  {
+    "id": "email_f3067d70-0449-4f0f-868a-cbf32cbb9d0f",
+    "to": "admin@eduvista.com",
+    "subject": "New Teacher Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new teacher, Dr. Test Registration (@dr-test-1784714215189) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Teacher Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new teacher, Dr. Test Registration (@dr-test-1784714215189) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new teacher, Dr. Test Registration (@dr-test-1784714215189) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them."
+    },
+    "sentAt": "2026-07-22T09:56:58.205Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.ae4a6f70-85b3-11f1-93af-5254005934b4.19f8941cfe7",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_74e48262-75ca-420c-8b9d-8b488117cf43",
+    "to": "zeerocodes@gmail.com",
+    "subject": "New Teacher Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new teacher, Dr. Test Registration (@dr-test-1784714215189) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Teacher Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new teacher, Dr. Test Registration (@dr-test-1784714215189) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new teacher, Dr. Test Registration (@dr-test-1784714215189) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them."
+    },
+    "sentAt": "2026-07-22T09:56:58.738Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.ae8f40a0-85b3-11f1-93af-5254005934b4.19f8941d1aa",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_79312505-5b39-4932-8bc8-5002ef7a8076",
+    "to": "teacher_1784714215189@test.com",
+    "subject": "Welcome to EduVista Africa!",
+    "template": "welcome",
+    "body": "Welcome to EduVista Africa, Dr. Test Registration!\n\nYour profile as a professional educator is now ready for onboarding.\n\nNext Steps:\n1. Verify Email: http://localhost:5173/verify-email?token=5cbf80d314354dca453b94feb9b160e2\n2. Complete Profile: List subjects, curriculum, and hourly rates.\n3. Set Availability: Choose slots for parent booking.\n\nBest regards,\nEduVista Africa Support",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Welcome to EduVista Africa!</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n        <div style=\"text-align: center; margin-bottom: 25px;\">\n          <span class=\"badge\" style=\"letter-spacing: 1px; text-transform: uppercase;\">Educator Portal</span>\n        </div>\n        <h2 style=\"font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;\">Empower the Next Generation of Minds.</h2>\n        <p>Welcome to EduVista Africa, <strong>Dr. Test Registration</strong>. Your profile as a professional educator is now ready for onboarding.</p>\n        \n        <div style=\"background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 20px; margin: 25px 0;\">\n          <h3 style=\"color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;\">Next Steps to Live Status:</h3>\n          <ol style=\"padding-left: 20px; margin: 0; color: #1A1A1A; line-height: 1.6;\">\n            <li style=\"margin-bottom: 8px;\"><strong>Verify Email:</strong> Activate your secure authentication session using the button below.</li>\n            <li style=\"margin-bottom: 8px;\"><strong>Complete Profile:</strong> List your subjects, select the school curriculum you specialize in, and set your hourly rate.</li>\n            <li style=\"margin-bottom: 0;\"><strong>Set Availability:</strong> Block out times on your weekly schedule to allow parents to book sessions.</li>\n          </ol>\n        </div>\n\n        <p style=\"color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;\">\n          Our automated escrow engine ensures your tutoring sessions are paid instantly and protected from booking disputes. Welcome to the future of elite tutoring.\n        </p>\n        \n        <div style=\"text-align: center;\">\n          <a class=\"button\" href=\"http://localhost:5173/verify-email?token=5cbf80d314354dca453b94feb9b160e2\">Verify Account & Log In</a>\n        </div>\n        <p style=\"margin-top: 30px; font-size: 14px;\">Warm regards,<br>The EduVista Team</p>\n      \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "displayName": "Dr. Test Registration",
+      "role": "Teacher"
+    },
+    "sentAt": "2026-07-22T09:56:58.806Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.ae8f67b0-85b3-11f1-a2db-525400d4bb1c.19f8941d1ab",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_ce69c155-a5e8-46c8-8f50-747dc1cb81cf",
+    "to": "admin@eduvista.com",
+    "subject": "New Teacher Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new teacher, Dr. Test Registration (@dr-test-1784714242026) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Teacher Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new teacher, Dr. Test Registration (@dr-test-1784714242026) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new teacher, Dr. Test Registration (@dr-test-1784714242026) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them."
+    },
+    "sentAt": "2026-07-22T09:57:24.783Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.be280510-85b3-11f1-89fd-525400a229b1.19f894237e1",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_321c394e-2f55-4e13-8425-3d005523d444",
+    "to": "zeerocodes@gmail.com",
+    "subject": "New Teacher Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new teacher, Dr. Test Registration (@dr-test-1784714242026) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Teacher Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new teacher, Dr. Test Registration (@dr-test-1784714242026) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them.\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new teacher, Dr. Test Registration (@dr-test-1784714242026) from Nigeria, has registered directly and uploaded their credentials. WhatsApp: Not provided, LinkedIn: Not provided. Please contact and vet them."
+    },
+    "sentAt": "2026-07-22T09:57:25.313Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.be7bca60-85b3-11f1-93af-5254005934b4.19f89423a06",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_9c8df045-9a4c-41c8-bdb1-ada199045395",
+    "to": "teacher_1784714242026@test.com",
+    "subject": "Welcome to EduVista Africa!",
+    "template": "welcome",
+    "body": "Welcome to EduVista Africa, Dr. Test Registration!\n\nYour profile as a professional educator is now ready for onboarding.\n\nNext Steps:\n1. Verify Email: http://localhost:5173/verify-email?token=5d4d8cc9398360683015d59077986f4e\n2. Complete Profile: List subjects, curriculum, and hourly rates.\n3. Set Availability: Choose slots for parent booking.\n\nBest regards,\nEduVista Africa Support",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Welcome to EduVista Africa!</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n        <div style=\"text-align: center; margin-bottom: 25px;\">\n          <span class=\"badge\" style=\"letter-spacing: 1px; text-transform: uppercase;\">Educator Portal</span>\n        </div>\n        <h2 style=\"font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;\">Empower the Next Generation of Minds.</h2>\n        <p>Welcome to EduVista Africa, <strong>Dr. Test Registration</strong>. Your profile as a professional educator is now ready for onboarding.</p>\n        \n        <div style=\"background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 20px; margin: 25px 0;\">\n          <h3 style=\"color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;\">Next Steps to Live Status:</h3>\n          <ol style=\"padding-left: 20px; margin: 0; color: #1A1A1A; line-height: 1.6;\">\n            <li style=\"margin-bottom: 8px;\"><strong>Verify Email:</strong> Activate your secure authentication session using the button below.</li>\n            <li style=\"margin-bottom: 8px;\"><strong>Complete Profile:</strong> List your subjects, select the school curriculum you specialize in, and set your hourly rate.</li>\n            <li style=\"margin-bottom: 0;\"><strong>Set Availability:</strong> Block out times on your weekly schedule to allow parents to book sessions.</li>\n          </ol>\n        </div>\n\n        <p style=\"color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;\">\n          Our automated escrow engine ensures your tutoring sessions are paid instantly and protected from booking disputes. Welcome to the future of elite tutoring.\n        </p>\n        \n        <div style=\"text-align: center;\">\n          <a class=\"button\" href=\"http://localhost:5173/verify-email?token=5d4d8cc9398360683015d59077986f4e\">Verify Account & Log In</a>\n        </div>\n        <p style=\"margin-top: 30px; font-size: 14px;\">Warm regards,<br>The EduVista Team</p>\n      \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "displayName": "Dr. Test Registration",
+      "role": "Teacher"
+    },
+    "sentAt": "2026-07-22T09:57:25.400Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.be7b0710-85b3-11f1-be69-525400114fe6.19f89423a01",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_3698fb83-8818-425e-9c76-572d9c73e756",
+    "to": "admin@eduvista.com",
+    "subject": "New Teacher Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new teacher, Dr. Test Registration, has completed onboarding and is pending approval. Please review their profile.\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Teacher Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new teacher, Dr. Test Registration, has completed onboarding and is pending approval. Please review their profile.\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new teacher, Dr. Test Registration, has completed onboarding and is pending approval. Please review their profile."
+    },
+    "sentAt": "2026-07-22T09:57:26.523Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.bed0ef40-85b3-11f1-93af-5254005934b4.19f89423c34",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_2d849c7f-5135-4b48-acdd-d75573f40fb4",
+    "to": "zeerocodes@gmail.com",
+    "subject": "New Teacher Registration",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nA new teacher, Dr. Test Registration, has completed onboarding and is pending approval. Please review their profile.\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>New Teacher Registration</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"A new teacher, Dr. Test Registration, has completed onboarding and is pending approval. Please review their profile.\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "A new teacher, Dr. Test Registration, has completed onboarding and is pending approval. Please review their profile."
+    },
+    "sentAt": "2026-07-22T09:57:27.290Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.bf43d550-85b3-11f1-b203-765e7256bde4.19f89423f25",
+      "object": "email"
+    }
+  },
+  {
+    "id": "email_d5617ffc-93ba-4ffc-ad82-4abd26300f31",
+    "to": "teacher_1784714242026@test.com",
+    "subject": "Application Received - Pending Verification",
+    "template": "alert",
+    "body": "Dear User,\n\nWe have a new update for you regarding your EduVista account:\n\nHello Dr. Test Registration,\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status.\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration",
+    "htmlBody": "\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"utf-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Application Received - Pending Verification</title>\n        <style>\n          body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background-color: #F2F0E9; color: #1A1A1A; margin: 0; padding: 20px; }\n          .container { max-width: 600px; background-color: #ffffff; border: 1px solid rgba(46,64,54,0.1); border-radius: 24px; overflow: hidden; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }\n          .header { background-color: #2E4036; padding: 30px 20px; text-align: center; }\n          .header h1 { color: #F2F0E9; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 0.5px; }\n          .content { padding: 40px 30px; font-size: 15px; line-height: 1.6; color: #1A1A1A; }\n          .footer { background-color: #1A1A1A; color: #F2F0E9; text-align: center; padding: 20px; font-size: 11px; }\n          .button { display: inline-block; background-color: #CC5833; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: bold; margin-top: 20px; }\n          .badge { display: inline-block; background-color: rgba(204,88,51,0.1); color: #CC5833; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }\n          ul { padding-left: 20px; margin: 15px 0; }\n          li { margin-bottom: 8px; }\n        </style>\n      </head>\n      <body>\n        <div class=\"container\">\n          <div class=\"header\">\n            <h1>EduVista</h1>\n          </div>\n          <div class=\"content\">\n            \n      <h2>EduVista Administration Update</h2>\n      <p>Dear User,</p>\n      <p>We have a new update for you regarding your EduVista account:</p>\n      <p style=\"background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;\">\n        \"Hello Dr. Test Registration,\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status.\"\n      </p>\n      <p>To view this update and take action, please log in to your dashboard:</p>\n      <p><a class=\"button\" href=\"http://localhost:5173/\">Log In to Dashboard</a></p>\n      <p>Warm regards,<br>EduVista Administration</p>\n    \n          </div>\n          <div class=\"footer\">\n            <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>\n            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>\n          </div>\n        </div>\n      </body>\n    </html>\n  ",
+    "data": {
+      "message": "Hello Dr. Test Registration,\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status."
+    },
+    "sentAt": "2026-07-22T09:57:27.344Z",
+    "status": "sent",
+    "provider": "zeptomail_api",
+    "providerResponse": {
+      "data": [
+        {
+          "code": "EM_104",
+          "additional_info": [],
+          "message": "Email request received"
+        }
+      ],
+      "message": "OK",
+      "request_id": "2d6f.5b61d007241c6214.m1.bf4275c0-85b3-11f1-89fd-525400a229b1.19f89423f1c",
+      "object": "email"
+    }
   }
 ]

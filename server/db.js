@@ -483,6 +483,16 @@ export async function seedDatabase() {
       passwordHash: "8b7e28a506bb8029d2f2d93e17cd3626be0cd776fa2e7d704ba44dfb8d80f8cd"
     },
     {
+      uid: "admin_morich",
+      email: "morichcare@gmail.com",
+      displayName: "Morichcare Admin",
+      role: "Admin",
+      country: "Nigeria",
+      status: "active",
+      salt: "d56360976c",
+      passwordHash: "8b7e28a506bb8029d2f2d93e17cd3626be0cd776fa2e7d704ba44dfb8d80f8cd"
+    },
+    {
       uid: "parent_1",
       email: "parent@eduvista.com",
       displayName: "Ngozi Adeleke",

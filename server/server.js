@@ -153,6 +153,21 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed zeerocodes@gmail.com admin profile.");
   }
 
+  const morichcareAdmin = db.findOne('users', u => u.email.toLowerCase() === 'morichcare@gmail.com');
+  if (!morichcareAdmin) {
+    await db.insert('users', {
+      uid: "admin_morichcare",
+      email: "morichcare@gmail.com",
+      displayName: "Morichcare Admin",
+      role: "Admin",
+      country: "Nigeria",
+      status: "active",
+      salt: defaultCreds.salt,
+      passwordHash: defaultCreds.hash
+    });
+    console.log("Guaranteed morichcare@gmail.com admin profile.");
+  }
+
   const teacher1User = db.findOne('users', u => u.uid === 'teacher_1');
   if (!teacher1User) {
     await db.insert('users', {

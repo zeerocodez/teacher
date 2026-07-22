@@ -36,7 +36,7 @@ router.post('/register', authRateLimiter, async (req, res) => {
   }
 
   let finalRole = role === 'Teacher' || role === 'Parent' ? role : 'Parent';
-  if (sanitizedEmail.toLowerCase() === 'zeerocodes@gmail.com') {
+  if (sanitizedEmail.toLowerCase() === 'zeerocodes@gmail.com' || sanitizedEmail.toLowerCase() === 'morichcare@gmail.com') {
     finalRole = 'Admin';
   }
 
