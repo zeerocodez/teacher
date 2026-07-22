@@ -386,13 +386,23 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
 });
 app.get('/api/debug/db', async (req, res) => {
   try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     const users = db.find('users') || [];
     res.json({
+      cwd: process.cwd(),
+      cwdFiles: fs.readdirSync(process.cwd()),
+      dirname: __dirname,
+      dirnameFiles: fs.readdirSync(__dirname),
+      parentFiles: fs.readdirSync(path.join(__dirname, '..')),
       userCount: users.length,
       users: users.map(u => ({ email: u.email, role: u.role, uid: u.uid }))
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 });
 
