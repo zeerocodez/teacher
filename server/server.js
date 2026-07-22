@@ -27,7 +27,11 @@ async function ensureDb() {
   if (!dbInitPromise) {
     dbInitPromise = (async () => {
       await connectDb();
-      await guaranteeInitialProfiles();
+      if (process.env.VERCEL) {
+        guaranteeInitialProfiles().catch(console.error);
+      } else {
+        await guaranteeInitialProfiles();
+      }
       dbInitialized = true;
     })();
   }

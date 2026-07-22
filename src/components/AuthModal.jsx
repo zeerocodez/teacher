@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { X, Mail, User, Shield, Lock, Phone, Link2, Clock, Video, FileText, Camera, Globe, DollarSign, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { X, Mail, User, Shield, Lock, Phone, Link2, Clock, Video, FileText, Camera, Globe, DollarSign, CheckCircle, ArrowLeft, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import BrandLogo from './BrandLogo';
@@ -260,14 +260,19 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           onClose();
           return;
         } else {
-          const errData = await response.json();
-          setError(errData.error || 'Authentication failed on backend.');
+          let errData;
+          try {
+            errData = await response.json();
+          } catch (jsonErr) {
+            throw new Error('Server returned an invalid response. Please try again later.');
+          }
+          setError(errData?.error || 'Authentication failed on backend.');
           setLoading(false);
           return;
         }
       } catch (backendErr) {
         console.warn("Backend login fallback failed:", backendErr);
-        setError('Network Error. Unable to reach backend server.');
+        setError(backendErr.message === 'Failed to fetch' ? 'Network Error. Unable to reach backend server.' : backendErr.message);
       }
     } finally {
       setLoading(false);
