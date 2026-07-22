@@ -386,8 +386,10 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
 });
 app.get('/api/debug/db', async (req, res) => {
   try {
+    const { dbInitError } = await import('./db.js');
     const users = db.find('users') || [];
     res.json({
+      dbInitError: typeof dbInitError !== 'undefined' ? dbInitError : null,
       userCount: users.length,
       users: users.map(u => ({ email: u.email, role: u.role, uid: u.uid }))
     });

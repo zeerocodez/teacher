@@ -291,7 +291,8 @@ function initFirestore() {
   }
 }
 
-// Initialize and connect database
+export let dbInitError = null;
+
 export async function connectDb() {
   // Try to connect to Firestore first if variables are configured
   initFirestore();
