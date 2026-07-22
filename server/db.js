@@ -198,17 +198,30 @@ async function persistDocumentDelete(collection, id) {
 }
 
 function initFirestore() {
-  // Dynamically find any Firebase service account JSON file in the project root
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
   let serviceAccountPath = null;
+  
+  // 1. Try process.cwd()
   try {
     const files = fs.readdirSync(process.cwd());
     const serviceAccountFile = files.find(f => f.startsWith('edubridgez-firebase-adminsdk-') && f.endsWith('.json'));
     if (serviceAccountFile) {
       serviceAccountPath = path.join(process.cwd(), serviceAccountFile);
-      console.log(`Database Migration: Found Firebase service account key file: ${serviceAccountFile}`);
+      console.log(`Database Migration: Found Firebase service account key file in cwd: ${serviceAccountFile}`);
     }
-  } catch (err) {
-    console.warn("Failed to dynamically search for firebase service account:", err);
+  } catch (err) {}
+
+  // 2. Try __dirname/..
+  if (!serviceAccountPath) {
+    try {
+      const parentDir = path.join(__dirname, '..');
+      const files = fs.readdirSync(parentDir);
+      const serviceAccountFile = files.find(f => f.startsWith('edubridgez-firebase-adminsdk-') && f.endsWith('.json'));
+      if (serviceAccountFile) {
+        serviceAccountPath = path.join(parentDir, serviceAccountFile);
+        console.log(`Database Migration: Found Firebase service account key file in parent dir: ${serviceAccountFile}`);
+      }
+    } catch (err) {}
   }
 
   if (!serviceAccountPath) {
