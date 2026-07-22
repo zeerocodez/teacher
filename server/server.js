@@ -728,6 +728,38 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
   res.json(user);
 });
 
+// POST onboard new teacher
+app.post('/api/teachers/onboard', authenticateToken, requireRole(['Teacher']), async (req, res) => {
+  const payload = req.body;
+  if (!payload || !payload.uid) {
+    return res.status(400).json({ error: "Invalid payload." });
+  }
+
+  const existingTeacher = db.findOne('teachers', t => t.uid === payload.uid || t.id === payload.uid);
+  let updatedTeacher;
+  
+  if (existingTeacher) {
+    updatedTeacher = await db.update('teachers', existingTeacher.id, {
+      ...payload,
+      status: "pending_approval"
+    });
+  } else {
+    updatedTeacher = await db.insert('teachers', {
+      ...payload,
+      status: "pending_approval"
+    });
+  }
+
+  // Sync user display name if changed
+  const existingUser = db.findOne('users', u => u.uid === payload.uid);
+  if (existingUser && payload.name && existingUser.displayName !== payload.name) {
+    await db.update('users', existingUser.id, { displayName: payload.name });
+  }
+
+  res.json(updatedTeacher);
+});
+
+
 
 // --- 2. TEACHER ENDPOINTS ---
 
