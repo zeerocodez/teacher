@@ -386,11 +386,11 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
 });
 app.get('/api/debug/db', async (req, res) => {
   try {
-    const { dbInitError, executionTrace } = await import('./db.js');
+    const { getDbInitError, isFirestore } = await import('./db.js');
     const users = db.find('users') || [];
     res.json({
-      dbInitError: typeof dbInitError !== 'undefined' ? dbInitError : null,
-      executionTrace: typeof executionTrace !== 'undefined' ? executionTrace : [],
+      dbInitError: typeof getDbInitError !== 'undefined' ? getDbInitError() : null,
+      isFirestore: typeof isFirestore !== 'undefined' ? isFirestore : null,
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       userCount: users.length,

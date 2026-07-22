@@ -31,7 +31,8 @@ const getFilePath = (collection) => path.join(DATA_DIR, `${collection}.json`);
 // In-memory collection cache
 const CACHE = {};
 let isMongo = false;
-let isFirestore = false;
+export let isFirestore = false;
+let isDbConnected = false;
 let firestoreDb = null;
 
 const collections = [
@@ -200,10 +201,14 @@ async function persistDocumentDelete(collection, id) {
 
 function initFirestore() {
   if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+    let pk = process.env.FIREBASE_PRIVATE_KEY;
+    if (pk.startsWith('"') && pk.endsWith('"')) {
+      pk = pk.slice(1, -1);
+    }
     const serviceAccount = {
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+      privateKey: pk.replace(/\\n/g, '\n')
     };
     initializeApp({ credential: cert(serviceAccount) });
     firestoreDb = getFirestore();
@@ -292,24 +297,14 @@ function initFirestore() {
 }
 
 export let dbInitError = null;
-
-export const executionTrace = [];
+export function getDbInitError() { return dbInitError; }
 
 export async function connectDb() {
-  executionTrace.push("connectDb start");
-  if (isDbConnected) {
-    executionTrace.push("isDbConnected was true, returning");
-    return;
-  }
-
   // Try to connect to Firestore first if variables are configured
-  executionTrace.push("calling initFirestore");
   initFirestore();
-  executionTrace.push(`initFirestore returned, isFirestore=${isFirestore}`);
 
   if (isFirestore) {
     try {
-      executionTrace.push("starting Promise.all to fetch from Firestore");
       // Load all collections into cache in parallel to prevent cold-start timeouts
       await Promise.all(collections.map(async (col) => {
         const snapshot = await firestoreDb.collection(col).get();
@@ -318,17 +313,15 @@ export async function connectDb() {
           docs.push({ id: doc.id, ...doc.data() });
         });
         CACHE[col] = docs;
+        console.log(`Database Migration: Loaded ${CACHE[col].length} documents for collection '${col}' from Firestore.`);
       }));
-      executionTrace.push(`Promise.all finished. users length=${CACHE['users'] ? CACHE['users'].length : 0}`);
     } catch (err) {
-      executionTrace.push(`Promise.all threw error: ${err.message}`);
       console.error("Database Migration: Firestore loading failed, falling back to local JSON database:", err);
       dbInitError = "Fetch Error: " + err.message;
       isFirestore = false;
       loadFromJsonFiles();
     }
   } else {
-    executionTrace.push("isFirestore is false, entering else block");
     const uri = process.env.MONGODB_URI;
     if (uri) {
       console.log("Database Migration: Connecting to production MongoDB...");
