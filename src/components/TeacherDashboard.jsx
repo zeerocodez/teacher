@@ -533,6 +533,9 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
               <p className="font-sans text-xs text-brand-charcoal/70 leading-relaxed">
                 Welcome to EduVista Africa! You have successfully registered your educator profile. Before you can start taking classes, tutoring students, or earning payouts, our Admin team must manually audit your credentials.
               </p>
+              <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm font-bold">
+                Your application is pending verification on the platform. Please check your email for updates regarding your approval status.
+              </div>
             </div>
             
             {/* Checklist of what was submitted */}
