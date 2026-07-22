@@ -393,6 +393,8 @@ app.get('/api/debug/db', async (req, res) => {
       isFirestore: typeof isFirestore !== 'undefined' ? isFirestore : null,
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      databaseId: process.env.FIRESTORE_DATABASE_ID,
+      firebaseDbUrl: process.env.FIREBASE_DATABASE_URL,
       userCount: users.length,
       users: users.map(u => ({ email: u.email, role: u.role, uid: u.uid }))
     });

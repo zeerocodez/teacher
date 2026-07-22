@@ -363,7 +363,9 @@ export async function connectDb() {
   }
 
   // Seed the database after collections are loaded in memory
-  await seedDatabase();
+  // WARNING: seedDatabase unconditionally overwrites CACHE['users'] with 5 hardcoded users.
+  // DO NOT RUN in production as it destroys the fetched Firestore state!
+  // await seedDatabase();
 }
 
 // Read collection
