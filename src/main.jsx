@@ -6,15 +6,18 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './contexts/AuthContext'
 import { UIProvider } from './contexts/UIContext'
+import { DataProvider } from './contexts/DataContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <UIProvider>
-          <App />
-          <Toaster position="bottom-right" />
-        </UIProvider>
+        <DataProvider>
+          <UIProvider>
+            <App />
+            <Toaster position="bottom-right" />
+          </UIProvider>
+        </DataProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

@@ -28,17 +28,10 @@ export default function BookingModal({
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Credit Card Gateway States
-  const [showCardForm, setShowCardForm] = useState(false);
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
-  const [cardName, setCardName] = useState('');
   
+          
   // OTP Verification States
-  const [showOtpForm, setShowOtpForm] = useState(false);
-  const [otpCode, setOtpCode] = useState('');
-  const [paymentStatusText, setPaymentStatusText] = useState('');
-
+      
   const isFirstTrial = !bookedSessions || bookedSessions.length === 0;
   const teacherRateMinor = teacher ? (teacher.rate || 0) : 350000;
   const activeRateMinor = isFirstTrial ? 0 : teacherRateMinor;
@@ -187,13 +180,16 @@ export default function BookingModal({
   const handlePay = () => {
     if (selectedSlots.length === 0) return;
     
-    if (paymentMethod === 'card') {
-      setShowCardForm(true);
+    setIsProcessing(true);
+    const slotsData = selectedSlots.map(id => slots.find(s => s.id === id));
+    
+    if (paymentMethod === 'paystack') {
+      // Direct integration triggered via App.jsx
+      onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
+      // Don't close or reset yet, let the redirect happen
     } else {
       // Wallet payment
-      setIsProcessing(true);
       setTimeout(() => {
-        const slotsData = selectedSlots.map(id => slots.find(s => s.id === id));
         onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
         setIsProcessing(false);
         resetStates();
@@ -202,68 +198,31 @@ export default function BookingModal({
     }
   };
 
-  // Simulated Card Payment Gateway Checkout Submit
-  const handleCardPaymentSubmit = (e) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    setPaymentStatusText("Contacting Paystack checkout server...");
-    
-    setTimeout(() => {
-      setPaymentStatusText("Authorizing transaction with the bank...");
-      setTimeout(() => {
-        setPaymentStatusText("Verifying 3D Secure verification protocol...");
-        setShowOtpForm(true);
-        setIsProcessing(false);
-      }, 1200);
-    }, 1200);
-  };
-
-  // OTP Verification Submit
-  const handleOtpVerifySubmit = (e) => {
-    e.preventDefault();
-    if (!otpCode || otpCode.length < 4) {
-      toast.error("Please enter a valid verification code.");
-      return;
-    }
-
-    setIsProcessing(true);
-    setPaymentStatusText("Validating OTP code...");
-
-    setTimeout(() => {
-      setPaymentStatusText("Securing escrow booking deposit...");
-      setTimeout(() => {
-        // Successful payment booking release
-        const slotsData = selectedSlots.map(id => slots.find(s => s.id === id));
-        onBook(totalRateMinor, slotsData, 'card', { subject: selectedSubject, curriculum: selectedCurriculum });
-        setIsProcessing(false);
-        resetStates();
-        onClose();
-      }, 1000);
-    }, 1200);
-  };
-
-  const resetStates = () => {
-    setShowCardForm(false);
-    setShowOtpForm(false);
-    setCardNumber('');
-    setCardExpiry('');
-    setCardCvv('');
-    setCardName('');
-    setOtpCode('');
-    setPaymentStatusText('');
-  };
-
   const isWalletInsufficient = paymentMethod === 'wallet' && walletBalance < totalRateMinor;
 
-  if (!isOpen || !teacher) return null;
+  
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <AnimatePresence>
+      {isOpen && teacher && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => { resetStates(); onClose(); }} />
       
       {/* Modal Container */}
-      <div className="relative bg-brand-cream border border-brand-moss/20 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.95 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="relative bg-brand-cream border border-brand-moss/20 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
+        >}
+      
         {/* Close Button */}
         <button onClick={() => { resetStates(); onClose(); }} className="absolute top-6 right-6 text-brand-moss/60 hover:text-brand-moss">
           <X className="w-5 h-5" />
@@ -589,11 +548,11 @@ export default function BookingModal({
                   </div>
                 )}
 
-                {/* Credit Card Option (Paystack simulation) */}
+                {/* Paystack Checkout Option */}
                 <button
-                  onClick={() => setPaymentMethod('card')}
+                  onClick={() => setPaymentMethod('paystack')}
                   className={`w-full py-3.5 px-4 rounded-xl border text-left font-sans transition-all duration-300 flex items-center justify-between ${
-                    paymentMethod === 'card'
+                    paymentMethod === 'paystack'
                       ? 'border-brand-moss bg-brand-moss/5 ring-1 ring-brand-moss'
                       : 'border-brand-moss/10 bg-white hover:border-brand-moss/30'
                   }`}
@@ -624,7 +583,7 @@ export default function BookingModal({
                 {isProcessing 
                   ? "Securing Escrow..." 
                   : selectedSlots.length > 0
-                    ? paymentMethod === 'card' 
+                    ? paymentMethod === 'paystack' 
                       ? "Enter Card Details" 
                       : `Pay ${formattedTotalRate} & Lock Escrow`
                     : "Select at least one slot"
@@ -638,7 +597,8 @@ export default function BookingModal({
             </div>
           </>
         )}
-      </div>
-    </div>
+      </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
-}

@@ -28,7 +28,7 @@ router.post('/students/add', authenticateToken, requireOwnerOrAdmin, async (req,
   });
 
   // Update parent children list in database
-  const parent = db.findOne('parents', p => p.uid === parentId);
+  const parent = await db.findOne('parents', p => p.uid === parentId);
   if (parent) {
     const updatedChildren = Array.isArray(parent.children) ? [...parent.children, name] : [name];
     await db.update('parents', parent.id, { children: updatedChildren });
@@ -37,28 +37,28 @@ router.post('/students/add', authenticateToken, requireOwnerOrAdmin, async (req,
   res.json({ success: true, student: newStudent });
 });
 
-router.get('/dashboard/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) => {
+router.get('/dashboard/:uid', authenticateToken, requireOwnerOrAdmin, async (req, res) => {
   const { uid } = req.params;
   
-  const parent = db.findOne('parents', p => p.uid === uid);
+  const parent = await db.findOne('parents', p => p.uid === uid);
   if (!parent) {
     return res.status(404).json({ error: "Parent dashboard not found." });
   }
 
-  const wallet = db.findOne('wallets', w => w.uid === uid);
-  const students = db.find('students', s => s.parentUid === uid);
+  const wallet = await db.findOne('wallets', w => w.uid === uid);
+  const students = await db.find('students', s => s.parentUid === uid);
   const studentNames = students.map(s => s.name);
   
   // Find sessions where parent is involved
-  const activeSessions = db.find('sessions', s => s.parentId === uid || studentNames.includes(s.studentName));
-  const assignments = db.find('assignments', a => studentNames.includes(a.studentName));
-  const parentTransactions = db.find('transactions', t => t.fromUserId === uid);
-  const parentDisputes = db.find('disputes', d => d.raisedBy === uid);
+  const activeSessions = await db.find('sessions', s => s.parentId === uid || studentNames.includes(s.studentName));
+  const assignments = await db.find('assignments', a => studentNames.includes(a.studentName));
+  const parentTransactions = await db.find('transactions', t => t.fromUserId === uid);
+  const parentDisputes = await db.find('disputes', d => d.raisedBy === uid);
 
   // Fetch referrals for this parent
-  const referrals = db.find('parents', p => p.referredBy === uid);
-  const referralsList = referrals.map(r => {
-    const user = db.findOne('users', u => u.uid === r.uid);
+  const referrals = await db.find('parents', p => p.referredBy === uid);
+  const referralsList = await Promise.all(referrals.map(async r => {
+    const user = await db.findOne('users', u => u.uid === r.uid);
     return {
       id: r.uid,
       name: user ? user.displayName : 'Referred Parent',
@@ -66,7 +66,7 @@ router.get('/dashboard/:uid', authenticateToken, requireOwnerOrAdmin, (req, res)
       status: 'Converted',
       commission: 500000 // ₦5,000 in minor NGN
     };
-  });
+  }));
 
   const referralStats = {
     hits: parent.referralHits || 0,
@@ -90,14 +90,14 @@ router.get('/dashboard/:uid', authenticateToken, requireOwnerOrAdmin, (req, res)
 });
 
 // GET Student dashboard data
-router.get('/students/dashboard/:uid', authenticateToken, (req, res) => {
+router.get('/students/dashboard/:uid', authenticateToken, async (req, res) => {
   const { uid } = req.params;
 
   // Find student by UID or by username
-  let student = db.findOne('students', s => s.uid === uid);
+  let student = await db.findOne('students', s => s.uid === uid);
   if (!student) {
     // Fallback: try by name
-    student = db.findOne('students', s => s.name.toLowerCase() === uid.toLowerCase());
+    student = await db.findOne('students', s => s.name.toLowerCase() === uid.toLowerCase());
   }
 
   if (!student) {
@@ -109,11 +109,11 @@ router.get('/students/dashboard/:uid', authenticateToken, (req, res) => {
     return res.status(403).json({ error: "Access forbidden. You do not have permission to view this student's dashboard." });
   }
 
-  const studentSessions = db.find('sessions', s => s.studentId === student.uid || s.studentName.toLowerCase() === student.name.toLowerCase());
-  const assignments = db.find('assignments', a => a.studentId === student.uid || a.studentName.toLowerCase() === student.name.toLowerCase());
+  const studentSessions = await db.find('sessions', s => s.studentId === student.uid || s.studentName.toLowerCase() === student.name.toLowerCase());
+  const assignments = await db.find('assignments', a => a.studentId === student.uid || a.studentName.toLowerCase() === student.name.toLowerCase());
 
   // Return dynamic student leaderboard sorted by XP
-  const allStudents = db.find('students');
+  const allStudents = await db.find('students');
   const leaderboard = allStudents
     .map((s, idx) => ({
       rank: idx + 1, // Will be computed after sorting
@@ -145,7 +145,7 @@ router.post('/wallet/topup', authenticateToken, paymentRateLimiter, async (req, 
     return res.status(403).json({ error: "Access forbidden. User identity mismatch." });
   }
 
-  let wallet = db.findOne('wallets', w => w.uid === parentId);
+  let wallet = await db.findOne('wallets', w => w.uid === parentId);
   if (!wallet) {
     wallet = await db.insert('wallets', {
       uid: parentId,
@@ -192,7 +192,7 @@ router.post('/referral/hit', publicActionRateLimiter, async (req, res) => {
     return res.status(400).json({ error: "Referral code is required." });
   }
 
-  const parent = db.findOne('parents', p => p.uid === ref);
+  const parent = await db.findOne('parents', p => p.uid === ref);
   if (parent) {
     await db.update('parents', parent.id, {
       referralHits: (parent.referralHits || 0) + 1
@@ -206,14 +206,14 @@ router.post('/referral/hit', publicActionRateLimiter, async (req, res) => {
 // POST submit assignments score
 router.post('/assignments/grade', authenticateToken, requireRole(['Teacher']), async (req, res) => {
   const { id, score, feedback } = req.body;
-  const assignment = db.findOne('assignments', a => a.id === id);
+  const assignment = await db.findOne('assignments', a => a.id === id);
   if (!assignment) {
     return res.status(404).json({ error: "Assignment not found." });
   }
 
   // Verify ownership: Teacher is tutor of session
   if (assignment.teacherId && assignment.teacherId !== req.user.uid) {
-    const matchedTeacher = db.findOne('teachers', t => t.uid === req.user.uid);
+    const matchedTeacher = await db.findOne('teachers', t => t.uid === req.user.uid);
     if (!matchedTeacher || (assignment.teacherName && assignment.teacherName !== matchedTeacher.name)) {
       return res.status(403).json({ error: "Access forbidden. You are not the teacher of this assignment." });
     }
@@ -229,7 +229,7 @@ router.post('/assignments/grade', authenticateToken, requireRole(['Teacher']), a
   });
 
   // Notify parent of graded assignment
-  const student = db.findOne('students', s => s.name.toLowerCase() === assignment.studentName.toLowerCase());
+  const student = await db.findOne('students', s => s.name.toLowerCase() === assignment.studentName.toLowerCase());
   const parentUid = student ? student.parentUid : "parent_1";
   await createNotification(
     parentUid,
@@ -239,7 +239,7 @@ router.post('/assignments/grade', authenticateToken, requireRole(['Teacher']), a
   );
 
   // Trigger transactional email to parent
-  const parentUser = db.findOne('users', u => u.uid === parentUid) || { email: "parent@eduvista.com" };
+  const parentUser = await db.findOne('users', u => u.uid === parentUid) || { email: "parent@eduvista.com" };
   sendTransactionalEmail(parentUser.email, "EduVista: Assignment Graded Card", "assignment_graded", {
     studentName: assignment.studentName,
     title: assignment.title,
@@ -257,7 +257,7 @@ router.post('/assignments/create', authenticateToken, requireRole(['Teacher']), 
     return res.status(400).json({ error: "Title and Student Name are required." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === req.user.uid) || { name: "Teacher" };
+  const teacher = await db.findOne('teachers', t => t.uid === req.user.uid) || { name: "Teacher" };
 
   const newAssignment = await db.insert('assignments', {
     title: sanitizeText(title),
@@ -271,7 +271,7 @@ router.post('/assignments/create', authenticateToken, requireRole(['Teacher']), 
   });
 
   // Notify parent of new homework
-  const studentObj = db.findOne('students', s => s.name.toLowerCase() === studentName.toLowerCase());
+  const studentObj = await db.findOne('students', s => s.name.toLowerCase() === studentName.toLowerCase());
   const pUid = studentObj ? studentObj.parentUid : "parent_1";
   await createNotification(
     pUid,
@@ -286,7 +286,7 @@ router.post('/assignments/create', authenticateToken, requireRole(['Teacher']), 
 // POST submit assignment (Student/Parent)
 router.post('/assignments/submit', authenticateToken, async (req, res) => {
   const { id, submissionText } = req.body;
-  const assignment = db.findOne('assignments', a => a.id === id);
+  const assignment = await db.findOne('assignments', a => a.id === id);
   if (!assignment) {
     return res.status(404).json({ error: "Assignment not found." });
   }
@@ -297,7 +297,7 @@ router.post('/assignments/submit', authenticateToken, async (req, res) => {
   }
 
   // Verify Ownership: Requester must be the Student themselves or the Parent of the student
-  const student = db.findOne('students', s => s.name.toLowerCase() === assignment.studentName.toLowerCase());
+  const student = await db.findOne('students', s => s.name.toLowerCase() === assignment.studentName.toLowerCase());
   if (req.user.role !== 'Admin') {
     if (req.user.role === 'Student' && (!student || student.uid !== req.user.uid)) {
       return res.status(403).json({ error: "Access forbidden. You are not the student assigned to this homework." });
@@ -315,8 +315,8 @@ router.post('/assignments/submit', authenticateToken, async (req, res) => {
 
   // Automated email alert to teacher
   try {
-    const studentObj = db.findOne('students', s => s.id === assignment.studentId) || { name: "Student" };
-    const teacherUser = db.findOne('users', u => u.uid === assignment.teacherId);
+    const studentObj = await db.findOne('students', s => s.id === assignment.studentId) || { name: "Student" };
+    const teacherUser = await db.findOne('users', u => u.uid === assignment.teacherId);
     if (teacherUser && teacherUser.email) {
       sendTransactionalEmail(teacherUser.email, "EduVista: Homework Assignment Submitted", "assignment_submitted", {
         studentName: studentObj.name,

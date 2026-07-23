@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 
-const API_BASE = '/api';
+export const API_BASE = '/api';
 
 export const getAuthHeaders = (extraHeaders = {}) => {
   const token = localStorage.getItem('eduvista_token');

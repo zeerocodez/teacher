@@ -7,64 +7,12 @@ import { getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { db } from '../db.js';
 import { sendTransactionalEmail } from '../services/email.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 dotenv.config();
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'eduvista_jwt_secret_2026';
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: "Access token required." });
-
-  // If Firebase Admin is initialized, verify via Firebase Auth
-  if (getApps().length > 0) {
-    getAuth().verifyIdToken(token)
-      .then((decodedToken) => {
-        const uid = decodedToken.uid;
-        // Lookup user profile in database cache
-        const user = db.findOne('users', u => u.uid === uid);
-        if (user) {
-          req.user = {
-            uid: user.uid,
-            role: user.role,
-            email: user.email,
-            displayName: user.displayName
-          };
-        } else {
-          // If profile sync hasn't occurred yet, build basic request context
-          req.user = {
-            uid: uid,
-            role: decodedToken.role || 'Parent',
-            email: decodedToken.email
-          };
-        }
-        next();
-      })
-      .catch((err) => {
-        // Fallback to local JWT verification
-        jwt.verify(token, JWT_SECRET, (jwtErr, user) => {
-          if (jwtErr) {
-            console.warn("JWT verification error (Firebase catch in payments):", jwtErr.message);
-            return res.status(403).json({ error: "Invalid or expired token." });
-          }
-          req.user = user;
-          next();
-        });
-      });
-  } else {
-    // Normal local JWT fallback
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) {
-        console.warn("JWT verification error (No Firebase in payments):", err.message);
-        return res.status(403).json({ error: "Invalid or expired token." });
-      }
-      req.user = user;
-      next();
-    });
-  }
-}
 
 const checkoutRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -95,7 +43,7 @@ router.post('/checkout', authenticateToken, checkoutRateLimiter, async (req, res
   if (isPaystackLive) {
     try {
       // Find parent user to get email
-      const parentUser = db.findOne('users', u => u.uid === parentId || u.id === parentId);
+      const parentUser = await db.findOne('users', u => u.uid === parentId || u.id === parentId);
       const email = parentUser ? parentUser.email : 'customer@eduvista.com';
 
       // We need to send amount in minor units to Paystack.
@@ -254,7 +202,7 @@ router.post('/webhook', async (req, res) => {
     if (currency === 'NGN') {
       amountNgnMinor = chargeAmount;
     } else {
-      const config = db.findOne('platform_config', c => c.id === 'default') || {};
+      const config = await db.findOne('platform_config', c => c.id === 'default') || {};
       const rates = config.exchangeRates || { NGN_USD: 0.00125 };
       const rateKey = `NGN_${currency}`;
       const rate = rates[rateKey] || 1;
@@ -275,7 +223,7 @@ router.post('/webhook', async (req, res) => {
 
     // Deduplicate webhook actions
     if (reference) {
-      const existingTx = db.findOne('transactions', t => t.paymentReference === reference || t.id === reference);
+      const existingTx = await db.findOne('transactions', t => t.paymentReference === reference || t.id === reference);
       if (existingTx) {
         console.log(`[PAYMENTS] Webhook reference ${reference} already processed.`);
         return res.json({ success: true, message: "Webhook already processed." });
@@ -298,8 +246,8 @@ router.post('/webhook', async (req, res) => {
       const payout = amountNgnMinor - commission;
 
       // Update admin wallet (balance)
-      const adminUser = db.findOne('users', u => u.role === 'Admin') || { uid: 'admin_1' };
-      let adminWallet = db.findOne('wallets', w => w.uid === adminUser.uid);
+      const adminUser = await db.findOne('users', u => u.role === 'Admin') || { uid: 'admin_1' };
+      let adminWallet = await db.findOne('wallets', w => w.uid === adminUser.uid);
       if (!adminWallet) {
         await db.insert('wallets', {
           uid: adminUser.uid,
@@ -313,7 +261,7 @@ router.post('/webhook', async (req, res) => {
       }
 
       // Update teacher wallet (escrow)
-      let teacherWallet = db.findOne('wallets', w => w.uid === teacherId);
+      let teacherWallet = await db.findOne('wallets', w => w.uid === teacherId);
       if (!teacherWallet) {
         await db.insert('wallets', {
           uid: teacherId,
@@ -381,7 +329,7 @@ router.post('/webhook', async (req, res) => {
         timestamp: new Date().toISOString()
       });
 
-      const parentUser = db.findOne('users', u => u.uid === parentId);
+      const parentUser = await db.findOne('users', u => u.uid === parentId);
       if (parentUser) {
         sendTransactionalEmail(parentUser.email, "EduVista: Session Escrow Secured", "booking_secured", {
           displayName: parentUser.displayName,
@@ -391,7 +339,7 @@ router.post('/webhook', async (req, res) => {
         });
       }
 
-      const teacherUser = db.findOne('users', u => u.uid === teacherId);
+      const teacherUser = await db.findOne('users', u => u.uid === teacherId);
       if (teacherUser) {
         sendTransactionalEmail(teacherUser.email, "EduVista: New Booking Request", "booking_received", {
           displayName: teacherUser.displayName,
@@ -403,7 +351,7 @@ router.post('/webhook', async (req, res) => {
       return res.json({ success: true, message: "Session booked and fees split successfully." });
 
     } else {
-      let wallet = db.findOne('wallets', w => w.uid === parentId);
+      let wallet = await db.findOne('wallets', w => w.uid === parentId);
       if (!wallet) {
         wallet = await db.insert('wallets', {
           uid: parentId,
@@ -439,7 +387,7 @@ router.post('/webhook', async (req, res) => {
       });
 
       // Send transactional confirmation email
-      const parentUser = db.findOne('users', u => u.uid === parentId || u.id === parentId);
+      const parentUser = await db.findOne('users', u => u.uid === parentId || u.id === parentId);
       if (parentUser) {
         sendTransactionalEmail(parentUser.email, "EduVista: Wallet Deposit Confirmed", "wallet_topup", {
           displayName: parentUser.displayName,

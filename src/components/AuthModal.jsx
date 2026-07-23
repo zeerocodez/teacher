@@ -4,6 +4,8 @@ import { X, Mail, User, Shield, Lock, Phone, Link2, Clock, Video, FileText, Came
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import BrandLogo from './BrandLogo';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Linkedin = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -13,7 +15,26 @@ const Linkedin = ({ className }) => (
   </svg>
 );
 
-export default function AuthModal({ isOpen, onClose, onSuccess }) {
+export default function AuthModal({ isOpen, onClose }) {
+  const { currentUser, pendingOnboarding, setPendingOnboarding } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser && isOpen) {
+      onClose();
+      if (currentUser.role === 'Parent') {
+        window.location.hash = '#marketplace';
+      }
+    }
+  }, [currentUser, isOpen, onClose]);
+
+  const handleSuccess = (user) => {
+    login(user, user.token);
+    navigate('/dashboard');
+    if (user.role === 'Parent') {
+      window.location.hash = '#marketplace';
+    }
+  };
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -151,38 +172,25 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     }
 
     setLoading(true);
-
     const refCode = localStorage.getItem('eduvista_ref');
 
     try {
-      let firebaseUser = null;
-      let token = null;
-
-      // Real Firebase Auth flow if API Key is configured
-      if (auth.app.options.apiKey && auth.app.options.apiKey !== "mock-api-key") {
-        if (activeTab === 'login') {
-          const userCredential = await signInWithEmailAndPassword(auth, email, password);
-          firebaseUser = userCredential.user;
-          token = await firebaseUser.getIdToken();
-        } else {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          firebaseUser = userCredential.user;
-          token = await firebaseUser.getIdToken();
-        }
-      }
-
-      const endpoint = activeTab === 'login' ? '/auth/login' : '/auth/register';
-      const payload = activeTab === 'login' 
-        ? { email, password, uid: firebaseUser?.uid } 
-        : { 
+      if (activeTab === 'login') {
+        await signInWithEmailAndPassword(auth, email, password);
+        // AuthContext will automatically fetch /me and update currentUser
+      } else {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const token = await userCredential.user.getIdToken();
+        
+        // Immediately hit backend /register since we know all details
+        const payload = { 
+            clientUid: userCredential.user.uid,
             email, 
             displayName: name, 
             username: role === 'Teacher' ? username : undefined, 
             role, 
             country, 
-            password, 
             referredBy: refCode || undefined, 
-            uid: firebaseUser?.uid, 
             eliteCertificate: role === 'Teacher' ? eliteCertificate : undefined,
             whatsapp: role === 'Teacher' ? whatsapp : undefined,
             nin: role === 'Teacher' ? nin : undefined,
@@ -197,185 +205,33 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             timezone: role === 'Teacher' ? timezone : undefined,
             classroomLink: role === 'Teacher' ? classroomLink : undefined,
             recordingTool: role === 'Teacher' ? recordingTool : undefined
-          };
+        };
 
-      const response = await fetch(`${API_BASE}${endpoint}`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify(payload)
-      });
+        const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000/api'}/auth/register`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
 
-      const data = await response.json();
-      if (response.ok) {
-        onSuccess({ ...data, token: data.token || token });
-        onClose();
-      } else {
-        setError(data.error || 'Something went wrong.');
+        const data = await response.json();
+        if (response.ok) {
+          // Trigger a token refresh so backend recognizes them
+          await auth.currentUser.getIdToken(true);
+          // The onAuthStateChanged might have missed them because they didn't exist in DB at first!
+          // We can force AuthContext to recheck, or just wait for it to notice.
+          // By refreshing token, the next request to /me will work.
+        } else {
+          setError(data.error || 'Something went wrong during registration.');
+          setLoading(false);
+        }
       }
     } catch (err) {
       console.error('Auth error:', err);
-      // Fallback: try calling backend API directly before using local mock fallback
-      try {
-        const endpoint = activeTab === 'login' ? '/auth/login' : '/auth/register';
-        const payload = activeTab === 'login' 
-          ? { email, password } 
-          : { 
-              email, 
-              displayName: name, 
-              username: role === 'Teacher' ? username : undefined, 
-              role, 
-              country, 
-              password, 
-              referredBy: refCode || undefined, 
-              eliteCertificate: role === 'Teacher' ? eliteCertificate : undefined,
-              whatsapp: role === 'Teacher' ? whatsapp : undefined,
-              nin: role === 'Teacher' ? nin : undefined,
-              linkedin: role === 'Teacher' ? linkedin : undefined,
-              avatar: role === 'Teacher' ? avatar : undefined,
-              govIdUrl: role === 'Teacher' ? govIdUrl : undefined,
-              cvUrl: role === 'Teacher' ? cvUrl : undefined,
-              videoUrl: role === 'Teacher' ? videoUrl : undefined,
-              degreeUrl: role === 'Teacher' ? degreeUrl : undefined,
-              rate: role === 'Teacher' ? rate : undefined,
-              currency: role === 'Teacher' ? currency : undefined,
-              timezone: role === 'Teacher' ? timezone : undefined,
-              classroomLink: role === 'Teacher' ? classroomLink : undefined,
-              recordingTool: role === 'Teacher' ? recordingTool : undefined
-            };
-
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (activeTab === 'register' && role === 'Teacher') {
-            toast.success("Your application is pending verification on the platform. Please check your email for updates.");
-          }
-          onSuccess(data);
-          onClose();
-          return;
-        } else {
-          let errData;
-          try {
-            errData = await response.json();
-          } catch (jsonErr) {
-            throw new Error('Server returned an invalid response. Please try again later.');
-          }
-          setError(errData?.error || 'Authentication failed on backend.');
-          setLoading(false);
-          return;
-        }
-      } catch (backendErr) {
-        console.warn("Backend login fallback failed:", backendErr);
-        setError(backendErr.message === 'Failed to fetch' ? 'Network Error. Unable to reach backend server.' : backendErr.message);
-      }
-    } finally {
+      setError(err.message || 'Authentication failed.');
       setLoading(false);
-    }
-  };
-
-  const handleAdminLoginShortcut = async () => {
-    setError('');
-    setLoading(true);
-    try {
-      setEmail('admin@eduvista.com');
-      setPassword('password123');
-
-      let firebaseUser = null;
-      let token = null;
-
-      if (auth.app.options.apiKey && auth.app.options.apiKey !== "mock-api-key") {
-        try {
-          const userCredential = await signInWithEmailAndPassword(auth, 'admin@eduvista.com', 'password123');
-          firebaseUser = userCredential.user;
-          token = await firebaseUser.getIdToken();
-        } catch (firebaseErr) {
-          console.warn("Firebase admin sign-in failed, trying backend directly:", firebaseErr.message);
-        }
-      }
-
-      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ email: 'admin@eduvista.com', password: 'password123', uid: firebaseUser?.uid })
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        onSuccess({ ...data, token: data.token || token });
-        onClose();
-      } else {
-        setError(data.error || 'Something went wrong.');
-      }
-    } catch (err) {
-      console.error('Admin login error:', err);
-      onSuccess({ uid: 'admin_1', displayName: 'System Admin', role: 'Admin', email: 'admin@eduvista.com' });
-      onClose();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const executeGoogleLoginFlow = async (selectedEmail, selectedName, selectedUid, token) => {
-    setLoading(true);
-    setError('');
-    const userRole = selectedEmail.toLowerCase().includes('teacher') ? 'Teacher' : (selectedEmail.toLowerCase().includes('admin') ? 'Admin' : role);
-    const googleUid = selectedUid || `google_${Date.now()}`;
-    const googleEmail = selectedEmail;
-    const googleName = selectedName || googleEmail.split('@')[0];
-
-    try {
-      const response = await fetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({
-          email: googleEmail,
-          displayName: googleName,
-          role: userRole,
-          uid: googleUid,
-          country: country || 'Nigeria'
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        onSuccess({ ...data, token: data.token || token });
-        onClose();
-        return;
-      }
-
-      const loginRes = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: googleEmail })
-      });
-
-      if (loginRes.ok) {
-        const loginData = await loginRes.json();
-        onSuccess({ ...loginData, token: loginData.token || token });
-        onClose();
-        return;
-      }
-
-      onSuccess({ uid: googleUid, displayName: googleName, role: userRole, email: googleEmail, token: token || `token_${Date.now()}` });
-      onClose();
-    } catch (err) {
-      onSuccess({ uid: googleUid, displayName: googleName, role: userRole, email: googleEmail, token: `token_${Date.now()}` });
-      onClose();
-    } finally {
-      setLoading(false);
-      setShowGooglePicker(false);
     }
   };
 
@@ -386,57 +242,64 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-      const userCredential = await signInWithPopup(auth, provider);
-      const firebaseUser = userCredential.user;
-      const token = await firebaseUser.getIdToken();
-      await executeGoogleLoginFlow(firebaseUser.email, firebaseUser.displayName || 'Google User', firebaseUser.uid, token);
+      await signInWithPopup(auth, provider);
+      // AuthContext's onAuthStateChanged will automatically pick this up!
     } catch (popupErr) {
       console.warn("Firebase Google popup error:", popupErr.message);
-      toast.error(`Google Sign-In failed: ${popupErr.message}. Ensure your domain is authorized in Firebase.`);
+      toast.error(`Google Sign-In failed: ${popupErr.message}.`);
       setLoading(false);
     }
   };
 
   const handleGoogleSetupSubmit = async (e) => {
     e.preventDefault();
-    if (!googleUserForSetup) return;
     setError('');
     setLoading(true);
 
     const refCode = localStorage.getItem('eduvista_ref');
 
     try {
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) throw new Error("Not authenticated with Google.");
+
+      const token = await firebaseUser.getIdToken();
+
       const payload = {
-        email: googleUserForSetup.email,
-        displayName: name,
+        clientUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: name || firebaseUser.displayName || 'Google User',
         username: role === 'Teacher' ? username : undefined,
         role,
         country,
         referredBy: refCode || undefined,
-        uid: googleUserForSetup.uid,
         eliteCertificate: role === 'Teacher' ? eliteCertificate : undefined
       };
 
-      const response = await fetch(`${API_BASE}/auth/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000/api'}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${googleUserForSetup.token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });
 
       const data = await response.json();
       if (response.ok) {
-        onSuccess({ ...data, token: googleUserForSetup.token });
-        onClose();
+        // Trigger AuthContext to recheck backend
+        setPendingOnboarding(false);
+        // We can force AuthContext to recheck by getting a fresh token
+        await firebaseUser.getIdToken(true);
+        // We rely on AuthContext onAuthStateChanged to pick this up, 
+        // or we can reload the page for a clean state
+        window.location.reload();
       } else {
         setError(data.error || 'Failed to complete registration.');
+        setLoading(false);
       }
     } catch (err) {
       console.error('Google registration error:', err);
       setError(err.message || 'Failed to connect to backend.');
-    } finally {
       setLoading(false);
     }
   };
@@ -563,16 +426,16 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     );
   }
 
-  if (googleUserForSetup) {
+  if (pendingOnboarding && auth.currentUser) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Backdrop */}
-        <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => { setGoogleUserForSetup(null); onClose(); }} />
+        <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => { setPendingOnboarding(false); onClose(); }} />
         
         {/* Modal Container */}
         <div className="relative bg-brand-cream border border-brand-moss/20 rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl z-10 max-h-[85vh] overflow-y-auto">
           {/* Close Button */}
-          <button onClick={() => { setGoogleUserForSetup(null); onClose(); }} className="absolute top-6 right-6 text-brand-moss/60 hover:text-brand-moss">
+          <button onClick={() => { setPendingOnboarding(false); onClose(); }} className="absolute top-6 right-6 text-brand-moss/60 hover:text-brand-moss">
             <X className="w-5 h-5" />
           </button>
 
@@ -581,7 +444,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
           <h3 className="font-heading font-bold text-xl text-brand-moss mb-2">Complete Registration</h3>
           <p className="font-sans text-xs text-brand-charcoal/70 mb-6">
-            Just a few more details to set up your account for <strong>{googleUserForSetup.email}</strong>.
+            Just a few more details to set up your account for <strong>{auth.currentUser.email}</strong>.
           </p>
 
           {/* Error Alert */}
@@ -711,7 +574,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             <div className="pt-4 flex gap-3">
               <button
                 type="button"
-                onClick={() => setGoogleUserForSetup(null)}
+                onClick={() => setPendingOnboarding(false)}
                 className="flex-grow py-4 rounded-full border border-brand-moss/20 hover:border-brand-moss/45 bg-white text-brand-moss font-bold text-xs uppercase tracking-wider text-center cursor-pointer"
               >
                 Back

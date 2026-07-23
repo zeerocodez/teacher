@@ -7,7 +7,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { db, seedDatabase, connectDb } from './db.js';
+import { db, connectDb } from './db.js';
 import paymentRoutes from './routes/payments.js';
 import b2bRoutes from './routes/b2b.js';
 import { sendTransactionalEmail, readSentEmails } from './services/email.js';
@@ -70,7 +70,7 @@ import { sanitizeText, sanitizeObject, hashPassword, verifyPassword, createNotif
 import { globalRateLimiter, authRateLimiter, supportRateLimiter, paymentRateLimiter, publicActionRateLimiter } from './middleware/limiters.js';
 
 // Global Input Sanitization Middleware to prevent XSS
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   if (req.body) req.body = sanitizeObject(req.body);
   if (req.query) {
     try {
@@ -115,9 +115,9 @@ async function initDefaultCreds() {
 async function guaranteeInitialProfiles() {
   await initDefaultCreds();
   // Guarantee Admin User and Teacher Usernames for Testing
-  const adminUser = db.findOne('users', u => u.role === 'Admin');
+  const adminUser = await db.findOne('users', u => u.role === 'Admin');
   if (!adminUser) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "admin_1",
       email: "admin@eduvista.com",
       displayName: "System Admin",
@@ -130,9 +130,9 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed admin@eduvista.com admin profile.");
   }
 
-  const zeerocodesAdmin = db.findOne('users', u => u.email.toLowerCase() === 'zeerocodes@gmail.com');
+  const zeerocodesAdmin = await db.findOne('users', u => u.email.toLowerCase() === 'zeerocodes@gmail.com');
   if (!zeerocodesAdmin) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "admin_zeerocodes",
       email: "zeerocodes@gmail.com",
       displayName: "Zeerocodes Super Admin",
@@ -145,9 +145,9 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed zeerocodes@gmail.com admin profile.");
   }
 
-  const morichcareAdmin = db.findOne('users', u => u.email.toLowerCase() === 'morichcare@gmail.com');
+  const morichcareAdmin = await db.findOne('users', u => u.email.toLowerCase() === 'morichcare@gmail.com');
   if (!morichcareAdmin) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "admin_morichcare",
       email: "morichcare@gmail.com",
       displayName: "Morichcare Admin",
@@ -160,9 +160,9 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed morichcare@gmail.com admin profile.");
   }
 
-  const teacher1User = db.findOne('users', u => u.uid === 'teacher_1');
+  const teacher1User = await db.findOne('users', u => u.uid === 'teacher_1');
   if (!teacher1User) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "teacher_1",
       email: "teacher@eduvista.com",
       displayName: "Mr. Adebayo Okafor",
@@ -175,9 +175,9 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed teacher@eduvista.com teacher profile.");
   }
 
-  const testPayTeacherUser = db.findOne('users', u => u.uid === 'teacher_test_pay');
+  const testPayTeacherUser = await db.findOne('users', u => u.uid === 'teacher_test_pay');
   if (!testPayTeacherUser) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "teacher_test_pay",
       email: "testpay@eduvista.com",
       displayName: "Test Pay Teacher",
@@ -190,9 +190,9 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed testpay@eduvista.com teacher profile.");
   }
 
-  const parent1User = db.findOne('users', u => u.uid === 'parent_1');
+  const parent1User = await db.findOne('users', u => u.uid === 'parent_1');
   if (!parent1User) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "parent_1",
       email: "parent@eduvista.com",
       displayName: "Ngozi Adeleke",
@@ -205,9 +205,9 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed parent@eduvista.com parent profile.");
   }
 
-  const student1User = db.findOne('users', u => u.uid === 'student_1');
+  const student1User = await db.findOne('users', u => u.uid === 'student_1');
   if (!student1User) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "student_1",
       email: "student@eduvista.com",
       displayName: "Tunde Okafor",
@@ -221,9 +221,9 @@ async function guaranteeInitialProfiles() {
   }
 
   // Guarantee fresh teacher for onboarding flow testing
-  const freshTeacherUser = db.findOne('users', u => u.uid === 'teacher_fresh');
+  const freshTeacherUser = await db.findOne('users', u => u.uid === 'teacher_fresh');
   if (!freshTeacherUser) {
-    await db.insert('users', {
+    await await db.insert('users', {
       uid: "teacher_fresh",
       email: "newteacher@eduvista.com",
       displayName: "Dr. Chidi Johnson",
@@ -233,7 +233,7 @@ async function guaranteeInitialProfiles() {
       salt: defaultCreds.salt,
       passwordHash: defaultCreds.hash
     });
-    await db.insert('teachers', {
+    await await db.insert('teachers', {
       uid: "teacher_fresh",
       name: "Dr. Chidi Johnson",
       location: "Enugu, Nigeria",
@@ -257,40 +257,40 @@ async function guaranteeInitialProfiles() {
   }
 
   // Guarantee SEO usernames for seeded teachers
-  const teacher_1 = db.findOne('teachers', t => t.uid === 'teacher_1');
+  const teacher_1 = await db.findOne('teachers', t => t.uid === 'teacher_1');
   if (teacher_1 && (!teacher_1.username || teacher_1.username !== 'adebayo' || teacher_1.status !== 'verified')) {
-    await db.update('teachers', teacher_1.id, { username: "adebayo", status: "verified" });
+    await await db.update('teachers', teacher_1.id, { username: "adebayo", status: "verified" });
   }
-  const teacher_2 = db.findOne('teachers', t => t.uid === 'teacher_2');
+  const teacher_2 = await db.findOne('teachers', t => t.uid === 'teacher_2');
   if (teacher_2 && (!teacher_2.username || teacher_2.username !== 'kofi' || teacher_2.status !== 'verified')) {
-    await db.update('teachers', teacher_2.id, { username: "kofi", status: "verified" });
+    await await db.update('teachers', teacher_2.id, { username: "kofi", status: "verified" });
   }
-  const teacher_3 = db.findOne('teachers', t => t.uid === 'teacher_3');
+  const teacher_3 = await db.findOne('teachers', t => t.uid === 'teacher_3');
   if (teacher_3 && (!teacher_3.username || teacher_3.username !== 'chioma' || teacher_3.status !== 'verified')) {
-    await db.update('teachers', teacher_3.id, { username: "chioma", status: "verified" });
+    await await db.update('teachers', teacher_3.id, { username: "chioma", status: "verified" });
   }
-  const teacher_4 = db.findOne('teachers', t => t.uid === 'teacher_4');
+  const teacher_4 = await db.findOne('teachers', t => t.uid === 'teacher_4');
   if (teacher_4 && (!teacher_4.username || teacher_4.username !== 'aminata' || teacher_4.status !== 'verified')) {
-    await db.update('teachers', teacher_4.id, { username: "aminata", status: "verified" });
+    await await db.update('teachers', teacher_4.id, { username: "aminata", status: "verified" });
   }
-  const teacher_5 = db.findOne('teachers', t => t.uid === 'teacher_5');
+  const teacher_5 = await db.findOne('teachers', t => t.uid === 'teacher_5');
   if (teacher_5 && (!teacher_5.username || teacher_5.username !== 'fatima' || teacher_5.status !== 'verified')) {
-    await db.update('teachers', teacher_5.id, { username: "fatima", status: "verified" });
+    await await db.update('teachers', teacher_5.id, { username: "fatima", status: "verified" });
   }
 
   // Guarantee wallets for admin_1 and teacher_1
-  let adminWallet = db.findOne('wallets', w => w.uid === 'admin_1');
+  let adminWallet = await db.findOne('wallets', w => w.uid === 'admin_1');
   if (!adminWallet) {
-    await db.insert('wallets', {
+    await await db.insert('wallets', {
       uid: 'admin_1',
       balance: 15000000, // ₦150,000 in minor units
       escrow: 0
     });
     console.log("Guaranteed admin_1 wallet.");
   }
-  let teacher1Wallet = db.findOne('wallets', w => w.uid === 'teacher_1');
+  let teacher1Wallet = await db.findOne('wallets', w => w.uid === 'teacher_1');
   if (!teacher1Wallet) {
-    await db.insert('wallets', {
+    await await db.insert('wallets', {
       uid: 'teacher_1',
       balance: 8500000, // ₦85,000 in minor units
       escrow: 0
@@ -376,9 +376,9 @@ app.post('/api/support/message', supportRateLimiter, async (req, res) => {
 });
 
 // Simulates user account status and fetch
-app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) => {
+app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, async (req, res) => {
   const { uid } = req.params;
-  const user = db.findOne('users', u => u.uid === uid || u.id === uid);
+  const user = await db.findOne('users', u => u.uid === uid || u.id === uid);
   if (!user) {
     return res.status(404).json({ error: "User profile not found." });
   }
@@ -387,7 +387,7 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
 app.get('/api/debug/db', async (req, res) => {
   try {
     const { getDbInitError, isFirestore } = await import('./db.js');
-    const users = db.find('users') || [];
+    const users = await db.find('users') || [];
     res.json({
       dbInitError: typeof getDbInitError !== 'undefined' ? getDbInitError() : null,
       isFirestore: typeof isFirestore !== 'undefined' ? isFirestore : null,
@@ -418,12 +418,15 @@ app.use('/api/parents', parentRoutes);
 import newPaymentRoutes from './routes/payment.routes.js';
 app.use('/api', newPaymentRoutes);
 
+import videoRoutes from './routes/video.routes.js';
+app.use('/api/video', videoRoutes);
+
 
 // --- 6. REPUTATION ENGINE ENDPOINTS ---
 
 // GET /api/leaderboard
-app.get('/api/leaderboard', (req, res) => {
-  let teachers = db.find('teachers');
+app.get('/api/leaderboard', async (req, res) => {
+  let teachers = await db.find('teachers');
   // Sort logic: Higher rating, higher reviewsCount, and badges
   teachers = teachers.map(t => {
     let score = (t.rating * 10) + ((t.reviewsCount || 0) * 5) + ((t.badges || []).length * 15);
@@ -434,9 +437,9 @@ app.get('/api/leaderboard', (req, res) => {
 });
 
 // GET /api/teachers/:uid/reviews
-app.get('/api/teachers/:uid/reviews', (req, res) => {
+app.get('/api/teachers/:uid/reviews', async (req, res) => {
   const { uid } = req.params;
-  const reviews = db.find('reviews', r => r.teacherId === uid);
+  const reviews = await db.find('reviews', r => r.teacherId === uid);
   // Add some mock 5-dimension reviews if none exist, so the UI can be populated
   if (reviews.length === 0) {
     const mockReviews = [
@@ -474,13 +477,13 @@ app.post('/api/reviews/reply', authenticateToken, requireRole(['Teacher']), asyn
   const { reviewId, replyText } = req.body;
   if (!reviewId || !replyText) return res.status(400).json({ error: "Missing fields" });
   
-  const review = db.findOne('reviews', r => r.id === reviewId);
+  const review = await db.findOne('reviews', r => r.id === reviewId);
   if (review && review.teacherId !== req.user.uid) {
     return res.status(403).json({ error: "Access forbidden. Review recipient mismatch." });
   }
 
   if (review) {
-    const updated = await db.update('reviews', review.id, { reply: sanitizeText(replyText) });
+    const updated = await await db.update('reviews', review.id, { reply: sanitizeText(replyText) });
     res.json({ success: true, review: updated });
   } else {
     res.json({ success: true, review: { id: reviewId, reply: sanitizeText(replyText) } });
@@ -498,7 +501,7 @@ app.post('/api/academy/enroll', authenticateToken, requireRole(['Teacher']), asy
     return res.status(403).json({ error: "Access forbidden. User identity mismatch." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === userId || t.id === userId);
+  const teacher = await db.findOne('teachers', t => t.uid === userId || t.id === userId);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
@@ -507,14 +510,14 @@ app.post('/api/academy/enroll', authenticateToken, requireRole(['Teacher']), asy
   const subscriptionFee = plan === 'annual' ? 12000000 : 1500000; // ₦120,000 annual or ₦15,000 monthly in minor kobo
   
   // Register enrollment in database
-  await db.update('teachers', teacher.id, {
+  await await db.update('teachers', teacher.id, {
     academyEnrolled: true,
     academyPlan: plan,
     academyEnrolledAt: new Date().toISOString()
   });
 
   // Create an academy ledger notification
-  await db.insert('notifications', {
+  await await db.insert('notifications', {
     userId,
     title: "Elite Academy Subscription Secured",
     message: `Welcome to the Elite Teachers Academy! Your ${plan === 'annual' ? 'annual' : 'monthly'} subscription was successfully authorized. You now have full access to all 6 modules, interactive quizzes, video courses, discussion forums, and the Gemini roleplay simulator.`,
@@ -530,18 +533,18 @@ app.post('/api/academy/enroll', authenticateToken, requireRole(['Teacher']), asy
 });
 
 // GET Academy Enrollment & Progress Status
-app.get('/api/academy/status/:userId', authenticateToken, requireRole(['Teacher']), (req, res) => {
+app.get('/api/academy/status/:userId', authenticateToken, requireRole(['Teacher']), async (req, res) => {
   const { userId } = req.params;
   if (userId !== req.user.uid) {
     return res.status(403).json({ error: "Access forbidden." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === userId || t.id === userId);
+  const teacher = await db.findOne('teachers', t => t.uid === userId || t.id === userId);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
 
-  const progress = db.find('academy_progress', p => p.userId === userId);
+  const progress = await db.find('academy_progress', p => p.userId === userId);
   res.json({
     enrolled: !!teacher.academyEnrolled,
     plan: teacher.academyPlan || null,
@@ -559,7 +562,7 @@ app.post('/api/academy/submit-quiz', authenticateToken, requireRole(['Teacher'])
     return res.status(403).json({ error: "Access forbidden. User identity mismatch." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === userId || t.id === userId);
+  const teacher = await db.findOne('teachers', t => t.uid === userId || t.id === userId);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
@@ -576,9 +579,9 @@ app.post('/api/academy/submit-quiz', authenticateToken, requireRole(['Teacher'])
   }
 
   // Save progress
-  const progressRecord = db.findOne('academy_progress', p => p.userId === userId && p.moduleId === moduleId);
+  const progressRecord = await db.findOne('academy_progress', p => p.userId === userId && p.moduleId === moduleId);
   if (!progressRecord) {
-    await db.insert('academy_progress', {
+    await await db.insert('academy_progress', {
       userId,
       moduleId,
       status: "Completed",
@@ -588,7 +591,7 @@ app.post('/api/academy/submit-quiz', authenticateToken, requireRole(['Teacher'])
   }
 
   // Update teacher badges & stats
-  const allProgress = db.find('academy_progress', p => p.userId === userId && p.status === 'Completed');
+  const allProgress = await db.find('academy_progress', p => p.userId === userId && p.status === 'Completed');
   const modulesCompletedCount = allProgress.length;
 
   let badges = [...(teacher.badges || [])];
@@ -597,7 +600,7 @@ app.post('/api/academy/submit-quiz', authenticateToken, requireRole(['Teacher'])
     badges.push('badge-ai-cert');
   }
 
-  await db.update('teachers', teacher.id, {
+  await await db.update('teachers', teacher.id, {
     badges
   });
 
@@ -710,8 +713,8 @@ app.post('/api/academy/roleplay', authenticateToken, requireRole(['Teacher']), a
 });
 
 // GET list forum posts
-app.get('/api/academy/forum', (req, res) => {
-  const posts = db.find('academy_forum');
+app.get('/api/academy/forum', async (req, res) => {
+  const posts = await db.find('academy_forum');
   posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   res.json(posts);
 });
@@ -724,7 +727,7 @@ app.post('/api/academy/forum', authenticateToken, async (req, res) => {
   }
 
   if (parentId) {
-    const post = db.findOne('academy_forum', p => p.id === parentId);
+    const post = await db.findOne('academy_forum', p => p.id === parentId);
     if (!post) return res.status(404).json({ error: "Parent post not found." });
     
     const comments = post.comments || [];
@@ -735,15 +738,15 @@ app.post('/api/academy/forum', authenticateToken, async (req, res) => {
       createdAt: new Date().toISOString()
     };
     comments.push(newComment);
-    await db.update('academy_forum', post.id, { comments });
-    return res.json({ success: true, post: db.findOne('academy_forum', p => p.id === parentId) });
+    await await db.update('academy_forum', post.id, { comments });
+    return res.json({ success: true, post: await db.findOne('academy_forum', p => p.id === parentId) });
   }
 
   if (!title) {
     return res.status(400).json({ error: "Title is required for a new thread." });
   }
 
-  const newPost = await db.insert('academy_forum', {
+  const newPost = await await db.insert('academy_forum', {
     title,
     content,
     authorName: req.user.displayName || "Elite Tutor",
@@ -758,9 +761,9 @@ app.post('/api/academy/forum', authenticateToken, async (req, res) => {
 // --- 7. NOTIFICATION, DISPUTE & REPORT ENDPOINTS ---
 
 // GET notifications list
-app.get('/api/notifications/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) => {
+app.get('/api/notifications/:uid', authenticateToken, requireOwnerOrAdmin, async (req, res) => {
   const { uid } = req.params;
-  const list = db.find('notifications', n => n.userId === uid);
+  const list = await db.find('notifications', n => n.userId === uid);
   list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   res.json(list);
 });
@@ -768,12 +771,12 @@ app.get('/api/notifications/:uid', authenticateToken, requireOwnerOrAdmin, (req,
 // POST Mark notification as read
 app.post('/api/notifications/:id/read', authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const notification = db.findOne('notifications', n => n.id === id);
+  const notification = await db.findOne('notifications', n => n.id === id);
   if (notification) {
     if (notification.userId !== req.user.uid) {
       return res.status(403).json({ error: "Access forbidden. You do not own this notification." });
     }
-    const updated = await db.update('notifications', notification.id, { read: true });
+    const updated = await await db.update('notifications', notification.id, { read: true });
     return res.json(updated);
   }
   res.status(404).json({ error: "Notification not found." });
@@ -782,9 +785,9 @@ app.post('/api/notifications/:id/read', authenticateToken, async (req, res) => {
 // POST Mark all notifications as read
 app.post('/api/notifications/read-all/:uid', authenticateToken, requireOwnerOrAdmin, async (req, res) => {
   const { uid } = req.params;
-  const list = db.find('notifications', n => n.userId === uid && !n.read);
+  const list = await db.find('notifications', n => n.userId === uid && !n.read);
   for (const n of list) {
-    await db.update('notifications', n.id, { read: true });
+    await await db.update('notifications', n.id, { read: true });
   }
   res.json({ success: true, count: list.length });
 });
@@ -792,13 +795,13 @@ app.post('/api/notifications/read-all/:uid', authenticateToken, requireOwnerOrAd
 // --- ADMIN EMAIL & NOTIFICATION CLIENT ROUTES ---
 
 // GET all users (Admin only)
-app.get('/api/admin/users', authenticateToken, requireRole(['Admin']), (req, res) => {
-  const users = db.find('users');
+app.get('/api/admin/users', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const users = await db.find('users');
   res.json(users);
 });
 
 // GET all sent emails (Admin only)
-app.get('/api/admin/emails', authenticateToken, requireRole(['Admin']), (req, res) => {
+app.get('/api/admin/emails', authenticateToken, requireRole(['Admin']), async (req, res) => {
   try {
     const emails = readSentEmails();
     res.json(emails);
@@ -834,9 +837,9 @@ app.post('/api/admin/emails/send-notification', authenticateToken, requireRole([
   try {
     let targets = [];
     if (userId === 'all') {
-      targets = db.find('users');
+      targets = await db.find('users');
     } else {
-      const user = db.findOne('users', u => u.uid === userId);
+      const user = await db.findOne('users', u => u.uid === userId);
       if (!user) {
         return res.status(404).json({ error: "User not found." });
       }
@@ -869,7 +872,7 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
     return res.status(400).json({ error: "sessionId and reason are required." });
   }
 
-  const session = db.findOne('sessions', s => s.id === sessionId);
+  const session = await db.findOne('sessions', s => s.id === sessionId);
   if (!session) {
     return res.status(404).json({ error: "Session not found." });
   }
@@ -878,19 +881,19 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
     return res.status(403).json({ error: "Access forbidden. You are not a participant parent." });
   }
 
-  const transaction = db.findOne('transactions', t => t.sessionId === sessionId);
+  const transaction = await db.findOne('transactions', t => t.sessionId === sessionId);
   if (transaction) {
-    await db.update('transactions', transaction.id, {
+    await await db.update('transactions', transaction.id, {
       status: "disputed",
       payoutStatus: "frozen"
     });
   }
 
-  await db.update('sessions', session.id, {
+  await await db.update('sessions', session.id, {
     status: "Disputed"
   });
 
-  const dispute = await db.insert('disputes', {
+  const dispute = await await db.insert('disputes', {
     sessionId,
     reason,
     details: details ? sanitizeText(details) : "",
@@ -914,8 +917,8 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
 
   // Automated dispute email alerts (teacher, parent, admins)
   try {
-    const parentUser = db.findOne('users', u => u.uid === session.parentId) || { email: "parent@eduvista.com" };
-    const teacherUser = db.findOne('users', u => u.uid === session.teacherId);
+    const parentUser = await db.findOne('users', u => u.uid === session.parentId) || { email: "parent@eduvista.com" };
+    const teacherUser = await db.findOne('users', u => u.uid === session.teacherId);
     if (teacherUser && teacherUser.email) {
       sendTransactionalEmail(teacherUser.email, "EduVista: Billing Dispute Opened", "dispute_created", {
         slot: session.slot,
@@ -929,7 +932,7 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
       message: `Your dispute for the session on ${session.slot.day} at ${session.slot.time} with ${session.teacherName} has been registered. Our billing support team is reviewing it and will contact you shortly.`
     });
 
-    const admins = db.find('users', u => u.role === 'Admin');
+    const admins = await db.find('users', u => u.role === 'Admin');
     for (const admin of admins) {
       sendTransactionalEmail(admin.email, "EduVista ADMIN: New Dispute Filed", "dispute_created", {
         slot: session.slot,
@@ -947,7 +950,7 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
 // POST Complete Session & Trigger Escrow Release Countdown
 app.post('/api/sessions/:id/complete', authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const session = db.findOne('sessions', s => s.id === id);
+  const session = await db.findOne('sessions', s => s.id === id);
   if (!session) {
     return res.status(404).json({ error: "Session not found." });
   }
@@ -959,7 +962,7 @@ app.post('/api/sessions/:id/complete', authenticateToken, async (req, res) => {
   const now = new Date();
   const autoReleaseAt = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
 
-  await db.update('sessions', session.id, {
+  await await db.update('sessions', session.id, {
     status: "Completed",
     completedAt: now.toISOString(),
     autoReleaseAt
@@ -983,42 +986,42 @@ app.post('/api/disputes/resolve', authenticateToken, requireRole(['Admin']), asy
     return res.status(400).json({ error: "disputeId and action are required." });
   }
 
-  const dispute = db.findOne('disputes', d => d.id === disputeId);
+  const dispute = await db.findOne('disputes', d => d.id === disputeId);
   if (!dispute) {
     return res.status(404).json({ error: "Dispute record not found." });
   }
 
-  const session = db.findOne('sessions', s => s.id === dispute.sessionId);
+  const session = await db.findOne('sessions', s => s.id === dispute.sessionId);
   const safeNotes = resolutionNotes ? sanitizeText(resolutionNotes) : "Admin resolution completed.";
 
   if (action === 'refund_parent') {
     // 1. Mark dispute & session
-    await db.update('disputes', dispute.id, { status: "Resolved - Refunded", resolutionNotes: safeNotes, resolvedAt: new Date().toISOString() });
+    await await db.update('disputes', dispute.id, { status: "Resolved - Refunded", resolutionNotes: safeNotes, resolvedAt: new Date().toISOString() });
     if (session) {
-      await db.update('sessions', session.id, { status: "Refunded" });
+      await await db.update('sessions', session.id, { status: "Refunded" });
       
       // Credit Parent Wallet
-      const parentWallet = db.findOne('wallets', w => w.userUid === session.parentId);
+      const parentWallet = await db.findOne('wallets', w => w.userUid === session.parentId);
       if (parentWallet) {
         const amount = session.amount || 2500000;
-        await db.update('wallets', parentWallet.id, {
+        await await db.update('wallets', parentWallet.id, {
           balance: (parentWallet.balance || 0) + amount,
           updatedAt: new Date().toISOString()
         });
       }
 
       // Deduct/clear teacher escrow if present
-      const teacherWallet = db.findOne('wallets', w => w.userUid === session.teacherId);
+      const teacherWallet = await db.findOne('wallets', w => w.userUid === session.teacherId);
       if (teacherWallet) {
         const amount = session.amount || 2500000;
-        await db.update('wallets', teacherWallet.id, {
+        await await db.update('wallets', teacherWallet.id, {
           escrow: Math.max(0, (teacherWallet.escrow || 0) - amount),
           updatedAt: new Date().toISOString()
         });
       }
 
       // Record transaction
-      await db.insert('transactions', {
+      await await db.insert('transactions', {
         id: `tx_ref_${Date.now()}`,
         userUid: session.parentId,
         sessionId: session.id,
@@ -1036,14 +1039,14 @@ app.post('/api/disputes/resolve', authenticateToken, requireRole(['Admin']), asy
     return res.json({ success: true, message: "Dispute resolved: Parent refunded successfully.", disputeId });
 
   } else if (action === 'release_teacher') {
-    await db.update('disputes', dispute.id, { status: "Resolved - Released", resolutionNotes: safeNotes, resolvedAt: new Date().toISOString() });
+    await await db.update('disputes', dispute.id, { status: "Resolved - Released", resolutionNotes: safeNotes, resolvedAt: new Date().toISOString() });
     if (session) {
-      await db.update('sessions', session.id, { status: "Cleared" });
+      await await db.update('sessions', session.id, { status: "Cleared" });
 
-      const teacherWallet = db.findOne('wallets', w => w.userUid === session.teacherId);
+      const teacherWallet = await db.findOne('wallets', w => w.userUid === session.teacherId);
       if (teacherWallet) {
         const amount = session.amount || 2500000;
-        await db.update('wallets', teacherWallet.id, {
+        await await db.update('wallets', teacherWallet.id, {
           escrow: Math.max(0, (teacherWallet.escrow || 0) - amount),
           balance: (teacherWallet.balance || 0) + Math.round(amount * 0.85),
           updatedAt: new Date().toISOString()
@@ -1070,10 +1073,10 @@ app.post('/api/reviews', authenticateToken, requireRole(['Parent']), async (req,
   const numRating = Math.min(5, Math.max(1, Number(rating)));
   const safeComment = comment ? sanitizeText(comment) : "";
 
-  const parentUser = db.findOne('users', u => u.uid === req.user.uid);
+  const parentUser = await db.findOne('users', u => u.uid === req.user.uid);
   const parentName = parentUser ? (parentUser.displayName || parentUser.email.split('@')[0]) : "Verified Parent";
 
-  const newReview = await db.insert('reviews', {
+  const newReview = await await db.insert('reviews', {
     teacherId,
     sessionId: sessionId || null,
     parentId: req.user.uid,
@@ -1084,12 +1087,12 @@ app.post('/api/reviews', authenticateToken, requireRole(['Parent']), async (req,
   });
 
   // Recalculate Teacher Profile Avg Rating
-  const allReviews = db.find('reviews', r => r.teacherId === teacherId);
+  const allReviews = await db.find('reviews', r => r.teacherId === teacherId);
   const avgRating = (allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length).toFixed(1);
 
-  const teacherProfile = db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
+  const teacherProfile = await db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
   if (teacherProfile) {
-    await db.update('teachers', teacherProfile.id, {
+    await await db.update('teachers', teacherProfile.id, {
       rating: parseFloat(avgRating),
       reviewsCount: allReviews.length
     });
@@ -1108,7 +1111,7 @@ app.post('/api/reviews', authenticateToken, requireRole(['Parent']), async (req,
 // GET Fetch Reviews for Teacher
 app.get('/api/teachers/:teacherId/reviews', async (req, res) => {
   const { teacherId } = req.params;
-  const reviews = db.find('reviews', r => r.teacherId === teacherId);
+  const reviews = await db.find('reviews', r => r.teacherId === teacherId);
   res.json({ success: true, reviews });
 });
 
@@ -1119,8 +1122,8 @@ app.post('/api/ai/progress-report', authenticateToken, async (req, res) => {
     return res.status(400).json({ error: "studentName is required." });
   }
 
-  const assignments = db.find('assignments', a => a.studentName?.toLowerCase() === studentName.toLowerCase());
-  const sessions = db.find('sessions', s => s.studentName?.toLowerCase() === studentName.toLowerCase());
+  const assignments = await db.find('assignments', a => a.studentName?.toLowerCase() === studentName.toLowerCase());
+  const sessions = await db.find('sessions', s => s.studentName?.toLowerCase() === studentName.toLowerCase());
 
   const graded = assignments.filter(a => a.status === 'Graded');
   const avgGrade = graded.length > 0
@@ -1184,13 +1187,13 @@ app.get('/api/parents/dashboard/:uid/ai-insight', authenticateToken, requireOwne
     return res.status(400).json({ error: "studentName query param is required" });
   }
 
-  const student = db.findOne('students', s => s.parentUid === uid && s.name.toLowerCase() === studentName.toLowerCase());
+  const student = await db.findOne('students', s => s.parentUid === uid && s.name.toLowerCase() === studentName.toLowerCase());
   if (!student) {
     return res.status(403).json({ error: "Access forbidden. Student not associated with this parent profile." });
   }
 
-  const assignments = db.find('assignments', a => a.studentName.toLowerCase() === studentName.toLowerCase());
-  const sessions = db.find('sessions', s => s.studentName.toLowerCase() === studentName.toLowerCase());
+  const assignments = await db.find('assignments', a => a.studentName.toLowerCase() === studentName.toLowerCase());
+  const sessions = await db.find('sessions', s => s.studentName.toLowerCase() === studentName.toLowerCase());
 
   const graded = assignments.filter(a => a.status === 'Graded');
   const pending = assignments.filter(a => a.status !== 'Graded');
@@ -1258,9 +1261,9 @@ app.get('/api/parents/dashboard/:uid/ai-insight', authenticateToken, requireOwne
 });
 
 // GET HTML progress report download representation
-app.get('/api/reports/download/:studentId', authenticateToken, (req, res) => {
+app.get('/api/reports/download/:studentId', authenticateToken, async (req, res) => {
   const { studentId } = req.params;
-  const student = db.findOne('students', s => s.uid === studentId || s.id === studentId);
+  const student = await db.findOne('students', s => s.uid === studentId || s.id === studentId);
   if (!student) {
     return res.status(404).send("Student profile not found.");
   }
@@ -1269,10 +1272,10 @@ app.get('/api/reports/download/:studentId', authenticateToken, (req, res) => {
     return res.status(403).send("Access forbidden. Not the parent of this student.");
   }
 
-  const parent = db.findOne('parents', p => p.uid === student.parentUid);
-  const parentUser = db.findOne('users', u => u.uid === student.parentUid);
-  const assignments = db.find('assignments', a => a.studentName.toLowerCase() === student.name.toLowerCase());
-  const sessions = db.find('sessions', s => s.studentName.toLowerCase() === student.name.toLowerCase());
+  const parent = await db.findOne('parents', p => p.uid === student.parentUid);
+  const parentUser = await db.findOne('users', u => u.uid === student.parentUid);
+  const assignments = await db.find('assignments', a => a.studentName.toLowerCase() === student.name.toLowerCase());
+  const sessions = await db.find('sessions', s => s.studentName.toLowerCase() === student.name.toLowerCase());
   
   const graded = assignments.filter(a => a.status === 'Graded');
   const completed = sessions.filter(s => s.status === 'Completed');
@@ -1377,7 +1380,7 @@ app.get('/api/reports/download/:studentId', authenticateToken, (req, res) => {
 });
 
 // App initialization status check
-app.get('/api/status', (req, res) => {
+app.get('/api/status', async (req, res) => {
   res.json({ status: "healthy", version: "2.0.0", message: "EduVista API Server Active." });
 });
 

@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
+import DailyIframe from '@daily-co/daily-js';
+import { db } from '../firebase';
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '../contexts/AuthContext';
+import { getAuthHeaders, API_BASE } from '../utils/api';
 import { Play, Pause, AlertTriangle, CheckCircle, Video, MessageSquare, Edit3, Trash2, Send, Star } from 'lucide-react';
 
 export default function SessionEngine({ 
@@ -19,10 +24,21 @@ export default function SessionEngine({
     { sender: 'student', text: 'Hi Mr. Adebayo, ready to learn!' }
   ]);
   const [inputText, setInputText] = useState('');
+  const { currentUser } = useAuth();
+  const callContainerRef = useRef(null);
+  const [callFrame, setCallFrame] = useState(null);
+  const chatEndRef = useRef(null);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const unsubscribeRef = useRef(null);
   
   // Whiteboard drawing canvas refs
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+
+  // Scroll to bottom effect
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   // Review state
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -137,26 +153,25 @@ export default function SessionEngine({
   };
 
   // Chat message submission
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || !activeSession || !currentUser) return;
     
-    const newMsg = { sender: 'student', text: inputText };
-    setChatMessages(prev => [...prev, newMsg]);
+    const textToSend = inputText;
     setInputText('');
-
-    // Simulated Teacher auto-replies based on query keywords
-    setTimeout(() => {
-      let replyText = "Interesting question, let's write that formula on the whiteboard!";
-      if (inputText.toLowerCase().includes('hello') || inputText.toLowerCase().includes('hi')) {
-        replyText = "Hello! Let's solve the equations. Let me know if you have any questions.";
-      } else if (inputText.toLowerCase().includes('equation') || inputText.toLowerCase().includes('algebra')) {
-        replyText = "Remember that for ax² + bx + c = 0, the solutions are x = (-b ± √(b² - 4ac)) / 2a.";
-      } else if (inputText.toLowerCase().includes('difficult') || inputText.toLowerCase().includes('hard')) {
-        replyText = "Don't worry! We will take it step-by-step. Try drawing the root values on the board.";
-      }
-      setChatMessages(prev => [...prev, { sender: 'teacher', text: replyText }]);
-    }, 1200);
+    
+    try {
+      await addDoc(collection(db, 'session_messages'), {
+        sessionId: activeSession.id,
+        senderId: currentUser.uid,
+        senderName: currentUser.displayName || 'User',
+        text: textToSend,
+        timestamp: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Error sending message:", err);
+      toast.error("Failed to send message");
+    }
   };
 
   const logClockEvent = async (sessionId, eventType) => {
@@ -176,12 +191,64 @@ export default function SessionEngine({
   };
 
   // Complete session flow
-  const handleStartSession = (session) => {
+  const handleStartSession = async (session) => {
     setActiveSession(session);
     setSeconds(0);
     setIsPaused(false);
     setRecordConsent({ teacher: true, student: false });
     logClockEvent(session.id, 'start');
+    
+    // Subscribe to Firestore Chat
+    const q = query(
+      collection(db, 'session_messages'),
+      // Add where('sessionId', '==', session.id) later, keeping simple for sandbox
+      orderBy('timestamp', 'asc')
+    );
+    
+    unsubscribeRef.current = onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(msg => msg.sessionId === session.id);
+      setChatMessages(messages);
+    });
+
+    // Initialize Daily.co
+    setIsVideoLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/video/room/${session.id}`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || "Failed to provision room");
+      
+      if (callContainerRef.current) {
+        // Destroy existing frame if any
+        if (callFrame) {
+          await callFrame.destroy();
+        }
+        
+        const newFrame = DailyIframe.createFrame(callContainerRef.current, {
+          iframeStyle: {
+            width: '100%',
+            height: '100%',
+            border: '0',
+            borderRadius: '1rem',
+            backgroundColor: '#121A20'
+          },
+          showLeaveButton: false
+        });
+        
+        await newFrame.join({ url: data.url });
+        setCallFrame(newFrame);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Video initialization failed");
+    } finally {
+      setIsVideoLoading(false);
+    }
   };
 
   const togglePause = () => {
@@ -198,6 +265,13 @@ export default function SessionEngine({
     }
     setIsPaused(true);
     setShowReviewForm(true);
+    
+    if (callFrame) {
+      callFrame.destroy().then(() => setCallFrame(null));
+    }
+    if (unsubscribeRef.current) {
+      unsubscribeRef.current();
+    }
   };
 
   const handleReviewSubmit = (e) => {
@@ -307,35 +381,20 @@ export default function SessionEngine({
               {/* Classroom Video and Whiteboard Feed */}
               <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] overflow-hidden relative min-h-[420px] flex flex-col md:flex-row">
                 
-                {/* Webcam Mock Frame (Daily.co Simulation) */}
-                <div className="w-full md:w-1/3 bg-[#121A20] border-r border-brand-cream/5 flex flex-col justify-between h-[180px] md:h-auto relative overflow-hidden group">
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-white bg-black/40 px-2 py-1 rounded backdrop-blur-md flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                      REC
-                    </span>
-                    <span className="bg-blue-600 text-white font-mono text-[8px] px-1.5 py-1 rounded shadow-md flex items-center gap-1">
-                      <Video className="w-2.5 h-2.5" /> daily.co
-                    </span>
-                  </div>
-                  
-                  {/* Video simulation using a placeholder video loop or image */}
-                  <div className="absolute inset-0 w-full h-full">
-                    <img 
-                      src={activeSession.avatar} 
-                      alt={activeSession.teacherName} 
-                      className="w-full h-full object-cover opacity-90 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#121A20]/90 via-transparent to-transparent"></div>
-                  </div>
-                  
-                  {/* Floating Daily.co Controls */}
-                  <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div>
-                      <span className="font-sans font-bold text-xs text-white drop-shadow-md block">{activeSession.teacherName}</span>
-                      <span className="font-mono text-[8px] text-white/70">192 kbps • 32ms</span>
+                {/* Daily.co Video Call Container */}
+                <div ref={callContainerRef} className="w-full md:w-1/3 bg-[#121A20] border-r border-brand-cream/5 flex flex-col justify-center items-center h-[240px] md:h-auto relative overflow-hidden group">
+                  {!callFrame && (
+                    <div className="text-center p-4">
+                      {isVideoLoading ? (
+                        <>
+                          <Video className="w-8 h-8 text-brand-clay mx-auto animate-pulse mb-2" />
+                          <span className="font-mono text-[10px] uppercase tracking-wider text-white">Connecting to Video Server...</span>
+                        </>
+                      ) : (
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-white/50">Video Ready</span>
+                      )}
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Interactive Whiteboard Canvas */}

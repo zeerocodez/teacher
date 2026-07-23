@@ -7,10 +7,10 @@ import { sendTransactionalEmail } from '../services/email.js';
 const router = express.Router();
 
 // GET vetted teachers list with filter supports
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { subject, curriculum, rateMax, location } = req.query;
   
-  let teachers = db.find('teachers');
+  let teachers = await db.find('teachers');
   teachers = teachers.filter(t => !t.status || t.status === 'verified');
   
   if (subject) {
@@ -31,9 +31,9 @@ router.get('/', (req, res) => {
 });
 
 // GET single teacher public profile
-router.get('/:uid', (req, res) => {
+router.get('/:uid', async (req, res) => {
   const { uid } = req.params;
-  const teacher = db.findOne('teachers', t => t.uid === uid || t.id === uid);
+  const teacher = await db.findOne('teachers', t => t.uid === uid || t.id === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
@@ -79,7 +79,7 @@ router.post('/optimize-bio', authenticateToken, requireRole(['Teacher']), async 
 // POST Update teacher profile (builder)
 router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
   const { uid, name, location, rate, subjects, curricula, languages, bio, avatar } = req.body;
-  const teacher = db.findOne('teachers', t => t.uid === uid);
+  const teacher = await db.findOne('teachers', t => t.uid === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
@@ -105,7 +105,7 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     return res.status(400).json({ error: "Teacher UID and Display Name are required." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === uid);
+  const teacher = await db.findOne('teachers', t => t.uid === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
@@ -117,7 +117,7 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     if (cleanUsername.length < 3) {
       return res.status(400).json({ error: "Username must be at least 3 characters long." });
     }
-    const existing = db.findOne('teachers', t => t.username === cleanUsername && t.uid !== uid);
+    const existing = await db.findOne('teachers', t => t.username === cleanUsername && t.uid !== uid);
     if (existing) {
       return res.status(400).json({ error: "This username is already taken. Please choose another." });
     }
@@ -127,7 +127,7 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     let baseUsername = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     finalUsername = baseUsername;
     let counter = 1;
-    while (db.findOne('teachers', t => t.username === finalUsername && t.uid !== uid)) {
+    while (await db.findOne('teachers', t => t.username === finalUsername && t.uid !== uid)) {
       finalUsername = `${baseUsername}-${counter}`;
       counter++;
     }
@@ -159,7 +159,7 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
   });
 
   // Notify Admins of the new registration
-  const adminUsers = db.find('users', u => u.role === 'Admin');
+  const adminUsers = await db.find('users', u => u.role === 'Admin');
   for (const admin of adminUsers) {
     await createNotification(admin.uid, 'system', 'New Teacher Application', `${sanitizeText(name)} has submitted a new teacher application.`);
     sendTransactionalEmail(admin.email, "New Teacher Registration", "alert", {
@@ -168,7 +168,7 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
   }
 
   // Notify Teacher of pending verification
-  const teacherUser = db.findOne('users', u => u.uid === uid);
+  const teacherUser = await db.findOne('users', u => u.uid === uid);
   if (teacherUser && teacherUser.email) {
     sendTransactionalEmail(teacherUser.email, "Application Received - Pending Verification", "alert", {
       message: `Hello ${sanitizeText(name)},\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status.`
@@ -179,12 +179,12 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
 });
 
 // GET teacher by SEO-friendly username
-router.get('/by-username/:username', (req, res) => {
+router.get('/by-username/:username', async (req, res) => {
   const { username } = req.params;
   // Search strategy:
   // 1. Case-insensitive search for custom username
   // 2. Case-sensitive search for UID or ID (Firestore document IDs are case-sensitive)
-  const teacher = db.findOne('teachers', t => 
+  const teacher = await db.findOne('teachers', t => 
     (t.username && t.username.toLowerCase() === username.toLowerCase()) ||
     (t.uid === username) ||
     (String(t.id) === username)
@@ -196,7 +196,7 @@ router.get('/by-username/:username', (req, res) => {
 });
 
 // GET Teacher dashboard data
-router.get('/dashboard/:uid', authenticateToken, (req, res) => {
+router.get('/dashboard/:uid', authenticateToken, async (req, res) => {
   const { uid } = req.params;
 
   // Authorization check: User must be Admin or the Teacher themselves
@@ -204,22 +204,22 @@ router.get('/dashboard/:uid', authenticateToken, (req, res) => {
     return res.status(403).json({ error: "Access forbidden. You do not have permission to view this dashboard." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === uid);
+  const teacher = await db.findOne('teachers', t => t.uid === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher dashboard not found." });
   }
 
-  const teacherSessions = db.find('sessions', s => s.teacherId === uid);
-  const teacherAssignments = db.find('assignments', a => a.teacherId === uid || (a.teacherName === teacher.name && teacher.name));
+  const teacherSessions = await db.find('sessions', s => s.teacherId === uid);
+  const teacherAssignments = await db.find('assignments', a => a.teacherId === uid || (a.teacherName === teacher.name && teacher.name));
 
-  const wallet = db.findOne('wallets', w => w.uid === uid) || { balance: 0, escrow: 0 };
-  const teacherTransactions = db.find('transactions', t => t.toUserId === uid);
+  const wallet = await db.findOne('wallets', w => w.uid === uid) || { balance: 0, escrow: 0 };
+  const teacherTransactions = await db.find('transactions', t => t.toUserId === uid);
 
   // Compute dynamic stats
   const completedSessions = teacherSessions.filter(s => s.status === 'Completed');
   const activeEscrowSessions = teacherSessions.filter(s => s.status === 'Scheduled' || s.status === 'Pending Confirmation');
   
-  const config = db.findOne('platform_config', c => c.id === 'default') || { commissionRate: 15 };
+  const config = await db.findOne('platform_config', c => c.id === 'default') || { commissionRate: 15 };
   const commissionRate = config.commissionRate || 15;
 
   const earnedThisMonth = completedSessions.reduce((sum, s) => sum + (s.cost - Math.round(s.cost * (commissionRate / 100))), 0);

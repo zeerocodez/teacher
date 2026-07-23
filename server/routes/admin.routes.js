@@ -8,14 +8,14 @@ import { sendTransactionalEmail } from '../services/email.js';
 const router = express.Router();
 
 // GET all teacher applications (Admin application listings)
-router.get('/applications', authenticateToken, requireRole(['Admin']), (req, res) => {
-  const teachers = db.find('teachers');
+router.get('/applications', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const teachers = await db.find('teachers');
   res.json(teachers);
 });
 
 // GET all B2B Schools list
 router.get('/b2b-schools', authenticateToken, requireRole(['Admin']), async (req, res) => {
-  let schools = db.find('b2b_schools');
+  let schools = await db.find('b2b_schools');
   if (schools.length === 0) {
     // Seed default B2B school
     await db.insert('b2b_schools', {
@@ -25,7 +25,7 @@ router.get('/b2b-schools', authenticateToken, requireRole(['Admin']), async (req
       status: "active",
       registeredStudentsCount: 2
     });
-    schools = db.find('b2b_schools');
+    schools = await db.find('b2b_schools');
   }
   res.json(schools);
 });
@@ -67,7 +67,7 @@ router.post('/applications/respond', authenticateToken, requireRole(['Admin']), 
     return res.status(400).json({ error: "Teacher UID and action are required." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === teacherUid);
+  const teacher = await db.findOne('teachers', t => t.uid === teacherUid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
@@ -81,7 +81,7 @@ router.post('/applications/respond', authenticateToken, requireRole(['Admin']), 
   });
 
   // Also update user verification state in users database collection
-  const user = db.findOne('users', u => u.uid === teacherUid);
+  const user = await db.findOne('users', u => u.uid === teacherUid);
   if (user) {
     await db.update('users', user.id, {
       status: action === "Approve" ? "active" : "suspended"

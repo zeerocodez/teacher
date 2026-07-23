@@ -1,42 +1,46 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import { db } from '../db.js';
-import { sanitizeText, hashPassword, verifyPassword, createNotification } from '../utils.js';
+import { sanitizeText, createNotification } from '../utils.js';
 import { authRateLimiter } from '../middleware/limiters.js';
+import { authenticateToken } from '../middleware/auth.js';
 import { sendTransactionalEmail } from '../services/email.js';
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'eduvista_jwt_secret_2026';
 
-// Register a new user (Parent or Teacher)
+// Get Current Authenticated User Profile
+router.get('/me', authenticateToken, async (req, res) => {
+  // If authenticateToken succeeds, it means the Firebase token is valid.
+  // req.user contains the full user document (if they exist in the DB)
+  // If req.user only has uid, role, email (meaning they are authenticated in Firebase but NOT in our DB),
+  // we return 404 to trigger the Onboarding flow on the frontend.
+  if (req.user && req.user.status) {
+    return res.json(req.user);
+  } else {
+    return res.status(404).json({ error: "User profile not found in database. Onboarding required." });
+  }
+});
+
+// Register a new user (Parent or Teacher) after Firebase Auth succeeds
 router.post('/register', authRateLimiter, async (req, res) => {
   try {
-    const { email, displayName, role, country, password, username: requestedUsername, referredBy, uid: clientUid, eliteCertificate } = req.body;
-    if (!email || !displayName || !role) {
-      return res.status(400).json({ error: "Email, display name, and role are required." });
+    const { clientUid, email, displayName, role, country, username: requestedUsername, referredBy, eliteCertificate } = req.body;
+    
+    if (!clientUid || !email || !displayName || !role) {
+      return res.status(400).json({ error: "Firebase UID, Email, display name, and role are required." });
     }
 
     const sanitizedEmail = sanitizeText(email);
     const sanitizedDisplayName = sanitizeText(displayName);
     const sanitizedCountry = country ? sanitizeText(country) : "Nigeria";
 
-    const existingUser = db.findOne('users', u => u.email.toLowerCase() === sanitizedEmail.toLowerCase());
+    const existingUser = await db.findOne('users', 'uid', '==', clientUid);
     if (existingUser) {
-      return res.status(400).json({ error: "User with this email already exists." });
+      return res.status(400).json({ error: "User profile already exists." });
     }
 
-    // Use clientUid from Firebase if available, otherwise fallback to mock
-    const uid = clientUid || `user_${Date.now()}`;
-    let salt = "";
-    let hash = "";
-
-    if (password) {
-      const pwDetails = await hashPassword(password);
-      salt = pwDetails.salt;
-      hash = pwDetails.hash;
-    }
-
+    const uid = clientUid;
     let finalRole = role === 'Teacher' || role === 'Parent' ? role : 'Parent';
+    
     if (sanitizedEmail.toLowerCase() === 'zeerocodes@gmail.com' || sanitizedEmail.toLowerCase() === 'morichcare@gmail.com') {
       finalRole = 'Admin';
     }
@@ -47,15 +51,12 @@ router.post('/register', authRateLimiter, async (req, res) => {
       displayName: sanitizedDisplayName,
       role: finalRole,
       country: sanitizedCountry,
-      status: "active",
-      salt,
-      passwordHash: hash
+      status: "active"
     });
 
     if (finalRole === "Teacher") {
       const { 
-        whatsapp, nin, linkedin, avatar, govIdUrl, cvUrl, videoUrl, degreeUrl, 
-        rate, currency, timezone, classroomLink, recordingTool 
+        whatsapp, avatar, rate
       } = req.body;
 
       let finalUsername;
@@ -64,7 +65,7 @@ router.post('/register', authRateLimiter, async (req, res) => {
         if (!cleanUsername) {
           return res.status(400).json({ error: "Username must contain alphanumeric characters or hyphens." });
         }
-        const existingTeacher = db.findOne('teachers', t => t.username === cleanUsername);
+        const existingTeacher = await db.findOne('teachers', 'username', '==', cleanUsername);
         if (existingTeacher) {
           return res.status(400).json({ error: "This username is taken. Please choose a unique username." });
         }
@@ -88,53 +89,38 @@ router.post('/register', authRateLimiter, async (req, res) => {
         avatar: avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
         coverImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
         online: true,
-        availability: {
-          Tomorrow: ["4:00 PM", "5:00 PM"],
-          Wednesday: ["3:00 PM", "4:00 PM"]
-        },
+        availability: {},
         languages: ["English"],
         verified: false,
         status: "pending_approval",
         stats: { sessionsTaught: 0, responseRate: 100 },
         leaderboardOptIn: true,
-        whatsapp: whatsapp ? sanitizeText(whatsapp) : "",
-        nin: nin ? sanitizeText(nin) : "",
-        linkedin: linkedin ? sanitizeText(linkedin) : "",
-        govIdUrl: govIdUrl ? sanitizeText(govIdUrl) : "",
-        cvUrl: cvUrl ? sanitizeText(cvUrl) : "",
-        videoUrl: videoUrl ? sanitizeText(videoUrl) : "",
-        degreeUrl: degreeUrl ? sanitizeText(degreeUrl) : "",
-        currency: currency ? sanitizeText(currency) : "NGN",
-        timezone: timezone ? sanitizeText(timezone) : "Africa/Lagos",
-        classroomLink: classroomLink ? sanitizeText(classroomLink) : "",
-        recordingTool: recordingTool ? sanitizeText(recordingTool) : "recordly.site"
+        whatsapp: whatsapp ? sanitizeText(whatsapp) : ""
       });
 
       await db.insert('wallets', {
         uid,
+        userUid: uid,
         balance: 0,
-        escrow: 0
+        escrow: 0,
+        currency: "NGN",
+        history: []
       });
 
-      // Notify Admins of the new registration immediately
-      const admins = db.find('users', u => u.role === 'Admin');
+      // Notify Admins
+      const admins = await db.find('users', 'role', '==', 'Admin');
       for (const admin of admins) {
         await createNotification(admin.uid, 'system', 'New Teacher Application', `${sanitizedDisplayName} (@${finalUsername}) has registered and is pending vetting.`);
         sendTransactionalEmail(admin.email, "New Teacher Registration", "alert", {
-          message: `A new teacher, ${sanitizedDisplayName} (@${finalUsername}) from ${sanitizedCountry}, has registered directly and uploaded their credentials. WhatsApp: ${whatsapp || 'Not provided'}, LinkedIn: ${linkedin || 'Not provided'}. Please contact and vet them.`
+          message: `A new teacher, ${sanitizedDisplayName} (@${finalUsername}), has applied and is pending verification. Email: ${sanitizedEmail}`
         });
       }
 
-      // Notify Teacher of pending verification
-      sendTransactionalEmail(sanitizedEmail, "Application Received - Pending Verification", "alert", {
-        message: `Hello ${sanitizedDisplayName},\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status.`
-      });
     } else if (finalRole === "Parent") {
       await db.insert('parents', {
         uid,
-        children: ["Tunde"], // Default test student
-        paymentMethods: ["card_visa_default"],
-        preferredCurrency: "NGN",
+        name: sanitizedDisplayName,
+        email: sanitizedEmail,
         country: sanitizedCountry,
         referredBy: referredBy ? sanitizeText(referredBy) : null,
         referralHits: 0
@@ -142,12 +128,14 @@ router.post('/register', authRateLimiter, async (req, res) => {
 
       await db.insert('wallets', {
         uid,
-        balance: 0, // Real-world balance defaults to 0 kobo NGN (requires paystack top-up)
-        escrow: 0
+        userUid: uid,
+        balance: 0,
+        escrow: 0,
+        currency: "NGN",
+        history: []
       });
 
-      // Notify Admins of the new parent registration
-      const admins = db.find('users', u => u.role === 'Admin');
+      const admins = await db.find('users', 'role', '==', 'Admin');
       for (const admin of admins) {
         await createNotification(admin.uid, 'system', 'New Parent Registration', `${sanitizedDisplayName} has joined as a Parent from ${sanitizedCountry}.`);
         sendTransactionalEmail(admin.email, "New Parent Registration", "alert", {
@@ -156,55 +144,15 @@ router.post('/register', authRateLimiter, async (req, res) => {
       }
     }
 
-    const token = jwt.sign({ uid, role: finalRole, email: sanitizedEmail }, JWT_SECRET, { expiresIn: '7d' });
-
-    // Trigger transactional Welcome email
     sendTransactionalEmail(sanitizedEmail, "Welcome to EduVista Africa!", "welcome", {
       displayName: sanitizedDisplayName,
       role: finalRole
     });
 
-    res.json({ ...newUser, token });
+    res.json(newUser);
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ error: "An internal server error occurred during registration." });
-  }
-});
-
-// Login user
-router.post('/login', authRateLimiter, async (req, res) => {
-  try {
-    const { email, password, uid } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: "Email is required." });
-    }
-    if (!password && !uid) {
-      return res.status(400).json({ error: "Password or authentication UID is required." });
-    }
-
-    const sanitizedEmail = sanitizeText(email);
-    const user = db.findOne('users', u => u.email.toLowerCase() === sanitizedEmail.toLowerCase());
-    
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials. Please try again." });
-    }
-
-    if (uid && user.uid === uid) {
-      // Valid OAuth / Firebase token login
-    } else if (password && user.passwordHash && user.salt) {
-      const isMatch = await verifyPassword(password, user.salt, user.passwordHash);
-      if (!isMatch) {
-        return res.status(401).json({ error: "Invalid credentials. Please try again." });
-      }
-    } else {
-      return res.status(401).json({ error: "Authentication mismatch or invalid credentials." });
-    }
-
-    const token = jwt.sign({ uid: user.uid, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ ...user, token });
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ error: "An internal server error occurred during login." });
   }
 });
 

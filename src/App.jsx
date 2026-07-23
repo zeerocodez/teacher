@@ -27,6 +27,8 @@ import {
   Play
 } from 'lucide-react';
 
+import { useAuth } from './contexts/AuthContext';
+
 import heroImage from './assets/hero.jpg';
 import { translations } from './locales/i18n';
 import { auth } from './firebase';
@@ -85,17 +87,7 @@ export default function App() {
   const [openFaqIdx, setOpenFaqIdx] = useState(0);
   
   // Current user authentication states
-  const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('eduvista_user');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse saved user", e);
-      }
-    }
-    return null;
-  });
+  const { currentUser, setCurrentUser, login, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [profileUsername, setProfileUsername] = useState(() => {
@@ -402,9 +394,7 @@ export default function App() {
           if (savedUser.uid && (savedUser.uid.startsWith('user_') || savedUser.uid.includes('_1'))) {
             // Keep local mock profile
           } else {
-            localStorage.removeItem('eduvista_user');
-            localStorage.removeItem('eduvista_token');
-            setCurrentUser(null);
+            logout();
           }
         }
       }
@@ -577,13 +567,7 @@ export default function App() {
   };
 
   const handleAuthSuccess = (user) => {
-    if (user.token) {
-      localStorage.setItem('eduvista_token', user.token);
-      localStorage.setItem('eduvista_user', JSON.stringify(user));
-    } else {
-      localStorage.setItem('eduvista_user', JSON.stringify(user));
-    }
-    setCurrentUser(user);
+    login(user, user.token);
     navigate('/dashboard');
     if (user.role === 'Parent') {
       window.location.hash = '#marketplace';
@@ -682,7 +666,7 @@ export default function App() {
     const activeStudentId = selectedStudentForBooking ? (selectedStudentForBooking.uid || selectedStudentForBooking.id) : 'student_1';
     const activeStudentName = selectedStudentForBooking ? selectedStudentForBooking.name : 'Tunde';
     try {
-      if (paymentMethod === 'card') {
+      if (paymentMethod === 'paystack') {
         const provider = 'paystack';
         const checkoutRes = await fetch(`${API_BASE}/payments/checkout`, {
           method: 'POST',
@@ -720,10 +704,7 @@ export default function App() {
           console.error("Booking checkout initiation failed:", errData);
           toast.error(`Booking payment failed: ${errData.error || "Payment gateway error"}`);
           if (checkoutRes.status === 401 || checkoutRes.status === 403 || (errData.error && errData.error.toLowerCase().includes("token"))) {
-            localStorage.removeItem('eduvista_user');
-            localStorage.removeItem('eduvista_token');
-            setCurrentUser(null);
-            navigate('/');
+            logout();
           }
           return;
         }
@@ -757,7 +738,7 @@ export default function App() {
       }
     } catch (err) {
       console.error("Booking API error:", err);
-      if (paymentMethod === 'card') {
+      if (paymentMethod === 'paystack') {
         toast.error(`Payment initialization failed: ${err.message || "Please check your connection."}`);
         return;
       }
@@ -837,10 +818,7 @@ export default function App() {
           console.error("Top-up checkout initiation failed:", errData);
           toast.error(`Top-up failed: ${errData.error || "Payment gateway error"}`);
           if (checkoutRes.status === 401 || checkoutRes.status === 403 || (errData.error && errData.error.toLowerCase().includes("token"))) {
-            localStorage.removeItem('eduvista_user');
-            localStorage.removeItem('eduvista_token');
-            setCurrentUser(null);
-            navigate('/');
+            logout();
           }
           return false;
         }
@@ -1201,10 +1179,7 @@ export default function App() {
                     } catch (e) {
                       console.warn("Failed to sign out of Firebase:", e);
                     }
-                    localStorage.removeItem('eduvista_user');
-                    localStorage.removeItem('eduvista_token');
-                    setCurrentUser(null);
-                    navigate('/');
+                    logout();
                     setIsMobileMenuOpen(false);
                   }}
                   className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border bg-brand-cream border-brand-cream text-brand-moss hover:bg-brand-clay hover:border-brand-clay hover:text-white"
@@ -1372,10 +1347,7 @@ export default function App() {
                       } catch (e) {
                         console.warn("Failed to sign out of Firebase:", e);
                       }
-                      localStorage.removeItem('eduvista_user');
-                      localStorage.removeItem('eduvista_token');
-                      setCurrentUser(null);
-                      navigate('/');
+                      logout();
                     }}
                     className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl bg-white text-brand-moss hover:bg-brand-clay hover:text-white text-center"
                   >
@@ -1622,7 +1594,6 @@ export default function App() {
         <AuthModal 
           isOpen={isAuthOpen} 
           onClose={() => setIsAuthOpen(false)} 
-          onSuccess={handleAuthSuccess}
         />
       </Suspense>
 

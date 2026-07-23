@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Search, Star, ShieldCheck, CheckCircle2, Award, Zap, HelpCircle, Play } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Marketplace({ 
   teachers = [], 
@@ -247,8 +248,13 @@ export default function Marketplace({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[...filteredTeachers].sort((a, b) => {
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {[...filteredTeachers].sort((a, b) => {
           const aHasElite = (a.badges || []).includes('badge-ai-cert');
           const bHasElite = (b.badges || []).includes('badge-ai-cert');
           if (aHasElite && !bHasElite) return -1;

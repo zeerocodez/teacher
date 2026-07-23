@@ -83,7 +83,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
   }
 
   // Double-booking check
-  const existingBookings = db.find('sessions', s => s.teacherId === teacherId && s.status !== 'Cancelled');
+  const existingBookings = await db.find('sessions', s => s.teacherId === teacherId && s.status !== 'Cancelled');
   for (const slot of slots) {
     const isDoubleBooked = existingBookings.some(eb => 
       eb.slot && 
@@ -103,7 +103,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
   const totalCost = costPerSession * slots.length;
 
   // 1. Check Parent wallet
-  const wallet = db.findOne('wallets', w => w.uid === parentId);
+  const wallet = await db.findOne('wallets', w => w.uid === parentId);
   if (!wallet || wallet.balance < totalCost) {
     return res.status(400).json({ error: "Insufficient wallet balance." });
   }
@@ -114,7 +114,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
     escrow: wallet.escrow + totalCost
   });
 
-  const teacherProfile = db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
+  const teacherProfile = await db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
   const defaultSubject = (teacherProfile && teacherProfile.subjects && teacherProfile.subjects[0]) || "General Class";
   const defaultCurriculum = (teacherProfile && teacherProfile.curricula && teacherProfile.curricula[0]) || "Standard";
 
@@ -174,7 +174,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
   );
 
   // Retrieve parent email to notify
-  const parentUser = db.findOne('users', u => u.uid === parentId) || { email: "parent@eduvista.com" };
+  const parentUser = await db.findOne('users', u => u.uid === parentId) || { email: "parent@eduvista.com" };
   sendTransactionalEmail(parentUser.email, "EduVista: Session Escrow Secured", "booking_secured", {
     teacherName,
     formattedCost: `₦${cost/100}`,
@@ -183,7 +183,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
 
   // Automated notification and email alert to the teacher
   try {
-    const teacherUser = db.findOne('users', u => u.uid === teacherId);
+    const teacherUser = await db.findOne('users', u => u.uid === teacherId);
     if (teacherUser && teacherUser.email) {
       sendTransactionalEmail(teacherUser.email, "EduVista: New Session Booking Request", "booking_received", {
         parentName: parentUser.displayName || parentUser.email.split('@')[0],
@@ -212,7 +212,7 @@ router.post('/sessions/respond', authenticateToken, requireRole(['Teacher']), as
     return res.status(400).json({ error: "Session ID and action are required." });
   }
 
-  const session = db.findOne('sessions', s => s.id === sessionId);
+  const session = await db.findOne('sessions', s => s.id === sessionId);
   if (!session) {
     return res.status(404).json({ error: "Session not found." });
   }
@@ -234,7 +234,7 @@ router.post('/sessions/respond', authenticateToken, requireRole(['Teacher']), as
 
     // Automated email to Parent
     try {
-      const parentUser = db.findOne('users', u => u.uid === session.parentId);
+      const parentUser = await db.findOne('users', u => u.uid === session.parentId);
       if (parentUser && parentUser.email) {
         sendTransactionalEmail(parentUser.email, "EduVista: Booking Request Confirmed", "booking_confirmed", {
           teacherName: session.teacherName,
@@ -248,7 +248,7 @@ router.post('/sessions/respond', authenticateToken, requireRole(['Teacher']), as
     return res.json(updated);
   } else if (action === "Reject") {
     // Release escrow back to parent
-    const wallet = db.findOne('wallets', w => w.uid === session.parentId);
+    const wallet = await db.findOne('wallets', w => w.uid === session.parentId);
     if (wallet) {
       await db.update('wallets', wallet.id, {
         balance: wallet.balance + session.cost,
@@ -268,7 +268,7 @@ router.post('/sessions/respond', authenticateToken, requireRole(['Teacher']), as
 
     // Automated email to Parent
     try {
-      const parentUser = db.findOne('users', u => u.uid === session.parentId);
+      const parentUser = await db.findOne('users', u => u.uid === session.parentId);
       if (parentUser && parentUser.email) {
         sendTransactionalEmail(parentUser.email, "EduVista: Booking Request Declined", "booking_rejected", {
           teacherName: session.teacherName,
@@ -286,9 +286,9 @@ router.post('/sessions/respond', authenticateToken, requireRole(['Teacher']), as
 });
 
 // GET messages for a session
-router.get('/messages/:sessionId', authenticateToken, (req, res) => {
+router.get('/messages/:sessionId', authenticateToken, async (req, res) => {
   const { sessionId } = req.params;
-  const session = db.findOne('sessions', s => s.id === sessionId);
+  const session = await db.findOne('sessions', s => s.id === sessionId);
   if (!session) {
     return res.status(404).json({ error: "Session not found." });
   }
@@ -296,7 +296,7 @@ router.get('/messages/:sessionId', authenticateToken, (req, res) => {
     return res.status(403).json({ error: "Access forbidden. You are not a participant of this class." });
   }
   
-  const messages = db.find('messages', m => m.sessionId === sessionId);
+  const messages = await db.find('messages', m => m.sessionId === sessionId);
   messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   res.json(messages);
 });
@@ -312,7 +312,7 @@ router.post('/messages', authenticateToken, async (req, res) => {
     return res.status(403).json({ error: "Access forbidden. Sender ID mismatch." });
   }
 
-  const session = db.findOne('sessions', s => s.id === sessionId);
+  const session = await db.findOne('sessions', s => s.id === sessionId);
   if (!session) {
     return res.status(404).json({ error: "Session not found." });
   }
@@ -328,7 +328,7 @@ router.post('/messages', authenticateToken, async (req, res) => {
   });
 
   // Dispatch Notifications
-  const sess = db.findOne('sessions', s => s.id === sessionId);
+  const sess = await db.findOne('sessions', s => s.id === sessionId);
   if (sess) {
     const recipientId = senderId === sess.teacherId ? sess.parentId : sess.teacherId;
     await createNotification(
@@ -349,7 +349,7 @@ router.post('/sessions/clock', authenticateToken, async (req, res) => {
     return res.status(400).json({ error: "Session ID and eventType are required." });
   }
 
-  const session = db.findOne('sessions', s => s.id === sessionId);
+  const session = await db.findOne('sessions', s => s.id === sessionId);
   if (!session) {
     return res.status(404).json({ error: "Session record not found." });
   }
@@ -372,7 +372,7 @@ router.post('/sessions/link', authenticateToken, requireRole(['Teacher']), async
     return res.status(400).json({ error: "Session ID and class link are required." });
   }
 
-  const session = db.findOne('sessions', s => s.id === sessionId);
+  const session = await db.findOne('sessions', s => s.id === sessionId);
   if (!session) {
     return res.status(404).json({ error: "Session not found." });
   }
@@ -392,7 +392,7 @@ router.post('/sessions/link', authenticateToken, requireRole(['Teacher']), async
 router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (req, res) => {
   const { sessionId, rating, comment } = req.body;
 
-  const session = db.findOne('sessions', s => s.id === sessionId);
+  const session = await db.findOne('sessions', s => s.id === sessionId);
   if (!session) {
     return res.status(404).json({ error: "Session record not found." });
   }
@@ -412,12 +412,12 @@ router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (
   });
 
   // 2. Release Escrow & Apportion payout/commission based on booking source
-  const config = db.findOne('platform_config', c => c.id === 'default') || { commissionRate: 15 };
+  const config = await db.findOne('platform_config', c => c.id === 'default') || { commissionRate: 15 };
   const commissionRate = config.commissionRate || 15;
   const commission = Math.round(session.cost * (commissionRate / 100));
   const payout = session.cost - commission;
 
-  const parentWallet = db.findOne('wallets', w => w.uid === session.parentId);
+  const parentWallet = await db.findOne('wallets', w => w.uid === session.parentId);
 
   if (parentWallet && Number(parentWallet.escrow) >= session.cost) {
     // Booked via Parent Wallet: release parent escrow, add platform commission to admin, and add teacher payout
@@ -425,7 +425,7 @@ router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (
       escrow: Math.max(0, Number(parentWallet.escrow) - session.cost)
     });
 
-    let teacherWallet = db.findOne('wallets', w => w.uid === session.teacherId);
+    let teacherWallet = await db.findOne('wallets', w => w.uid === session.teacherId);
     if (!teacherWallet) {
       await db.insert('wallets', {
         uid: session.teacherId,
@@ -438,7 +438,7 @@ router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (
       });
     }
 
-    let adminWallet = db.findOne('wallets', w => w.uid === 'admin_1');
+    let adminWallet = await db.findOne('wallets', w => w.uid === 'admin_1');
     if (!adminWallet) {
       await db.insert('wallets', {
         uid: 'admin_1',
@@ -452,7 +452,7 @@ router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (
     }
   } else {
     // Booked via Card checkout: payout (85%) was already locked in teacher's escrow, so release it to teacher's balance
-    let teacherWallet = db.findOne('wallets', w => w.uid === session.teacherId);
+    let teacherWallet = await db.findOne('wallets', w => w.uid === session.teacherId);
     if (teacherWallet) {
       await db.update('wallets', teacherWallet.id, {
         escrow: Math.max(0, Number(teacherWallet.escrow) - payout),
@@ -484,14 +484,14 @@ router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (
 
   // Automated email notifications to parent and teacher
   try {
-    const parentUser = db.findOne('users', u => u.uid === session.parentId);
+    const parentUser = await db.findOne('users', u => u.uid === session.parentId);
     if (parentUser && parentUser.email) {
       sendTransactionalEmail(parentUser.email, "EduVista: Tutoring Session Completed Summary", "session_completed", {
         teacherName: session.teacherName
       });
     }
 
-    const teacherUser = db.findOne('users', u => u.uid === session.teacherId);
+    const teacherUser = await db.findOne('users', u => u.uid === session.teacherId);
     if (teacherUser && teacherUser.email) {
       sendTransactionalEmail(teacherUser.email, "EduVista: Escrow Funds Released", "escrow_released", {
         formattedPayout: `₦${payout/100}`,
@@ -529,9 +529,9 @@ router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (
     });
 
     // Update teacher reviews stats
-    const teacher = db.findOne('teachers', t => t.uid === session.teacherId);
+    const teacher = await db.findOne('teachers', t => t.uid === session.teacherId);
     if (teacher) {
-      const allReviews = db.find('reviews', r => r.teacherId === session.teacherId);
+      const allReviews = await db.find('reviews', r => r.teacherId === session.teacherId);
       const avg = allReviews.reduce((sum, r) => sum + r.overallRating, 0) / allReviews.length;
       await db.update('teachers', teacher.id, {
         reviewsCount: allReviews.length,
@@ -556,7 +556,7 @@ router.post('/payout/request', authenticateToken, requireRole(['Teacher', 'Admin
     return res.status(400).json({ error: "Valid amount is required." });
   }
 
-  const wallet = db.findOne('wallets', w => w.uid === req.user.uid);
+  const wallet = await db.findOne('wallets', w => w.uid === req.user.uid);
   if (!wallet || wallet.balance < amount) {
     return res.status(400).json({ error: "Insufficient wallet balance." });
   }
@@ -575,7 +575,7 @@ router.post('/payout/request', authenticateToken, requireRole(['Teacher', 'Admin
   });
 
   // Notify admins
-  const admins = db.find('users', u => u.role === 'Admin');
+  const admins = await db.find('users', u => u.role === 'Admin');
   for (const admin of admins) {
     await createNotification(
       admin.uid,
@@ -590,7 +590,7 @@ router.post('/payout/request', authenticateToken, requireRole(['Teacher', 'Admin
 
 // GET Admin Wallet Balance
 router.get('/admin/wallet', authenticateToken, requireRole(['Admin']), async (req, res) => {
-  let wallet = db.findOne('wallets', w => w.uid === req.user.uid);
+  let wallet = await db.findOne('wallets', w => w.uid === req.user.uid);
   if (!wallet) {
     wallet = await db.insert('wallets', {
       uid: req.user.uid,
@@ -605,14 +605,14 @@ router.get('/admin/wallet', authenticateToken, requireRole(['Admin']), async (re
 });
 
 // GET Payout Requests (Admin)
-router.get('/admin/payouts', authenticateToken, requireRole(['Admin']), (req, res) => {
-  const payouts = db.find('payout_requests');
+router.get('/admin/payouts', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const payouts = await db.find('payout_requests');
   // Enhance with teacher / admin user info
-  const enhanced = payouts.map(p => {
-    const t = db.findOne('teachers', t => t.uid === p.teacherId) || {};
-    const u = db.findOne('users', u => u.uid === p.teacherId) || {};
+  const enhanced = await Promise.all(payouts.map(async p => {
+    const t = await db.findOne('teachers', t => t.uid === p.teacherId) || {};
+    const u = await db.findOne('users', u => u.uid === p.teacherId) || {};
     return { ...p, teacherName: u.displayName || t.name || p.teacherId };
-  });
+  }));
   enhanced.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
   res.json(enhanced);
 });
@@ -620,7 +620,7 @@ router.get('/admin/payouts', authenticateToken, requireRole(['Admin']), (req, re
 // POST Approve/Reject Payout (Admin)
 router.post('/admin/payouts/:id/respond', authenticateToken, requireRole(['Admin']), async (req, res) => {
   const { action } = req.body;
-  const payoutReq = db.findOne('payout_requests', p => p.id === req.params.id);
+  const payoutReq = await db.findOne('payout_requests', p => p.id === req.params.id);
   
   if (!payoutReq || payoutReq.status !== 'pending') {
     return res.status(400).json({ error: "Invalid or already processed payout request." });
@@ -644,7 +644,7 @@ router.post('/admin/payouts/:id/respond', authenticateToken, requireRole(['Admin
         });
       } catch (transferErr) {
         console.error("[PAYOUT] Paystack Transfer failed:", transferErr.message);
-        const wallet = db.findOne('wallets', w => w.uid === payoutReq.teacherId);
+        const wallet = await db.findOne('wallets', w => w.uid === payoutReq.teacherId);
         if (wallet) {
           await db.update('wallets', wallet.id, { balance: Number(wallet.balance) + payoutReq.amount });
         }
@@ -662,7 +662,7 @@ router.post('/admin/payouts/:id/respond', authenticateToken, requireRole(['Admin
     await createNotification(payoutReq.teacherId, 'payout_approved', 'Payout Approved', `Your payout of ₦${payoutReq.amount/100} has been processed and sent to your bank account.`);
 
     try {
-      const teacherUser = db.findOne('users', u => u.uid === payoutReq.teacherId);
+      const teacherUser = await db.findOne('users', u => u.uid === payoutReq.teacherId);
       if (teacherUser && teacherUser.email) {
         sendTransactionalEmail(teacherUser.email, "EduVista: Payout Request Approved", "payout_approved", {
           formattedAmount: `₦${payoutReq.amount/100}`
@@ -675,14 +675,14 @@ router.post('/admin/payouts/:id/respond', authenticateToken, requireRole(['Admin
     await db.update('payout_requests', payoutReq.id, { status: 'rejected', processedAt: new Date().toISOString() });
     
     // Refund to wallet
-    const wallet = db.findOne('wallets', w => w.uid === payoutReq.teacherId);
+    const wallet = await db.findOne('wallets', w => w.uid === payoutReq.teacherId);
     if (wallet) {
       await db.update('wallets', wallet.id, { balance: wallet.balance + payoutReq.amount });
     }
     await createNotification(payoutReq.teacherId, 'payout_rejected', 'Payout Rejected', `Your payout of ₦${payoutReq.amount/100} was rejected and refunded to your wallet.`);
 
     try {
-      const teacherUser = db.findOne('users', u => u.uid === payoutReq.teacherId);
+      const teacherUser = await db.findOne('users', u => u.uid === payoutReq.teacherId);
       if (teacherUser && teacherUser.email) {
         sendTransactionalEmail(teacherUser.email, "EduVista: Payout Request Declined", "payout_rejected", {
           formattedAmount: `₦${payoutReq.amount/100}`,
