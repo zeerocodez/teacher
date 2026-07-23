@@ -268,6 +268,8 @@ export default function App() {
       ]
     }
   ]);
+  const [hasMoreTeachers, setHasMoreTeachers] = useState(false);
+  const [teachersPage, setTeachersPage] = useState(1);
 
   // Booking Modal Trigger State
   const [selectedTeacherForBooking, setSelectedTeacherForBooking] = useState(null);
@@ -317,27 +319,15 @@ export default function App() {
     };
   };
 
-  const fetchInitialData = async () => {
+  const loadFilteredTeachers = async (filters = {}, page = 1, append = false) => {
     try {
-      const teachersRes = await fetch(`${API_BASE}/teachers`, {
-        headers: getAuthHeaders()
+      const queryParams = new URLSearchParams({
+        page,
+        limit: 12,
+        ...filters
       });
-      let latestTeachers = [];
-      if (teachersRes.ok) {
-        const teachersData = await teachersRes.json();
-        latestTeachers = teachersData.map(t => ({
-            ...t,
-            id: t.uid || t.id,
-            subjects: t.subjects || [],
-            curriculums: t.curricula || t.curriculums || [],
-            reviews: t.reviews || []
-          }));
-          const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_6', 'teacher_test_pay'];
-          const realTeachers = latestTeachers.filter(t => !demoUids.includes(t.uid));
-          if (realTeachers.length > 0) {
-            setTeachers(realTeachers);
-          }
-        }
+      
+      await loadFilteredTeachers({}, 1, false);
 
       const activeUid = currentUser ? currentUser.uid : 'parent_1';
       const dashboardRes = await fetch(`${API_BASE}/parents/dashboard/${activeUid}`, {
@@ -1492,9 +1482,12 @@ export default function App() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/" element={
             <Home 
-              t={t}
-              scrollToSection={scrollToSection}
-              teachers={teachers}
+                t={t}
+                scrollToSection={scrollToSection}
+                teachers={teachers}
+                hasMoreTeachers={hasMoreTeachers}
+                loadFilteredTeachers={loadFilteredTeachers}
+                teachersPage={teachersPage}
               selectedCurrency={selectedCurrency}
               handleBookClick={handleBookClick}
               formatCurrency={formatCurrency}
@@ -1582,11 +1575,15 @@ export default function App() {
                       />
                     ) : (
                       <ParentDashboard 
-                        currentUser={currentUser}
-                        lang={lang}
-                        t={t}
-                        selectedCurrency={selectedCurrency}
-                        formatCurrency={formatCurrency}
+                          currentUser={currentUser}
+                          lang={lang}
+                          t={t}
+                          selectedCurrency={selectedCurrency}
+                          formatCurrency={formatCurrency}
+                          teachers={teachers}
+                          hasMoreTeachers={hasMoreTeachers}
+                          loadFilteredTeachers={loadFilteredTeachers}
+                          teachersPage={teachersPage}
                         convertMinor={convertMinor}
                         gradesLog={gradesLog}
                         onGradeHomework={handleGradeHomework}

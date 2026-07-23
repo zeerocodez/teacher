@@ -24,7 +24,7 @@ function LoadingFallback() {
 }
 
 export default function Home({
-  t, scrollToSection, teachers, selectedCurrency, handleBookClick,
+  t, scrollToSection, teachers, hasMoreTeachers, loadFilteredTeachers, teachersPage, selectedCurrency, handleBookClick,
   formatCurrency, convertMinor, handleTutorProfileSelect,
   watchingTeacherVideo, setWatchingTeacherVideo, bookedSessions,
   handleEndSession, escrowBalance, currentUser, handleUnlockBadge,
@@ -484,8 +484,11 @@ export default function Home({
       {/* Marketplace Find Teachers Component */}
       <Suspense fallback={<LoadingFallback />}>
         <Marketplace 
-          teachers={teachers} 
-          selectedCurrency={selectedCurrency} 
+            teachers={teachers} 
+            hasMoreTeachers={hasMoreTeachers}
+            loadFilteredTeachers={loadFilteredTeachers}
+            teachersPage={teachersPage}
+            selectedCurrency={selectedCurrency} 
           onBookClick={handleBookClick}
           formatCurrency={formatCurrency}
           convertMinor={convertMinor}

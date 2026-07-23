@@ -8,26 +8,59 @@ const router = express.Router();
 
 // GET vetted teachers list with filter supports
 router.get('/', async (req, res) => {
-  const { subject, curriculum, rateMax, location } = req.query;
-  
-  let teachers = await db.find('teachers');
-  teachers = teachers.filter(t => !t.status || t.status === 'verified');
-  
-  if (subject) {
-    teachers = teachers.filter(t => t.subjects.some(s => s.toLowerCase() === subject.toLowerCase()));
-  }
-  if (curriculum) {
-    teachers = teachers.filter(t => t.curricula.some(c => c.toLowerCase() === curriculum.toLowerCase()));
-  }
-  if (rateMax) {
-    const maxVal = parseInt(rateMax, 10);
-    teachers = teachers.filter(t => t.rate <= maxVal);
-  }
-  if (location) {
-    teachers = teachers.filter(t => t.location.toLowerCase().includes(location.toLowerCase()));
-  }
-  
-  res.json(teachers);
+    const { subject, curriculum, rateMax, location, search, page = 1, limit = 12 } = req.query;
+    
+    let teachers = await db.find('teachers');
+    teachers = teachers.filter(t => !t.status || t.status === 'verified');
+    
+    if (subject && subject !== 'All') {
+      teachers = teachers.filter(t => t.subjects && t.subjects.some(s => s.toLowerCase() === subject.toLowerCase()));
+    }
+    if (curriculum && curriculum !== 'All') {
+      teachers = teachers.filter(t => t.curricula && t.curricula.some(c => c.toLowerCase() === curriculum.toLowerCase()));
+    }
+    if (rateMax) {
+      const maxVal = parseInt(rateMax, 10);
+      teachers = teachers.filter(t => t.rate <= maxVal);
+    }
+    if (location) {
+      teachers = teachers.filter(t => t.location && t.location.toLowerCase().includes(location.toLowerCase()));
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      teachers = teachers.filter(t => 
+        (t.name && t.name.toLowerCase().includes(q)) || 
+        (t.bio && t.bio.toLowerCase().includes(q)) ||
+        (t.subjects && t.subjects.some(s => s.toLowerCase().includes(q)))
+      );
+    }
+    
+    // Sort logic to favor Elite verified teachers
+    teachers.sort((a, b) => {
+      const aElite = (a.badges || []).includes('badge-ai-cert');
+      const bElite = (b.badges || []).includes('badge-ai-cert');
+      if (aElite && !bElite) return -1;
+      if (!aElite && bElite) return 1;
+      // Randomize ties
+      return Math.random() - 0.5;
+    });
+    
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const startIndex = (pageNum - 1) * limitNum;
+    const endIndex = pageNum * limitNum;
+    
+    const paginatedTeachers = teachers.slice(startIndex, endIndex);
+    
+    res.json({
+      data: paginatedTeachers,
+      pagination: {
+        total: teachers.length,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(teachers.length / limitNum)
+      }
+    });
 });
 
 // GET single teacher public profile

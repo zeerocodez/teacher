@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 
 export default function Marketplace({ 
   teachers = [], 
+  hasMoreTeachers,
+  loadFilteredTeachers,
+  teachersPage,
   selectedCurrency, 
   onBookClick, 
   formatCurrency, 
@@ -25,59 +28,20 @@ export default function Marketplace({
       .catch(console.error);
   }, []);
 
-  // Filter teachers based on state
-  const filteredTeachers = (teachers || []).filter(t => {
-    if (!t) return false;
-    const tSubjects = t.subjects || [];
-    const tCurricula = t.curricula || t.curriculums || [];
-
-    const standardSubjects = [
-      'Mathematics', 
-      'Further Mathematics',
-      'Physics', 
-      'Chemistry', 
-      'English', 
-      'Literature', 
-      'Diction',
-      'Spelling',
-      'Nigerian Languages',
-      'French', 
-      'Spanish', 
-      'Coding & Robotics', 
-      'Data Science'
-    ];
-
-    const standardCurricula = [
-      'Nursery (Ages 2-5)', 
-      'Primary (Ages 6-11)', 
-      'Middle School (Ages 12-14)', 
-      'High School (Ages 15-18)', 
-      'University Prep', 
-      'Adult Education',
-      'WAEC', 
-      'JAMB', 
-      'IGCSE', 
-      'Cambridge', 
-      'IB Diploma', 
-      'SAT',
-      'Professional Certs',
-      'Vocational & Technical'
-    ];
-
-    const matchesSubject = subjectFilter === 'All' || 
-      (subjectFilter === 'Others' 
-        ? tSubjects.some(subj => !standardSubjects.includes(subj) || subj === 'Others')
-        : tSubjects.includes(subjectFilter));
-
-    const matchesCurriculum = curriculumFilter === 'All' || 
-      (curriculumFilter === 'Others (Professional)' || curriculumFilter === 'Others'
-        ? tCurricula.some(curr => !standardCurricula.includes(curr) || curr === 'Others (Professional)' || curr === 'Others')
-        : tCurricula.includes(curriculumFilter));
-
-    const matchesSearch = (t.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (t.bio || '').toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSubject && matchesCurriculum && matchesSearch;
-  });
+    // Fetch from backend when filters change
+  React.useEffect(() => {
+    if (loadFilteredTeachers) {
+      // Use a small timeout for debounce on search
+      const delay = setTimeout(() => {
+        loadFilteredTeachers({
+          subject: subjectFilter,
+          curriculum: curriculumFilter,
+          search: searchQuery
+        }, 1, false);
+      }, 300);
+      return () => clearTimeout(delay);
+    }
+  }, [subjectFilter, curriculumFilter, searchQuery]);
 
   return (
     <section id="marketplace" className={`${isNested ? 'pt-6 pb-24' : 'py-24'} px-6 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto`}>
@@ -155,7 +119,7 @@ export default function Marketplace({
           </div>
 
           <div className="text-xs text-brand-charcoal/50 font-mono">
-            SHOWING {filteredTeachers.length} OF {teachers.length} EDUCATORS
+            SHOWING {teachers.length} OF {teachers.length} EDUCATORS
           </div>
         </div>
 
@@ -237,7 +201,7 @@ export default function Marketplace({
       </div>
 
       {/* Grid listing */}
-      {filteredTeachers.length === 0 ? (
+      {teachers.length === 0 ? (
         <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-12 text-center max-w-xl mx-auto space-y-4 my-8 shadow-sm">
           <div className="w-16 h-16 bg-brand-cream/50 rounded-full flex items-center justify-center mx-auto border border-brand-moss/5">
             <Search className="w-8 h-8 text-brand-clay animate-pulse" />
@@ -254,7 +218,7 @@ export default function Marketplace({
             transition={{ staggerChildren: 0.1 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {[...filteredTeachers].sort((a, b) => {
+            {[...teachers].sort((a, b) => {
           const aHasElite = (a.badges || []).includes('badge-ai-cert');
           const bHasElite = (b.badges || []).includes('badge-ai-cert');
           if (aHasElite && !bHasElite) return -1;
@@ -424,6 +388,21 @@ export default function Marketplace({
           );
         })}
       </motion.div>
+      )}
+
+      {hasMoreTeachers && (
+        <div className="mt-12 flex justify-center">
+          <button 
+            onClick={() => loadFilteredTeachers({
+              subject: subjectFilter,
+              curriculum: curriculumFilter,
+              search: searchQuery
+            }, teachersPage + 1, true)}
+            className="btn-magnetic bg-brand-moss hover:bg-brand-moss/90 text-brand-cream font-bold py-3.5 px-8 rounded-full text-sm uppercase tracking-widest shadow-lg shadow-brand-moss/20"
+          >
+            Load More Educators
+          </button>
+        </div>
       )}
     </section>
   );
