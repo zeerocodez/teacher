@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@daily-co/daily-js": "^0.91.0",
     "autoprefixer": "^10.5.0",
     "concurrently": "^10.0.3",
     "cors": "^2.8.6",
