@@ -391,8 +391,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       const token = await firebaseUser.getIdToken();
       await executeGoogleLoginFlow(firebaseUser.email, firebaseUser.displayName || 'Google User', firebaseUser.uid, token);
     } catch (popupErr) {
-      console.warn("Firebase Google popup error or unconfigured domain, displaying Google Account Selector:", popupErr.message);
-      setShowGooglePicker(true);
+      console.warn("Firebase Google popup error:", popupErr.message);
+      toast.error(`Google Sign-In failed: ${popupErr.message}. Ensure your domain is authorized in Firebase.`);
       setLoading(false);
     }
   };
