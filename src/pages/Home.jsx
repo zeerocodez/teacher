@@ -758,12 +758,14 @@ export default function Home({
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
               <a 
                 href="#marketplace"
+                onClick={scrollToSection('marketplace')}
                 className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-brand-clay text-white px-8 py-4 rounded-full shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2 hover:bg-brand-clay/90"
               >
                 Find My Child's Teacher →
               </a>
               <a 
                 href="#marketplace" 
+                onClick={scrollToSection('marketplace')}
                 className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-transparent text-white border border-white/30 hover:bg-white/10 px-8 py-4 rounded-full"
               >
                 View Verified Teachers
@@ -808,7 +810,7 @@ export default function Home({
                   <li className="flex items-center gap-2">✓ 100% Refundable Guarantee</li>
                 </ul>
               </div>
-              <a href="#marketplace" className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
+              <a href="#marketplace" onClick={scrollToSection('marketplace')} className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
                 Book Trial Class
               </a>
             </div>
@@ -835,7 +837,7 @@ export default function Home({
                   <li className="flex items-center gap-2">✓ Secure Escrow Release</li>
                 </ul>
               </div>
-              <a href="#marketplace" className="btn-magnetic w-full py-4 px-6 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-xs uppercase tracking-wider text-center">
+              <a href="#marketplace" onClick={scrollToSection('marketplace')} className="btn-magnetic w-full py-4 px-6 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-xs uppercase tracking-wider text-center">
                 Book Bundle
               </a>
             </div>
@@ -858,7 +860,7 @@ export default function Home({
                   <li className="flex items-center gap-2">✓ Mock WAEC/IGCSE Practice Tests</li>
                 </ul>
               </div>
-              <a href="#marketplace" className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
+              <a href="#marketplace" onClick={scrollToSection('marketplace')} className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
                 Book Prep
               </a>
             </div>

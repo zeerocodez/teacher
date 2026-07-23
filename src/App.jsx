@@ -1041,10 +1041,10 @@ export default function App() {
           <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
             {currentUser?.role === 'Parent' && (
-              <a href="#marketplace" className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
+              <a href="#marketplace" onClick={scrollToSection('marketplace')} className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
             )}
             {currentUser?.role === 'Teacher' && (
-              <a href="#academy" className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</a>
+              <a href="#academy" onClick={scrollToSection('academy')} className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</a>
             )}
           </div>
 
@@ -1551,8 +1551,8 @@ export default function App() {
           <div>
             <h4 className="font-heading font-semibold text-xs text-brand-clay mb-4 uppercase tracking-widest">Products</h4>
             <ul className="space-y-2.5 font-sans text-xs text-brand-cream/70">
-              <li><a href="#marketplace" className="hover:text-brand-clay transition-colors block">Find Teachers</a></li>
-              <li><a href="#academy" className="hover:text-brand-clay transition-colors block">ELITE TEACHERS ACADEMY</a></li>
+              <li><a href="#marketplace" onClick={scrollToSection('marketplace')} className="hover:text-brand-clay transition-colors block">Find Teachers</a></li>
+              <li><a href="#academy" onClick={scrollToSection('academy')} className="hover:text-brand-clay transition-colors block">ELITE TEACHERS ACADEMY</a></li>
             </ul>
           </div>
           
