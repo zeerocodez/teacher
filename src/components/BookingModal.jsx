@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { X, Calendar, CreditCard, Shield, Clock, Lock } from 'lucide-react';
 
