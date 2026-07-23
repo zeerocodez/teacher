@@ -145,7 +145,7 @@ export default function App() {
   const prevUnreadCountRef = useRef(0);
 
   // Vetted Teachers Database state (so we can append reviews)
-    const [teachers, setTeachers] = useState([
+      const [teachers, setTeachers] = useState([
     {
       id: "teacher_1",
       uid: "teacher_1",
@@ -205,6 +205,66 @@ export default function App() {
       online: false,
       reviews: [
         { parent: "Emeka O.", text: "The best science tutor we've ever had. Truly exceptional.", score: 5 }
+      ]
+    },
+    {
+      id: "teacher_4",
+      uid: "teacher_4",
+      username: "grace",
+      name: "Mrs. Grace Ojo",
+      location: "Ibadan, Nigeria",
+      subjects: ["Basic Literacy", "Numeracy", "Phonics"],
+      curriculums: ["Early Years Foundation Stage (EYFS)", "Nursery", "Primary (Ages 6-10)"],
+      rate: 250000,
+      rating: 4.9,
+      reviewsCount: 112,
+      badges: ["badge-verified", "badge-bg-checked"],
+      bio: "Early childhood education specialist. I use play-based learning and interactive phonics to build a strong foundation for young learners.",
+      avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1bfa82?q=80&w=200&auto=format&fit=crop",
+      coverImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+      online: true,
+      reviews: [
+        { parent: "Aisha M.", text: "My 5-year-old looks forward to her phonics classes every week!", score: 5 }
+      ]
+    },
+    {
+      id: "teacher_5",
+      uid: "teacher_5",
+      username: "samuel",
+      name: "Mr. Samuel Kalu",
+      location: "Enugu, Nigeria",
+      subjects: ["General Science", "Basic Mathematics"],
+      curriculums: ["Primary (Ages 6-10)", "Montessori"],
+      rate: 200000,
+      rating: 4.8,
+      reviewsCount: 95,
+      badges: ["badge-verified"],
+      bio: "Passionate about making math and science fun for kids. I integrate visual aids and Montessori methods to engage young minds.",
+      avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop",
+      coverImage: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop",
+      online: true,
+      reviews: [
+        { parent: "Chukwudi E.", text: "He has a great way of explaining fractions to my 8-year-old.", score: 5 }
+      ]
+    },
+    {
+      id: "teacher_6",
+      uid: "teacher_6",
+      username: "amina",
+      name: "Miss Amina Bello",
+      location: "Kano, Nigeria",
+      subjects: ["Creative Arts", "English Reading", "Handwriting"],
+      curriculums: ["Nursery", "Primary (Ages 6-10)"],
+      rate: 150000,
+      rating: 4.7,
+      reviewsCount: 78,
+      badges: ["badge-verified", "badge-bg-checked"],
+      bio: "Patient and encouraging tutor for nursery and early primary students. Specializes in helping kids develop excellent reading habits and fine motor skills.",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop",
+      coverImage: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=600&auto=format&fit=crop",
+      online: false,
+      reviews: [
+        { parent: "Fatima S.", text: "Her handwriting improvement techniques are amazing.", score: 4 }
       ]
     }
   ]);
@@ -272,7 +332,7 @@ export default function App() {
             curriculums: t.curricula || t.curriculums || [],
             reviews: t.reviews || []
           }));
-          const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_test_pay'];
+          const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_6', 'teacher_test_pay'];
           const realTeachers = latestTeachers.filter(t => !demoUids.includes(t.uid));
           if (realTeachers.length > 0) {
             setTeachers(realTeachers);
@@ -536,7 +596,7 @@ export default function App() {
       return;
     }
 
-    const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_test_pay'];
+    const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_6', 'teacher_test_pay'];
     const isDemoTutor = demoUids.includes(teacher.uid || teacher.id);
     if (isDemoTutor) {
       const realTutor = teachers.find(t => !demoUids.includes(t.uid || t.id));
