@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import toast from 'react-hot-toast';
 import { 
   ShieldCheck, Layers, Globe, Calendar, Cpu, CheckCircle2, 
   ArrowRight, Lock, Activity, Sparkles, Star, BookOpen, 
@@ -810,7 +811,11 @@ export default function Home({
                   <li className="flex items-center gap-2">✓ 100% Refundable Guarantee</li>
                 </ul>
               </div>
-              <a href="#marketplace" onClick={scrollToSection('marketplace')} className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
+              <a href="#marketplace" onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('marketplace')(e);
+                toast.success("Select a verified teacher below to book your Trial Class.", { duration: 4000 });
+              }} className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
                 Book Trial Class
               </a>
             </div>
@@ -837,7 +842,11 @@ export default function Home({
                   <li className="flex items-center gap-2">✓ Secure Escrow Release</li>
                 </ul>
               </div>
-              <a href="#marketplace" onClick={scrollToSection('marketplace')} className="btn-magnetic w-full py-4 px-6 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-xs uppercase tracking-wider text-center">
+              <a href="#marketplace" onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('marketplace')(e);
+                toast.success("Select a verified teacher below to book your Performance Bundle.", { duration: 4000 });
+              }} className="btn-magnetic w-full py-4 px-6 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-xs uppercase tracking-wider text-center">
                 Book Bundle
               </a>
             </div>
@@ -860,7 +869,11 @@ export default function Home({
                   <li className="flex items-center gap-2">✓ Mock WAEC/IGCSE Practice Tests</li>
                 </ul>
               </div>
-              <a href="#marketplace" onClick={scrollToSection('marketplace')} className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
+              <a href="#marketplace" onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('marketplace')(e);
+                toast.success("Select a verified teacher below to book your Academic Prep Bundle.", { duration: 4000 });
+              }} className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center">
                 Book Prep
               </a>
             </div>
