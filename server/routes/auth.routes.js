@@ -175,8 +175,11 @@ router.post('/register', authRateLimiter, async (req, res) => {
 router.post('/login', authRateLimiter, async (req, res) => {
   try {
     const { email, password, uid } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required." });
+    if (!email) {
+      return res.status(400).json({ error: "Email is required." });
+    }
+    if (!password && !uid) {
+      return res.status(400).json({ error: "Password or authentication UID is required." });
     }
 
     const sanitizedEmail = sanitizeText(email);
@@ -186,13 +189,15 @@ router.post('/login', authRateLimiter, async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials. Please try again." });
     }
 
-    if (user.passwordHash && user.salt) {
+    if (uid && user.uid === uid) {
+      // Valid OAuth / Firebase token login
+    } else if (password && user.passwordHash && user.salt) {
       const isMatch = await verifyPassword(password, user.salt, user.passwordHash);
       if (!isMatch) {
         return res.status(401).json({ error: "Invalid credentials. Please try again." });
       }
-    } else if (uid && user.uid !== uid) {
-      return res.status(401).json({ error: "Authentication mismatch." });
+    } else {
+      return res.status(401).json({ error: "Authentication mismatch or invalid credentials." });
     }
 
     const token = jwt.sign({ uid: user.uid, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
