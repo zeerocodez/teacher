@@ -548,7 +548,7 @@ export default function TeacherPublicProfile({
         <div className="lg:col-span-4 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-lg space-y-6 lg:sticky lg:top-28">
           
           {/* Rate Header Card */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div>
               <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/50 block mb-1">STANDARD RATE</span>
               <div className="flex items-baseline gap-0.5">
@@ -556,15 +556,6 @@ export default function TeacherPublicProfile({
                   {formatCurrency(convertMinor(teacher.rate || 400000, selectedCurrency), selectedCurrency)}
                 </span>
                 <span className="font-mono text-[10px] text-brand-charcoal/50">/ hr</span>
-              </div>
-            </div>
-            <div>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/50 block mb-1">TRIAL RATE</span>
-              <div className="flex items-baseline gap-0.5">
-                <span className="font-heading text-xl sm:text-2xl font-extrabold text-brand-clay">
-                  {formatCurrency(convertMinor(350000, selectedCurrency), selectedCurrency)}
-                </span>
-                <span className="font-mono text-[10px] text-brand-charcoal/50">/ class</span>
               </div>
             </div>
           </div>

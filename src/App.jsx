@@ -1801,8 +1801,7 @@ export default function App() {
               <p className="font-sans text-brand-charcoal/80 text-xs leading-relaxed">
                 "{watchingTeacherVideo.bio}"
               </p>
-              <div className="flex justify-between items-center">
-                <span className="font-mono text-2xs text-brand-charcoal/50 uppercase">TRIAL RATE: {formatCurrency(convertMinor(350000, selectedCurrency), selectedCurrency)} / class</span>
+              <div className="flex justify-end items-center">
                 <button
                   onClick={() => {
                     const tutor = watchingTeacherVideo;

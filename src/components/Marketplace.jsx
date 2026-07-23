@@ -397,10 +397,6 @@ export default function Marketplace({
                     <span className="text-brand-charcoal/50 font-mono text-[10px] uppercase tracking-wider">Standard Rate:</span>
                     <span className="font-heading font-bold text-brand-moss">{formattedStandardRate}/hr</span>
                   </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-brand-charcoal/50 font-mono text-[10px] uppercase tracking-wider">Trial Rate:</span>
-                    <span className="font-heading font-bold text-brand-clay">{formattedRate}/class</span>
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
