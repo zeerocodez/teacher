@@ -221,7 +221,7 @@ export default function BookingModal({
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="relative bg-brand-cream border border-brand-moss/20 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
-        >}
+        >
       
         {/* Close Button */}
         <button onClick={() => { resetStates(); onClose(); }} className="absolute top-6 right-6 text-brand-moss/60 hover:text-brand-moss">
@@ -602,3 +602,4 @@ export default function BookingModal({
       )}
     </AnimatePresence>
   );
+}

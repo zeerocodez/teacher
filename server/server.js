@@ -308,7 +308,7 @@ import authRoutes from './routes/auth.routes.js';
 app.use('/api/auth', authRoutes);
 
 // POST support agent chatbot message using Gemini AI
-app.post('/api/support/message', supportRateLimiter, async (req, res) => {
+app.post('/api/support/message', authenticateToken, supportRateLimiter, async (req, res) => {
   const { message, history } = req.body;
   if (!message) {
     return res.status(400).json({ error: "Message is required." });
@@ -384,20 +384,7 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, async (req, r
   }
   res.json(user);
 });
-app.get('/api/debug/db', async (req, res) => {
-  try {
-    const { getDbInitError, isFirestore } = await import('./db.js');
-    const users = await db.find('users') || [];
-    res.json({
-      dbInitError: typeof getDbInitError !== 'undefined' ? getDbInitError() : null,
-      isFirestore: typeof isFirestore !== 'undefined' ? isFirestore : null,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      databaseId: process.env.FIRESTORE_DATABASE_ID,
-      firebaseDbUrl: process.env.FIREBASE_DATABASE_URL,
-      userCount: users.length,
-      users: users.map(u => ({ email: u.email, role: u.role, uid: u.uid }))
-    });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -713,7 +700,7 @@ app.post('/api/academy/roleplay', authenticateToken, requireRole(['Teacher']), a
 });
 
 // GET list forum posts
-app.get('/api/academy/forum', async (req, res) => {
+app.get('/api/academy/forum', authenticateToken, async (req, res) => {
   const posts = await db.find('academy_forum');
   posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   res.json(posts);

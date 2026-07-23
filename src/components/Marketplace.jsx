@@ -423,7 +423,7 @@ export default function Marketplace({
             </div>
           );
         })}
-      </div>
+      </motion.div>
       )}
     </section>
   );
