@@ -798,7 +798,7 @@ export default function Home({
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="font-heading text-4xl font-bold text-brand-moss">
-                    {formatCurrency(convertMinor(350000, selectedCurrency), selectedCurrency)}
+                    FREE
                   </span>
                   <span className="font-mono text-xs text-brand-charcoal/50 block mt-1">/ one-time</span>
                 </div>
@@ -820,14 +820,13 @@ export default function Home({
               </div>
               <div className="space-y-6">
                 <div>
-                  <span className="font-mono text-2xs text-brand-cream/50 block uppercase">8 Session Pack</span>
+                  <span className="font-mono text-2xs text-brand-cream/50 block uppercase">8 Session Pack (2 TIMES A WEEK)</span>
                   <h3 className="font-heading font-bold text-2xl text-white mt-1 font-bold">Performance Bundle</h3>
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="font-heading text-4xl font-bold text-white">
-                    {formatCurrency(convertMinor(2400000, selectedCurrency), selectedCurrency)}
+                <div className="flex items-baseline gap-1 mt-4 mb-3">
+                  <span className="font-heading text-lg font-bold text-white uppercase">
+                    <strong>Subject to Tutors Rates</strong>
                   </span>
-                  <span className="font-mono text-xs text-brand-cream/50 block mt-1">/ month</span>
                 </div>
                 <ul className="space-y-3 font-sans text-xs text-brand-cream/90">
                   <li className="flex items-center gap-2">✓ 8 Live Private Classes</li>
@@ -845,14 +844,13 @@ export default function Home({
             <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-8 flex flex-col justify-between h-[500px] custom-card-shadow hover-lift">
               <div className="space-y-6">
                 <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">16 Session Intensive</span>
+                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">16 Session Intensive (4 TIMES A WEEK)</span>
                   <h3 className="font-heading font-bold text-2xl text-brand-moss mt-1 font-bold">Academic Prep</h3>
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="font-heading text-4xl font-bold text-brand-moss">
-                    {formatCurrency(convertMinor(4500000, selectedCurrency), selectedCurrency)}
+                <div className="flex items-baseline gap-1 mt-4 mb-3">
+                  <span className="font-heading text-lg font-bold text-brand-moss uppercase">
+                    <strong>Subject to Tutors Rates</strong>
                   </span>
-                  <span className="font-mono text-xs text-brand-charcoal/50 block mt-1">/ month</span>
                 </div>
                 <ul className="space-y-3 font-sans text-xs text-brand-charcoal/80">
                   <li className="flex items-center gap-2">✓ 16 Live Private Classes</li>

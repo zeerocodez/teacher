@@ -100,6 +100,21 @@ export default function TutorAgreementModal({ isOpen, onClose }) {
               <li>Any detected attempt to bypass the platform escrow system will result in immediate termination of your platform contract and forfeiture of all accumulated funds in your educator wallet.</li>
             </ul>
           </div>
+
+          {/* Section 5 */}
+          <div className="space-y-2">
+            <h3 className="font-heading font-bold text-sm text-brand-moss uppercase tracking-wider flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-brand-clay shrink-0" />
+              5. Disputes & Escrow Freezes
+            </h3>
+            <p>
+              To maintain high educational standards and protect the community:
+            </p>
+            <ul className="list-disc pl-5 space-y-1.5 text-brand-moss font-semibold">
+              <li>If a tutor is a no-show, experiences continuous connectivity failures, or files incorrect hours, a dispute can be registered within 48 hours of lesson completion.</li>
+              <li>Escrow funds are immediately frozen pending manual administrator reviews.</li>
+            </ul>
+          </div>
         </div>
 
         {/* Footer */}

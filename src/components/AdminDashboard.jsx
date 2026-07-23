@@ -129,9 +129,6 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
       if (usersRes.ok) {
         const usersData = await usersRes.json();
         setPlatformUsers(usersData);
-        if (usersData.length > 0 && !selectedUserForWelcome) {
-          setSelectedUserForWelcome(usersData[0].uid);
-        }
       }
       
       const emailsRes = await fetch(`${API_BASE}/admin/emails`, { headers });
@@ -3348,8 +3345,9 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                       onChange={(e) => setSelectedUserForWelcome(e.target.value)}
                       className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl py-2 px-3 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
                     >
+                      <option value="">Select a user...</option>
                       {platformUsers.length === 0 ? (
-                        <option value="">No users found</option>
+                        <option value="" disabled>No users found</option>
                       ) : (
                         platformUsers.map(u => (
                           <option key={u.uid} value={u.uid}>
@@ -3362,7 +3360,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
 
                   <button
                     type="submit"
-                    disabled={sendingWelcome || platformUsers.length === 0}
+                    disabled={sendingWelcome || !selectedUserForWelcome}
                     className="w-full py-3 bg-brand-moss hover:bg-brand-moss/90 text-white font-sans text-2xs font-bold uppercase tracking-wider rounded-full transition-colors flex items-center justify-center gap-2"
                   >
                     {sendingWelcome ? "Sending welcome email..." : "Send Onboarding Email"}

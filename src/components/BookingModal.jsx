@@ -500,6 +500,14 @@ export default function BookingModal({
                   {teacher?.timezone || 'WAT (GMT+1)'}
                 </span>
               </span>
+
+              {/* Informational Banner */}
+              <div className="bg-brand-clay/10 border border-brand-clay/20 p-3 rounded-xl mb-4 font-sans text-xs text-brand-charcoal/80 shadow-sm leading-relaxed">
+                <p>
+                  <strong>Note:</strong> Payment is strictly for the sessions booked. Each session lasts for <strong>1 hour</strong>. 
+                  You may select <strong>multiple slots</strong> per day based on the teacher's availability.
+                </p>
+              </div>
               <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
                 {slots.map(slot => {
                   const isSelected = selectedSlots.includes(slot.id);

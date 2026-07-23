@@ -203,7 +203,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVista Team</p>
       `);
     } else {
-      body = `Welcome to EduVista Africa, ${templateData.displayName}!\n\nYour parental hub has been successfully created.\n\nHere is what you can expect and your next steps:\n\n1. Verify Email: ${verificationUrl}\n2. Top Up Wallet: Add funds to your secure wallet to pay for lessons.\n3. Discover Tutors: Browse vetted educators by subject, rate, and curriculum.\n4. Book Lessons: Schedule 1-on-1 virtual sessions securely.\n\nEvery lesson is backed by the EduVista Escrow System.\n\nBest regards,\nEduVista Africa Support`;
+      body = `Welcome to EduVista Africa, ${templateData.displayName}!\n\nYour parental hub has been successfully created.\n\nHere is what you can expect and your next steps:\n\n1. Verify Email: ${verificationUrl}\n2. Top Up Wallet: Add funds to your secure wallet to pay for lessons.\n3. Discover Tutors: Browse vetted educators by subject, rate, and curriculum.\n4. Book Lessons: Schedule 1-on-1 virtual sessions securely.\n\nEvery lesson is backed by the EduVista Escrow System.\n\nIf a tutor is a no-show, experiences continuous connectivity failures, or files incorrect hours, you can register a dispute within 48 hours of lesson completion. Escrow funds are immediately frozen pending manual administrator reviews.\n\nBest regards,\nEduVista Africa Support`;
       htmlBody = getHtmlWrapper(subject, `
         <div style="text-align: center; margin-bottom: 25px;">
           <span class="badge" style="letter-spacing: 1px; text-transform: uppercase;">Parental Hub</span>
@@ -225,6 +225,8 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
 
         <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;">
           <strong>What to expect during a session:</strong> Every lesson is backed by the EduVista Escrow System — your funds are safely locked when booking, and are only released to the tutor once the classroom timer records a successful lesson completion.
+          <br><br>
+          If a tutor is a no-show, experiences continuous connectivity failures, or files incorrect hours, you can register a dispute within 48 hours of lesson completion. Escrow funds are immediately frozen pending manual administrator reviews.
         </p>
         
         <div style="text-align: center;">

@@ -34,6 +34,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { Routes, Route, useNavigate, useLocation, Navigate, Link } from 'react-router-dom';
 import BrandLogo from './components/BrandLogo';
 import Home from './pages/Home';
+import AboutUs from './pages/AboutUs';
 
 const BookingModal = lazy(() => import('./components/BookingModal'));
 const Marketplace = lazy(() => import('./components/Marketplace'));
@@ -1037,16 +1038,15 @@ export default function App() {
             <BrandLogo light={true} className="h-11 md:h-12 lg:h-13 transition-transform duration-300 hover:scale-105" />
           </div>
           
-          {currentUser && (
-            <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
-              {currentUser.role === 'Parent' && (
-                <a href="#marketplace" className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
-              )}
-              {currentUser.role === 'Teacher' && (
-                <a href="#academy" className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</a>
-              )}
-            </div>
-          )}
+          <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
+            <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
+            {currentUser?.role === 'Parent' && (
+              <a href="#marketplace" className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
+            )}
+            {currentUser?.role === 'Teacher' && (
+              <a href="#academy" className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</a>
+            )}
+          </div>
 
           <div className="flex items-center gap-4">
             {/* Desktop selectors (hidden on mobile/tablet) */}
@@ -1413,6 +1413,7 @@ export default function App() {
 
       <main className="flex-1 w-full relative">
         <Routes>
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/" element={
             <Home 
               t={t}

@@ -251,21 +251,25 @@ export default function Academy({
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roleplayMessages]);
 
-  // Handle paywall enrollment submission
-  const handleEnroll = async (e) => {
+  // Handle proof of payment upload
+  const handleProofUpload = async (e) => {
     e.preventDefault();
-    if (!cardName || !cardNumber || !cardExpiry || !cardCvv) {
-      setPaymentError("All payment card details are required.");
-      return;
-    }
-
     setPaymentError("");
     setPaymentStep('processing');
     
-    // Simulate payment processor delay
-    setTimeout(async () => {
-      setPaymentStep('otp');
-    }, 2000);
+    // Simulate upload delay and verification
+    setTimeout(() => {
+      setEnrolled(true);
+      setPaymentStep('success');
+      toast.success("Proof of payment uploaded successfully!");
+      
+      const localCache = localStorage.getItem(`academy_progress_${currentUser.uid}`) || '{}';
+      const updated = { ...JSON.parse(localCache), enrolled: true, completedModules: [], xp: 0 };
+      localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
+      
+      // Redirect to the Savvy Teachers Trybe Replit
+      window.location.href = "https://savvyteacherstrybe.replit.app/";
+    }, 1500);
   };
 
   const handleVerifyOtp = () => {
@@ -536,7 +540,7 @@ export default function Academy({
   };
 
   const getAcademyFee = () => {
-    const rawNgn = 5000000; // 50,000 NGN in kobo
+    const rawNgn = 2000000; // 20,000 NGN in kobo
     const converted = convertMinor(rawNgn, selectedCurrency);
     return formatCurrency(converted, selectedCurrency);
   };
@@ -573,6 +577,27 @@ export default function Academy({
             ))}
           </div>
 
+          {/* Why become an elite teacher */}
+          <div className="mb-16 max-w-4xl mx-auto">
+            <h3 className="font-heading font-bold text-2xl text-white text-center mb-8">Why become an elite teacher?</h3>
+            <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-[2.5rem] p-8 md:p-10 mb-8">
+              <h4 className="font-heading font-bold text-lg text-brand-clay mb-4">Elite (Grade A) Teachers</h4>
+              <p className="font-sans text-sm text-brand-cream/80 leading-relaxed mb-4">
+                Paid full academy money, completed up to module 4 of the academy. <strong>Client cannot pay them less than ₦100,000 for monthly contact.</strong>
+              </p>
+              <h4 className="font-heading font-bold text-lg text-brand-clay mb-4 mt-8">Basic (Grade B) Teachers</h4>
+              <p className="font-sans text-sm text-brand-cream/80 leading-relaxed mb-4">
+                Basic verification which is similar to that of elite too: NIN, TRCN, School ID, LinkedIn profile link or any social media page.
+              </p>
+            </div>
+            <div className="bg-brand-clay/10 border border-brand-clay/20 rounded-2xl p-6">
+              <span className="font-mono text-[10px] text-brand-clay font-bold uppercase tracking-widest block mb-2">SUGGESTED PERKS</span>
+              <p className="font-sans text-xs text-brand-cream/90 leading-relaxed">
+                Enjoy perks, VIP trainings, be seen on top of the search, get a verified elite teachers badge showing your competencies, get priority access to premium classes and resources, private community, etc.
+              </p>
+            </div>
+          </div>
+
           <div className="bg-brand-moss/10 border border-brand-cream/10 rounded-[2.5rem] p-8 max-w-3xl mx-auto text-center space-y-6">
             <ShieldAlert className="w-8 h-8 text-brand-clay mx-auto" />
             <h3 className="font-heading font-bold text-xl text-white">Are you a registered educator?</h3>
@@ -582,15 +607,11 @@ export default function Academy({
             <button
               type="button"
               onClick={() => {
-                if (onRegisterClick) {
-                  onRegisterClick();
-                } else {
-                  window.location.hash = 'dashboard';
-                }
+                window.location.href = 'https://savvyteacherstrybe.replit.app/';
               }}
               className="inline-block btn-magnetic py-3 px-8 bg-brand-clay hover:bg-brand-clay/95 rounded-full text-white font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/10"
             >
-              Register for Academy (₦50,000 Onboarding Fee)
+              Register for Academy
             </button>
           </div>
         </div>
@@ -691,238 +712,21 @@ export default function Academy({
               </div>
             </div>
 
-            {/* Paywall Payment Form Column */}
-            <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-6 shadow-2xl relative">
-              <div className="flex justify-between items-center border-b border-brand-cream/10 pb-4 mb-6">
-                {onboardingStep === 'form' && paymentStep === 'idle' ? (
-                  <>
-                    <BookOpen className="w-5 h-5 text-brand-clay" />
-                    <span className="font-mono text-[9px] text-brand-cream/40 uppercase">ACADEMY REGISTRATION FORM</span>
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="w-5 h-5 text-brand-clay" />
-                    <span className="font-mono text-[9px] text-brand-cream/40 uppercase">SECURE PAYMENT CHECKOUT</span>
-                  </>
-                )}
-              </div>
-
-              {paymentStep === 'success' ? (
-                <div className="py-12 text-center space-y-6">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono text-base mx-auto font-bold animate-bounce">
-                    ✓
-                  </div>
-                  <h4 className="font-heading font-bold text-lg text-white">Enrollment Confirmed!</h4>
-                  <p className="font-sans text-2xs text-brand-cream/70 max-w-xs mx-auto">
-                    Welcome to the academy. Onboarding registration payment has been verified. You can now join the virtual academy classroom and start your training modules.
-                  </p>
-                  
-                  <div className="flex flex-col gap-3 max-w-xs mx-auto pt-2">
-                    <a
-                      href="https://classroom.google.com/c/eduvista-elite-academy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-magnetic w-full py-3 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-[10px] flex items-center justify-center gap-1.5 shadow-lg shadow-brand-clay/15"
-                    >
-                      Join Academy Classroom
-                    </a>
-                    
-                    <button
-                      onClick={() => { setEnrolled(true); fetchStatus(); }}
-                      className="btn-magnetic w-full py-2.5 border border-brand-cream/25 text-white hover:bg-brand-cream/5 rounded-full font-bold uppercase tracking-wider text-[10px]"
-                    >
-                      Access Study Modules
-                    </button>
-                  </div>
-                </div>
-              ) : paymentStep === 'otp' ? (
-                <div className="space-y-5 font-sans text-xs">
-                  <span className="font-mono text-2xs text-brand-clay tracking-wider uppercase block">3D SECURE TRANSACTION AUTHENTICATION</span>
-                  <p className="text-brand-cream/80 leading-normal">
-                    Enter the verification OTP code sent to your phone number registered with your card issuer.
-                  </p>
-                  <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-3 flex justify-between items-center font-mono">
-                    <span className="text-brand-cream/50">Merchant:</span>
-                    <span className="text-white font-bold">EduVista Academy</span>
-                  </div>
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-2">One-Time Password (OTP)</label>
-                    <input
-                      type="text"
-                      placeholder="123456"
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-3 text-white text-center font-mono text-lg tracking-widest focus:outline-none focus:border-brand-clay"
-                    />
-                  </div>
-                  <button
-                    onClick={handleVerifyOtp}
-                    className="w-full py-3 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-2xs"
-                  >
-                    Verify Code & Complete Pay
-                  </button>
-                </div>
-              ) : onboardingStep === 'form' ? (
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!academyWhatsapp || !academySubjects || !academyMotivation) {
-                      toast.error("Please fill all required onboarding fields.");
-                      return;
-                    }
-                    setOnboardingStep('payment');
-                  }} 
-                  className="space-y-4 font-sans text-xs"
-                >
-                  <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-2xl p-4 text-center mb-2">
-                    <span className="font-mono text-2xs text-brand-clay font-bold tracking-widest uppercase block mb-1">ELITE ACADEMY ONBOARDING</span>
-                    <p className="text-brand-cream/60 text-[9px] mt-1">Submit your profile credentials to enter the vetting program.</p>
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-1.5">WhatsApp Sync Number</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. +234 803 123 4567"
-                      value={academyWhatsapp}
-                      onChange={(e) => setAcademyWhatsapp(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-clay"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-1.5">Teaching Subjects</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Mathematics, Chemistry"
-                      value={academySubjects}
-                      onChange={(e) => setAcademySubjects(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-clay"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-1.5">Primary Curriculum Focus</label>
-                    <select
-                      value={academyExperience}
-                      onChange={(e) => setAcademyExperience(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-clay font-bold bg-brand-charcoal text-xs"
-                    >
-                      <option value="WAEC">WAEC / JAMB prep</option>
-                      <option value="Cambridge">Cambridge IGCSE</option>
-                      <option value="SAT">SAT / AP Preparation</option>
-                      <option value="Primary">Foundational Primary Focus</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-1.5">Professional Statement / Motivation</label>
-                    <textarea
-                      required
-                      placeholder="A short note on why you want to obtain the Elite Certified badge..."
-                      value={academyMotivation}
-                      onChange={(e) => setAcademyMotivation(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-4 text-white focus:outline-none focus:border-brand-clay h-20 resize-none font-sans text-xs"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="btn-magnetic w-full py-3.5 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-2xs mt-2 flex items-center justify-center gap-1.5 shadow-lg shadow-brand-clay/15"
-                  >
-                    Proceed to Payment (₦50,000)
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleEnroll} className="space-y-5 font-sans text-xs">
-                  
-                  {/* Flat Onboarding Fee display */}
-                  <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-2xl p-4 text-center">
-                    <span className="font-mono text-2xs text-brand-clay font-bold tracking-widest uppercase block mb-1">ONBOARDING & REGISTRATION FEE</span>
-                    <span className="font-heading font-extrabold text-2xl text-white">{getAcademyFee()}</span>
-                  </div>
-
-                  {paymentError && (
-                    <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-3 rounded-xl font-mono text-[9px] text-center">
-                      {paymentError}
-                    </div>
-                  )}
-
-                  {/* Card fields */}
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-2">Cardholder Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Adebayo Okafor"
-                      value={cardName}
-                      onChange={(e) => setCardName(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-clay"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-2">Card Number</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="4000 1234 5678 9010"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2.5 text-white font-mono focus:outline-none focus:border-brand-clay"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-2">Expiry Date</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="MM/YY"
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(e.target.value)}
-                        className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2.5 text-white font-mono focus:outline-none focus:border-brand-clay text-center"
-                      />
-                    </div>
-                    <div>
-                      <label className="font-heading font-bold text-[10px] uppercase text-brand-cream/60 block mb-2">CVV / Security Code</label>
-                      <input
-                        type="password"
-                        required
-                        placeholder="•••"
-                        maxLength={3}
-                        value={cardCvv}
-                        onChange={(e) => setCardCvv(e.target.value)}
-                        className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2.5 text-white font-mono focus:outline-none focus:border-brand-clay text-center"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setOnboardingStep('form')}
-                      className="w-1/3 py-3.5 rounded-full border border-brand-cream/25 hover:bg-brand-cream/5 text-white font-bold uppercase tracking-wider text-[10px]"
-                    >
-                      Back
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={paymentStep === 'processing'}
-                      className="w-2/3 btn-magnetic py-3.5 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-2xs flex items-center justify-center gap-1.5 shadow-lg shadow-brand-clay/15"
-                    >
-                      {paymentStep === 'processing' ? (
-                        <>
-                          <Loader className="w-3.5 h-3.5 animate-spin" /> Authorizing...
-                        </>
-                      ) : (
-                        `Pay ₦50,000`
-                      )}
-                    </button>
-                  </div>
-                </form>
-              )}
+            {/* Redirect Form Column */}
+            <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-6 shadow-2xl flex flex-col justify-center items-center text-center space-y-6">
+              <h3 className="font-heading font-bold text-2xl text-white">Join the Elite Trybe</h3>
+              <p className="font-sans text-sm text-brand-cream/80 max-w-sm">
+                All academy registrations, vetting processes, and onboarding payments are handled securely via our Savvy Teachers portal.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = 'https://savvyteacherstrybe.replit.app/';
+                }}
+                className="btn-magnetic w-full max-w-xs py-4 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/15"
+              >
+                Proceed to Registration
+              </button>
             </div>
           </div>
         ) : (
