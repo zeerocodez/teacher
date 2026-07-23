@@ -634,10 +634,29 @@ export default function Academy({
 
                 <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-3 py-2 mt-auto flex justify-between items-center">
                   <span className="font-sans text-xs text-white font-medium">{mod.modulesCount}</span>
-                  <span className="font-mono text-[9px] text-brand-clay uppercase cursor-pointer hover:underline">Explore →</span>
+                  <a 
+                    href="https://savvyteacherstrybe.replit.app/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="font-mono text-[9px] text-brand-clay uppercase cursor-pointer hover:underline"
+                  >
+                    Explore →
+                  </a>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Registration CTA underneath grid */}
+          <div className="text-center mb-16">
+            <a 
+              href="https://savvyteacherstrybe.replit.app/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block btn-magnetic py-4 px-10 bg-brand-clay hover:bg-brand-clay/95 rounded-full text-white font-bold uppercase tracking-widest text-xs shadow-lg shadow-brand-clay/10 transition-transform hover:scale-105"
+            >
+              Register for the Academy
+            </a>
           </div>
 
           {/* Why become an elite teacher */}
