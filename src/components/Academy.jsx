@@ -71,9 +71,17 @@ export default function Academy({
   const modules = [
     { 
       id: 1, 
-      title: "Digital Classroom Setup", 
-      tools: "Google Classroom, Zoom, Notion", 
-      desc: "Master layout setups to orchestrate your workspace cleanly. Synchronize class documents, schedule live sessions, and structure curriculum dashboards for parent accountability.",
+      level: "L1",
+      title: "Professional Foundation", 
+      subtitle: "Build the Teacher",
+      desc: "Establish the bedrock of your professional identity. This foundational level develops the mindset, ethics, emotional intelligence, and habits that distinguish exceptional teachers from average ones.",
+      outcomes: [
+        "Develop a clear professional identity and teaching philosophy",
+        "Master communication strategies for students, parents, and colleagues",
+        "Build emotional intelligence and resilience frameworks",
+        "Establish productivity systems that sustain long-term excellence"
+      ],
+      modulesCount: "9 Modules",
       question: "What is the primary benefit of linking Notion databases directly with Google Classroom assignments?",
       options: [
         "Ensures parents and students have a single source of truth for syllabi, live lesson links, and grades.",
@@ -83,9 +91,17 @@ export default function Academy({
     },
     { 
       id: 2, 
-      title: "AI-Powered Lesson Planning", 
-      tools: "Gemini, ChatGPT, Canva AI", 
-      desc: "Write optimized system prompt frameworks to generate detailed 10-week syllabus matrices. Learn to build customized slide decks and automated exercise worksheets.",
+      level: "L2",
+      title: "Instructional Mastery", 
+      subtitle: "Build the Classroom",
+      desc: "Transform your teaching practice through evidence-based instructional design, modern assessment strategies, and technology integration. Build classrooms where every student thrives.",
+      outcomes: [
+        "Design engaging, differentiated lessons backed by learning science",
+        "Implement formative and summative assessment with precision",
+        "Integrate AI tools ethically and effectively into your classroom",
+        "Create inclusive environments where every learner succeeds"
+      ],
+      modulesCount: "7 Modules",
       question: "Which technique yields the best lesson planning templates using ChatGPT or Gemini?",
       options: [
         "Supplying specific curriculum criteria (like WAEC codes), student grade levels, and structured grading rubrics.",
@@ -95,9 +111,17 @@ export default function Academy({
     },
     { 
       id: 3, 
-      title: "Video Content for Teachers", 
-      tools: "Loom, CapCut, HeyGen", 
-      desc: "Produce bite-sized educational video bytes. Learn screen-recording, digital pacing, basic transitions, and AI avatars to drive student engagement outside standard hours.",
+      level: "L3",
+      title: "Innovation & Creativity", 
+      subtitle: "Build the Future",
+      desc: "Step into the frontier of educational innovation. Learn to think like a designer, create compelling educational content, explore emerging technologies, and launch educational entrepreneurship ventures.",
+      outcomes: [
+        "Apply design thinking to transform learning experiences",
+        "Build and monetize educational content across digital platforms",
+        "Lead innovation initiatives in your school or organization",
+        "Launch an educational product, program, or service"
+      ],
+      modulesCount: "6 Modules",
       question: "When record-syncing classroom lessons via Loom or HeyGen, what is the best pedagogical setup?",
       options: [
         "Keeping lectures under 5 minutes, focusing on single core concepts, and attaching interactive pre-tests.",
@@ -107,9 +131,17 @@ export default function Academy({
     },
     { 
       id: 4, 
-      title: "Online Communication & Professionalism", 
-      tools: "Email etiquette, video presence", 
-      desc: "Ensure elite positioning by formatting transactional email updates correctly. Master lighting, audio clarity, micro-expressions, and resolving delicate disputes.",
+      level: "L4",
+      title: "Leadership & Influence", 
+      subtitle: "Build the Leader",
+      desc: "Develop the executive presence, mentorship skills, and leadership capacity to influence education at the school, district, and systemic level. Become the teacher other teachers look to.",
+      outcomes: [
+        "Lead instructional improvement initiatives with confidence",
+        "Build and sustain a powerful professional brand",
+        "Navigate conflict and policy with strategic intelligence",
+        "Develop public speaking skills for stages, panels, and media"
+      ],
+      modulesCount: "7 Modules",
       question: "To maintain professional online communication with parents, what standard is recommended?",
       options: [
         "Sending structured weekly summaries, maintaining good video lighting/eye-contact, and resolving disputes calmly.",
@@ -119,9 +151,17 @@ export default function Academy({
     },
     { 
       id: 5, 
-      title: "Pricing & Positioning Globally", 
-      tools: "Rate setting, profile optimization", 
-      desc: "Price your skills competitively on the global stage. Structure your hourly billing against verified certifications, specialities, and review trust marks.",
+      level: "L5",
+      title: "Global Educator Pathway", 
+      subtitle: "Build Global Influence",
+      desc: "Take your expertise to the world stage. Conduct research, publish your ideas, access international opportunities, and build the professional visibility that positions you as a globally respected educator.",
+      outcomes: [
+        "Conduct and publish original educational research",
+        "Access international teaching and speaking opportunities",
+        "Build a global professional network and online presence",
+        "Position yourself as a thought leader in global education"
+      ],
+      modulesCount: "7 Modules",
       question: "Which factor is most critical when positioning your tutoring rates globally?",
       options: [
         "Aligning rates with high-status certifications, highlighting specialized curriculum expertise, and displaying verified parent reviews.",
@@ -131,9 +171,17 @@ export default function Academy({
     },
     { 
       id: 6, 
-      title: "Growing Your Student Base", 
-      tools: "SEO profiles, referrals, social proof", 
-      desc: "Leverage marketplace search algorithms to maximize page views. Implement programmatic referral code structures and translate feedback into social proof assets.",
+      level: "L6",
+      title: "Legacy & Systems Building", 
+      subtitle: "Build the Future Beyond Yourself",
+      desc: "The pinnacle of the transformation journey. Design systems, build communities, launch consultancies, and create the institutional legacy that outlives any single classroom — a future shaped by your influence.",
+      outcomes: [
+        "Design educational systems and frameworks that scale",
+        "Launch an educational consultancy or training organization",
+        "Create social impact through community-centered programs",
+        "Build a lasting legacy in the education ecosystem"
+      ],
+      modulesCount: "6 Modules",
       question: "What is the most sustainable way to grow your student base on the platform?",
       options: [
         "Optimising profile SEO keywords, sharing copyable parent referral links, and building high-trust verified reviews.",
@@ -554,24 +602,39 @@ export default function Academy({
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-16 relative">
             <h2 className="font-heading font-bold text-3xl sm:text-5xl tracking-tight text-white uppercase">
-              ELITE TEACHERS ACADEMY
+              The Transformation Pathway
             </h2>
             <div className="h-[2px] w-24 bg-brand-clay mx-auto my-6" />
             <p className="font-sans text-brand-cream/70 max-w-xl mx-auto text-sm leading-relaxed">
-              Unlock international tutoring placements. We vet and certify our educators in digital pedagogy, global curriculum alignment, and communication professionalism.
+              Progress through six distinct levels of mastery. Each program is meticulously crafted to elevate your teaching, leadership, and global influence.
             </p>
           </div>
 
           {/* Curriculum grid overview */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {modules.map(mod => (
-              <div key={mod.id} className="bg-brand-charcoal/50 border border-brand-cream/10 rounded-[2rem] p-6 hover:border-brand-clay/35 transition-colors relative">
-                <span className="font-mono text-2xs text-brand-clay font-bold block mb-2">MODULE 0{mod.id}</span>
-                <h3 className="font-heading font-bold text-base text-white mb-2">{mod.title}</h3>
-                <p className="font-sans text-2xs text-brand-cream/60 leading-relaxed mb-4">{mod.desc}</p>
-                <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-3 py-2">
-                  <span className="font-mono text-[9px] text-brand-cream/40 uppercase block">TOOLS COVERED:</span>
-                  <span className="font-sans text-xs text-white font-medium">{mod.tools}</span>
+              <div key={mod.id} className="bg-brand-charcoal/50 border border-brand-cream/10 rounded-[2rem] p-6 hover:border-brand-clay/35 transition-colors relative flex flex-col">
+                <div className="mb-2">
+                  <span className="font-mono text-2xs text-brand-clay font-bold block">{mod.level}: {mod.title}</span>
+                  <span className="font-heading font-bold text-lg text-white">{mod.subtitle}</span>
+                </div>
+                <p className="font-sans text-2xs text-brand-cream/60 leading-relaxed mb-4 flex-grow">{mod.desc}</p>
+                
+                <div className="mb-4">
+                  <span className="font-mono text-[9px] text-brand-cream/40 uppercase block mb-2">KEY OUTCOMES:</span>
+                  <ul className="space-y-1.5">
+                    {mod.outcomes?.map((outcome, idx) => (
+                      <li key={idx} className="font-sans text-[10px] text-brand-cream/80 flex items-start gap-1.5">
+                        <span className="text-brand-clay mt-0.5">•</span>
+                        <span>{outcome}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-3 py-2 mt-auto flex justify-between items-center">
+                  <span className="font-sans text-xs text-white font-medium">{mod.modulesCount}</span>
+                  <span className="font-mono text-[9px] text-brand-clay uppercase cursor-pointer hover:underline">Explore →</span>
                 </div>
               </div>
             ))}
@@ -804,7 +867,7 @@ export default function Academy({
                       <Play className="w-10 h-10 text-brand-clay mx-auto fill-brand-clay/10" />
                       <h4 className="font-heading font-bold text-sm text-white">Pedagogical Training Video Session</h4>
                       <p className="font-sans text-2xs text-brand-cream/60 max-w-md mx-auto">
-                        To unlock the validation exam quiz for this module, you must watch the interactive instructional video covering: <span className="font-bold text-white">{modules[activeModule - 1].tools}</span>.
+                        To unlock the validation exam quiz for this module, you must watch the interactive instructional video covering: <span className="font-bold text-white">{modules[activeModule - 1].title}</span>.
                       </p>
                       
                       {watchingVideo ? (
