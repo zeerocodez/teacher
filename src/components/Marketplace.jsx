@@ -406,13 +406,12 @@ export default function Marketplace({
                   >
                     Book Trial
                   </button>
-                  <a
-                    href="#chat"
-                    onClick={(e) => { e.preventDefault(); toast.success(`Simulated Chat with ${teacher.name}. Interface is active in parent/teacher dashboards.`); }}
+                  <button
+                    onClick={() => onTeacherSelect && onTeacherSelect(teacherId)}
                     className="btn-magnetic border border-brand-moss/20 text-brand-moss font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center hover:bg-brand-moss/5"
                   >
                     Message
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
