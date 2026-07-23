@@ -161,7 +161,7 @@ export default function App() {
       name: "Mr. Adebayo Okafor",
       location: "Lagos, Nigeria",
       subjects: ["Mathematics", "Physics"],
-      curriculums: ["WAEC", "JAMB", "IGCSE", "High School (Ages 15-18)", "University Prep"],
+      curriculums: ["WAEC", "JAMB", "IGCSE", "High School (Ages 15-18)", "University Prep", "Adult Education"],
       rate: 400000, // ₦4,000/hr
       rating: 4.9,
       reviewsCount: 247,
@@ -1578,6 +1578,7 @@ export default function App() {
               <li><span className="block text-brand-cream/70">WAEC / JAMB prep</span></li>
               <li><span className="block text-brand-cream/70">Cambridge IGCSE</span></li>
               <li><span className="block text-brand-cream/70">IB Diploma Prep</span></li>
+              <li><span className="block text-brand-cream/70">Adult Education</span></li>
             </ul>
           </div>
         </div>
