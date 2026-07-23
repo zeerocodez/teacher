@@ -667,7 +667,7 @@ export default function Home({
             </div>
 
             <a 
-              href="https://wa.me/2340000000000" 
+              href="https://wa.me/2348136451607" 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-magnetic bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 px-6 rounded-full inline-flex items-center gap-2 text-xs uppercase tracking-wider text-center"
