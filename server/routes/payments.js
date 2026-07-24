@@ -68,6 +68,7 @@ router.post('/checkout', authenticateToken, checkoutRateLimiter, async (req, res
           amount: paystackAmount,
           currency: currency === 'NGN' ? 'NGN' : currency,
           callback_url: callbackUrl,
+          channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
           metadata: {
             parentId,
             paymentType: req.body.paymentType || 'wallet_topup',
