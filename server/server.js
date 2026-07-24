@@ -385,10 +385,6 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, async (req, r
   res.json(user);
 });
 
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 import teacherRoutes from './routes/teacher.routes.js';
 app.use('/api/teachers', teacherRoutes);
