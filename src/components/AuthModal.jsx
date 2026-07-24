@@ -16,7 +16,7 @@ const Linkedin = ({ className }) => (
 );
 
 export default function AuthModal({ isOpen, onClose }) {
-  const { currentUser, pendingOnboarding, setPendingOnboarding } = useAuth();
+  const { currentUser, pendingOnboarding, setPendingOnboarding, login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -249,6 +249,19 @@ export default function AuthModal({ isOpen, onClose }) {
       toast.error(`Google Sign-In failed: ${popupErr.message}.`);
       setLoading(false);
     }
+  };
+
+  const handleAdminLoginShortcut = () => {
+    setEmail('admin.google@eduvista.com');
+    setPassword('admin123456');
+    toast.success("Admin credentials filled. Click Log In.");
+  };
+
+  const executeGoogleLoginFlow = async (mockEmail, mockName, mockUid) => {
+    toast.success(`Simulating Google Login for ${mockEmail}...`);
+    setShowGooglePicker(false);
+    setEmail(mockEmail);
+    setPassword('password123'); // Example mock password
   };
 
   const handleGoogleSetupSubmit = async (e) => {
