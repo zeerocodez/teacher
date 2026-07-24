@@ -595,24 +595,7 @@ export default function App() {
       return;
     }
 
-    const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_6', 'teacher_test_pay'];
-    const isDemoTutor = demoUids.includes(teacher.uid || teacher.id);
-    if (isDemoTutor) {
-      const realTutor = teachers.find(t => !demoUids.includes(t.uid || t.id));
-      if (realTutor) {
-        toast.error(`Booking sessions with demo content tutors is disabled. Redirecting you to book our verified tutor, ${realTutor.name}.`);
-        setSelectedTeacherForBooking(realTutor);
-        setSelectedStudentForBooking(student || null);
-        setBookingPreselectedSlots([]);
-        setIsBookingOpen(true);
-        if (location.pathname.startsWith('/teacher')) {
-          setProfileUsername(realTutor.username);
-        }
-      } else {
-        toast.error("Booking sessions with demo content tutors is disabled. Please register a real teacher account to book classes.");
-      }
-      return;
-    }
+
 
     setSelectedTeacherForBooking(teacher);
     setSelectedStudentForBooking(student || null);
