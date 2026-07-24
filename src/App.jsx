@@ -327,6 +327,78 @@ export default function App() {
         ...filters
       });
       
+      const teachersRes = await fetch(`${API_BASE}/teachers?${queryParams}`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (!teachersRes.ok) {
+        throw new Error('Failed to fetch teachers from API');
+      }
+      
+      const teachersData = await teachersRes.json();
+      
+      let newTeachers = [];
+      if (Array.isArray(teachersData.data)) {
+        newTeachers = teachersData.data;
+      } else if (Array.isArray(teachersData)) {
+        newTeachers = teachersData;
+      }
+      
+      if (append && page > 1) {
+        setTeachers(prev => {
+          const combined = [...prev, ...newTeachers];
+          return Array.from(new Map(combined.map(t => [t.uid || t.id, t])).values());
+        });
+      } else {
+        setTeachers(newTeachers);
+      }
+      
+      setHasMoreTeachers(!!teachersData.hasMore);
+      setTeachersPage(page);
+    } catch (err) {
+      console.warn("Using local teachers fallback:", err.message);
+    }
+  };
+
+  const fetchInitialData = async () => {
+    try {
+      await loadFilteredTeachers({}, 1, false);
+
+      const activeUid = currentUser ? currentUser.uid : 'parent_1';
+      const dashboardRes = await fetch(`${API_BASE}/parents/dashboard/${activeUid}`, {
+        headers: getAuthHeaders()
+      });
+
+      if (dashboardRes.ok) {
+        const d = await dashboardRes.json();
+        if (d.sessions) {
+          setBookedSessions(d.sessions.map(s => {
+            const matchedTeacher = teachers.find(t => t.id === s.teacherId || t.uid === s.teacherId);
+            return {
+              ...s,
+              id: s.id,
+              teacherId: s.teacherId,
+              teacherName: s.teacherName,
+              avatar: s.avatar || matchedTeacher?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
+              subject: s.subject,
+              slot: s.slot,
+              cost: s.cost,
+              status: s.status
+            };
+          }));
+        }
+        if (d.grades) {
+          setGradesLog(d.grades);
+        }
+      }
+    } catch (error) {
+      console.warn("Dashboard fetch error:", error.message);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      if (!currentUser) return;
       const res = await fetch(`${API_BASE}/notifications/${currentUser.uid}`, {
         headers: getAuthHeaders()
       });
