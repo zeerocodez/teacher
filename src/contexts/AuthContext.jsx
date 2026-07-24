@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
           const token = await firebaseUser.getIdToken();
           
           // Verify against our backend and fetch the full user profile
-          const response = await fetch('http://localhost:5000/api/auth/me', {
+          const response = await fetch('/api/auth/me', {
             headers: {
               'Authorization': `Bearer ${token}`
             }

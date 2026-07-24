@@ -207,7 +207,7 @@ export default function AuthModal({ isOpen, onClose }) {
             recordingTool: role === 'Teacher' ? recordingTool : undefined
         };
 
-        const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000/api'}/auth/register`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE || '/api'}/auth/register`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ export default function AuthModal({ isOpen, onClose }) {
         eliteCertificate: role === 'Teacher' ? eliteCertificate : undefined
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000/api'}/auth/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || '/api'}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
