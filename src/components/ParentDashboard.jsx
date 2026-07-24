@@ -368,7 +368,7 @@ export default function ParentDashboard({
   const activeStudent = students.find(s => s.uid === selectedChild || s.id === selectedChild || s.name.toLowerCase() === selectedChild.toLowerCase()) || {
     name: selectedChild === 'yinka' ? 'Zara Okafor' : 'Timi Okafor',
     uid: selectedChild === 'yinka' ? 'student_2' : 'student_1',
-    xp: selectedChild === 'yinka' ? 950 : 1450,
+    xp: selectedChild === 'yinka' ? 0 : 0,
     badges: selectedChild === 'yinka' ? ["Consistent Learner", "Top Scorer"] : ["Perfect Attendance", "Assignment Champion", "Streak Master"]
   };
 
@@ -381,7 +381,7 @@ export default function ParentDashboard({
   
   const totalBooked = studentSessions.length;
   const totalAttended = studentSessions.filter(s => s.status === 'Completed' || s.status === 'Scheduled').length;
-  const attendanceRate = totalBooked > 0 ? Math.round((totalAttended / totalBooked) * 100) : 89;
+  const attendanceRate = totalBooked > 0 ? Math.round((totalAttended / totalBooked) * 100) : 0;
 
   // Assignments filter per student
   const studentGrades = (dashboardData?.gradesLog || parentGradesLog).filter(g => {
@@ -503,29 +503,29 @@ export default function ParentDashboard({
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
               <span className="font-heading font-extrabold text-2xl text-emerald-600 block">{attendanceRate}%</span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Attendance this month</span>
-              <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">↑ +4% vs last month</span>
+              <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">No previous data</span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-brand-moss block">76%</span>
+              <span className="font-heading font-extrabold text-2xl text-brand-moss block">0%</span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Assignments submitted</span>
-              <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">3 of 4 returned</span>
+              <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">0 of 0 returned</span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-brand-clay block">82%</span>
+              <span className="font-heading font-extrabold text-2xl text-brand-clay block">0%</span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Avg. assessment score</span>
-              <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">↑ +12% this month</span>
+              <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">No previous data</span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
               <span className="font-heading font-extrabold text-2xl text-brand-moss block">{studentSessions.length}</span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Sessions this month</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">2 upcoming scheduled</span>
+              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">0 upcoming scheduled</span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm col-span-2 md:col-span-1">
               <span className="font-heading font-extrabold text-2xl text-emerald-600 block">
-                {formatCurrency(convertMinor(totalPaid || 1750000, selectedCurrency), selectedCurrency)}
+                {formatCurrency(convertMinor(totalPaid || 0, selectedCurrency), selectedCurrency)}
               </span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Spent this month</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">3 sessions in bundle</span>
+              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">0 sessions in bundle</span>
             </div>
           </div>
           

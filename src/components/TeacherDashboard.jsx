@@ -1826,17 +1826,17 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                 <div className="grid grid-cols-3 gap-2 text-center font-sans text-xs">
                   <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
                     <span className="text-brand-charcoal/50 block text-[9px] font-mono">Views (30d)</span>
-                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">342 views</span>
-                    <span className="text-[9px] text-emerald-600 block font-bold">↑ +15%</span>
+                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">0 views</span>
+                    <span className="text-[9px] text-emerald-600 block font-bold">No previous data</span>
                   </div>
                   <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
                     <span className="text-brand-charcoal/50 block text-[9px] font-mono">Impressions</span>
-                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">1,240</span>
+                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">0</span>
                     <span className="text-[9px] text-brand-charcoal/50 block">Keyword searches</span>
                   </div>
                   <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
                     <span className="text-brand-charcoal/50 block text-[9px] font-mono">Conversion</span>
-                    <span className="font-heading font-bold text-base text-brand-clay block mt-0.5">18.2%</span>
+                    <span className="font-heading font-bold text-base text-brand-clay block mt-0.5">0%</span>
                     <span className="text-[9px] text-brand-charcoal/50 block">Views to Bookings</span>
                   </div>
                 </div>
@@ -1865,10 +1865,10 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
             {/* Modules list progress */}
             <div className="space-y-4">
               {[
-                { title: 'Module 1: Platform Billing & Escrow Rules', status: 'Passed', score: '100%' },
-                { title: 'Module 2: Direct Interactive Teaching Methods', status: 'Passed', score: '95%' },
-                { title: 'Module 3: Deploying Gemini AI Tools in class', status: 'Passed', score: '90%' },
-                { title: 'Module 4: Student Motivation Techniques', status: 'In Progress', score: null },
+                { title: 'Module 1: Platform Billing & Escrow Rules', status: 'Locked', score: null },
+                { title: 'Module 2: Direct Interactive Teaching Methods', status: 'Locked', score: null },
+                { title: 'Module 3: Deploying Gemini AI Tools in class', status: 'Locked', score: null },
+                { title: 'Module 4: Student Motivation Techniques', status: 'Locked', score: null },
                 { title: 'Module 5: Dispute Claims Management', status: 'Locked', score: null },
                 { title: 'Module 6: Capstone Teaching Roleplay Practice', status: 'Locked', score: null }
               ].map((m, idx) => (
