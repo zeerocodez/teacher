@@ -390,6 +390,12 @@ export default function App() {
         if (d.grades) {
           setGradesLog(d.grades);
         }
+        if (d.walletBalance !== undefined) {
+          setWalletBalance(d.walletBalance);
+        }
+        if (d.escrowBalance !== undefined) {
+          setEscrowBalance(d.escrowBalance);
+        }
       }
     } catch (error) {
       console.warn("Dashboard fetch error:", error.message);

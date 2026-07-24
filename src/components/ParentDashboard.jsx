@@ -1400,7 +1400,7 @@ export default function ParentDashboard({
                 <div className="bg-brand-cream/20 border border-brand-moss/5 p-5 rounded-2xl mb-6">
                   <span className="font-sans text-[10px] text-brand-charcoal/50 uppercase block">Total Spent (All Sessions)</span>
                   <span className="font-heading font-bold text-2xl text-brand-moss">
-                    {formatCurrency(convertMinor(totalPaid || 750000, selectedCurrency), selectedCurrency)}
+                    {formatCurrency(convertMinor(totalPaid || 0, selectedCurrency), selectedCurrency)}
                   </span>
                 </div>
 
@@ -1408,18 +1408,8 @@ export default function ParentDashboard({
                 <div className="space-y-4 mb-6">
                   <h5 className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold">Breakdown by Subject</h5>
                   {Object.entries(spendBySubject).length === 0 ? (
-                    <div className="space-y-2">
-                      <div className="flex justify-between font-sans text-xs">
-                        <span>Mathematics</span>
-                        <span className="font-bold">₦4,000 (53%)</span>
-                      </div>
-                      <div className="w-full bg-brand-cream h-2 rounded-full"><div className="bg-brand-moss h-2 rounded-full w-[53%]" /></div>
-                      
-                      <div className="flex justify-between font-sans text-xs">
-                        <span>English</span>
-                        <span className="font-bold">₦3,500 (47%)</span>
-                      </div>
-                      <div className="w-full bg-brand-cream h-2 rounded-full"><div className="bg-brand-clay h-2 rounded-full w-[47%]" /></div>
+                    <div className="space-y-2 text-center text-xs text-brand-charcoal/50 py-4">
+                      No spend data available yet.
                     </div>
                   ) : (
                     Object.entries(spendBySubject).map(([sub, amount], index) => {
