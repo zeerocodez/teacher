@@ -147,6 +147,109 @@ function verifyPaystackWebhook(rawBody, signatureHeader, paystackSecret) {
 }
 
 /**
+ * Generate Paystack Dedicated Virtual Account (DVA)
+ */
+router.post('/paystack/dva', authenticateToken, async (req, res) => {
+  const { parentId } = req.body;
+  if (!parentId) {
+    return res.status(400).json({ error: "Missing parentId." });
+  }
+
+  if (req.user.role !== 'Admin' && req.user.uid !== parentId) {
+    return res.status(403).json({ error: "Access forbidden." });
+  }
+
+  const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+  const isPaystackLive = paystackSecret && !paystackSecret.includes('mock_paystack_secret_key');
+
+  try {
+    const parentUser = await db.findOne('users', u => u.uid === parentId || u.id === parentId);
+    if (!parentUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    let wallet = await db.findOne('wallets', w => w.uid === parentId);
+    if (!wallet) {
+      wallet = await db.insert('wallets', {
+        uid: parentId,
+        balance: 0,
+        escrow: 0
+      });
+    }
+
+    if (wallet.dva) {
+      return res.json({ success: true, dva: wallet.dva });
+    }
+
+    if (isPaystackLive) {
+      const email = parentUser.email || 'customer@eduvista.com';
+      const name = parentUser.displayName || 'EduVista Parent';
+      
+      // 1. Create or get customer
+      const customerRes = await fetch('https://api.paystack.co/customer', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${paystackSecret}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, first_name: name })
+      });
+      const customerData = await customerRes.json();
+      if (!customerRes.ok && customerData.code !== 'duplicate') {
+        throw new Error(customerData.message || 'Failed to create Paystack customer');
+      }
+
+      // If duplicate, we need to fetch the customer code
+      let customerCode = customerData.data?.customer_code;
+      if (!customerCode && customerData.code === 'duplicate') {
+        const fetchCustRes = await fetch(`https://api.paystack.co/customer/${email}`, {
+          headers: { 'Authorization': `Bearer ${paystackSecret}` }
+        });
+        const fetchCustData = await fetchCustRes.json();
+        customerCode = fetchCustData.data.customer_code;
+      }
+
+      // 2. Create DVA
+      const dvaRes = await fetch('https://api.paystack.co/dedicated_account', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${paystackSecret}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ customer: customerCode, preferred_bank: 'titan-paystack' })
+      });
+      const dvaData = await dvaRes.json();
+      
+      if (dvaRes.ok && dvaData.status) {
+        const newDva = {
+          bankName: dvaData.data.bank.name,
+          accountNumber: dvaData.data.account_number,
+          accountName: dvaData.data.account_name,
+          customerCode: customerCode
+        };
+        await db.update('wallets', wallet.id, { dva: newDva, paystackCustomerCode: customerCode });
+        return res.json({ success: true, dva: newDva });
+      } else {
+        throw new Error(dvaData.message || 'Failed to generate Dedicated Virtual Account');
+      }
+    } else {
+      // Simulate DVA creation
+      const mockDva = {
+        bankName: 'Mock Bank PLC',
+        accountNumber: '0123456789',
+        accountName: parentUser.displayName || 'EduVista Virtual Account',
+        customerCode: 'CUS_mock123'
+      };
+      await db.update('wallets', wallet.id, { dva: mockDva, paystackCustomerCode: 'CUS_mock123' });
+      return res.json({ success: true, dva: mockDva });
+    }
+  } catch (err) {
+    console.error("[PAYMENTS] Generate DVA Error:", err);
+    return res.status(500).json({ error: err.message || "Failed to generate permanent account." });
+  }
+});
+
+/**
  * Simulate Webhook Confirmation (Top-up Wallet)
  */
 router.post('/webhook', async (req, res) => {
@@ -190,8 +293,25 @@ router.post('/webhook', async (req, res) => {
   const reference = isPaystackEvent ? payload.data.reference : payload.reference;
   const dataMetadata = isPaystackEvent ? (payload.data.metadata || {}) : {};
   
-  const parentId = dataMetadata.parentId || payload.parentId;
+  let parentId = dataMetadata.parentId || payload.parentId;
   const paymentType = dataMetadata.paymentType || payload.paymentType || 'wallet_topup';
+
+  // For Dedicated Virtual Account (DVA) transfers, we might not have parentId in metadata
+  if (!parentId && isPaystackEvent && payload.data.channel === 'dedicated_nuban') {
+    const customerCode = payload.data.customer?.customer_code;
+    const email = payload.data.customer?.email;
+    if (customerCode || email) {
+      // Find wallet by customer code
+      const wallet = await db.findOne('wallets', w => w.paystackCustomerCode === customerCode);
+      if (wallet) {
+        parentId = wallet.uid;
+      } else if (email) {
+        // fallback to finding user by email
+        const user = await db.findOne('users', u => u.email === email);
+        if (user) parentId = user.uid;
+      }
+    }
+  }
   
   // Get amount. If Paystack, we can use metadata.amountNgnMinor or fall back to payload.amount
   let amountNgnMinor = dataMetadata.amountNgnMinor || (isPaystackEvent ? payload.data.amount : payload.amount);

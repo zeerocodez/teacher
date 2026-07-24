@@ -178,6 +178,30 @@ export default function ParentDashboard({
   const [topupLoading, setTopupLoading] = useState(false);
   const [topupSuccess, setTopupSuccess] = useState('');
   const [topupCurrency, setTopupCurrency] = useState(selectedCurrency || 'NGN');
+  const [dvaLoading, setDvaLoading] = useState(false);
+
+  const handleGenerateDVA = async () => {
+    setDvaLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/payments/paystack/dva`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ parentId: parentUid })
+      });
+      if (res.ok) {
+        toast.success("Permanent Virtual Account generated successfully!");
+        fetchDashboard();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Failed to generate account.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Connection error while generating account.");
+    } finally {
+      setDvaLoading(false);
+    }
+  };
 
   const API_BASE = '/api';
   const parentUid = currentUser?.uid || 'parent_1'; // Seeded test parent or active user
@@ -1345,7 +1369,8 @@ export default function ParentDashboard({
 
                 {/* Inline Bank Details Info Box */}
                 {topupMethod === 'bank' && (() => {
-                  const details = {
+                  const hasDva = dashboardData?.dva && dashboardData.dva.accountNumber;
+                  const details = hasDva ? dashboardData.dva : {
                     NGN: { bank: 'KudaBank', number: '3002410020', name: 'ZEEROCODES AUTOMATION LIMITED', extraLabel: null, extraVal: null },
                     USD: { bank: 'Citibank NY', number: '9988223311', name: 'EduVista Africa Ltd', extraLabel: 'ROUTING / ABA', extraVal: '021000021' },
                     GBP: { bank: 'Barclays Bank London', number: '88776655', name: 'EduVista Africa Ltd', extraLabel: 'SORT CODE', extraVal: '20-00-00' },
@@ -1355,22 +1380,38 @@ export default function ParentDashboard({
 
                   return (
                     <div className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 animate-fade-in font-sans text-xs space-y-2">
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block">🏦 Direct Bank Transfer Details</span>
-                      <p className="text-brand-charcoal/70">Please make a transfer of the exact amount in your selected deposit currency <strong className="uppercase">{topupCurrency}</strong>. Ensure you include your parent user ID <strong className="font-mono">{currentUser?.uid || 'parent_1'}</strong> as the transfer description/reference.</p>
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block">🏦 {hasDva ? 'Dedicated Virtual Account' : 'Direct Bank Transfer Details'}</span>
+                        {!hasDva && topupCurrency === 'NGN' && (
+                          <button
+                            type="button"
+                            onClick={handleGenerateDVA}
+                            disabled={dvaLoading}
+                            className="bg-brand-moss hover:bg-brand-clay text-white px-3 py-1.5 rounded-full font-mono text-[9px] uppercase font-bold transition-colors disabled:opacity-50"
+                          >
+                            {dvaLoading ? 'Generating...' : 'Generate Permanent Account Number'}
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-brand-charcoal/70">
+                        {hasDva 
+                          ? `Transfer any amount to your permanent dedicated virtual account below to instantly fund your wallet.`
+                          : `Please make a transfer of the exact amount in your selected deposit currency. Ensure you include your parent user ID ${currentUser?.uid || 'parent_1'} as the description.`}
+                      </p>
                       <div className="bg-white border border-brand-moss/5 p-3 rounded-xl space-y-1.5 font-mono text-[10px]">
                         <div className="flex justify-between">
                           <span className="text-brand-charcoal/50">BANK NAME:</span>
-                          <span className="font-bold text-brand-moss">{details.bank}</span>
+                          <span className="font-bold text-brand-moss">{hasDva ? details.bankName : details.bank}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-brand-charcoal/50">ACCOUNT NAME:</span>
-                          <span className="font-bold text-brand-moss">{details.name}</span>
+                          <span className="font-bold text-brand-moss">{hasDva ? details.accountName : details.name}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-brand-charcoal/50">ACCOUNT NUMBER:</span>
-                          <span className="font-bold text-brand-clay">{details.number}</span>
+                          <span className="font-bold text-brand-clay">{hasDva ? details.accountNumber : details.number}</span>
                         </div>
-                        {details.extraLabel && (
+                        {!hasDva && details.extraLabel && (
                           <div className="flex justify-between">
                             <span className="text-brand-charcoal/50">{details.extraLabel}:</span>
                             <span className="font-bold text-brand-moss">{details.extraVal}</span>

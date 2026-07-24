@@ -78,6 +78,7 @@ router.get('/dashboard/:uid', authenticateToken, requireOwnerOrAdmin, async (req
     parent,
     walletBalance: wallet ? wallet.balance : 0,
     escrowBalance: wallet ? wallet.escrow : 0,
+    dva: wallet ? wallet.dva : null,
     students,
     sessions: activeSessions,
     gradesLog: assignments.filter(a => a.status === 'Graded'),
