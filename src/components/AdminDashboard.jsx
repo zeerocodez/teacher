@@ -1457,7 +1457,6 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               )}
             </div>
           </div>
-          </div>
         </div>
       )}
 
