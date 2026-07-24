@@ -48,7 +48,7 @@ export function requireRole(roles) {
 }
 
 export function requireOwnerOrAdmin(req, res, next) {
-  const resourceUid = req.params.uid || req.params.id;
+  const resourceUid = req.params.uid || req.params.id || req.body.uid || req.body.parentId || req.body.teacherId || req.body.studentId;
   if (!req.user) {
     return res.status(401).json({ error: "Unauthorized" });
   }
