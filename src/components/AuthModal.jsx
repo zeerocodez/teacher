@@ -22,18 +22,15 @@ export default function AuthModal({ isOpen, onClose }) {
   useEffect(() => {
     if (currentUser && isOpen) {
       onClose();
-      if (currentUser.role === 'Parent') {
-        window.location.hash = '#marketplace';
+      if (currentUser.role === 'Parent' || currentUser.role === 'Teacher') {
+        navigate('/dashboard');
       }
     }
-  }, [currentUser, isOpen, onClose]);
+  }, [currentUser, isOpen, onClose, navigate]);
 
   const handleSuccess = (user) => {
     login(user, user.token);
     navigate('/dashboard');
-    if (user.role === 'Parent') {
-      window.location.hash = '#marketplace';
-    }
   };
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
   const [email, setEmail] = useState('');
