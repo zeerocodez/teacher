@@ -1342,12 +1342,12 @@ export default function ParentDashboard({
                 {/* Inline Bank Details Info Box */}
                 {topupMethod === 'bank' && (() => {
                   const details = {
-                    NGN: { bank: 'Providus Bank', number: '1023948571', name: 'EduVista Africa Ltd', extraLabel: null, extraVal: null },
+                    NGN: { bank: 'KudaBank', number: '3002410020', name: 'ZEEROCODES AUTOMATION LIMITED', extraLabel: null, extraVal: null },
                     USD: { bank: 'Citibank NY', number: '9988223311', name: 'EduVista Africa Ltd', extraLabel: 'ROUTING / ABA', extraVal: '021000021' },
                     GBP: { bank: 'Barclays Bank London', number: '88776655', name: 'EduVista Africa Ltd', extraLabel: 'SORT CODE', extraVal: '20-00-00' },
                     EUR: { bank: 'Deutsche Bank Frankfurt', number: 'DE89370400440532013000', name: 'EduVista Africa Ltd', extraLabel: 'IBAN', extraVal: 'DE89370400440532013000' },
                     GHS: { bank: 'Ecobank Ghana', number: '77665544', name: 'EduVista Africa Ltd', extraLabel: 'BRANCH', extraVal: 'Accra High St' }
-                  }[topupCurrency] || { bank: 'Providus Bank', number: '1023948571', name: 'EduVista Africa Ltd', extraLabel: null, extraVal: null };
+                  }[topupCurrency] || { bank: 'KudaBank', number: '3002410020', name: 'ZEEROCODES AUTOMATION LIMITED', extraLabel: null, extraVal: null };
 
                   return (
                     <div className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 animate-fade-in font-sans text-xs space-y-2">
