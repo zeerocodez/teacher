@@ -111,4 +111,63 @@ router.post('/applications/respond', authenticateToken, requireRole(['Admin']), 
   res.json(updated);
 });
 
+// GET pending transactions
+router.get('/transactions/pending', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const transactions = await db.find('transactions', t => t.status === 'Pending Verification');
+  res.json(transactions);
+});
+
+// POST approve transaction
+router.post('/transactions/:id/approve', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const { id } = req.params;
+  const transaction = await db.findOne('transactions', t => t.id === id);
+  if (!transaction) return res.status(404).json({ error: "Transaction not found" });
+  if (transaction.status !== 'Pending Verification') return res.status(400).json({ error: "Transaction not pending" });
+  
+  if (transaction.type === 'wallet_topup') {
+    let wallet = await db.findOne('wallets', w => w.uid === transaction.toUserId);
+    if (!wallet) {
+      await db.insert('wallets', { uid: transaction.toUserId, balance: Number(transaction.amount), escrow: 0 });
+    } else {
+      await db.update('wallets', wallet.id, { balance: Number(wallet.balance) + Number(transaction.amount) });
+    }
+  } else if (transaction.type === 'session_booking') {
+    let wallet = await db.findOne('wallets', w => w.uid === transaction.fromUserId);
+    if (wallet) {
+      await db.update('wallets', wallet.id, { escrow: Number(wallet.escrow) + Number(transaction.amount) });
+    }
+    
+    // Find all sessions booked by this parent that are pending verification
+    const pendingSessions = await db.find('sessions', s => s.status === 'Pending Verification' && s.parentId === transaction.fromUserId && s.teacherId === transaction.toUserId);
+    for (const ps of pendingSessions) {
+      await db.update('sessions', ps.id, { status: 'Pending Confirmation' }); 
+    }
+  }
+  
+  await db.update('transactions', transaction.id, { status: 'Completed' });
+  await createNotification(transaction.fromUserId === 'system' ? transaction.toUserId : transaction.fromUserId, 'payment_approved', 'Your bank transfer was verified and approved.', 'transaction_update');
+  
+  res.json({ success: true });
+});
+
+// POST reject transaction
+router.post('/transactions/:id/reject', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const { id } = req.params;
+  const transaction = await db.findOne('transactions', t => t.id === id);
+  if (!transaction) return res.status(404).json({ error: "Transaction not found" });
+  
+  await db.update('transactions', transaction.id, { status: 'Failed' });
+  
+  if (transaction.type === 'session_booking') {
+    const pendingSessions = await db.find('sessions', s => s.status === 'Pending Verification' && s.parentId === transaction.fromUserId && s.teacherId === transaction.toUserId);
+    for (const ps of pendingSessions) {
+      await db.update('sessions', ps.id, { status: 'Cancelled' }); 
+    }
+  }
+  
+  await createNotification(transaction.fromUserId === 'system' ? transaction.toUserId : transaction.fromUserId, 'payment_rejected', 'Your bank transfer could not be verified.', 'transaction_update');
+  
+  res.json({ success: true });
+});
+
 export default router;

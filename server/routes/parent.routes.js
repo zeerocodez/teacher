@@ -135,7 +135,7 @@ router.get('/students/dashboard/:uid', authenticateToken, async (req, res) => {
 
 // POST Parent wallet top-up / add funds
 router.post('/wallet/topup', authenticateToken, paymentRateLimiter, async (req, res) => {
-  const { amount, parentId } = req.body;
+  const { amount, parentId, method } = req.body;
   if (!amount || amount <= 0) {
     return res.status(400).json({ error: "Invalid topup amount." });
   }
@@ -143,6 +143,37 @@ router.post('/wallet/topup', authenticateToken, paymentRateLimiter, async (req, 
   // Enforce parent ownership check to prevent unauthorized wallet updates
   if (req.user.role !== 'Admin' && req.user.uid !== parentId) {
     return res.status(403).json({ error: "Access forbidden. User identity mismatch." });
+  }
+
+  if (method === 'bank') {
+    // 1. Create a pending transaction
+    await db.insert('transactions', {
+      id: 'txn_' + Date.now(),
+      fromUserId: 'system',
+      toUserId: parentId,
+      amount: amount,
+      type: 'wallet_topup',
+      status: 'Pending Verification',
+      method: 'bank',
+      date: new Date().toISOString()
+    });
+    
+    // 2. Notify parent
+    await db.insert('notifications', {
+      id: 'notif_' + Date.now(),
+      userId: parentId,
+      title: 'Top-up Pending Verification',
+      body: `Your bank transfer of funds is pending admin verification.`,
+      read: false,
+      type: 'wallet_topup',
+      timestamp: new Date().toISOString()
+    });
+
+    return res.json({
+      success: true,
+      status: 'pending',
+      message: 'Bank transfer pending verification by Admin.'
+    });
   }
 
   let wallet = await db.findOne('wallets', w => w.uid === parentId);
@@ -160,10 +191,12 @@ router.post('/wallet/topup', authenticateToken, paymentRateLimiter, async (req, 
 
   // log a mock transaction
   await db.insert('transactions', {
+    id: 'txn_' + Date.now(),
     fromUserId: 'system',
     toUserId: parentId,
     amount: amount,
     type: 'wallet_topup',
+    status: 'Completed',
     date: new Date().toISOString()
   });
 

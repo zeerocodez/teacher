@@ -825,16 +825,21 @@ export default function App() {
           costPerSession: Math.floor(costNgnMinor / slots.length),
           slots,
           subject: options.subject || (selectedTeacherForBooking.subjects && selectedTeacherForBooking.subjects[0]) || 'General',
-          curriculum: options.curriculum || (selectedTeacherForBooking.curricula && selectedTeacherForBooking.curricula[0]) || 'Standard'
+          curriculum: options.curriculum || (selectedTeacherForBooking.curricula && selectedTeacherForBooking.curricula[0]) || 'Standard',
+          paymentMethod
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        setWalletBalance(data.walletBalance);
-        setEscrowBalance(data.escrowBalance);
+        if (data.status === 'pending') {
+          toast.success("Booking secured pending Admin bank transfer verification!");
+        } else {
+          setWalletBalance(data.walletBalance);
+          setEscrowBalance(data.escrowBalance);
+          appendTelemetryLog(`Escrow Locked: ${formatCurrency(convertMinor(costNgnMinor, selectedCurrency), selectedCurrency)} secured for ${selectedTeacherForBooking.name}`);
+        }
         await fetchInitialData();
-        appendTelemetryLog(`Escrow Locked: ${formatCurrency(convertMinor(costNgnMinor, selectedCurrency), selectedCurrency)} secured for ${selectedTeacherForBooking.name}`);
       } else {
         const errData = await response.json();
         toast.error(`Booking failed: ${errData.error}`);
@@ -932,11 +937,15 @@ export default function App() {
         headers: getAuthHeaders(),
         body: JSON.stringify({
           parentId: currentUser ? currentUser.uid : 'parent_1',
-          amount: amountNgnMinor
+          amount: amountNgnMinor,
+          method
         })
       });
       if (response.ok) {
         const data = await response.json();
+        if (data.status === 'pending') {
+          return { pending: true, message: data.message };
+        }
         setWalletBalance(data.walletBalance);
         setEscrowBalance(data.escrowBalance);
         await fetchInitialData();

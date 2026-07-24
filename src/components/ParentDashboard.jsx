@@ -351,7 +351,11 @@ export default function ParentDashboard({
         return;
       }
       if (res) {
-        setTopupSuccess(`✓ Wallet top-up of ${formatCurrency(amountMinor, topupCurrency)} successfully credited via ${topupMethod.toUpperCase()}!`);
+        if (res.pending) {
+          setTopupSuccess(`✓ ${res.message}`);
+        } else {
+          setTopupSuccess(`✓ Wallet top-up of ${formatCurrency(amountMinor, topupCurrency)} successfully credited via ${topupMethod.toUpperCase()}!`);
+        }
         setCustomAmount('');
         fetchDashboard();
       } else {

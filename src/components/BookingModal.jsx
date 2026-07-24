@@ -228,27 +228,13 @@ export default function BookingModal({
       onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
       // Don't close or reset yet, let the redirect happen
     } else if (paymentMethod === 'bank') {
-      // Bank Transfer mock integration - auto top-up first
-      const token = localStorage.getItem('eduvista_token');
-      const apiBase = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : 'https://api.eduvista.com/api';
-      fetch(`${apiBase}/parents/wallet/topup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({
-          parentId: localStorage.getItem('eduvista_uid') || 'parent_1',
-          amount: totalRateMinor
-        })
-      }).finally(() => {
-        setTimeout(() => {
-          onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
-          setIsProcessing(false);
-          resetStates();
-          onClose();
-        }, 1000);
-      });
+      // Bank Transfer - let App.jsx handle the pending booking via /sessions/book
+      setTimeout(() => {
+        onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
+        setIsProcessing(false);
+        resetStates();
+        onClose();
+      }, 1000);
     } else {
       // Wallet payment
       setTimeout(() => {

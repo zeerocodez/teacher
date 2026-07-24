@@ -71,7 +71,7 @@ async function executePaystackTransfer(amountMinor, recipient) {
 
 // POST Book a session
 router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requireOwnerOrAdmin, async (req, res) => {
-  const { teacherId, teacherName, studentId, studentName, parentId, costPerSession, slots, subject, curriculum } = req.body;
+  const { teacherId, teacherName, studentId, studentName, parentId, costPerSession, slots, subject, curriculum, paymentMethod } = req.body;
 
   const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_test_pay'];
   if (demoUids.includes(teacherId)) {
@@ -102,17 +102,20 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
 
   const totalCost = costPerSession * slots.length;
 
-  // 1. Check Parent wallet
-  const wallet = await db.findOne('wallets', w => w.uid === parentId);
-  if (!wallet || wallet.balance < totalCost) {
-    return res.status(400).json({ error: "Insufficient wallet balance." });
-  }
+  const isBankTransfer = paymentMethod === 'bank';
 
-  // 2. Lock escrow balance
-  await db.update('wallets', wallet.id, {
-    balance: wallet.balance - totalCost,
-    escrow: wallet.escrow + totalCost
-  });
+  // 1. Check Parent wallet (skip if bank transfer)
+  const wallet = await db.findOne('wallets', w => w.uid === parentId);
+  if (!isBankTransfer) {
+    if (!wallet || wallet.balance < totalCost) {
+      return res.status(400).json({ error: "Insufficient wallet balance." });
+    }
+    // 2. Lock escrow balance
+    await db.update('wallets', wallet.id, {
+      balance: wallet.balance - totalCost,
+      escrow: wallet.escrow + totalCost
+    });
+  }
 
   const teacherProfile = await db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
   const defaultSubject = (teacherProfile && teacherProfile.subjects && teacherProfile.subjects[0]) || "General Class";
@@ -130,7 +133,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
       parentId,
       cost: costPerSession,
       slot,
-      status: "Pending Confirmation",
+      status: isBankTransfer ? "Pending Verification" : "Pending Confirmation",
       clockLog: [],
       recordingConsent: { teacher: true, parent: true },
       subject: subject || defaultSubject,
@@ -147,11 +150,11 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
       amountMinorUnits: totalCost,
       currency: "NGN",
       commission: 0,
-      status: "secured",
+      status: isBankTransfer ? "Pending Verification" : "secured",
       fromUserId: parentId,
       toUserId: teacherId,
       sessionId: lastSession.id,
-      paymentProcessor: "escrow",
+      paymentProcessor: isBankTransfer ? "bank" : "escrow",
       payoutStatus: "locked"
     });
   }
@@ -198,11 +201,21 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
     console.error("Failed to send booking notification email to teacher:", err);
   }
 
-  res.json({
-    session: lastSession,
-    walletBalance: wallet.balance - cost,
-    escrowBalance: wallet.escrow + cost
-  });
+  if (isBankTransfer) {
+    res.json({
+      success: true,
+      status: "pending",
+      message: "Booking pending bank transfer verification."
+    });
+  } else {
+    res.json({
+      success: true,
+      message: "Successfully booked sessions",
+      sessions: createdSessions,
+      walletBalance: wallet.balance - totalCost,
+      escrowBalance: wallet.escrow + totalCost
+    });
+  }
 });
 
 // POST Respond to booking requests (manual confirmation)
