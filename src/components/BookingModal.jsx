@@ -227,6 +227,28 @@ export default function BookingModal({
       // Direct integration triggered via App.jsx
       onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
       // Don't close or reset yet, let the redirect happen
+    } else if (paymentMethod === 'bank') {
+      // Bank Transfer mock integration - auto top-up first
+      const token = localStorage.getItem('eduvista_token');
+      const apiBase = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : 'https://api.eduvista.com/api';
+      fetch(`${apiBase}/parents/wallet/topup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          parentId: localStorage.getItem('eduvista_uid') || 'parent_1',
+          amount: totalRateMinor
+        })
+      }).finally(() => {
+        setTimeout(() => {
+          onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
+          setIsProcessing(false);
+          resetStates();
+          onClose();
+        }, 1000);
+      });
     } else {
       // Wallet payment
       setTimeout(() => {
@@ -606,6 +628,35 @@ export default function BookingModal({
                     </span>
                   </div>
                 </button>
+
+                {/* Direct Bank Transfer Option */}
+                <button
+                  onClick={() => setPaymentMethod('bank')}
+                  className={`w-full py-3.5 px-4 rounded-xl border text-left font-sans transition-all duration-300 flex flex-col ${
+                    paymentMethod === 'bank'
+                      ? 'border-brand-moss bg-brand-moss/5 ring-1 ring-brand-moss'
+                      : 'border-brand-moss/10 bg-white hover:border-brand-moss/30'
+                  }`}
+                >
+                  <div>
+                    <span className="text-xs font-bold block text-brand-charcoal">
+                      Direct Bank Transfer
+                    </span>
+                    <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
+                      Manual transfer to our KudaBank account
+                    </span>
+                  </div>
+                  
+                  {paymentMethod === 'bank' && (
+                    <div className="bg-white border border-brand-moss/20 rounded-xl p-3 mt-3 font-sans text-xs space-y-1.5 w-full">
+                      <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block mb-1">🏦 Bank Details</span>
+                      <p className="text-brand-charcoal/70 mb-2">Please make a transfer of exactly <strong className="uppercase">{formattedTotalRate}</strong> to book.</p>
+                      <div className="flex justify-between"><span className="text-brand-charcoal/50">BANK:</span><span className="font-bold">KudaBank</span></div>
+                      <div className="flex justify-between"><span className="text-brand-charcoal/50">NAME:</span><span className="font-bold">ZEEROCODES AUTOMATION LIMITED</span></div>
+                      <div className="flex justify-between"><span className="text-brand-charcoal/50">ACCOUNT:</span><span className="font-bold text-brand-clay">3002410020</span></div>
+                    </div>
+                  )}
+                </button>
               </div>
             </div>
 
@@ -621,11 +672,13 @@ export default function BookingModal({
                 }`}
               >
                 {isProcessing 
-                  ? "Securing Escrow..." 
+                  ? "Processing..." 
                   : selectedSlots.length > 0
                     ? paymentMethod === 'paystack' 
                       ? "Enter Card Details" 
-                      : `Pay ${formattedTotalRate} & Lock Escrow`
+                      : paymentMethod === 'bank'
+                        ? "I Have Made The Transfer"
+                        : `Pay ${formattedTotalRate} & Lock Escrow`
                     : "Select at least one slot"
                 }
               </button>

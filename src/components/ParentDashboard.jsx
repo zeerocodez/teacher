@@ -174,7 +174,7 @@ export default function ParentDashboard({
   // Wallet Top-up States
   const [topupAmount, setTopupAmount] = useState('10000'); // in raw base units (e.g. 10000 NGN)
   const [customAmount, setCustomAmount] = useState('');
-  const [topupMethod, setTopupMethod] = useState('paystack');
+  const [topupMethod, setTopupMethod] = useState('bank');
   const [topupLoading, setTopupLoading] = useState(false);
   const [topupSuccess, setTopupSuccess] = useState('');
   const [topupCurrency, setTopupCurrency] = useState(selectedCurrency || 'NGN');
