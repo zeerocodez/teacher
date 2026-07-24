@@ -29,10 +29,49 @@ export default function BookingModal({
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Credit Card Gateway States
-  
+  const [showCardForm, setShowCardForm] = useState(false);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [paymentStatusText, setPaymentStatusText] = useState('');
           
   // OTP Verification States
-      
+  const [showOtpForm, setShowOtpForm] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+
+  const resetStates = () => {
+    setShowCardForm(false);
+    setShowOtpForm(false);
+    setCardNumber('');
+    setCardName('');
+    setCardExpiry('');
+    setCardCvv('');
+    setOtpCode('');
+    setPaymentStatusText('');
+    setIsProcessing(false);
+  };
+
+  const handleCardPaymentSubmit = (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    setPaymentStatusText('Processing payment...');
+    setTimeout(() => {
+      setShowCardForm(false);
+      setShowOtpForm(true);
+      setPaymentStatusText('Awaiting OTP Verification...');
+    }, 2000);
+  };
+
+  const handleOtpVerifySubmit = (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    setPaymentStatusText('Verifying OTP...');
+    setTimeout(() => {
+      resetStates();
+      if (onBook) onBook();
+    }, 1500);
+  };
   const isFirstTrial = !bookedSessions || bookedSessions.length === 0;
   const teacherRateMinor = teacher ? (teacher.rate || 0) : 350000;
   const activeRateMinor = isFirstTrial ? 0 : teacherRateMinor;
