@@ -823,6 +823,11 @@ export default function App() {
           appendTelemetryLog(`Escrow Locked: ${formatCurrency(convertMinor(costNgnMinor, selectedCurrency), selectedCurrency)} secured for ${selectedTeacherForBooking.name}`);
         }
         await fetchInitialData();
+        
+        // Redirect to dashboard
+        setIsBookingOpen(false);
+        navigate('/dashboard');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         const errData = await response.json();
         toast.error(`Booking failed: ${errData.error}`);
@@ -850,6 +855,11 @@ export default function App() {
       }));
       setBookedSessions(prev => [...prev, ...newSessions]);
       appendTelemetryLog(`Escrow Locked (Local Fallback): ${formatCurrency(convertMinor(costNgnMinor, selectedCurrency), selectedCurrency)} secured for ${selectedTeacherForBooking.name} (${slots.length} sessions)`);
+      
+      // Redirect to dashboard
+      setIsBookingOpen(false);
+      navigate('/dashboard');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
