@@ -93,6 +93,23 @@ export default function App() {
   const { currentUser, setCurrentUser, login, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleLogout = async () => {
+    await logout();
+    setCurrentUser(null);
+    try {
+      localStorage.removeItem('eduvista_user');
+      localStorage.removeItem('eduvista_token');
+      localStorage.removeItem('eduvista_ref');
+    } catch (e) {}
+    setWalletBalance(0);
+    setEscrowBalance(0);
+    setBookedSessions([]);
+    setPendingAssignments([]);
+    setGradesLog([]);
+    toast.success("Logged out successfully");
+    navigate('/');
+  };
   const [profileUsername, setProfileUsername] = useState(() => {
     const path = window.location.pathname;
     const match = path.match(/\/teacher\/([^/]+)/);
@@ -1565,6 +1582,7 @@ export default function App() {
                         selectedCurrency={selectedCurrency}
                         formatCurrency={formatCurrency}
                         convertMinor={convertMinor}
+                        onLogout={handleLogout}
                         onBack={() => navigate('/')}
                       />
                     ) : currentUser.role === 'Teacher' ? (
@@ -1576,7 +1594,8 @@ export default function App() {
                         onOpenChat={handleOpenChat}
                         onGradeHomework={handleGradeHomework}
                         gradesLog={gradesLog}
-                        onBack={() => navigate('/')}
+                        onLogout={handleLogout}
+                        onBack={handleLogout}
                       />
                     ) : currentUser.role === 'Student' ? (
                       <StudentPortal
@@ -1584,7 +1603,8 @@ export default function App() {
                         selectedCurrency={selectedCurrency}
                         formatCurrency={formatCurrency}
                         convertMinor={convertMinor}
-                        onBack={() => navigate('/')}
+                        onLogout={handleLogout}
+                        onBack={handleLogout}
                       />
                     ) : (
                       <ParentDashboard 
@@ -1609,7 +1629,8 @@ export default function App() {
                         teachers={teachers}
                         onBookClick={handleBookClick}
                         onTeacherSelect={handleTutorProfileSelect}
-                        onBack={() => navigate('/')}
+                        onLogout={handleLogout}
+                        onBack={handleLogout}
                       />
                     )}
                   </Suspense>

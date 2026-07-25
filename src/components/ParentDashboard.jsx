@@ -58,6 +58,7 @@ export default function ParentDashboard({
   onTopupWallet,
   onBookClick,
   onTeacherSelect,
+  onLogout,
   onBack
 }) {
   const [activeTab, setActiveTab] = useState('progress'); // 'progress' | 'marketplace' | 'billing' | 'disputes' | 'affiliate'
@@ -520,8 +521,8 @@ export default function ParentDashboard({
           </button>
           <button 
             onClick={() => {
-              if (onBack) onBack();
-              toast.success("Logged out successfully");
+              if (onLogout) onLogout();
+              else if (onBack) onBack();
             }}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition-all"
           >
@@ -581,8 +582,8 @@ export default function ParentDashboard({
             </div>
             <button
               onClick={() => {
-                if (onBack) onBack();
-                toast.success("Logged out successfully");
+                if (onLogout) onLogout();
+                else if (onBack) onBack();
               }}
               className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold px-3 py-2 rounded-xl transition-all"
             >

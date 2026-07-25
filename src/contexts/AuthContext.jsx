@@ -59,19 +59,24 @@ export const AuthProvider = ({ children }) => {
   const login = (userData) => {
     setCurrentUser(userData);
     setPendingOnboarding(false);
+    try {
+      localStorage.setItem('eduvista_user', JSON.stringify(userData));
+    } catch (e) {}
   };
 
   const logout = async () => {
     try {
-      await firebaseSignOut(auth);
-      setCurrentUser(null);
-      setPendingOnboarding(false);
-      localStorage.removeItem('eduvista_user');
-      localStorage.removeItem('eduvista_token');
-      window.location.href = '/';
+      await firebaseSignOut(auth).catch(() => {});
     } catch (error) {
       console.error("Error signing out:", error);
     }
+    setCurrentUser(null);
+    setPendingOnboarding(false);
+    try {
+      localStorage.removeItem('eduvista_user');
+      localStorage.removeItem('eduvista_token');
+      localStorage.removeItem('eduvista_ref');
+    } catch (e) {}
   };
 
   return (
