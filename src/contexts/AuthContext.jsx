@@ -65,6 +65,8 @@ export const AuthProvider = ({ children }) => {
       await firebaseSignOut(auth);
       setCurrentUser(null);
       setPendingOnboarding(false);
+      localStorage.removeItem('eduvista_user');
+      localStorage.removeItem('eduvista_token');
       window.location.href = '/';
     } catch (error) {
       console.error("Error signing out:", error);
