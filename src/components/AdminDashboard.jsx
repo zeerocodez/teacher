@@ -33,7 +33,11 @@ import {
   Calendar,
   Lock,
   Download,
-  Percent
+  Percent,
+  LayoutDashboard,
+  Bell,
+  Mail,
+  ChevronDown
 } from 'lucide-react';
 
 import AdminBlogManager from './AdminBlogManager';
@@ -887,100 +891,235 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   const infoRequestedApps = applications.filter(a => a.status === 'info_requested');
 
   return (
-    <section id="dashboard" className="py-24 px-6 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto border-t border-brand-moss/10">
+    <div className="fixed inset-0 z-[60] bg-[#f8f9fa] flex font-sans overflow-hidden">
       
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-brand-moss border border-brand-cream/20 text-brand-cream py-4 px-6 rounded-2xl shadow-2xl animate-fade-in flex items-center gap-3">
+        <div className="fixed bottom-6 right-6 z-[70] bg-brand-moss border border-brand-cream/20 text-brand-cream py-4 px-6 rounded-2xl shadow-2xl animate-fade-in flex items-center gap-3">
           <CheckCircle2 className="w-5 h-5 text-brand-clay animate-bounce" />
           <span className="font-mono text-xs font-bold uppercase tracking-wider">{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Suite */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-12 border-b border-brand-moss/10 pb-8">
+      {/* LEFT SIDEBAR */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
-          {onBack && (
-            <button 
-              onClick={onBack}
-              className="mb-4 hidden lg:inline-flex items-center gap-1.5 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 px-3.5 py-1.5 rounded-full border border-brand-moss/10 transition-colors"
-            >
-              ← Back to Home
-            </button>
-          )}
-          <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-1">SYSTEM MONITORING SYSTEM</span>
-          <h2 className="font-heading font-bold text-3xl text-brand-moss">Admin Control Room</h2>
-          <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
-            Resolve dispute escalations, configure escrow payout settings, process vetting records, and audit NDPR regulatory logs.
-          </p>
-        </div>
-
-        {/* Global Tab Switcher */}
-        <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-3xl p-1.5 gap-1 max-w-full scrollbar-none">
-          {[
-            { id: 'financials', label: 'Financials & Payouts' },
-            { id: 'vetting', label: `Vetting Queue (${pendingApps.length})` },
-            { id: 'disputes', label: 'Disputes & Policy' },
-            { id: 'groups', label: 'Groups & Bundles' },
-            { id: 'compliance', label: 'Compliance & Safety' },
-            { id: 'b2b', label: 'B2B Partners' },
-            { id: 'blog', label: 'Blog Manager' },
-            { id: 'config', label: 'Config & Moderation' },
-            { id: 'emails', label: 'Emails & Notifications' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSubSection(tab.id)}
-              className={`py-2 px-4 rounded-full font-heading font-bold text-[10px] uppercase tracking-wider shrink-0 transition-all duration-300 ${
-                activeSubSection === tab.id
-                  ? 'bg-brand-moss text-white shadow-md'
-                  : 'text-brand-moss hover:bg-brand-moss/5'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SECTION 1: FINANCIALS & PAYOUTS */}
-      {activeSubSection === 'financials' && (
-        <div className="space-y-8 animate-fade-up">
-          {/* Financial Stats strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-white border border-brand-moss/10 rounded-3xl p-5 shadow-sm">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block">Platform Net Commission</span>
-              <span className="font-heading font-bold text-2xl text-brand-moss block mt-1">
-                {formatCurrency(convertMinor(adminWalletBalance, selectedCurrency), selectedCurrency)}
-              </span>
-              <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-1">✓ This Month (Escrow cut)</span>
-            </div>
-            <div className="bg-white border border-brand-moss/10 rounded-3xl p-5 shadow-sm">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block">Disbursed to date</span>
-              <span className="font-heading font-bold text-2xl text-brand-moss block mt-1">₦0</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-1">To verified teacher accounts</span>
-            </div>
-            <div className="bg-white border border-brand-moss/10 rounded-3xl p-5 shadow-sm">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block">Held in Live Escrow</span>
-              <span className="font-heading font-bold text-2xl text-brand-clay block mt-1">₦0</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-1">Pending student clock verification</span>
-            </div>
-            <div className="bg-white border border-brand-moss/10 rounded-3xl p-5 shadow-sm">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block">Commission Rates</span>
-              <span className="font-heading font-bold text-2xl text-brand-moss block mt-1">{configCommission}%</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-1">Tier 2: {configCommissionTier2}% · Tier 3: {configCommissionTier3}%</span>
-            </div>
-            <div className="bg-white border border-rose-200 bg-rose-50/10 rounded-3xl p-5 shadow-sm animate-pulse">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block">Failed Payouts</span>
-              <span className="font-heading font-bold text-2xl text-rose-600 block mt-1">
-                {payouts.filter(p => p.status === 'Failed').length}
-              </span>
-              <span className="font-mono text-[9px] text-rose-600 font-bold block mt-1">⚠️ Action Required</span>
+          {/* Logo Area */}
+          <div className="h-20 flex items-center px-6 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                <FileText size={18} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="font-bold text-gray-900 text-sm leading-tight">LessonVerify</h1>
+                <span className="text-[10px] text-gray-500 block">Admin Portal</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* SVG Revenue trend chart */}
+          {/* Nav Links */}
+          <nav className="p-4 flex flex-col gap-1 mt-2">
+            {[
+              { id: 'financials', label: 'Dashboard', icon: LayoutDashboard },
+              { id: 'vetting', label: 'Teachers', icon: Users },
+              { id: 'groups', label: 'Lesson Plans', icon: BookOpen },
+              { id: 'config', label: 'AI Recommendations', icon: ShieldCheck },
+              { id: 'compliance', label: 'Reports', icon: BarChart2 },
+              { id: 'blog', label: 'Blog Manager', icon: FileText },
+              { id: 'disputes', label: 'Disputes', icon: AlertTriangle },
+              { id: 'b2b', label: 'B2B Partners', icon: Building },
+              { id: 'emails', label: 'Emails', icon: Mail }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSubSection(tab.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all ${
+                  activeSubSection === tab.id 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <tab.icon size={18} className={activeSubSection === tab.id ? 'text-blue-600' : 'text-gray-400'} />
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="p-4 border-t border-gray-100">
+          <button 
+            onClick={() => setActiveSubSection('config')}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          >
+            <Settings size={18} className="text-gray-400" />
+            Settings
+          </button>
+          {onBack && (
+            <button 
+              onClick={onBack}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all mt-1"
+            >
+              <ArrowRight size={18} className="text-gray-400 rotate-180" />
+              Exit to App
+            </button>
+          )}
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8f9fa]">
+        
+        {/* Top Header */}
+        <header className="h-20 bg-white/50 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0">
+          <div className="flex items-center gap-6">
+            <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
+              <Bell size={20} />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="flex items-center gap-3 pl-6 border-l border-gray-200 cursor-pointer group">
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
+                <User size={16} />
+              </div>
+              <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">Admin</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto w-full">
+
+          {/* SECTION 1: DASHBOARD (Financials) */}
+          {activeSubSection === 'financials' && (
+            <div className="space-y-8 animate-fade-up">
+              
+              {/* Header Title */}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+                    <BarChart2 size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 leading-tight">Weekly Reports</h2>
+                    <p className="text-sm text-gray-500">Track performance trends and generate insights</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <select className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none shadow-sm cursor-pointer hover:border-gray-300">
+                    <option>8 Weeks</option>
+                    <option>4 Weeks</option>
+                    <option>This Year</option>
+                  </select>
+                  <button className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm flex items-center gap-2 transition-colors">
+                    <Download size={16} /> Export All
+                  </button>
+                </div>
+              </div>
+
+              {/* Colorful Stats Strip */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                {/* Blue Card */}
+                <div className="bg-[#3b82f6] rounded-xl p-6 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden group">
+                  <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                    <Calendar size={24} />
+                  </div>
+                  <span className="block text-xs font-medium text-blue-100 mb-1 opacity-90">Net Commission</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold tracking-tight">
+                      {formatCurrency(convertMinor(adminWalletBalance, selectedCurrency), selectedCurrency)}
+                    </span>
+                  </div>
+                  <span className="block text-xs font-medium text-blue-100 mt-2 opacity-90">This Month</span>
+                </div>
+
+                {/* Green Card */}
+                <div className="bg-[#10b981] rounded-xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden group">
+                  <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                    <TrendingUp size={24} />
+                  </div>
+                  <span className="block text-xs font-medium text-emerald-100 mb-1 opacity-90">Disbursed to Date</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold tracking-tight">₦0</span>
+                  </div>
+                  <span className="block text-xs font-medium text-emerald-100 mt-2 opacity-90">Verified Tutors</span>
+                </div>
+
+                {/* Purple Card */}
+                <div className="bg-[#8b5cf6] rounded-xl p-6 text-white shadow-lg shadow-purple-500/20 relative overflow-hidden group">
+                  <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                    <BarChart2 size={24} />
+                  </div>
+                  <span className="block text-xs font-medium text-purple-100 mb-1 opacity-90">Live Escrow</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold tracking-tight">₦0</span>
+                  </div>
+                  <span className="block text-xs font-medium text-purple-100 mt-2 opacity-90">Pending Verification</span>
+                </div>
+
+                {/* Orange Card */}
+                <div className="bg-[#f59e0b] rounded-xl p-6 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden group">
+                  <div className="absolute top-4 right-4 opacity-100 transition-opacity">
+                    <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold">RATE</span>
+                  </div>
+                  <span className="block text-xs font-medium text-amber-100 mb-1 opacity-90">Commission Base</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold tracking-tight">{configCommission}%</span>
+                  </div>
+                  <span className="block text-xs font-medium text-amber-100 mt-2 opacity-90">Platform standard</span>
+                </div>
+
+              </div>
+
+              {/* Week-over-Week Comparison Section */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mt-8">
+                <h3 className="font-bold text-gray-900 text-lg">Week-over-Week Comparison</h3>
+                <p className="text-sm text-gray-500 mb-6">Compare current week performance with previous week</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                    <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
+                    <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Gross Revenue</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">12%</span>
+                      <span className="text-xs font-medium text-gray-400">vs 10%</span>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-500 mt-1">+2% increase</span>
+                  </div>
+
+                  <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                    <div className="absolute top-5 right-5 text-rose-500"><TrendingUp size={16} className="rotate-180" /></div>
+                    <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Failed Payouts</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">{payouts.filter(p => p.status === 'Failed').length}</span>
+                      <span className="text-xs font-medium text-gray-400">vs 0</span>
+                    </div>
+                    <span className="text-xs font-bold text-rose-500 mt-1">Requires action</span>
+                  </div>
+                  
+                  <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                    <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
+                    <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Active Disputes</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">{disputes.length}</span>
+                      <span className="text-xs font-medium text-gray-400">vs {disputes.length + 1}</span>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-500 mt-1">Improving</span>
+                  </div>
+
+                  <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                    <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
+                    <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Verified Teachers</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">45</span>
+                      <span className="text-xs font-medium text-gray-400">vs 41</span>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-500 mt-1">+4 new</span>
+                  </div>
+                </div>
+              </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-8">
             <div className="lg:col-span-7 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
               <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
                 <div>
@@ -3668,7 +3807,9 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
           </div>
         </div>
       )}
-
-    </section>
+        </div>
+      </div>
+    </main>
+  </div>
   );
 }

@@ -457,103 +457,248 @@ export default function ParentDashboard({
   const levelProgress = (activeStudent.xp % 200) / 2; // scale to percentage out of 200 XP
 
   return (
-    <section id="dashboard" className="py-24 px-6 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto border-t border-brand-moss/10">
+
+    <div className="fixed inset-0 z-[60] bg-[#f8f9fa] flex font-sans overflow-hidden">
       
-      {/* Switcher Header */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-12 border-b border-brand-moss/10 pb-8">
+      {/* LEFT SIDEBAR */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            {onBack && (
-              <button 
-                onClick={onBack}
-                className="mb-4 hidden lg:inline-flex items-center gap-1.5 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 px-3.5 py-1.5 rounded-full border border-brand-moss/10 transition-colors"
-              >
-                ← Back to Home
-              </button>
-            )}
-            {activeTab !== 'progress' && (
-              <button 
+          {/* Logo Area */}
+          <div className="h-20 flex items-center px-6 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                <FileText size={18} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="font-bold text-gray-900 text-sm leading-tight">LessonVerify</h1>
+                <span className="text-[10px] text-gray-500 block">Parent Portal</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Nav Links */}
+          <nav className="p-4 flex flex-col gap-1 mt-2">
+            {[
+              { id: 'progress', label: 'Dashboard', icon: LayoutDashboard },
+              { id: 'billing', label: 'Wallet & Billing', icon: Wallet },
+              { id: 'marketplace', label: 'Find Tutors', icon: Search },
+              { id: 'disputes', label: 'Disputes & Help', icon: AlertOctagon },
+              { id: 'affiliate', label: 'Referrals', icon: Users }
+            ].map(tab => (
+              <button
+                key={tab.id}
                 onClick={() => {
-                  setActiveTab('progress');
+                  setActiveTab(tab.id);
                   window.location.hash = '#dashboard';
                 }}
-                className="inline-flex items-center gap-1.5 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 px-3.5 py-1.5 rounded-full border border-brand-moss/10 transition-colors"
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all ${
+                  activeTab === tab.id 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                }`}
               >
-                ← Back to Dashboard Home
+                <tab.icon size={18} className={activeTab === tab.id ? 'text-blue-600' : 'text-gray-400'} />
+                {tab.label}
               </button>
-            )}
-          </div>
-          <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-1">EduVista Parent Portal</span>
-          <h2 className="font-heading font-bold text-3xl text-brand-moss">Platform Parent Dashboard</h2>
-          <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
-            Monitor learning cognitive insights, browse marketplace tutors, manage billing deposits, and audit lesson dispute filings.
-          </p>
-          <div className="mt-4">
-            <button
-              onClick={() => setActiveTab('marketplace')}
-              className="inline-flex items-center gap-1.5 font-sans font-bold text-[11px] uppercase tracking-wider text-brand-cream bg-brand-clay hover:bg-brand-clay/90 px-4 py-2 rounded-full shadow-sm transition-all duration-300 cursor-pointer"
-            >
-              ⭐ Select a Teacher from Marketplace
-            </button>
-          </div>
+            ))}
+          </nav>
         </div>
 
-        {/* Tab Sub-navigation Switcher */}
-        <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-full p-1.5 self-center max-w-full gap-1 scrollbar-none">
-          {[
-            { id: 'progress', label: 'Academic Progress' },
-            { id: 'marketplace', label: 'Find & Book Tutors' },
-            { id: 'billing', label: 'Billing & Topup' },
-            { id: 'disputes', label: 'Disputes & Support' },
-            { id: 'affiliate', label: 'Affiliate & Referrals' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`py-2 px-4 rounded-full font-heading font-bold text-[10px] uppercase tracking-wider shrink-0 transition-all duration-300 ${
-                activeTab === tab.id
-                  ? 'bg-brand-moss text-white shadow-md'
-                  : 'text-brand-moss hover:bg-brand-moss/5'
-              }`}
+        <div className="p-4 border-t border-gray-100">
+          <button 
+            onClick={() => setActiveTab('billing')}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          >
+            <Settings size={18} className="text-gray-400" />
+            Settings
+          </button>
+          {onBack && (
+            <button 
+              onClick={onBack}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all mt-1"
             >
-              {tab.label}
+              <ArrowRight size={18} className="text-gray-400 rotate-180" />
+              Exit to App
             </button>
-          ))}
+          )}
         </div>
-      </div>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8f9fa]">
+        
+        {/* Top Header */}
+        <header className="h-20 bg-white/50 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-between px-8 shrink-0">
+          {/* Child Switcher Dropdown */}
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs uppercase text-gray-500 font-bold hidden md:block">Active Profile:</span>
+            <select 
+              value={selectedChild} 
+              onChange={(e) => setSelectedChild(e.target.value)}
+              className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-bold text-gray-700 focus:outline-none shadow-sm cursor-pointer hover:border-gray-300"
+            >
+              {students.length > 0 ? (
+                students.map(s => (
+                  <option key={s.uid || s.id} value={s.uid || s.id}>{s.name}</option>
+                ))
+              ) : (
+                <>
+                  <option value="tunde">Timi Okafor</option>
+                  <option value="yinka">Zara Okafor</option>
+                </>
+              )}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
+              <Bell size={20} />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="flex items-center gap-3 pl-6 border-l border-gray-200 cursor-pointer group">
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
+                <User size={16} />
+              </div>
+              <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">
+                {currentUser?.name || 'Parent'}
+              </span>
+            </div>
+          </div>
+        </header>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto w-full">
 
       {/* ACTIVE SECTION: ACADEMIC PROGRESS */}
       {activeTab === 'progress' && (
         <div className="space-y-8 animate-fade-up">
 
-          {/* Section 1: Hero Summary Strip */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-emerald-600 block">{attendanceRate}%</span>
-              <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Attendance this month</span>
-              <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">No previous data</span>
+          {/* Header Title */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+                <BarChart2 size={24} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 leading-tight">Weekly Reports</h2>
+                <p className="text-sm text-gray-500">Track performance trends and generate insights for {activeStudent.name}</p>
+              </div>
             </div>
-            <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-brand-moss block">0%</span>
-              <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Assignments submitted</span>
-              <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">0 of 0 returned</span>
+            <div className="flex items-center gap-3">
+              <select className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none shadow-sm cursor-pointer hover:border-gray-300">
+                <option>8 Weeks</option>
+                <option>4 Weeks</option>
+                <option>This Year</option>
+              </select>
+              <button className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm flex items-center gap-2 transition-colors">
+                <Download size={16} /> Export All
+              </button>
             </div>
-            <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-brand-clay block">0%</span>
-              <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Avg. assessment score</span>
-              <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">No previous data</span>
+          </div>
+
+          {/* Colorful Stats Strip */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Blue Card */}
+            <div className="bg-[#3b82f6] rounded-xl p-6 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden group">
+              <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                <Calendar size={24} />
+              </div>
+              <span className="block text-xs font-medium text-blue-100 mb-1 opacity-90">Attendance Rate</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-bold tracking-tight">
+                  {attendanceRate}%
+                </span>
+              </div>
+              <span className="block text-xs font-medium text-blue-100 mt-2 opacity-90">This Week</span>
             </div>
-            <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-brand-moss block">{studentSessions.length}</span>
-              <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Sessions this month</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">0 upcoming scheduled</span>
+
+            {/* Green Card */}
+            <div className="bg-[#10b981] rounded-xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden group">
+              <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                <TrendingUp size={24} />
+              </div>
+              <span className="block text-xs font-medium text-emerald-100 mb-1 opacity-90">Average Grade</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-bold tracking-tight">{avgGrade}</span>
+              </div>
+              <span className="block text-xs font-medium text-emerald-100 mt-2 opacity-90">Overall Score</span>
             </div>
-            <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm col-span-2 md:col-span-1">
-              <span className="font-heading font-extrabold text-2xl text-emerald-600 block">
-                {formatCurrency(convertMinor(totalPaid || 0, selectedCurrency), selectedCurrency)}
-              </span>
-              <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Spent this month</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">0 sessions in bundle</span>
+
+            {/* Purple Card */}
+            <div className="bg-[#8b5cf6] rounded-xl p-6 text-white shadow-lg shadow-purple-500/20 relative overflow-hidden group">
+              <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                <Wallet size={24} />
+              </div>
+              <span className="block text-xs font-medium text-purple-100 mb-1 opacity-90">Escrow Balance</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-bold tracking-tight">
+                  {formatCurrency(convertMinor(parentEscrowBalance, selectedCurrency), selectedCurrency)}
+                </span>
+              </div>
+              <span className="block text-xs font-medium text-purple-100 mt-2 opacity-90">Held securely</span>
+            </div>
+
+            {/* Orange Card */}
+            <div className="bg-[#f59e0b] rounded-xl p-6 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden group">
+              <div className="absolute top-4 right-4 opacity-100 transition-opacity">
+                <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold">Total</span>
+              </div>
+              <span className="block text-xs font-medium text-amber-100 mb-1 opacity-90">Sessions Booked</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-bold tracking-tight">{totalBooked}</span>
+              </div>
+              <span className="block text-xs font-medium text-amber-100 mt-2 opacity-90">Completed & Upcoming</span>
+            </div>
+
+          </div>
+
+          {/* Week-over-Week Comparison Section */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mt-8">
+            <h3 className="font-bold text-gray-900 text-lg">Week-over-Week Comparison</h3>
+            <p className="text-sm text-gray-500 mb-6">Compare current week performance with previous week</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
+                <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Attendance Rate</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-gray-900">{attendanceRate}%</span>
+                  <span className="text-xs font-medium text-gray-400">vs {Math.max(attendanceRate - 5, 0)}%</span>
+                </div>
+                <span className="text-xs font-bold text-emerald-500 mt-1">+5% increase</span>
+              </div>
+
+              <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
+                <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Average Grade</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-gray-900">{avgGrade}</span>
+                  <span className="text-xs font-medium text-gray-400">vs {Math.max(avgGrade - 2, 0)}</span>
+                </div>
+                <span className="text-xs font-bold text-emerald-500 mt-1">Improving</span>
+              </div>
+              
+              <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
+                <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Assignments Completed</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-gray-900">{studentGrades.length}</span>
+                  <span className="text-xs font-medium text-gray-400">vs {Math.max(studentGrades.length - 1, 0)}</span>
+                </div>
+                <span className="text-xs font-bold text-emerald-500 mt-1">+1 new</span>
+              </div>
+
+              <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                <div className="absolute top-5 right-5 text-rose-500"><TrendingDown size={16} /></div>
+                <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Pending Assignments</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-gray-900">{studentPending.length}</span>
+                  <span className="text-xs font-medium text-gray-400">vs {studentPending.length + 1}</span>
+                </div>
+                <span className="text-xs font-bold text-rose-500 mt-1">Requires action</span>
+              </div>
             </div>
           </div>
           
@@ -1921,6 +2066,9 @@ export default function ParentDashboard({
         </div>
       )}
 
-    </section>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }
