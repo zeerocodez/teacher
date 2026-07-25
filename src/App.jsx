@@ -347,13 +347,15 @@ export default function App() {
         newTeachers = teachersData;
       }
       
-      if (append && page > 1) {
-        setTeachers(prev => {
-          const combined = [...prev, ...newTeachers];
-          return Array.from(new Map(combined.map(t => [t.uid || t.id, t])).values());
-        });
-      } else {
-        setTeachers(newTeachers);
+      if (newTeachers && newTeachers.length > 0) {
+        if (append && page > 1) {
+          setTeachers(prev => {
+            const combined = [...prev, ...newTeachers];
+            return Array.from(new Map(combined.map(t => [t.uid || t.id, t])).values());
+          });
+        } else {
+          setTeachers(newTeachers);
+        }
       }
       
       setHasMoreTeachers(!!teachersData.hasMore);
