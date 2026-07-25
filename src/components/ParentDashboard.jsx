@@ -63,14 +63,11 @@ export default function ParentDashboard({
   const localT = t || ((key) => translations[lang]?.[key] || translations['en']?.[key] || key);
 
   const [copied, setCopied] = useState(false);
-  const [referralsList, setReferralsList] = useState([
-    { id: 'ref_u1', name: 'Sarah Mensah', date: '2026-06-08', status: 'Converted', commission: 500000 },
-    { id: 'ref_u2', name: 'Kofi Boakye', date: '2026-06-09', status: 'Converted', commission: 500000 }
-  ]);
+  const [referralsList, setReferralsList] = useState([]);
   const [referralStats, setReferralStats] = useState({
-    hits: 12,
-    conversions: 2,
-    earnings: 1000000
+    hits: 0,
+    conversions: 0,
+    earnings: 0
   });
 
   const [selectedChild, setSelectedChild] = useState('tunde'); // 'tunde' or 'yinka'
@@ -479,7 +476,7 @@ export default function ParentDashboard({
                 <FileText size={18} strokeWidth={2.5} />
               </div>
               <div>
-                <h1 className="font-bold text-gray-900 text-sm leading-tight">LessonVerify</h1>
+                <h1 className="font-bold text-gray-900 text-sm leading-tight">EduVistar</h1>
                 <span className="text-[10px] text-gray-500 block">Parent Portal</span>
               </div>
             </div>

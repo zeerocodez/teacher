@@ -593,7 +593,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
               </div>
               <div>
                 <h1 className="font-bold text-gray-900 text-sm leading-tight">
-                  LessonVerify
+                  EduVistar
                 </h1>
                 <span className="text-[10px] text-gray-500 block">
                   Teacher Portal

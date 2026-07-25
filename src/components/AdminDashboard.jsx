@@ -912,7 +912,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                 <FileText size={18} strokeWidth={2.5} />
               </div>
               <div>
-                <h1 className="font-bold text-gray-900 text-sm leading-tight">LessonVerify</h1>
+                <h1 className="font-bold text-gray-900 text-sm leading-tight">EduVistar</h1>
                 <span className="text-[10px] text-gray-500 block">Admin Portal</span>
               </div>
             </div>
