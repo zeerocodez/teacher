@@ -21,7 +21,16 @@ import {
   History,
   Info,
   FileText,
-  Clipboard
+  Clipboard,
+  TrendingUp,
+  TrendingDown,
+  LayoutDashboard,
+  Search,
+  Users,
+  Settings,
+  ArrowRight,
+  Bell,
+  User
 } from 'lucide-react';
 import Marketplace from './Marketplace';
 import { translations } from '../locales/i18n';
