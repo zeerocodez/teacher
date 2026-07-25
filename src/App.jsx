@@ -1126,6 +1126,9 @@ export default function App() {
           <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
             <Link to="/blog" className="hover:text-brand-clay transition-colors hover-lift">Blog</Link>
+            {currentUser?.role === 'Admin' && (
+              <Link to="/dashboard" className="hover:text-brand-clay transition-colors hover-lift font-bold text-brand-moss">Admin Panel</Link>
+            )}
             {currentUser?.role === 'Parent' && (
               <a href="#marketplace" onClick={scrollToSection('marketplace')} className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
             )}
@@ -1373,6 +1376,9 @@ export default function App() {
             <div className="flex flex-col gap-2.5 font-sans font-bold text-xs uppercase tracking-wider text-white/80 border-t border-white/5 pt-3">
               <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1">About Us</Link>
               <Link to="/blog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1">Blog</Link>
+              {currentUser?.role === 'Admin' && (
+                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1 font-bold text-brand-moss">Admin Panel</Link>
+              )}
               {currentUser?.role === 'Parent' && (
                 <a 
                   href="#marketplace" 

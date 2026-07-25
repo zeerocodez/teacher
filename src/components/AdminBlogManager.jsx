@@ -310,16 +310,15 @@ export default function AdminBlogManager({ getAuthHeaders }) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-brand-moss uppercase tracking-wider mb-2">Main Content (Supports basic Markdown) *</label>
-            <textarea 
-              name="content"
-              required
-              rows={15}
-              value={formData.content}
-              onChange={handleInputChange}
-              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-clay transition-all"
-              placeholder={`Write your article here.\n\nUse ### for headings.\nParagraphs are automatically separated by double newlines.`}
-            />
+            <label className="block text-xs font-bold text-brand-moss uppercase tracking-wider mb-2">Main Content (Rich Text) *</label>
+            <div className="bg-white rounded-xl border border-brand-moss/10 overflow-hidden">
+              <ReactQuill 
+                theme="snow"
+                value={formData.content}
+                onChange={(content) => setFormData({ ...formData, content })}
+                className="h-64"
+              />
+            </div>
           </div>
 
           <div className="pt-6 border-t border-brand-moss/10 flex items-center justify-end gap-4">

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Star, ShieldCheck, Video, Calendar, ArrowLeft, Heart, Languages, MapPin, Award, CheckCircle2, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
@@ -349,7 +350,13 @@ export default function TeacherPublicProfile({
   }
 
   return (
-    <article className="bg-brand-cream min-h-screen pb-24 text-brand-charcoal">
+    <>
+      <Helmet>
+        <title>{teacher?.name ? `${teacher.name} | Online Home Tutoring & Lessons | EduVista` : 'Tutor | EduVista'}</title>
+        <meta name="description" content={`Book premium online home tutoring and private lessons with ${teacher?.name || 'this tutor'} on EduVista. Specializes in ${teacher?.subjects ? (Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : teacher.subjects) : 'various subjects'}. Vetted credentials, secure escrow payment protection.`} />
+        <meta property="og:title" content={`${teacher?.name || 'Tutor'} | EduVista`} />
+      </Helmet>
+      <article className="bg-brand-cream min-h-screen pb-24 text-brand-charcoal">
       
       {/* Cover Image Banner */}
       <div className="h-64 sm:h-80 w-full relative overflow-hidden">
@@ -737,6 +744,7 @@ export default function TeacherPublicProfile({
 
       </div>
 
-    </article>
+      </article>
+    </>
   );
 }

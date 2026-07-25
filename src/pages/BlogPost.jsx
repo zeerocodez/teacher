@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Clock, Share2, Link as LinkIcon, MessageCircle } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { mockBlogPosts } from './Blog';
 
 const BlogPost = () => {
@@ -42,20 +43,18 @@ const BlogPost = () => {
     return <Navigate to="/blog" replace />;
   }
 
-  // Very simple markdown-to-html for paragraphs and headings
-  const renderContent = (content) => {
-    return content.split('\n\n').map((block, idx) => {
-      const text = block.trim();
-      if (!text) return null;
-      if (text.startsWith('### ')) {
-        return <h3 key={idx} className="text-2xl font-heading font-bold text-brand-moss mt-8 mb-4">{text.replace('### ', '')}</h3>;
-      }
-      return <p key={idx} className="mb-6 text-brand-charcoal/80 leading-relaxed text-lg">{text}</p>;
-    });
-  };
+
 
   return (
-    <div className="min-h-screen bg-brand-cream/30 pt-28 pb-24 font-sans text-brand-charcoal">
+    <>
+      <Helmet>
+        <title>{post.title} | EduVista Blog</title>
+        <meta name="description" content={post.excerpt || `Read ${post.title} by ${post.author}`} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt} />
+        {post.image && <meta property="og:image" content={post.image} />}
+      </Helmet>
+      <div className="min-h-screen bg-brand-cream/30 pt-28 pb-24 font-sans text-brand-charcoal">
       <article className="max-w-4xl mx-auto bg-white rounded-[2rem] shadow-sm border border-brand-moss/5 overflow-hidden animate-fade-in-up">
         {/* Header/Cover */}
         <div className="relative h-[400px] w-full">
@@ -121,9 +120,7 @@ const BlogPost = () => {
                 {post.excerpt}
               </p>
               
-              <div className="mt-8">
-                {renderContent(post.content)}
-              </div>
+              <div className="mt-8 prose prose-lg prose-brand max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
             </div>
             
             <div className="mt-16 pt-8 border-t border-brand-moss/10 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -145,6 +142,7 @@ const BlogPost = () => {
         </div>
       </article>
     </div>
+    </>
   );
 };
 

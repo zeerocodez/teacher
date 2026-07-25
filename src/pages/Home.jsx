@@ -28,6 +28,7 @@ import {
   BarChart2,
   Download,
 } from "lucide-react";
+import { Helmet } from 'react-helmet-async';
 import heroImage from "../assets/hero.jpg";
 
 const Marketplace = React.lazy(() => import("../components/Marketplace"));
@@ -81,6 +82,12 @@ export default function Home({
 }) {
   return (
     <>
+      <Helmet>
+        <title>EduVista | Premium 1-on-1 Online Home Tutoring & Private Lessons</title>
+        <meta name="description" content="Connect with certified, background-checked private tutors for online home tutoring and personalized academic lessons." />
+        <meta property="og:title" content="EduVista | Online Home Tutoring" />
+        <meta property="og:description" content="Connect with certified, background-checked private tutors for online home tutoring." />
+      </Helmet>
       <section className="relative h-[95dvh] w-full overflow-hidden flex items-end justify-start md:justify-end pb-20 px-6 md:px-16 lg:px-24">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
