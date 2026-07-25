@@ -1,6 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import {
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  ChevronRight,
+  Activity,
+  Calendar,
+  Download,
+  RefreshCw,
+  Star,
+  MessageSquare,
+  Clipboard,
+  User,
+  Users,
+  Award,
+  Trophy,
+  TrendingUp,
+  Video,
+  Clock,
+  Lock,
+  PlusCircle,
+  FolderOpen,
+  AlertOctagon,
+  LayoutDashboard,
+  Wallet,
+  FileText,
+  Settings,
+  ArrowRight,
+  Bell,
+  TrendingDown,
+  BarChart2,
+  Search,
+} from "lucide-react";
 
 export default function TeacherDashboard({
   currentUser,
@@ -10,7 +42,7 @@ export default function TeacherDashboard({
   onOpenChat,
   onGradeHomework,
   gradesLog,
-  onBack
+  onBack,
 }) {
   const [teacherProfile, setTeacherProfile] = useState(null);
   const [bookingRequests, setBookingRequests] = useState([]);
@@ -27,26 +59,26 @@ export default function TeacherDashboard({
   const [editingClassLink, setEditingClassLink] = useState(null);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'profile' | 'students' | 'earnings' | 'reputation' | 'academy'
+  const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'profile' | 'students' | 'earnings' | 'reputation' | 'academy'
 
   // Availability Grid states
   const [availabilityGrid, setAvailabilityGrid] = useState({
-    Monday: ['Afternoon', 'Evening'],
-    Tuesday: ['Afternoon'],
-    Wednesday: ['Evening'],
-    Thursday: ['Afternoon', 'Evening'],
-    Friday: ['Evening'],
-    Saturday: ['Morning', 'Afternoon'],
-    Sunday: []
+    Monday: ["Afternoon", "Evening"],
+    Tuesday: ["Afternoon"],
+    Wednesday: ["Evening"],
+    Thursday: ["Afternoon", "Evening"],
+    Friday: ["Evening"],
+    Saturday: ["Morning", "Afternoon"],
+    Sunday: [],
   });
   const [googleCalendarSync, setGoogleCalendarSync] = useState(true);
   const [holidayMode, setHolidayMode] = useState(false);
-  const [minNotice, setMinNotice] = useState('24 hours');
+  const [minNotice, setMinNotice] = useState("24 hours");
 
   // Student Roster state & notes
   const [roster, setRoster] = useState([]);
   const [selectedRosterStudent, setSelectedRosterStudent] = useState(null);
-  const [rosterNoteInput, setRosterNoteInput] = useState('');
+  const [rosterNoteInput, setRosterNoteInput] = useState("");
 
   // Reputation & Leaderboard Position states
   const [leaderboardOptIn, setLeaderboardOptIn] = useState(true);
@@ -57,60 +89,73 @@ export default function TeacherDashboard({
   const [selectedClockSession, setSelectedClockSession] = useState(null);
 
   // Profile builder form states
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [location, setLocation] = useState('');
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [location, setLocation] = useState("");
   const [rate, setRate] = useState(0);
-  const [bio, setBio] = useState('');
+  const [bio, setBio] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState([]);
-  const [customSubjectInput, setCustomSubjectInput] = useState('');
+  const [customSubjectInput, setCustomSubjectInput] = useState("");
   const [selectedCurricula, setSelectedCurricula] = useState([]);
-  const [customCurriculumInput, setCustomCurriculumInput] = useState('');
+  const [customCurriculumInput, setCustomCurriculumInput] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [avatar, setAvatar] = useState('');
-  const [profileMessage, setProfileMessage] = useState('');
-  const [currency, setCurrency] = useState('NGN');
-  const [timezone, setTimezone] = useState('Africa/Lagos');
-  const [classroomLink, setClassroomLink] = useState('');
-  const [recordingTool, setRecordingTool] = useState('recordly.site');
+  const [avatar, setAvatar] = useState("");
+  const [profileMessage, setProfileMessage] = useState("");
+  const [currency, setCurrency] = useState("NGN");
+  const [timezone, setTimezone] = useState("Africa/Lagos");
+  const [classroomLink, setClassroomLink] = useState("");
+  const [recordingTool, setRecordingTool] = useState("recordly.site");
 
   // Homework grading panel states
   const [gradingScore, setGradingScore] = useState(95);
-  const [gradingFeedback, setGradingFeedback] = useState('Brilliant solution. Very well aligned to curriculum guidelines.');
+  const [gradingFeedback, setGradingFeedback] = useState(
+    "Brilliant solution. Very well aligned to curriculum guidelines.",
+  );
   const [isGraded, setIsGraded] = useState(false);
 
   // Assignment Creator states
-  const [assignTitle, setAssignTitle] = useState('');
-  const [assignDesc, setAssignDesc] = useState('');
-  const [assignStudent, setAssignStudent] = useState('Tunde');
-  const [assignMessage, setAssignMessage] = useState('');
+  const [assignTitle, setAssignTitle] = useState("");
+  const [assignDesc, setAssignDesc] = useState("");
+  const [assignStudent, setAssignStudent] = useState("Tunde");
+  const [assignMessage, setAssignMessage] = useState("");
 
   // Group Class States
-  const [groupName, setGroupName] = useState('');
+  const [groupName, setGroupName] = useState("");
   const [groupFee, setGroupFee] = useState(15000);
   // Removed unused group class state
 
   // AI Progress Report States
   const [activeReportStudent, setActiveReportStudent] = useState(null);
-  const [aiReportContent, setAiReportContent] = useState('');
+  const [aiReportContent, setAiReportContent] = useState("");
   const [aiReportLoading, setAiReportLoading] = useState(false);
 
   // Payout settings states
-  const [payoutMethod, setPayoutMethod] = useState('Paystack Bank Account');
+  const [payoutMethod, setPayoutMethod] = useState("Paystack Bank Account");
   const [minPayout, setMinPayout] = useState(50000);
   const [payoutRequestAmount, setPayoutRequestAmount] = useState(0);
-  const [payoutMessage, setPayoutMessage] = useState('');
+  const [payoutMessage, setPayoutMessage] = useState("");
   const [isRequestingPayout, setIsRequestingPayout] = useState(false);
-  const [accountNumber, setAccountNumber] = useState('');
-  const [accountName, setAccountName] = useState('');
-  const [selectedBankCode, setSelectedBankCode] = useState('058');
-  const [selectedBankName, setSelectedBankName] = useState('Guaranty Trust Bank (GTBank)');
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [selectedBankCode, setSelectedBankCode] = useState("058");
+  const [selectedBankName, setSelectedBankName] = useState(
+    "Guaranty Trust Bank (GTBank)",
+  );
 
   const handleGeminiSuggest = () => {
     const suggestions = [
-      { title: "Algebraic quadratic factorisation worksheet", desc: "Solve all factoring polynomials on Page 54. Factor both standard and complex coefficients." },
-      { title: "WAEC Wave Mechanics physics equations", desc: "Calculate the amplitude, speed, and frequency metrics for the wave graph uploaded in the classroom." },
-      { title: "IGCSE Chemistry stoichiometry problems", desc: "Balance the stoichiometric equations sheet and explain molar mass conversions." }
+      {
+        title: "Algebraic quadratic factorisation worksheet",
+        desc: "Solve all factoring polynomials on Page 54. Factor both standard and complex coefficients.",
+      },
+      {
+        title: "WAEC Wave Mechanics physics equations",
+        desc: "Calculate the amplitude, speed, and frequency metrics for the wave graph uploaded in the classroom.",
+      },
+      {
+        title: "IGCSE Chemistry stoichiometry problems",
+        desc: "Balance the stoichiometric equations sheet and explain molar mass conversions.",
+      },
     ];
     const item = suggestions[Math.floor(Math.random() * suggestions.length)];
     setAssignTitle(item.title);
@@ -130,45 +175,55 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
     }, 1500);
   };
 
-  const API_BASE = '/api';
+  const API_BASE = "/api";
 
   const getAuthHeaders = (extraHeaders = {}) => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem("eduvista_token");
     return {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...extraHeaders,
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   };
 
   const fetchData = async () => {
     if (!currentUser) return;
     try {
-      const res = await fetch(`${API_BASE}/teachers/dashboard/${currentUser.uid}`, {
-        headers: getAuthHeaders()
-      });
+      const res = await fetch(
+        `${API_BASE}/teachers/dashboard/${currentUser.uid}`,
+        {
+          headers: getAuthHeaders(),
+        },
+      );
       if (res.ok) {
         const data = await res.json();
         setTeacherProfile(data.teacher);
-        setName(data.teacher.name || '');
-        setUsername(data.teacher.username || '');
-        setLocation(data.teacher.location || '');
+        setName(data.teacher.name || "");
+        setUsername(data.teacher.username || "");
+        setLocation(data.teacher.location || "");
         setRate(data.teacher.rate ? data.teacher.rate / 100 : 0);
-        setBio(data.teacher.bio || '');
+        setBio(data.teacher.bio || "");
         setSelectedSubjects(data.teacher.subjects || []);
         setSelectedCurricula(data.teacher.curricula || []);
         setSelectedLanguages(data.teacher.languages || []);
-        setAvatar(data.teacher.avatar || '');
-        setCurrency(data.teacher.currency || 'NGN');
-        setTimezone(data.teacher.timezone || 'Africa/Lagos');
-        setClassroomLink(data.teacher.classroomLink || '');
-        setRecordingTool(data.teacher.recordingTool || 'recordly.site');
+        setAvatar(data.teacher.avatar || "");
+        setCurrency(data.teacher.currency || "NGN");
+        setTimezone(data.teacher.timezone || "Africa/Lagos");
+        setClassroomLink(data.teacher.classroomLink || "");
+        setRecordingTool(data.teacher.recordingTool || "recordly.site");
 
         const teacherSessions = data.sessions || [];
-        setBookingRequests(teacherSessions.filter(s => s.status === 'Pending Confirmation'));
-        setActiveSessions(teacherSessions.filter(s => s.status !== 'Pending Confirmation'));
+        setBookingRequests(
+          teacherSessions.filter((s) => s.status === "Pending Confirmation"),
+        );
+        setActiveSessions(
+          teacherSessions.filter((s) => s.status !== "Pending Confirmation"),
+        );
 
-        setWallet({ balance: data.walletBalance || 0, escrow: data.escrowBalance || 0 });
+        setWallet({
+          balance: data.walletBalance || 0,
+          escrow: data.escrowBalance || 0,
+        });
         setEarnedThisMonth(data.earnedThisMonth || 0);
         setPaidOutToDate(data.paidOutToDate || 0);
         setCommission(data.commission || 0);
@@ -176,26 +231,34 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         setTransactions(data.transactions || []);
 
         // Dynamic Roster Mapping from active sessions
-        const activeSessionsList = teacherSessions.filter(s => s.status !== 'Pending Confirmation');
+        const activeSessionsList = teacherSessions.filter(
+          (s) => s.status !== "Pending Confirmation",
+        );
         const rosterMap = {};
-        activeSessionsList.forEach(s => {
+        activeSessionsList.forEach((s) => {
           if (!rosterMap[s.studentId]) {
             rosterMap[s.studentId] = {
               uid: s.studentId,
               name: s.studentName,
-              subject: s.subject || 'Tuition',
-              lastSession: s.status === 'Completed' ? 'Completed Class' : 'Scheduled',
-              nextSession: s.slot ? `${s.slot.day} ${s.slot.time}` : 'Not scheduled',
+              subject: s.subject || "Tuition",
+              lastSession:
+                s.status === "Completed" ? "Completed Class" : "Scheduled",
+              nextSession: s.slot
+                ? `${s.slot.day} ${s.slot.time}`
+                : "Not scheduled",
               assignments: 0,
-              trend: '↑ Active',
-              note: `Session booked by Parent ${s.parentId || ''}`
+              trend: "↑ Active",
+              note: `Session booked by Parent ${s.parentId || ""}`,
             };
           }
         });
         setRoster(Object.values(rosterMap));
       }
     } catch (err) {
-      console.warn("Backend API offline, using local states simulation for teacher:", err);
+      console.warn(
+        "Backend API offline, using local states simulation for teacher:",
+        err,
+      );
       // Local state fallback simulation
       setTeacherProfile({
         uid: currentUser.uid,
@@ -208,7 +271,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         reviewsCount: 1,
         badges: ["badge-verified"],
         bio: "Bio description here.",
-        avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop"
+        avatar:
+          "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
       });
     }
   };
@@ -219,7 +283,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setProfileMessage('');
+    setProfileMessage("");
     setLoading(true);
 
     const payload = {
@@ -236,24 +300,26 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       currency,
       timezone,
       classroomLink,
-      recordingTool
+      recordingTool,
     };
 
     try {
       const response = await fetch(`${API_BASE}/teachers/profile`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       if (response.ok) {
-        setProfileMessage('✓ Profile successfully updated!');
+        setProfileMessage("✓ Profile successfully updated!");
         fetchData();
       } else {
-        setProfileMessage('Error updating profile details.');
+        setProfileMessage("Error updating profile details.");
       }
     } catch (err) {
-      console.error('Error saving profile:', err);
-      setProfileMessage('✓ Profile successfully updated (Local Sandbox Fallback)');
+      console.error("Error saving profile:", err);
+      setProfileMessage(
+        "✓ Profile successfully updated (Local Sandbox Fallback)",
+      );
     } finally {
       setLoading(false);
     }
@@ -262,53 +328,61 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
   const handleBookingRespond = async (sessionId, action) => {
     try {
       const response = await fetch(`${API_BASE}/sessions/respond`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ sessionId, action })
+        body: JSON.stringify({ sessionId, action }),
       });
       if (response.ok) {
         fetchData();
-        toast.success(`Booking request successfully ${action === 'Confirm' ? 'approved and scheduled' : 'rejected'}.`);
+        toast.success(
+          `Booking request successfully ${action === "Confirm" ? "approved and scheduled" : "rejected"}.`,
+        );
       }
     } catch (err) {
-      console.error('Error responding to booking:', err);
+      console.error("Error responding to booking:", err);
       // Fallback
-      if (action === 'Confirm') {
-        setBookingRequests(prev => prev.filter(s => s.id !== sessionId));
-        toast.success('Booking successfully confirmed (Local Sandbox Fallback).');
+      if (action === "Confirm") {
+        setBookingRequests((prev) => prev.filter((s) => s.id !== sessionId));
+        toast.success(
+          "Booking successfully confirmed (Local Sandbox Fallback).",
+        );
       } else {
-        setBookingRequests(prev => prev.filter(s => s.id !== sessionId));
-        toast.success('Booking successfully rejected (Local Sandbox Fallback).');
+        setBookingRequests((prev) => prev.filter((s) => s.id !== sessionId));
+        toast.success(
+          "Booking successfully rejected (Local Sandbox Fallback).",
+        );
       }
     }
   };
 
   const toggleSubject = (subj) => {
-    setSelectedSubjects(prev =>
-      prev.includes(subj) ? prev.filter(s => s !== subj) : [...prev, subj]
+    setSelectedSubjects((prev) =>
+      prev.includes(subj) ? prev.filter((s) => s !== subj) : [...prev, subj],
     );
   };
 
   const toggleCurriculum = (curr) => {
-    setSelectedCurricula(prev =>
-      prev.includes(curr) ? prev.filter(c => c !== curr) : [...prev, curr]
+    setSelectedCurricula((prev) =>
+      prev.includes(curr) ? prev.filter((c) => c !== curr) : [...prev, curr],
     );
   };
 
   const toggleLanguage = (lang) => {
-    setSelectedLanguages(prev =>
-      prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
+    setSelectedLanguages((prev) =>
+      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang],
     );
   };
 
   const handleCompleteSession = async (sessionId) => {
     try {
       const res = await fetch(`${API_BASE}/sessions/${sessionId}/complete`, {
-        method: 'POST',
-        headers: getAuthHeaders()
+        method: "POST",
+        headers: getAuthHeaders(),
       });
       if (res.ok) {
-        toast.success("✓ Session marked as complete! 24-hour escrow auto-release countdown started.");
+        toast.success(
+          "✓ Session marked as complete! 24-hour escrow auto-release countdown started.",
+        );
         fetchData();
       } else {
         const data = await res.json();
@@ -325,12 +399,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
     if (!studentName) return;
     setActiveReportStudent(studentName);
     setAiReportLoading(true);
-    setAiReportContent('');
+    setAiReportContent("");
     try {
       const res = await fetch(`${API_BASE}/ai/progress-report`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ studentName, teacherNotes: rosterNoteInput })
+        body: JSON.stringify({ studentName, teacherNotes: rosterNoteInput }),
       });
       const data = await res.json();
       if (res.ok && data.report) {
@@ -340,7 +414,9 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       }
     } catch (err) {
       console.error(err);
-      setAiReportContent(`### Progress Report for ${studentName}\n\n- **Academic Strengths**: Excellent comprehension & active session participation.\n- **Growth Areas**: Practice timed examination questions.\n- **Recommended Plan**: Continue regular tutoring schedule.`);
+      setAiReportContent(
+        `### Progress Report for ${studentName}\n\n- **Academic Strengths**: Excellent comprehension & active session participation.\n- **Growth Areas**: Practice timed examination questions.\n- **Recommended Plan**: Continue regular tutoring schedule.`,
+      );
     } finally {
       setAiReportLoading(false);
     }
@@ -350,11 +426,11 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
     e.preventDefault();
     onGradeHomework({
       id: Date.now(),
-      student: 'Tunde',
-      title: 'Homework #4 (Quadratic Equations)',
+      student: "Tunde",
+      title: "Homework #4 (Quadratic Equations)",
       score: parseInt(gradingScore),
       feedback: gradingFeedback,
-      date: 'Today'
+      date: "Today",
     });
     setIsGraded(true);
     setTimeout(() => setIsGraded(false), 3000);
@@ -369,9 +445,9 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
     setSubmittingClassLink(sessionId);
     try {
       const res = await fetch(`${API_BASE}/sessions/link`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ sessionId, classLink })
+        body: JSON.stringify({ sessionId, classLink }),
       });
       if (res.ok) {
         fetchData();
@@ -389,1686 +465,2610 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
     }
   };
 
-
   const handleCreateAssignment = async (e) => {
     e.preventDefault();
-    setAssignMessage('Creating...');
+    setAssignMessage("Creating...");
     try {
       const response = await fetch(`${API_BASE}/assignments/create`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({
           title: assignTitle,
           description: assignDesc,
           teacherName: teacherProfile?.name || currentUser?.displayName,
           studentName: assignStudent,
-          dueDate: 'Next Week'
-        })
+          dueDate: "Next Week",
+        }),
       });
       if (response.ok) {
-        setAssignMessage('✓ Assignment Created successfully');
-        setAssignTitle('');
-        setAssignDesc('');
-        setTimeout(() => setAssignMessage(''), 3000);
+        setAssignMessage("✓ Assignment Created successfully");
+        setAssignTitle("");
+        setAssignDesc("");
+        setTimeout(() => setAssignMessage(""), 3000);
       } else {
-        setAssignMessage('Error creating assignment.');
+        setAssignMessage("Error creating assignment.");
       }
     } catch (err) {
       console.error(err);
-      setAssignMessage('✓ Assignment Created (Sandbox Mode)');
-      setAssignTitle('');
-      setAssignDesc('');
-      setTimeout(() => setAssignMessage(''), 3000);
+      setAssignMessage("✓ Assignment Created (Sandbox Mode)");
+      setAssignTitle("");
+      setAssignDesc("");
+      setTimeout(() => setAssignMessage(""), 3000);
     }
   };
 
   const handlePayoutRequest = async (e) => {
     e.preventDefault();
-    if (payoutRequestAmount <= 0) return setPayoutMessage('Amount must be greater than zero.');
-    if (wallet.balance < payoutRequestAmount) return setPayoutMessage('Insufficient settled balance.');
-    
+    if (payoutRequestAmount <= 0)
+      return setPayoutMessage("Amount must be greater than zero.");
+    if (wallet.balance < payoutRequestAmount)
+      return setPayoutMessage("Insufficient settled balance.");
+
     setIsRequestingPayout(true);
-    setPayoutMessage('');
+    setPayoutMessage("");
     try {
       const response = await fetch(`${API_BASE}/payout/request`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           amount: payoutRequestAmount,
           payoutMethod: payoutMethod,
-          bankDetails: payoutMethod === 'Paystack Bank Account' ? {
-            accountNumber,
-            accountName,
-            bankCode: selectedBankCode,
-            bankName: selectedBankName
-          } : null
-        })
+          bankDetails:
+            payoutMethod === "Paystack Bank Account"
+              ? {
+                  accountNumber,
+                  accountName,
+                  bankCode: selectedBankCode,
+                  bankName: selectedBankName,
+                }
+              : null,
+        }),
       });
       const data = await response.json();
       if (response.ok) {
-        setPayoutMessage(`✓ Payout requested successfully. New balance: ${formatCurrency(data.newBalance, selectedCurrency)}`);
-        setWallet(prev => ({ ...prev, balance: data.newBalance }));
+        setPayoutMessage(
+          `✓ Payout requested successfully. New balance: ${formatCurrency(data.newBalance, selectedCurrency)}`,
+        );
+        setWallet((prev) => ({ ...prev, balance: data.newBalance }));
         setPayoutRequestAmount(0);
       } else {
-        setPayoutMessage(data.error || 'Failed to request payout.');
+        setPayoutMessage(data.error || "Failed to request payout.");
       }
     } catch (err) {
-      console.error('Error requesting payout:', err);
+      console.error("Error requesting payout:", err);
       // Fallback
       const newBal = wallet.balance - payoutRequestAmount;
-      setWallet(prev => ({ ...prev, balance: newBal }));
-      setPayoutMessage(`✓ Payout requested successfully (Sandbox Mode). New balance: ${formatCurrency(newBal, selectedCurrency)}`);
+      setWallet((prev) => ({ ...prev, balance: newBal }));
+      setPayoutMessage(
+        `✓ Payout requested successfully (Sandbox Mode). New balance: ${formatCurrency(newBal, selectedCurrency)}`,
+      );
       setPayoutRequestAmount(0);
     } finally {
       setIsRequestingPayout(false);
-      setTimeout(() => setPayoutMessage(''), 5000);
+      setTimeout(() => setPayoutMessage(""), 5000);
     }
   };
 
-  const availableSubjects = ["Mathematics", "Physics", "Chemistry", "English", "Literature", "Further Mathematics", "Diction", "Spelling", "Nigerian Languages"];
-  const availableCurricula = ["WAEC", "JAMB", "IGCSE", "Cambridge", "IB Diploma", "Primary (Ages 6-11)", "Middle School (Ages 12-14)", "High School (Ages 15-18)", "Adult Education"];
-  const availableLanguages = ["English", "Yoruba", "Igbo", "Hausa", "French", "Swahili"];
+  const availableSubjects = [
+    "Mathematics",
+    "Physics",
+    "Chemistry",
+    "English",
+    "Literature",
+    "Further Mathematics",
+    "Diction",
+    "Spelling",
+    "Nigerian Languages",
+  ];
+  const availableCurricula = [
+    "WAEC",
+    "JAMB",
+    "IGCSE",
+    "Cambridge",
+    "IB Diploma",
+    "Primary (Ages 6-11)",
+    "Middle School (Ages 12-14)",
+    "High School (Ages 15-18)",
+    "Adult Education",
+  ];
+  const availableLanguages = [
+    "English",
+    "Yoruba",
+    "Igbo",
+    "Hausa",
+    "French",
+    "Swahili",
+  ];
 
   return (
-    <section id="dashboard" className="py-24 px-6 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto border-t border-brand-moss/10">
-      
-
-      {/* Dashboard Switcher Header */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-12 border-b border-brand-moss/10 pb-8">
+    <div className="fixed inset-0 z-[60] bg-[#f8f9fa] flex font-sans overflow-hidden">
+      {/* LEFT SIDEBAR */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
-          {onBack && (
-            <button 
-              onClick={onBack}
-              className="mb-4 hidden lg:inline-flex items-center gap-1.5 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 px-3.5 py-1.5 rounded-full border border-brand-moss/10 transition-colors"
-            >
-              ← Back to Home
-            </button>
-          )}
-          <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-1">Dual Portal Sandbox</span>
-          <h2 className="font-heading font-bold text-3xl text-brand-moss">Platform Teacher Dashboard</h2>
-          <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
-            Build your faculty profile, confirm incoming manual booking requests, and coordinate scheduling options.
-          </p>
-        </div>
+          {/* Logo Area */}
+          <div className="h-20 flex items-center px-6 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                <FileText size={18} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="font-bold text-gray-900 text-sm leading-tight">
+                  LessonVerify
+                </h1>
+                <span className="text-[10px] text-gray-500 block">
+                  Teacher Portal
+                </span>
+              </div>
+            </div>
+          </div>
 
-        {/* Pill Navigation Switcher */}
-        {teacherProfile && teacherProfile.verified && (
-          <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-full p-1.5 self-center max-w-full gap-1 scrollbar-none">
+          {/* Nav Links */}
+          <nav className="p-4 flex flex-col gap-1 mt-2">
             {[
-              { id: 'overview', label: 'Overview & Bookings' },
-              { id: 'profile', label: 'Faculty Profile' },
-              { id: 'students', label: 'Students & Grading' },
-              { id: 'earnings', label: 'Earnings & Payouts' },
-              { id: 'reputation', label: 'Reputation & Growth' },
-              { id: 'academy', label: 'AI Academy' }
-            ].map(tab => (
+              { id: "overview", label: "Dashboard", icon: LayoutDashboard },
+              { id: "students", label: "Students", icon: Users },
+              { id: "reputation", label: "Reputation", icon: Star },
+              { id: "academy", label: "AI Recommendations", icon: Sparkles },
+              { id: "earnings", label: "Reports & Earnings", icon: Wallet },
+              { id: "profile", label: "Profile Settings", icon: User },
+            ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-2 px-4 rounded-full font-heading font-bold text-[10px] uppercase tracking-wider shrink-0 transition-all duration-300 ${
+                onClick={() => {
+                  if (teacherProfile && teacherProfile.verified) {
+                    setActiveTab(tab.id);
+                  } else {
+                    toast.error("Complete verification to access this tab");
+                  }
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all ${
                   activeTab === tab.id
-                    ? 'bg-brand-moss text-white shadow-md'
-                    : 'text-brand-moss hover:bg-brand-moss/5'
-                }`}
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                } ${!teacherProfile || !teacherProfile.verified ? "opacity-50 cursor-not-allowed" : ""}`}
               >
+                <tab.icon
+                  size={18}
+                  className={
+                    activeTab === tab.id ? "text-blue-600" : "text-gray-400"
+                  }
+                />
                 {tab.label}
               </button>
             ))}
-          </div>
-        )}
-      </div>
+          </nav>
+        </div>
 
-      <div className="space-y-8 animate-fade-up">
-        
-        {/* Verification Check checklist for unverified teachers */}
-        {teacherProfile && !teacherProfile.verified && (
-          <div className="bg-white border border-brand-moss/10 rounded-[3rem] p-8 md:p-12 shadow-xl space-y-8 text-center max-w-2xl mx-auto">
-            <div className="w-16 h-16 bg-brand-clay/10 rounded-full flex items-center justify-center mx-auto text-brand-clay">
-              <Lock className="w-8 h-8 animate-pulse" />
-            </div>
-            
-            <div className="space-y-3">
-              <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block">
-                Verification & Approval Status: {teacherProfile.status === 'onboarding' ? 'Onboarding Incomplete' : 'Under Review'}
+        <div className="p-4 border-t border-gray-100">
+          <button
+            onClick={() => setActiveTab("profile")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          >
+            <Settings size={18} className="text-gray-400" />
+            Settings
+          </button>
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all mt-1"
+            >
+              <ArrowRight size={18} className="text-gray-400 rotate-180" />
+              Exit to App
+            </button>
+          )}
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8f9fa]">
+        {/* Top Header */}
+        <header className="h-20 bg-white/50 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0">
+          <div className="flex items-center gap-6">
+            <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
+              <Bell size={20} />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="flex items-center gap-3 pl-6 border-l border-gray-200 cursor-pointer group">
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 overflow-hidden">
+                {teacherProfile?.avatar ? (
+                  <img
+                    src={teacherProfile.avatar}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={16} />
+                )}
+              </div>
+              <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">
+                {currentUser?.displayName || "Teacher"}
               </span>
-              <h3 className="font-heading font-bold text-2xl text-brand-moss">Access Gated: Vetting in Progress</h3>
-              <p className="font-sans text-xs text-brand-charcoal/70 leading-relaxed">
-                Welcome to EduVista Africa! You have successfully registered your educator profile. Before you can start taking classes, tutoring students, or earning payouts, our Admin team must manually audit your credentials.
-              </p>
-              <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm font-bold">
-                Your application is pending verification on the platform. Please check your email for updates regarding your approval status.
-              </div>
             </div>
-            
-            {/* Checklist of what was submitted */}
-            <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-6 text-left space-y-4 max-w-md mx-auto font-sans text-xs">
-              <h4 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px]">Your Vetting Checklist</h4>
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Profile biography: <b>Completed</b></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Hourly rate configuration: <b>₦{(teacherProfile.rate || 0)/100}/hr</b></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Government-issued ID: <b>{teacherProfile.govId || 'Not uploaded'}</b></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Degree & Qualifications: <b>{teacherProfile.degree || 'Not uploaded'}</b></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {teacherProfile.videoUrl ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  ) : (
-                    <AlertOctagon className="w-4 h-4 text-brand-clay animate-pulse" />
-                  )}
-                  <span>Introductory Vetting Video: <b>{teacherProfile.videoUrl ? 'Uploaded ✓' : 'Awaiting upload'}</b></span>
-                </div>
-                <div className="h-px bg-brand-moss/10 my-3" />
-                <div className="flex items-center gap-2 text-brand-moss font-bold">
-                  <div className="w-2.5 h-2.5 rounded-full bg-brand-clay animate-ping" />
-                  <span>Admin Verification Panel: <b>Review Pending Approval</b></span>
-                </div>
-              </div>
-            </div>
-
-            <p className="font-mono text-[9px] text-brand-charcoal/50 leading-normal">
-              SLA Standard Window: Applications are vetted within 24 to 48 hours. <br />
-              Once verified, you will be granted full access to your booking calendars and lessons.
-            </p>
           </div>
-        )}
+        </header>
 
-        {/* If verified, show dashboard tabs */}
-        {teacherProfile && teacherProfile.verified && (
-          <>
-        
-        {/* TAB 1: OVERVIEW & BOOKINGS */}
-        {activeTab === 'overview' && (
-          <div className="space-y-8">
-            {/* Wallet Metrics Row */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-                <span className="font-heading font-extrabold text-2xl text-emerald-600 block">
-                  {formatCurrency(earnedThisMonth, selectedCurrency)}
-                </span>
-                <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Earned this month</span>
-                <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">↑ Net earnings</span>
-              </div>
-              <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-                <span className="font-heading font-extrabold text-2xl text-brand-clay block">
-                  {formatCurrency(wallet.escrow, selectedCurrency)}
-                </span>
-                <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">In escrow (pending)</span>
-                <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">Escrow secured</span>
-              </div>
-              <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-                <span className="font-heading font-extrabold text-2xl text-brand-moss block">
-                  {formatCurrency(paidOutToDate, selectedCurrency)}
-                </span>
-                <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Paid out to date</span>
-                <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">Processed payouts</span>
-              </div>
-              <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-                <span className="font-heading font-extrabold text-2xl text-rose-600 block">
-                  {formatCurrency(commission, selectedCurrency)}
-                </span>
-                <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Commission</span>
-                <span className="font-mono text-[9px] text-rose-600 font-bold block mt-2">15% platform gross</span>
-              </div>
-              <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm col-span-2 md:col-span-1">
-                <span className="font-heading font-extrabold text-2xl text-brand-moss block">
-                  {sessionsCount}
-                </span>
-                <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Sessions this month</span>
-                <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">Total classes</span>
-              </div>
-            </div>
-            
-            {/* Teacher Onboarding Checklist */}
-            {(() => {
-              const hasSubjects = teacherProfile?.subjects && teacherProfile.subjects.length > 0;
-              const hasAvailability = Object.values(availabilityGrid).some(slots => slots.length > 0);
-              const hasGraded = gradesLog && gradesLog.length > 0;
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto w-full space-y-8 animate-fade-up">
+            {/* Verification Check checklist for unverified teachers */}
+            {teacherProfile && !teacherProfile.verified && (
+              <div className="bg-white border border-brand-moss/10 rounded-[3rem] p-8 md:p-12 shadow-xl space-y-8 text-center max-w-2xl mx-auto">
+                <div className="w-16 h-16 bg-brand-clay/10 rounded-full flex items-center justify-center mx-auto text-brand-clay">
+                  <Lock className="w-8 h-8 animate-pulse" />
+                </div>
 
-              const teacherSteps = [
-                {
-                  step: 1,
-                  title: "Teacher Vetting Status",
-                  desc: "Your profile has been vetted and verified by the administration team.",
-                  completed: true,
-                  actionLabel: "Verified",
-                  action: null
-                },
-                {
-                  step: 2,
-                  title: "Set Hourly Rate & Profile Details",
-                  desc: hasSubjects 
-                    ? `Configured. Hourly rate: ${formatCurrency(teacherProfile.rate || 0, selectedCurrency)}.`
-                    : "Configure your subjects, biography, profile avatar, and set your hourly rate.",
-                  completed: hasSubjects,
-                  actionLabel: "Edit Profile",
-                  action: () => setActiveTab('profile')
-                },
-                {
-                  step: 3,
-                  title: "Set Slot Availability",
-                  desc: hasAvailability 
-                    ? "Weekly schedule slots configured."
-                    : "Add availability slots for days of the week so parents can book lessons.",
-                  completed: hasAvailability,
-                  actionLabel: "Set Availability",
-                  action: () => setActiveTab('profile')
-                },
-                {
-                  step: 4,
-                  title: "Grade Homework Submission",
-                  desc: hasGraded 
-                    ? `Graded ${gradesLog.length} assignment(s).`
-                    : "Grade student assignments and homework submissions to release escrow funds.",
-                  completed: hasGraded,
-                  actionLabel: "Grade Homework",
-                  action: () => {
-                    const el = document.getElementById('grading-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    else setActiveTab('students');
-                  }
-                }
-              ];
+                <div className="space-y-3">
+                  <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block">
+                    Verification & Approval Status:{" "}
+                    {teacherProfile.status === "onboarding"
+                      ? "Onboarding Incomplete"
+                      : "Under Review"}
+                  </span>
+                  <h3 className="font-heading font-bold text-2xl text-brand-moss">
+                    Access Gated: Vetting in Progress
+                  </h3>
+                  <p className="font-sans text-xs text-brand-charcoal/70 leading-relaxed">
+                    Welcome to EduVista Africa! You have successfully registered
+                    your educator profile. Before you can start taking classes,
+                    tutoring students, or earning payouts, our Admin team must
+                    manually audit your credentials.
+                  </p>
+                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm font-bold">
+                    Your application is pending verification on the platform.
+                    Please check your email for updates regarding your approval
+                    status.
+                  </div>
+                </div>
 
-              const tCompleted = teacherSteps.filter(s => s.completed).length;
-              const tPercent = Math.round((tCompleted / teacherSteps.length) * 100);
-
-              return (
-                <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-6 md:p-8 shadow-sm">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <div>
-                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block mb-1">INTERACTIVE QUICKSTART GUIDE</span>
-                      <h3 className="font-heading font-bold text-xl text-brand-moss">Set Up Your Teacher Account</h3>
-                      <p className="font-sans text-xs text-brand-charcoal/70 mt-1 leading-relaxed">
-                        Complete these steps to maximize your visibility and process bookings successfully. Click any card to navigate.
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end shrink-0">
-                      <span className="font-sans text-2xs font-bold text-brand-moss uppercase tracking-wider mb-1.5">
-                        Progress: {tPercent}% ({tCompleted}/{teacherSteps.length})
+                {/* Checklist of what was submitted */}
+                <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-6 text-left space-y-4 max-w-md mx-auto font-sans text-xs">
+                  <h4 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px]">
+                    Your Vetting Checklist
+                  </h4>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>
+                        Profile biography: <b>Completed</b>
                       </span>
-                      <div className="w-48 h-2 bg-brand-moss/10 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-brand-clay transition-all duration-500 rounded-full" 
-                          style={{ width: `${tPercent}%` }} 
-                        />
-                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>
+                        Hourly rate configuration:{" "}
+                        <b>₦{(teacherProfile.rate || 0) / 100}/hr</b>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>
+                        Government-issued ID:{" "}
+                        <b>{teacherProfile.govId || "Not uploaded"}</b>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>
+                        Degree & Qualifications:{" "}
+                        <b>{teacherProfile.degree || "Not uploaded"}</b>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {teacherProfile.videoUrl ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      ) : (
+                        <AlertOctagon className="w-4 h-4 text-brand-clay animate-pulse" />
+                      )}
+                      <span>
+                        Introductory Vetting Video:{" "}
+                        <b>
+                          {teacherProfile.videoUrl
+                            ? "Uploaded ✓"
+                            : "Awaiting upload"}
+                        </b>
+                      </span>
+                    </div>
+                    <div className="h-px bg-brand-moss/10 my-3" />
+                    <div className="flex items-center gap-2 text-brand-moss font-bold">
+                      <div className="w-2.5 h-2.5 rounded-full bg-brand-clay animate-ping" />
+                      <span>
+                        Admin Verification Panel: <b>Review Pending Approval</b>
+                      </span>
                     </div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {teacherSteps.map((item) => (
-                      <div 
-                        key={item.step} 
-                        onClick={() => item.action && item.action()}
-                        className={`border rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 relative select-none ${
-                          item.action ? 'cursor-pointer hover:shadow-md hover:border-brand-clay/35 hover-lift' : ''
-                        } ${
-                          item.completed 
-                            ? 'bg-emerald-50/20 border-emerald-600/20 text-brand-charcoal' 
-                            : 'bg-white border-brand-moss/10 hover:border-brand-clay/40'
-                        }`}
+                <p className="font-mono text-[9px] text-brand-charcoal/50 leading-normal">
+                  SLA Standard Window: Applications are vetted within 24 to 48
+                  hours. <br />
+                  Once verified, you will be granted full access to your booking
+                  calendars and lessons.
+                </p>
+              </div>
+            )}
+
+            {/* If verified, show dashboard tabs */}
+            {teacherProfile && teacherProfile.verified && (
+              <>
+                {/* TAB 1: OVERVIEW & BOOKINGS */}
+                {activeTab === "overview" && (
+                  <div className="space-y-8">
+                    {/* Header Title */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+                          <BarChart2 size={24} />
+                        </div>
+                        <div>
+                          <h2 className="text-2xl font-bold text-gray-900 leading-tight">
+                            Weekly Reports
+                          </h2>
+                          <p className="text-sm text-gray-500">
+                            Track performance trends and generate insights
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <select className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none shadow-sm cursor-pointer hover:border-gray-300">
+                          <option>8 Weeks</option>
+                          <option>4 Weeks</option>
+                          <option>This Year</option>
+                        </select>
+                        <button className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm flex items-center gap-2 transition-colors">
+                          <Download size={16} /> Export All
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Colorful Stats Strip */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {/* Blue Card */}
+                      <div className="bg-[#3b82f6] rounded-xl p-6 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden group">
+                        <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                          <Wallet size={24} />
+                        </div>
+                        <span className="block text-xs font-medium text-blue-100 mb-1 opacity-90">
+                          Earned This Month
+                        </span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-4xl font-bold tracking-tight">
+                            {formatCurrency(earnedThisMonth, selectedCurrency)}
+                          </span>
+                        </div>
+                        <span className="block text-xs font-medium text-blue-100 mt-2 opacity-90">
+                          Net earnings
+                        </span>
+                      </div>
+
+                      {/* Green Card */}
+                      <div className="bg-[#10b981] rounded-xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden group">
+                        <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                          <Activity size={24} />
+                        </div>
+                        <span className="block text-xs font-medium text-emerald-100 mb-1 opacity-90">
+                          Sessions This Month
+                        </span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-4xl font-bold tracking-tight">
+                            {sessionsCount}
+                          </span>
+                        </div>
+                        <span className="block text-xs font-medium text-emerald-100 mt-2 opacity-90">
+                          Total classes
+                        </span>
+                      </div>
+
+                      {/* Purple Card */}
+                      <div className="bg-[#8b5cf6] rounded-xl p-6 text-white shadow-lg shadow-purple-500/20 relative overflow-hidden group">
+                        <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                          <ShieldCheck size={24} />
+                        </div>
+                        <span className="block text-xs font-medium text-purple-100 mb-1 opacity-90">
+                          Escrow Balance
+                        </span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-4xl font-bold tracking-tight">
+                            {formatCurrency(wallet.escrow, selectedCurrency)}
+                          </span>
+                        </div>
+                        <span className="block text-xs font-medium text-purple-100 mt-2 opacity-90">
+                          Secured pending
+                        </span>
+                      </div>
+
+                      {/* Orange Card */}
+                      <div className="bg-[#f59e0b] rounded-xl p-6 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden group">
+                        <div className="absolute top-4 right-4 opacity-100 transition-opacity">
+                          <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold">
+                            NCDPI
+                          </span>
+                        </div>
+                        <span className="block text-xs font-medium text-amber-100 mb-1 opacity-90">
+                          Active Students
+                        </span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-4xl font-bold tracking-tight">
+                            {roster.length}
+                          </span>
+                        </div>
+                        <span className="block text-xs font-medium text-amber-100 mt-2 opacity-90">
+                          Enrolled in classes
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Week-over-Week Comparison Section */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mt-8">
+                      <h3 className="font-bold text-gray-900 text-lg">
+                        Week-over-Week Comparison
+                      </h3>
+                      <p className="text-sm text-gray-500 mb-6">
+                        Compare current week performance with previous week
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                          <div className="absolute top-5 right-5 text-emerald-500">
+                            <TrendingUp size={16} />
+                          </div>
+                          <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
+                            Student Attendance Rate
+                          </span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-gray-900">
+                              94%
+                            </span>
+                            <span className="text-xs font-medium text-gray-400">
+                              vs 89%
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold text-emerald-500 mt-1">
+                            +5% increase
+                          </span>
+                        </div>
+
+                        <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                          <div className="absolute top-5 right-5 text-emerald-500">
+                            <TrendingUp size={16} />
+                          </div>
+                          <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
+                            Average Class Rating
+                          </span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-gray-900">
+                              4.8/5
+                            </span>
+                            <span className="text-xs font-medium text-gray-400">
+                              vs 4.6/5
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold text-emerald-500 mt-1">
+                            Improving
+                          </span>
+                        </div>
+
+                        <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                          <div className="absolute top-5 right-5 text-emerald-500">
+                            <TrendingUp size={16} />
+                          </div>
+                          <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
+                            Total Teaching Hours
+                          </span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-gray-900">
+                              {sessionsCount * 2} hrs
+                            </span>
+                            <span className="text-xs font-medium text-gray-400">
+                              vs {Math.max(sessionsCount * 2 - 4, 0)} hrs
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold text-emerald-500 mt-1">
+                            +4 hrs
+                          </span>
+                        </div>
+
+                        <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
+                          <div className="absolute top-5 right-5 text-rose-500">
+                            <TrendingDown size={16} />
+                          </div>
+                          <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
+                            Pending Grading
+                          </span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-gray-900">
+                              3
+                            </span>
+                            <span className="text-xs font-medium text-gray-400">
+                              vs 1
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold text-rose-500 mt-1">
+                            Requires action
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Teacher Onboarding Checklist */}
+                    {(() => {
+                      const hasSubjects =
+                        teacherProfile?.subjects &&
+                        teacherProfile.subjects.length > 0;
+                      const hasAvailability = Object.values(
+                        availabilityGrid,
+                      ).some((slots) => slots.length > 0);
+                      const hasGraded = gradesLog && gradesLog.length > 0;
+
+                      const teacherSteps = [
+                        {
+                          step: 1,
+                          title: "Teacher Vetting Status",
+                          desc: "Your profile has been vetted and verified by the administration team.",
+                          completed: true,
+                          actionLabel: "Verified",
+                          action: null,
+                        },
+                        {
+                          step: 2,
+                          title: "Set Hourly Rate & Profile Details",
+                          desc: hasSubjects
+                            ? `Configured. Hourly rate: ${formatCurrency(teacherProfile.rate || 0, selectedCurrency)}.`
+                            : "Configure your subjects, biography, profile avatar, and set your hourly rate.",
+                          completed: hasSubjects,
+                          actionLabel: "Edit Profile",
+                          action: () => setActiveTab("profile"),
+                        },
+                        {
+                          step: 3,
+                          title: "Set Slot Availability",
+                          desc: hasAvailability
+                            ? "Weekly schedule slots configured."
+                            : "Add availability slots for days of the week so parents can book lessons.",
+                          completed: hasAvailability,
+                          actionLabel: "Set Availability",
+                          action: () => setActiveTab("profile"),
+                        },
+                        {
+                          step: 4,
+                          title: "Grade Homework Submission",
+                          desc: hasGraded
+                            ? `Graded ${gradesLog.length} assignment(s).`
+                            : "Grade student assignments and homework submissions to release escrow funds.",
+                          completed: hasGraded,
+                          actionLabel: "Grade Homework",
+                          action: () => {
+                            const el =
+                              document.getElementById("grading-section");
+                            if (el) el.scrollIntoView({ behavior: "smooth" });
+                            else setActiveTab("students");
+                          },
+                        },
+                      ];
+
+                      const tCompleted = teacherSteps.filter(
+                        (s) => s.completed,
+                      ).length;
+                      const tPercent = Math.round(
+                        (tCompleted / teacherSteps.length) * 100,
+                      );
+
+                      return (
+                        <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-6 md:p-8 shadow-sm">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                            <div>
+                              <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block mb-1">
+                                INTERACTIVE QUICKSTART GUIDE
+                              </span>
+                              <h3 className="font-heading font-bold text-xl text-brand-moss">
+                                Set Up Your Teacher Account
+                              </h3>
+                              <p className="font-sans text-xs text-brand-charcoal/70 mt-1 leading-relaxed">
+                                Complete these steps to maximize your visibility
+                                and process bookings successfully. Click any
+                                card to navigate.
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-end shrink-0">
+                              <span className="font-sans text-2xs font-bold text-brand-moss uppercase tracking-wider mb-1.5">
+                                Progress: {tPercent}% ({tCompleted}/
+                                {teacherSteps.length})
+                              </span>
+                              <div className="w-48 h-2 bg-brand-moss/10 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-brand-clay transition-all duration-500 rounded-full"
+                                  style={{ width: `${tPercent}%` }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {teacherSteps.map((item) => (
+                              <div
+                                key={item.step}
+                                onClick={() => item.action && item.action()}
+                                className={`border rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 relative select-none ${
+                                  item.action
+                                    ? "cursor-pointer hover:shadow-md hover:border-brand-clay/35 hover-lift"
+                                    : ""
+                                } ${
+                                  item.completed
+                                    ? "bg-emerald-50/20 border-emerald-600/20 text-brand-charcoal"
+                                    : "bg-white border-brand-moss/10 hover:border-brand-clay/40"
+                                }`}
+                              >
+                                <div className="absolute top-3 right-3">
+                                  {item.completed ? (
+                                    <span className="flex items-center justify-center w-4 h-4 bg-emerald-600 rounded-full text-white text-[9px] font-bold">
+                                      ✓
+                                    </span>
+                                  ) : (
+                                    <span className="flex items-center justify-center w-4 h-4 border border-brand-clay/55 rounded-full text-brand-clay text-[9px] font-bold animate-pulse">
+                                      ●
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div>
+                                  <span
+                                    className={`font-heading font-black text-2xl block mb-1 ${item.completed ? "text-emerald-600/80" : "text-brand-clay"}`}
+                                  >
+                                    0{item.step}
+                                  </span>
+                                  <h4 className="font-heading font-bold text-xs text-brand-moss mb-2">
+                                    {item.title}
+                                  </h4>
+                                  <p className="font-sans text-[11px] text-brand-charcoal/75 leading-relaxed mb-3">
+                                    {item.desc}
+                                  </p>
+                                </div>
+
+                                <div className="border-t border-brand-moss/5 pt-2 mt-auto">
+                                  {item.actionLabel && !item.completed && (
+                                    <button
+                                      type="button"
+                                      className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-extrabold hover:underline block text-left"
+                                    >
+                                      {item.actionLabel} →
+                                    </button>
+                                  )}
+                                  {item.completed && (
+                                    <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-600 font-extrabold block">
+                                      Completed
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Incoming Booking Requests */}
+                    <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+                      <h3 className="font-heading font-bold text-xl text-brand-moss mb-4 flex items-center justify-between">
+                        <span>Incoming Booking Requests</span>
+                        <span className="font-mono text-2xs bg-brand-clay/10 text-brand-clay font-bold py-1 px-3 rounded-full uppercase tracking-wider">
+                          {bookingRequests.length} Pending Confirm
+                        </span>
+                      </h3>
+
+                      <div className="bg-brand-clay/5 border border-brand-clay/20 rounded-xl p-4 mb-6">
+                        <h4 className="font-heading font-bold text-sm text-brand-clay mb-2">
+                          Step-by-Step Guide for Booking Requests
+                        </h4>
+                        <ol className="list-decimal list-inside space-y-1.5 font-sans text-xs text-brand-charcoal/80">
+                          <li>
+                            <strong>Review</strong> the student's request,
+                            noting the subject and proposed time slot.
+                          </li>
+                          <li>
+                            Click <strong>Confirm</strong> to accept the class,
+                            or <strong>Reject</strong> if you are unavailable.
+                          </li>
+                          <li>
+                            Once confirmed, the class moves to{" "}
+                            <strong>Active Tutoring Classrooms</strong> below.
+                          </li>
+                          <li>
+                            In the Active Classrooms section, paste your{" "}
+                            <strong>Class Link (e.g., Zoom/Google Meet)</strong>{" "}
+                            and submit it.
+                          </li>
+                          <li>
+                            After the class concludes, click{" "}
+                            <strong>Complete & Claim Escrow</strong> to receive
+                            your payout.
+                          </li>
+                        </ol>
+                      </div>
+
+                      {bookingRequests.length === 0 ? (
+                        <div className="py-8 text-center text-brand-charcoal/50 text-sm font-sans">
+                          No pending booking confirmation requests.
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {bookingRequests.map((request) => (
+                            <div
+                              key={request.id}
+                              className="bg-brand-cream/30 border border-brand-moss/5 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover-lift"
+                            >
+                              <div>
+                                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block mb-1">
+                                  NEW MANUAL BOOKING REQUEST
+                                </span>
+                                <h4 className="font-heading font-bold text-brand-moss text-base">
+                                  Class with {request.studentName} (Parent:
+                                  Ngozi A.)
+                                </h4>
+                                <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
+                                  Proposed Slot:{" "}
+                                  <span className="font-bold">
+                                    {request.slot.day} at {request.slot.time}
+                                  </span>{" "}
+                                  · Value:{" "}
+                                  {formatCurrency(
+                                    convertMinor(
+                                      request.cost,
+                                      selectedCurrency,
+                                    ),
+                                    selectedCurrency,
+                                  )}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-3 w-full md:w-auto">
+                                <button
+                                  onClick={() =>
+                                    handleBookingRespond(request.id, "Confirm")
+                                  }
+                                  className="flex-1 md:flex-none py-2 px-5 bg-brand-moss hover:bg-brand-moss/95 text-white rounded-full font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleBookingRespond(request.id, "Reject")
+                                  }
+                                  className="flex-1 md:flex-none py-2 px-5 border border-brand-clay hover:bg-brand-clay hover:text-white text-brand-clay rounded-full font-sans font-bold text-xs uppercase tracking-wider transition-all duration-300"
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Active Classrooms */}
+                    <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
+                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-4">
+                        ACTIVE TUTORING CLASSROOMS
+                      </span>
+
+                      {activeSessions.length === 0 ? (
+                        <div className="text-center text-brand-charcoal/40 text-xs py-6 font-sans">
+                          No scheduled lessons found. Pending confirm requests
+                          will appear here once approved.
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {activeSessions.map((session) => (
+                            <div
+                              key={session.id}
+                              className="bg-brand-cream/20 border border-brand-moss/5 rounded-2xl p-4 flex justify-between items-center gap-4 hover-lift"
+                            >
+                              <div>
+                                <h4 className="font-heading font-bold text-sm text-brand-moss">
+                                  {session.studentName} (Parent: Ngozi A.)
+                                </h4>
+                                <span className="font-mono text-[9px] text-brand-charcoal/50 block mt-0.5 uppercase">
+                                  {session.slot.day} · {session.slot.time} ·
+                                  Value:{" "}
+                                  {formatCurrency(
+                                    convertMinor(
+                                      session.cost,
+                                      selectedCurrency,
+                                    ),
+                                    selectedCurrency,
+                                  )}
+                                </span>
+                                <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-1 uppercase">
+                                  ✓ {session.status}
+                                </span>
+
+                                <div className="mt-3 w-full sm:w-80">
+                                  {(!session.classLink ||
+                                    editingClassLink === session.id) &&
+                                  session.status !== "Completed" ? (
+                                    <div className="flex gap-2">
+                                      <input
+                                        type="url"
+                                        placeholder="Paste Class Link (e.g. Zoom/Meet)"
+                                        value={
+                                          classLinkInputs[session.id] !==
+                                          undefined
+                                            ? classLinkInputs[session.id]
+                                            : session.classLink || ""
+                                        }
+                                        onChange={(e) =>
+                                          setClassLinkInputs({
+                                            ...classLinkInputs,
+                                            [session.id]: e.target.value,
+                                          })
+                                        }
+                                        className="flex-1 text-[10px] px-3 py-2 bg-white border border-brand-moss/20 rounded-xl outline-none focus:border-brand-moss"
+                                      />
+                                      <button
+                                        onClick={() =>
+                                          handleSubmitClassLink(session.id)
+                                        }
+                                        disabled={
+                                          submittingClassLink === session.id
+                                        }
+                                        className="px-3 py-2 bg-brand-moss hover:bg-brand-clay text-white rounded-xl text-[9px] uppercase tracking-wider font-bold shrink-0 disabled:opacity-50"
+                                      >
+                                        {submittingClassLink === session.id
+                                          ? "Submitting..."
+                                          : "Submit Link"}
+                                      </button>
+                                    </div>
+                                  ) : session.classLink ? (
+                                    <div className="w-full text-[10px] text-brand-moss bg-brand-moss/5 border border-brand-moss/10 px-3 py-2 rounded-xl truncate flex justify-between items-center gap-2">
+                                      <div className="truncate">
+                                        <b>Class Link:</b>{" "}
+                                        <a
+                                          href={session.classLink}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="underline font-mono"
+                                        >
+                                          {session.classLink}
+                                        </a>
+                                      </div>
+                                      {session.status !== "Completed" && (
+                                        <button
+                                          onClick={() =>
+                                            setEditingClassLink(session.id)
+                                          }
+                                          className="text-[9px] uppercase font-bold text-brand-clay hover:text-brand-moss shrink-0 border border-brand-clay/20 px-2 py-1 rounded-lg bg-white"
+                                        >
+                                          Edit
+                                        </button>
+                                      )}
+                                    </div>
+                                  ) : null}
+                                </div>
+                              </div>
+                              <div className="flex gap-2 self-start md:self-center flex-wrap">
+                                {session.status !== "Completed" &&
+                                  session.status !== "Disputed" && (
+                                    <button
+                                      onClick={() =>
+                                        handleCompleteSession(session.id)
+                                      }
+                                      className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
+                                    >
+                                      <CheckCircle2 className="w-3.5 h-3.5" />{" "}
+                                      Complete & Claim Escrow
+                                    </button>
+                                  )}
+                                {session.status === "Completed" && (
+                                  <button
+                                    onClick={() => {
+                                      setSelectedClockSession(session);
+                                      setIsClockLogOpen(true);
+                                    }}
+                                    className="py-2 px-4 bg-brand-moss/5 border border-brand-moss/10 rounded-xl font-heading font-bold text-2xs text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center gap-1.5"
+                                  >
+                                    <Clock className="w-3.5 h-3.5" /> Session
+                                    Clock Log
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => onOpenChat(session)}
+                                  className="btn-magnetic w-9 h-9 rounded-full bg-brand-moss/5 border border-brand-moss/10 flex items-center justify-center text-brand-moss hover:bg-brand-clay hover:text-white transition-colors"
+                                >
+                                  <MessageSquare className="w-4.5 h-4.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Direct Admin Support Box */}
+                    <div className="bg-brand-moss text-brand-cream border border-brand-cream/10 rounded-[2.5rem] p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        <h4 className="font-heading font-bold text-base text-white">
+                          Need Support or Profile Audits?
+                        </h4>
+                        <p className="font-sans text-xs text-brand-cream/80 mt-1 leading-relaxed">
+                          If you have questions about your onboarding status,
+                          class verification, payouts, or need help updating
+                          your banking details, please chat with our Admin team
+                          directly.
+                        </p>
+                      </div>
+                      <a
+                        href="https://wa.me/2348136451607"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-3 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider text-center shrink-0 shadow-lg shadow-brand-clay/20 transition-all duration-300 hover-lift"
                       >
-                        <div className="absolute top-3 right-3">
-                          {item.completed ? (
-                            <span className="flex items-center justify-center w-4 h-4 bg-emerald-600 rounded-full text-white text-[9px] font-bold">✓</span>
-                          ) : (
-                            <span className="flex items-center justify-center w-4 h-4 border border-brand-clay/55 rounded-full text-brand-clay text-[9px] font-bold animate-pulse">●</span>
-                          )}
+                        💬 WhatsApp Support
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: FACULTY PROFILE */}
+                {activeTab === "profile" && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    {/* Profile Builder */}
+                    <div className="lg:col-span-7 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">
+                        PROFILE BUILDER
+                      </span>
+                      <h3 className="font-heading font-bold text-2xl text-brand-moss mb-6">
+                        Edit Faculty Profile
+                      </h3>
+
+                      {profileMessage && (
+                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs py-3 px-4 rounded-xl mb-6 font-mono animate-pulse">
+                          {profileMessage}
+                        </div>
+                      )}
+
+                      <form
+                        onSubmit={handleProfileSubmit}
+                        className="space-y-6 font-sans text-xs"
+                      >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              Display Name
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              Public Username
+                            </label>
+                            <div className="relative flex items-center">
+                              <span className="absolute left-4 font-mono text-brand-charcoal/40">
+                                @
+                              </span>
+                              <input
+                                type="text"
+                                required
+                                value={username}
+                                onChange={(e) =>
+                                  setUsername(
+                                    e.target.value
+                                      .toLowerCase()
+                                      .replace(/[^a-z0-9-]/g, ""),
+                                  )
+                                }
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl pl-8 pr-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm font-mono"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              Location
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="e.g. Lagos, Nigeria"
+                              value={location}
+                              onChange={(e) => setLocation(e.target.value)}
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              Hourly Rate
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="number"
+                                required
+                                placeholder="e.g. 4000"
+                                value={rate}
+                                onChange={(e) =>
+                                  setRate(parseFloat(e.target.value) || 0)
+                                }
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
+                              />
+                              <select
+                                value={currency}
+                                onChange={(e) => setCurrency(e.target.value)}
+                                className="bg-white border border-brand-moss/10 rounded-xl px-3 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs font-bold h-[46px] shrink-0"
+                              >
+                                <option value="NGN">NGN (₦)</option>
+                                <option value="USD">USD ($)</option>
+                                <option value="GHS">GHS (₵)</option>
+                                <option value="KES">KES (KSh)</option>
+                                <option value="GBP">GBP (£)</option>
+                                <option value="EUR">EUR (€)</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              Timezone
+                            </label>
+                            <select
+                              value={timezone}
+                              onChange={(e) => setTimezone(e.target.value)}
+                              className="w-full bg-white border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm h-[46px]"
+                            >
+                              <option value="Africa/Lagos">
+                                West Africa Time (Lagos, UTC+1)
+                              </option>
+                              <option value="Africa/Nairobi">
+                                East Africa Time (Nairobi, UTC+3)
+                              </option>
+                              <option value="Africa/Johannesburg">
+                                South Africa Standard Time (UTC+2)
+                              </option>
+                              <option value="Africa/Accra">
+                                Greenwich Mean Time (Accra, UTC+0)
+                              </option>
+                              <option value="Europe/London">
+                                Europe / London (BST/GMT)
+                              </option>
+                              <option value="UTC">
+                                Coordinated Universal Time (UTC)
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              Preferred Classroom Link
+                            </label>
+                            <input
+                              type="url"
+                              placeholder="e.g. Google Meet or Zoom URL"
+                              value={classroomLink}
+                              onChange={(e) => setClassroomLink(e.target.value)}
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              Recording Tool
+                            </label>
+                            <select
+                              value={recordingTool}
+                              onChange={(e) => setRecordingTool(e.target.value)}
+                              className="w-full bg-white border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm h-[46px]"
+                            >
+                              <option value="recordly.site">
+                                Recordly.site (Recommended)
+                              </option>
+                              <option value="zoom-cloud">
+                                Zoom Cloud Native
+                              </option>
+                              <option value="loom">Loom Personal</option>
+                              <option value="other">
+                                Other / Manual Upload
+                              </option>
+                            </select>
+                          </div>
                         </div>
 
                         <div>
-                          <span className={`font-heading font-black text-2xl block mb-1 ${item.completed ? 'text-emerald-600/80' : 'text-brand-clay'}`}>
-                            0{item.step}
-                          </span>
-                          <h4 className="font-heading font-bold text-xs text-brand-moss mb-2">{item.title}</h4>
-                          <p className="font-sans text-[11px] text-brand-charcoal/75 leading-relaxed mb-3">{item.desc}</p>
+                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                            Profile Avatar URL
+                          </label>
+                          <input
+                            type="text"
+                            value={avatar}
+                            onChange={(e) => setAvatar(e.target.value)}
+                            className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
+                          />
                         </div>
 
-                        <div className="border-t border-brand-moss/5 pt-2 mt-auto">
-                          {item.actionLabel && !item.completed && (
-                            <button 
+                        <div>
+                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">
+                            Taught Subjects
+                          </label>
+                          <div className="flex flex-wrap gap-2">
+                            {availableSubjects.map((s) => {
+                              const active = selectedSubjects.includes(s);
+                              return (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  onClick={() => toggleSubject(s)}
+                                  className={`py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 ${
+                                    active
+                                      ? "border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
+                                      : "border-brand-moss/10 bg-white text-brand-charcoal/70"
+                                  }`}
+                                >
+                                  {active ? "✓ " : ""}
+                                  {s}
+                                </button>
+                              );
+                            })}
+                            {selectedSubjects
+                              .filter((s) => !availableSubjects.includes(s))
+                              .map((s) => (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  onClick={() => toggleSubject(s)}
+                                  className="py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
+                                >
+                                  ✓ {s}
+                                </button>
+                              ))}
+                          </div>
+                          <div className="mt-3 flex gap-2 max-w-sm">
+                            <input
+                              type="text"
+                              placeholder="Other subject (e.g. Tech Skills)"
+                              value={customSubjectInput}
+                              onChange={(e) =>
+                                setCustomSubjectInput(e.target.value)
+                              }
+                              className="flex-1 bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                            />
+                            <button
                               type="button"
-                              className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-extrabold hover:underline block text-left"
+                              onClick={() => {
+                                const val = customSubjectInput.trim();
+                                if (val) {
+                                  if (!selectedSubjects.includes(val)) {
+                                    setSelectedSubjects((prev) => [
+                                      ...prev,
+                                      val,
+                                    ]);
+                                  }
+                                  setCustomSubjectInput("");
+                                }
+                              }}
+                              className="py-2 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all"
                             >
-                              {item.actionLabel} →
+                              Add
                             </button>
-                          )}
-                          {item.completed && (
-                            <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-600 font-extrabold block">
-                              Completed
-                            </span>
-                          )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
 
-            {/* Incoming Booking Requests */}
-            <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-              <h3 className="font-heading font-bold text-xl text-brand-moss mb-4 flex items-center justify-between">
-                <span>Incoming Booking Requests</span>
-                <span className="font-mono text-2xs bg-brand-clay/10 text-brand-clay font-bold py-1 px-3 rounded-full uppercase tracking-wider">
-                  {bookingRequests.length} Pending Confirm
-                </span>
-              </h3>
+                        <div>
+                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">
+                            Supported Curricula
+                          </label>
+                          <div className="flex flex-wrap gap-2">
+                            {availableCurricula.map((c) => {
+                              const active = selectedCurricula.includes(c);
+                              return (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  onClick={() => toggleCurriculum(c)}
+                                  className={`py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 ${
+                                    active
+                                      ? "border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
+                                      : "border-brand-moss/10 bg-white text-brand-charcoal/70"
+                                  }`}
+                                >
+                                  {active ? "✓ " : ""}
+                                  {c}
+                                </button>
+                              );
+                            })}
+                            {selectedCurricula
+                              .filter((c) => !availableCurricula.includes(c))
+                              .map((c) => (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  onClick={() => toggleCurriculum(c)}
+                                  className="py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
+                                >
+                                  ✓ {c}
+                                </button>
+                              ))}
+                          </div>
+                          <div className="mt-3 flex gap-2 max-w-sm">
+                            <input
+                              type="text"
+                              placeholder="Other curriculum (e.g. Custom standard)"
+                              value={customCurriculumInput}
+                              onChange={(e) =>
+                                setCustomCurriculumInput(e.target.value)
+                              }
+                              className="flex-1 bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const val = customCurriculumInput.trim();
+                                if (val) {
+                                  if (!selectedCurricula.includes(val)) {
+                                    setSelectedCurricula((prev) => [
+                                      ...prev,
+                                      val,
+                                    ]);
+                                  }
+                                  setCustomCurriculumInput("");
+                                }
+                              }}
+                              className="py-2 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all"
+                            >
+                              Add
+                            </button>
+                          </div>
+                        </div>
 
-              <div className="bg-brand-clay/5 border border-brand-clay/20 rounded-xl p-4 mb-6">
-                <h4 className="font-heading font-bold text-sm text-brand-clay mb-2">Step-by-Step Guide for Booking Requests</h4>
-                <ol className="list-decimal list-inside space-y-1.5 font-sans text-xs text-brand-charcoal/80">
-                  <li><strong>Review</strong> the student's request, noting the subject and proposed time slot.</li>
-                  <li>Click <strong>Confirm</strong> to accept the class, or <strong>Reject</strong> if you are unavailable.</li>
-                  <li>Once confirmed, the class moves to <strong>Active Tutoring Classrooms</strong> below.</li>
-                  <li>In the Active Classrooms section, paste your <strong>Class Link (e.g., Zoom/Google Meet)</strong> and submit it.</li>
-                  <li>After the class concludes, click <strong>Complete & Claim Escrow</strong> to receive your payout.</li>
-                </ol>
-              </div>
+                        <div>
+                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                            Short Bio description
+                          </label>
+                          <textarea
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
+                            className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-4 text-brand-charcoal focus:outline-none focus:border-brand-clay h-28 resize-none text-sm leading-relaxed"
+                          />
+                        </div>
 
-              {bookingRequests.length === 0 ? (
-                <div className="py-8 text-center text-brand-charcoal/50 text-sm font-sans">
-                  No pending booking confirmation requests.
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {bookingRequests.map((request) => (
-                    <div key={request.id} className="bg-brand-cream/30 border border-brand-moss/5 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover-lift">
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="btn-magnetic w-full py-4 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-heading font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20"
+                        >
+                          {loading
+                            ? "Saving Changes..."
+                            : "Save & Publish Profile"}
+                        </button>
+                      </form>
+                    </div>
+
+                    {/* Availability Grid */}
+                    <div className="lg:col-span-5 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
                       <div>
-                        <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block mb-1">
-                          NEW MANUAL BOOKING REQUEST
+                        <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
+                          SCHEDULING ENGINE
                         </span>
-                        <h4 className="font-heading font-bold text-brand-moss text-base">
-                          Class with {request.studentName} (Parent: Ngozi A.)
+                        <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">
+                          Availability Slot Grid
                         </h4>
-                        <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
-                          Proposed Slot: <span className="font-bold">{request.slot.day} at {request.slot.time}</span> · Value: {formatCurrency(convertMinor(request.cost, selectedCurrency), selectedCurrency)}
+                        <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">
+                          Configure weekly available timings. Autodetects
+                          conflict overlays with Google Calendar.
                         </p>
                       </div>
-                      <div className="flex items-center gap-3 w-full md:w-auto">
-                        <button
-                          onClick={() => handleBookingRespond(request.id, 'Confirm')}
-                          className="flex-1 md:flex-none py-2 px-5 bg-brand-moss hover:bg-brand-moss/95 text-white rounded-full font-sans font-bold text-xs uppercase tracking-wider transition-colors"
-                        >
-                          Confirm
-                        </button>
-                        <button
-                          onClick={() => handleBookingRespond(request.id, 'Reject')}
-                          className="flex-1 md:flex-none py-2 px-5 border border-brand-clay hover:bg-brand-clay hover:text-white text-brand-clay rounded-full font-sans font-bold text-xs uppercase tracking-wider transition-all duration-300"
-                        >
-                          Reject
-                        </button>
+
+                      <div className="space-y-3 font-sans text-xs">
+                        {Object.entries(availabilityGrid).map(
+                          ([day, slots]) => (
+                            <div
+                              key={day}
+                              className="flex justify-between items-center border-b border-brand-moss/5 pb-2"
+                            >
+                              <span className="font-bold text-brand-moss w-20">
+                                {day}
+                              </span>
+                              <div className="flex gap-1">
+                                {["Morning", "Afternoon", "Evening"].map(
+                                  (slot) => {
+                                    const isAvailable = slots.includes(slot);
+                                    return (
+                                      <button
+                                        key={slot}
+                                        onClick={() => {
+                                          setAvailabilityGrid((prev) => {
+                                            const current = prev[day];
+                                            const updated = current.includes(
+                                              slot,
+                                            )
+                                              ? current.filter(
+                                                  (s) => s !== slot,
+                                                )
+                                              : [...current, slot];
+                                            return { ...prev, [day]: updated };
+                                          });
+                                        }}
+                                        className={`py-1.5 px-3 rounded-lg border text-[9px] font-bold uppercase transition-all duration-300 ${
+                                          isAvailable
+                                            ? "bg-brand-moss text-white border-brand-moss"
+                                            : "bg-brand-cream/30 border-brand-moss/10 text-brand-charcoal/50 hover:border-brand-moss/30"
+                                        }`}
+                                      >
+                                        {slot}
+                                      </button>
+                                    );
+                                  },
+                                )}
+                              </div>
+                            </div>
+                          ),
+                        )}
+                      </div>
+
+                      <div className="border-t border-brand-moss/5 pt-4 space-y-4 font-sans text-xs">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-bold block text-brand-charcoal">
+                              Google Calendar Sync
+                            </span>
+                            <span className="text-[10px] text-brand-charcoal/50">
+                              Auto-block busy time blocks.
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setGoogleCalendarSync(!googleCalendarSync)
+                            }
+                            className={`w-10 h-5 rounded-full transition-all relative ${googleCalendarSync ? "bg-brand-moss" : "bg-brand-charcoal/20"}`}
+                          >
+                            <div
+                              className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.5 transition-all ${googleCalendarSync ? "right-1" : "left-1"}`}
+                            />
+                          </button>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-bold block text-brand-charcoal">
+                              Holiday Mode
+                            </span>
+                            <span className="text-[10px] text-brand-charcoal/50">
+                              Block all bookings for 2 weeks.
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setHolidayMode(!holidayMode)}
+                            className={`w-10 h-5 rounded-full transition-all relative ${holidayMode ? "bg-brand-clay" : "bg-brand-charcoal/20"}`}
+                          >
+                            <div
+                              className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.5 transition-all ${holidayMode ? "right-1" : "left-1"}`}
+                            />
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">
+                              Timezone
+                            </label>
+                            <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2 font-mono text-[10px]">
+                              WAT (GMT+1)
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">
+                              Min Notice Window
+                            </label>
+                            <select
+                              value={minNotice}
+                              onChange={(e) => setMinNotice(e.target.value)}
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2 text-[10px] focus:outline-none"
+                            >
+                              <option value="12 hours">12 hours</option>
+                              <option value="24 hours">24 hours</option>
+                              <option value="48 hours">48 hours</option>
+                            </select>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                  </div>
+                )}
 
-            {/* Active Classrooms */}
-            <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
-              <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-4">ACTIVE TUTORING CLASSROOMS</span>
-              
-              {activeSessions.length === 0 ? (
-                <div className="text-center text-brand-charcoal/40 text-xs py-6 font-sans">
-                  No scheduled lessons found. Pending confirm requests will appear here once approved.
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {activeSessions.map((session) => (
-                    <div key={session.id} className="bg-brand-cream/20 border border-brand-moss/5 rounded-2xl p-4 flex justify-between items-center gap-4 hover-lift">
-                      <div>
-                        <h4 className="font-heading font-bold text-sm text-brand-moss">
-                          {session.studentName} (Parent: Ngozi A.)
-                        </h4>
-                        <span className="font-mono text-[9px] text-brand-charcoal/50 block mt-0.5 uppercase">
-                          {session.slot.day} · {session.slot.time} · Value: {formatCurrency(convertMinor(session.cost, selectedCurrency), selectedCurrency)}
-                        </span>
-                        <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-1 uppercase">
-                          ✓ {session.status}
-                        </span>
-                        
-                        <div className="mt-3 w-full sm:w-80">
-                          {(!session.classLink || editingClassLink === session.id) && session.status !== 'Completed' ? (
-                            <div className="flex gap-2">
-                              <input
-                                type="url"
-                                placeholder="Paste Class Link (e.g. Zoom/Meet)"
-                                value={classLinkInputs[session.id] !== undefined ? classLinkInputs[session.id] : (session.classLink || '')}
-                                onChange={e => setClassLinkInputs({ ...classLinkInputs, [session.id]: e.target.value })}
-                                className="flex-1 text-[10px] px-3 py-2 bg-white border border-brand-moss/20 rounded-xl outline-none focus:border-brand-moss"
-                              />
+                {/* TAB 3: STUDENTS & GRADING */}
+                {activeTab === "students" && (
+                  <div className="space-y-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                      {/* Student Roster list */}
+                      <div className="lg:col-span-7 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
+                        <div>
+                          <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
+                            STUDENT ROSTER
+                          </span>
+                          <h3 className="font-heading font-bold text-xl text-brand-moss mt-0.5">
+                            Active Study Roster
+                          </h3>
+                          <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">
+                            Track child performance milestones, notes, and
+                            outstanding tasks.
+                          </p>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left font-sans text-xs border-collapse">
+                            <thead>
+                              <tr className="border-b border-brand-moss/10 text-brand-charcoal/50 font-mono text-[9px] uppercase tracking-wider">
+                                <th className="py-2.5 pb-4">Student</th>
+                                <th className="py-2.5 pb-4">Subject</th>
+                                <th className="py-2.5 pb-4">Last Active</th>
+                                <th className="py-2.5 pb-4 text-center">
+                                  Tasks
+                                </th>
+                                <th className="py-2.5 pb-4 text-right">
+                                  Trend
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-brand-moss/5 text-brand-charcoal/80">
+                              {roster.map((student) => (
+                                <tr
+                                  key={student.uid}
+                                  onClick={() => {
+                                    setSelectedRosterStudent(student);
+                                    setRosterNoteInput(student.note);
+                                  }}
+                                  className="hover:bg-brand-moss/5 transition-colors cursor-pointer"
+                                >
+                                  <td className="py-3.5 font-bold text-brand-moss">
+                                    {student.name}
+                                  </td>
+                                  <td className="py-3.5">{student.subject}</td>
+                                  <td className="py-3.5 font-mono text-[10px]">
+                                    {student.lastSession}
+                                  </td>
+                                  <td className="py-3.5 text-center font-bold">
+                                    {student.assignments} pending
+                                  </td>
+                                  <td className="py-3.5 text-right flex items-center justify-end gap-2">
+                                    <span className="font-bold text-emerald-600">
+                                      {student.trend}
+                                    </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleGenerateAiReport(student.name);
+                                      }}
+                                      className="px-2.5 py-1 bg-brand-clay text-white rounded-lg text-[9px] font-mono font-bold hover:bg-brand-clay/90 transition-all shadow-sm"
+                                    >
+                                      🪄 AI Report
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* AI Progress Report Output Box */}
+                        {(aiReportLoading || aiReportContent) && (
+                          <div className="bg-brand-cream/40 border border-brand-clay/20 rounded-2xl p-5 mt-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-brand-clay" />{" "}
+                                AI Telemetry Progress Digest:{" "}
+                                {activeReportStudent}
+                              </span>
                               <button
-                                onClick={() => handleSubmitClassLink(session.id)}
-                                disabled={submittingClassLink === session.id}
-                                className="px-3 py-2 bg-brand-moss hover:bg-brand-clay text-white rounded-xl text-[9px] uppercase tracking-wider font-bold shrink-0 disabled:opacity-50"
+                                onClick={() => setAiReportContent("")}
+                                className="text-xs text-brand-charcoal/40 font-bold hover:text-brand-charcoal"
                               >
-                                {submittingClassLink === session.id ? 'Submitting...' : 'Submit Link'}
+                                ✕ Close
                               </button>
                             </div>
-                          ) : session.classLink ? (
-                            <div className="w-full text-[10px] text-brand-moss bg-brand-moss/5 border border-brand-moss/10 px-3 py-2 rounded-xl truncate flex justify-between items-center gap-2">
-                              <div className="truncate">
-                                <b>Class Link:</b> <a href={session.classLink} target="_blank" rel="noreferrer" className="underline font-mono">{session.classLink}</a>
+                            {aiReportLoading ? (
+                              <div className="py-6 text-center text-xs font-mono text-brand-clay animate-pulse">
+                                ⚡ Synthesizing student analytics & Gemini AI
+                                report...
                               </div>
-                              {session.status !== 'Completed' && (
-                                <button 
-                                  onClick={() => setEditingClassLink(session.id)}
-                                  className="text-[9px] uppercase font-bold text-brand-clay hover:text-brand-moss shrink-0 border border-brand-clay/20 px-2 py-1 rounded-lg bg-white"
-                                >
-                                  Edit
-                                </button>
-                              )}
-                            </div>
-                          ) : null}
+                            ) : (
+                              <div className="text-xs font-sans text-brand-charcoal leading-relaxed whitespace-pre-line bg-white p-4 rounded-xl border border-brand-moss/10 shadow-inner">
+                                {aiReportContent}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Group Class Manager */}
+                      <div className="lg:col-span-5 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
+                        <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">
+                          GROUP MODULE
+                        </span>
+                        <h4 className="font-heading font-bold text-sm text-brand-moss mb-4">
+                          Create Group Session (Max 10)
+                        </h4>
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            toast.success(
+                              "Group Classes are coming soon! This feature is under construction.",
+                            );
+                          }}
+                          className="space-y-4 font-sans text-xs"
+                        >
+                          <input
+                            type="text"
+                            required
+                            placeholder="Group Name (e.g. WAEC Math study group)"
+                            value={groupName}
+                            onChange={(e) => setGroupName(e.target.value)}
+                            className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-clay"
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="number"
+                              required
+                              placeholder="Fee (₦ per student)"
+                              value={groupFee}
+                              onChange={(e) => setGroupFee(e.target.value)}
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-clay"
+                            />
+                            <span className="text-[10px] text-brand-charcoal/60 self-center">
+                              System auto-splits cost
+                            </span>
+                          </div>
+                          <button
+                            type="submit"
+                            className="w-full py-2.5 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors"
+                          >
+                            Create Group Class (Coming Soon)
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* Assignment Creator */}
+                      <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] p-6 text-brand-cream shadow-sm">
+                        <div className="flex items-center justify-between border-b border-brand-cream/10 pb-4 mb-6">
+                          <div className="flex items-center gap-2">
+                            <Activity className="w-5 h-5 text-brand-clay" />
+                            <h4 className="font-heading font-bold text-sm text-white">
+                              Create Assignment
+                            </h4>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleGeminiSuggest}
+                            className="bg-brand-clay text-white border border-brand-clay/35 py-1 px-3 rounded-full font-mono text-[8px] uppercase tracking-wider font-bold hover:scale-[1.03] transition-all cursor-pointer"
+                          >
+                            🪄 Gemini Suggestion
+                          </button>
                         </div>
-                      </div>
-                      <div className="flex gap-2 self-start md:self-center flex-wrap">
-                        {session.status !== 'Completed' && session.status !== 'Disputed' && (
-                          <button
-                            onClick={() => handleCompleteSession(session.id)}
-                            className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
-                          >
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Complete & Claim Escrow
-                          </button>
-                        )}
-                        {session.status === 'Completed' && (
-                          <button
-                            onClick={() => {
-                              setSelectedClockSession(session);
-                              setIsClockLogOpen(true);
-                            }}
-                            className="py-2 px-4 bg-brand-moss/5 border border-brand-moss/10 rounded-xl font-heading font-bold text-2xs text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center gap-1.5"
-                          >
-                            <Clock className="w-3.5 h-3.5" /> Session Clock Log
-                          </button>
-                        )}
-                        <button
-                          onClick={() => onOpenChat(session)}
-                          className="btn-magnetic w-9 h-9 rounded-full bg-brand-moss/5 border border-brand-moss/10 flex items-center justify-center text-brand-moss hover:bg-brand-clay hover:text-white transition-colors"
+
+                        <form
+                          onSubmit={handleCreateAssignment}
+                          className="space-y-4 font-sans text-xs"
                         >
-                          <MessageSquare className="w-4.5 h-4.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Direct Admin Support Box */}
-            <div className="bg-brand-moss text-brand-cream border border-brand-cream/10 rounded-[2.5rem] p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h4 className="font-heading font-bold text-base text-white">Need Support or Profile Audits?</h4>
-                <p className="font-sans text-xs text-brand-cream/80 mt-1 leading-relaxed">
-                  If you have questions about your onboarding status, class verification, payouts, or need help updating your banking details, please chat with our Admin team directly.
-                </p>
-              </div>
-              <a 
-                href="https://wa.me/2348136451607" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="py-3 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider text-center shrink-0 shadow-lg shadow-brand-clay/20 transition-all duration-300 hover-lift"
-              >
-                💬 WhatsApp Support
-              </a>
-            </div>
-
-          </div>
-        )}
-
-        {/* TAB 2: FACULTY PROFILE */}
-        {activeTab === 'profile' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Profile Builder */}
-            <div className="lg:col-span-7 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-              <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">PROFILE BUILDER</span>
-              <h3 className="font-heading font-bold text-2xl text-brand-moss mb-6">Edit Faculty Profile</h3>
-              
-              {profileMessage && (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs py-3 px-4 rounded-xl mb-6 font-mono animate-pulse">
-                  {profileMessage}
-                </div>
-              )}
-
-              <form onSubmit={handleProfileSubmit} className="space-y-6 font-sans text-xs">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Display Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Public Username</label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-4 font-mono text-brand-charcoal/40">@</span>
-                      <input
-                        type="text"
-                        required
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                        className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl pl-8 pr-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm font-mono"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Location</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Lagos, Nigeria"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Hourly Rate</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        required
-                        placeholder="e.g. 4000"
-                        value={rate}
-                        onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
-                        className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
-                      />
-                      <select
-                        value={currency}
-                        onChange={(e) => setCurrency(e.target.value)}
-                        className="bg-white border border-brand-moss/10 rounded-xl px-3 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs font-bold h-[46px] shrink-0"
-                      >
-                        <option value="NGN">NGN (₦)</option>
-                        <option value="USD">USD ($)</option>
-                        <option value="GHS">GHS (₵)</option>
-                        <option value="KES">KES (KSh)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="EUR">EUR (€)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Timezone</label>
-                    <select
-                      value={timezone}
-                      onChange={(e) => setTimezone(e.target.value)}
-                      className="w-full bg-white border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm h-[46px]"
-                    >
-                      <option value="Africa/Lagos">West Africa Time (Lagos, UTC+1)</option>
-                      <option value="Africa/Nairobi">East Africa Time (Nairobi, UTC+3)</option>
-                      <option value="Africa/Johannesburg">South Africa Standard Time (UTC+2)</option>
-                      <option value="Africa/Accra">Greenwich Mean Time (Accra, UTC+0)</option>
-                      <option value="Europe/London">Europe / London (BST/GMT)</option>
-                      <option value="UTC">Coordinated Universal Time (UTC)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Preferred Classroom Link</label>
-                    <input
-                      type="url"
-                      placeholder="e.g. Google Meet or Zoom URL"
-                      value={classroomLink}
-                      onChange={(e) => setClassroomLink(e.target.value)}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Recording Tool</label>
-                    <select
-                      value={recordingTool}
-                      onChange={(e) => setRecordingTool(e.target.value)}
-                      className="w-full bg-white border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm h-[46px]"
-                    >
-                      <option value="recordly.site">Recordly.site (Recommended)</option>
-                      <option value="zoom-cloud">Zoom Cloud Native</option>
-                      <option value="loom">Loom Personal</option>
-                      <option value="other">Other / Manual Upload</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Profile Avatar URL</label>
-                  <input
-                    type="text"
-                    value={avatar}
-                    onChange={(e) => setAvatar(e.target.value)}
-                    className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">Taught Subjects</label>
-                  <div className="flex flex-wrap gap-2">
-                    {availableSubjects.map(s => {
-                      const active = selectedSubjects.includes(s);
-                      return (
-                        <button
-                          key={s}
-                          type="button"
-                          onClick={() => toggleSubject(s)}
-                          className={`py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 ${
-                            active
-                              ? 'border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold'
-                              : 'border-brand-moss/10 bg-white text-brand-charcoal/70'
-                          }`}
-                        >
-                          {active ? '✓ ' : ''}{s}
-                        </button>
-                      );
-                    })}
-                    {selectedSubjects.filter(s => !availableSubjects.includes(s)).map(s => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => toggleSubject(s)}
-                        className="py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
-                      >
-                        ✓ {s}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="mt-3 flex gap-2 max-w-sm">
-                    <input
-                      type="text"
-                      placeholder="Other subject (e.g. Tech Skills)"
-                      value={customSubjectInput}
-                      onChange={(e) => setCustomSubjectInput(e.target.value)}
-                      className="flex-1 bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const val = customSubjectInput.trim();
-                        if (val) {
-                          if (!selectedSubjects.includes(val)) {
-                            setSelectedSubjects(prev => [...prev, val]);
-                          }
-                          setCustomSubjectInput('');
-                        }
-                      }}
-                      className="py-2 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">Supported Curricula</label>
-                  <div className="flex flex-wrap gap-2">
-                    {availableCurricula.map(c => {
-                      const active = selectedCurricula.includes(c);
-                      return (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => toggleCurriculum(c)}
-                          className={`py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 ${
-                            active
-                              ? 'border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold'
-                              : 'border-brand-moss/10 bg-white text-brand-charcoal/70'
-                          }`}
-                        >
-                          {active ? '✓ ' : ''}{c}
-                        </button>
-                      );
-                    })}
-                    {selectedCurricula.filter(c => !availableCurricula.includes(c)).map(c => (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => toggleCurriculum(c)}
-                        className="py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
-                      >
-                        ✓ {c}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="mt-3 flex gap-2 max-w-sm">
-                    <input
-                      type="text"
-                      placeholder="Other curriculum (e.g. Custom standard)"
-                      value={customCurriculumInput}
-                      onChange={(e) => setCustomCurriculumInput(e.target.value)}
-                      className="flex-1 bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const val = customCurriculumInput.trim();
-                        if (val) {
-                          if (!selectedCurricula.includes(val)) {
-                            setSelectedCurricula(prev => [...prev, val]);
-                          }
-                          setCustomCurriculumInput('');
-                        }
-                      }}
-                      className="py-2 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Short Bio description</label>
-                  <textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-4 text-brand-charcoal focus:outline-none focus:border-brand-clay h-28 resize-none text-sm leading-relaxed"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-magnetic w-full py-4 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-heading font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20"
-                >
-                  {loading ? 'Saving Changes...' : 'Save & Publish Profile'}
-                </button>
-              </form>
-            </div>
-
-            {/* Availability Grid */}
-            <div className="lg:col-span-5 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
-              <div>
-                <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">SCHEDULING ENGINE</span>
-                <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">Availability Slot Grid</h4>
-                <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">Configure weekly available timings. Autodetects conflict overlays with Google Calendar.</p>
-              </div>
-
-              <div className="space-y-3 font-sans text-xs">
-                {Object.entries(availabilityGrid).map(([day, slots]) => (
-                  <div key={day} className="flex justify-between items-center border-b border-brand-moss/5 pb-2">
-                    <span className="font-bold text-brand-moss w-20">{day}</span>
-                    <div className="flex gap-1">
-                      {['Morning', 'Afternoon', 'Evening'].map(slot => {
-                        const isAvailable = slots.includes(slot);
-                        return (
-                          <button
-                            key={slot}
-                            onClick={() => {
-                              setAvailabilityGrid(prev => {
-                                const current = prev[day];
-                                const updated = current.includes(slot) ? current.filter(s => s !== slot) : [...current, slot];
-                                return { ...prev, [day]: updated };
-                              });
-                            }}
-                            className={`py-1.5 px-3 rounded-lg border text-[9px] font-bold uppercase transition-all duration-300 ${
-                              isAvailable
-                                ? 'bg-brand-moss text-white border-brand-moss'
-                                : 'bg-brand-cream/30 border-brand-moss/10 text-brand-charcoal/50 hover:border-brand-moss/30'
-                            }`}
-                          >
-                            {slot}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-brand-moss/5 pt-4 space-y-4 font-sans text-xs">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="font-bold block text-brand-charcoal">Google Calendar Sync</span>
-                    <span className="text-[10px] text-brand-charcoal/50">Auto-block busy time blocks.</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setGoogleCalendarSync(!googleCalendarSync)}
-                    className={`w-10 h-5 rounded-full transition-all relative ${googleCalendarSync ? 'bg-brand-moss' : 'bg-brand-charcoal/20'}`}
-                  >
-                    <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.5 transition-all ${googleCalendarSync ? 'right-1' : 'left-1'}`} />
-                  </button>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="font-bold block text-brand-charcoal">Holiday Mode</span>
-                    <span className="text-[10px] text-brand-charcoal/50">Block all bookings for 2 weeks.</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setHolidayMode(!holidayMode)}
-                    className={`w-10 h-5 rounded-full transition-all relative ${holidayMode ? 'bg-brand-clay' : 'bg-brand-charcoal/20'}`}
-                  >
-                    <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.5 transition-all ${holidayMode ? 'right-1' : 'left-1'}`} />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">Timezone</label>
-                    <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2 font-mono text-[10px]">
-                      WAT (GMT+1)
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">Min Notice Window</label>
-                    <select
-                      value={minNotice}
-                      onChange={(e) => setMinNotice(e.target.value)}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2 text-[10px] focus:outline-none"
-                    >
-                      <option value="12 hours">12 hours</option>
-                      <option value="24 hours">24 hours</option>
-                      <option value="48 hours">48 hours</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: STUDENTS & GRADING */}
-        {activeTab === 'students' && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
-              {/* Student Roster list */}
-              <div className="lg:col-span-7 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
-                <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">STUDENT ROSTER</span>
-                  <h3 className="font-heading font-bold text-xl text-brand-moss mt-0.5">Active Study Roster</h3>
-                  <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">Track child performance milestones, notes, and outstanding tasks.</p>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left font-sans text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-brand-moss/10 text-brand-charcoal/50 font-mono text-[9px] uppercase tracking-wider">
-                        <th className="py-2.5 pb-4">Student</th>
-                        <th className="py-2.5 pb-4">Subject</th>
-                        <th className="py-2.5 pb-4">Last Active</th>
-                        <th className="py-2.5 pb-4 text-center">Tasks</th>
-                        <th className="py-2.5 pb-4 text-right">Trend</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-brand-moss/5 text-brand-charcoal/80">
-                      {roster.map((student) => (
-                        <tr 
-                          key={student.uid} 
-                          onClick={() => { setSelectedRosterStudent(student); setRosterNoteInput(student.note); }}
-                          className="hover:bg-brand-moss/5 transition-colors cursor-pointer"
-                        >
-                          <td className="py-3.5 font-bold text-brand-moss">{student.name}</td>
-                          <td className="py-3.5">{student.subject}</td>
-                          <td className="py-3.5 font-mono text-[10px]">{student.lastSession}</td>
-                          <td className="py-3.5 text-center font-bold">{student.assignments} pending</td>
-                          <td className="py-3.5 text-right flex items-center justify-end gap-2">
-                            <span className="font-bold text-emerald-600">{student.trend}</span>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleGenerateAiReport(student.name); }}
-                              className="px-2.5 py-1 bg-brand-clay text-white rounded-lg text-[9px] font-mono font-bold hover:bg-brand-clay/90 transition-all shadow-sm"
+                          <div>
+                            <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">
+                              Student
+                            </label>
+                            <select
+                              value={assignStudent}
+                              onChange={(e) => setAssignStudent(e.target.value)}
+                              className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay text-brand-charcoal"
                             >
-                              🪄 AI Report
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                              {roster.length > 0 ? (
+                                roster.map((student) => (
+                                  <option
+                                    key={student.uid}
+                                    value={student.name}
+                                    className="text-brand-charcoal"
+                                  >
+                                    {student.name}
+                                  </option>
+                                ))
+                              ) : (
+                                <option
+                                  value=""
+                                  className="text-brand-charcoal"
+                                >
+                                  No active students
+                                </option>
+                              )}
+                            </select>
+                          </div>
 
-                {/* AI Progress Report Output Box */}
-                {(aiReportLoading || aiReportContent) && (
-                  <div className="bg-brand-cream/40 border border-brand-clay/20 rounded-2xl p-5 mt-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-brand-clay" /> AI Telemetry Progress Digest: {activeReportStudent}
+                          <div>
+                            <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">
+                              Assignment Title
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={assignTitle}
+                              onChange={(e) => setAssignTitle(e.target.value)}
+                              placeholder="e.g., Algebra Worksheet 2"
+                              className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">
+                              Description / Link
+                            </label>
+                            <textarea
+                              required
+                              value={assignDesc}
+                              onChange={(e) => setAssignDesc(e.target.value)}
+                              placeholder="Instructions or link to Google Doc..."
+                              className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-3 text-white focus:outline-none focus:border-brand-clay h-20 resize-none"
+                            />
+                          </div>
+
+                          <button
+                            type="submit"
+                            className="btn-magnetic w-full py-2.5 px-4 rounded-full bg-white text-brand-charcoal font-bold hover:bg-white/90 transition-colors shadow-lg text-2xs uppercase tracking-wider"
+                          >
+                            Send to Student
+                          </button>
+
+                          {assignMessage && (
+                            <div className="text-center text-emerald-400 font-mono text-[9px] animate-pulse mt-2">
+                              {assignMessage}
+                            </div>
+                          )}
+                        </form>
+                      </div>
+
+                      {/* Grading Homework reviewer */}
+                      <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] p-6 text-brand-cream">
+                        <div className="flex items-center justify-between border-b border-brand-cream/10 pb-4 mb-6">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-brand-clay" />
+                            <h4 className="font-heading font-bold text-sm text-white">
+                              Homework Submissions
+                            </h4>
+                          </div>
+                          <span className="font-mono text-2xs text-brand-clay uppercase tracking-widest font-bold">
+                            1 PENDING
+                          </span>
+                        </div>
+
+                        <form
+                          onSubmit={handleHomeworkGrade}
+                          className="space-y-4 font-sans text-xs"
+                        >
+                          <div className="bg-brand-moss/10 border border-brand-cream/10 rounded-xl p-3 font-mono text-[10px]">
+                            <div className="flex justify-between items-center text-brand-clay font-bold mb-1">
+                              <span>Tunde Okafor</span>
+                              <span>algebra_hw_4.txt</span>
+                            </div>
+                            <div className="text-brand-cream/70 leading-normal">
+                              x² - 5x + 6 = 0 <br />
+                              (x - 2)(x - 3) = 0 <br />
+                              Therefore, x = 2 or x = 3.
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">
+                                Score (1-100)
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="100"
+                                value={gradingScore}
+                                onChange={(e) =>
+                                  setGradingScore(e.target.value)
+                                }
+                                className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay"
+                              />
+                            </div>
+                            <div className="flex flex-col justify-end">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  toast.success(
+                                    "Simulated: Audio feedback recorded. File feedback_audio_dsp.mp3 attached.",
+                                  )
+                                }
+                                className="py-2.5 bg-brand-cream/10 hover:bg-brand-cream/15 text-white border border-brand-cream/20 rounded-xl font-mono text-[9px] uppercase tracking-wider font-bold text-center flex items-center justify-center gap-1 cursor-pointer"
+                              >
+                                🎤 Voice Note Feedback
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">
+                              Teacher Feedback
+                            </label>
+                            <textarea
+                              value={gradingFeedback}
+                              onChange={(e) =>
+                                setGradingFeedback(e.target.value)
+                              }
+                              className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-3 text-white focus:outline-none focus:border-brand-clay h-16 resize-none"
+                            />
+                          </div>
+
+                          <button
+                            type="submit"
+                            className="btn-magnetic w-full py-2.5 px-4 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-2xs uppercase tracking-wider"
+                          >
+                            Grade Submission
+                          </button>
+
+                          {isGraded && (
+                            <div className="text-center text-emerald-400 font-mono text-[9px] animate-pulse">
+                              ✓ Grade recorded successfully.
+                            </div>
+                          )}
+                        </form>
+                      </div>
+                    </div>
+
+                    {/* AI Progress Report Generator */}
+                    <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
+                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">
+                        PROGRESS REPORT BUILDER
                       </span>
-                      <button onClick={() => setAiReportContent('')} className="text-xs text-brand-charcoal/40 font-bold hover:text-brand-charcoal">✕ Close</button>
-                    </div>
-                    {aiReportLoading ? (
-                      <div className="py-6 text-center text-xs font-mono text-brand-clay animate-pulse">
-                        ⚡ Synthesizing student analytics & Gemini AI report...
-                      </div>
-                    ) : (
-                      <div className="text-xs font-sans text-brand-charcoal leading-relaxed whitespace-pre-line bg-white p-4 rounded-xl border border-brand-moss/10 shadow-inner">
-                        {aiReportContent}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Group Class Manager */}
-              <div className="lg:col-span-5 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
-                <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">GROUP MODULE</span>
-                <h4 className="font-heading font-bold text-sm text-brand-moss mb-4">Create Group Session (Max 10)</h4>
-                <form onSubmit={(e) => { e.preventDefault(); toast.success('Group Classes are coming soon! This feature is under construction.'); }} className="space-y-4 font-sans text-xs">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Group Name (e.g. WAEC Math study group)"
-                    value={groupName}
-                    onChange={(e) => setGroupName(e.target.value)}
-                    className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-clay"
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="number"
-                      required
-                      placeholder="Fee (₦ per student)"
-                      value={groupFee}
-                      onChange={(e) => setGroupFee(e.target.value)}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-clay"
-                    />
-                    <span className="text-[10px] text-brand-charcoal/60 self-center">System auto-splits cost</span>
-                  </div>
-                  <button type="submit" className="w-full py-2.5 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors">
-                    Create Group Class (Coming Soon)
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Assignment Creator */}
-              <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] p-6 text-brand-cream shadow-sm">
-                <div className="flex items-center justify-between border-b border-brand-cream/10 pb-4 mb-6">
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-brand-clay" />
-                    <h4 className="font-heading font-bold text-sm text-white">Create Assignment</h4>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleGeminiSuggest}
-                    className="bg-brand-clay text-white border border-brand-clay/35 py-1 px-3 rounded-full font-mono text-[8px] uppercase tracking-wider font-bold hover:scale-[1.03] transition-all cursor-pointer"
-                  >
-                    🪄 Gemini Suggestion
-                  </button>
-                </div>
-
-                <form onSubmit={handleCreateAssignment} className="space-y-4 font-sans text-xs">
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">Student</label>
-                    <select
-                      value={assignStudent}
-                      onChange={(e) => setAssignStudent(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay text-brand-charcoal"
-                    >
-                      {roster.length > 0 ? (
-                        roster.map(student => (
-                          <option key={student.uid} value={student.name} className="text-brand-charcoal">
-                            {student.name}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" className="text-brand-charcoal">No active students</option>
-                      )}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">Assignment Title</label>
-                    <input
-                      type="text"
-                      required
-                      value={assignTitle}
-                      onChange={(e) => setAssignTitle(e.target.value)}
-                      placeholder="e.g., Algebra Worksheet 2"
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">Description / Link</label>
-                    <textarea
-                      required
-                      value={assignDesc}
-                      onChange={(e) => setAssignDesc(e.target.value)}
-                      placeholder="Instructions or link to Google Doc..."
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-3 text-white focus:outline-none focus:border-brand-clay h-20 resize-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="btn-magnetic w-full py-2.5 px-4 rounded-full bg-white text-brand-charcoal font-bold hover:bg-white/90 transition-colors shadow-lg text-2xs uppercase tracking-wider"
-                  >
-                    Send to Student
-                  </button>
-
-                  {assignMessage && (
-                    <div className="text-center text-emerald-400 font-mono text-[9px] animate-pulse mt-2">
-                      {assignMessage}
-                    </div>
-                  )}
-                </form>
-              </div>
-
-              {/* Grading Homework reviewer */}
-              <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] p-6 text-brand-cream">
-                <div className="flex items-center justify-between border-b border-brand-cream/10 pb-4 mb-6">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-brand-clay" />
-                    <h4 className="font-heading font-bold text-sm text-white">Homework Submissions</h4>
-                  </div>
-                  <span className="font-mono text-2xs text-brand-clay uppercase tracking-widest font-bold">1 PENDING</span>
-                </div>
-
-                <form onSubmit={handleHomeworkGrade} className="space-y-4 font-sans text-xs">
-                  <div className="bg-brand-moss/10 border border-brand-cream/10 rounded-xl p-3 font-mono text-[10px]">
-                    <div className="flex justify-between items-center text-brand-clay font-bold mb-1">
-                      <span>Tunde Okafor</span>
-                      <span>algebra_hw_4.txt</span>
-                    </div>
-                    <div className="text-brand-cream/70 leading-normal">
-                      x² - 5x + 6 = 0 <br />
-                      (x - 2)(x - 3) = 0 <br />
-                      Therefore, x = 2 or x = 3.
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">Score (1-100)</label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={gradingScore}
-                        onChange={(e) => setGradingScore(e.target.value)}
-                        className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay"
-                      />
-                    </div>
-                    <div className="flex flex-col justify-end">
+                      <h4 className="font-heading font-bold text-sm text-brand-moss mb-4">
+                        Gemini Progress Report Generator
+                      </h4>
                       <button
                         type="button"
-                        onClick={() => toast.success('Simulated: Audio feedback recorded. File feedback_audio_dsp.mp3 attached.')}
-                        className="py-2.5 bg-brand-cream/10 hover:bg-brand-cream/15 text-white border border-brand-cream/20 rounded-xl font-mono text-[9px] uppercase tracking-wider font-bold text-center flex items-center justify-center gap-1 cursor-pointer"
+                        onClick={() => handleGenerateReport("Tunde")}
+                        className="w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
                       >
-                        🎤 Voice Note Feedback
+                        <Sparkles className="w-4 h-4 text-brand-clay animate-pulse" />{" "}
+                        Generate Gemini Report for Tunde
+                      </button>
+
+                      {aiReportLoading && (
+                        <div className="animate-pulse space-y-2 mt-4">
+                          <div className="h-3 bg-brand-moss/10 rounded w-3/4"></div>
+                          <div className="h-3 bg-brand-moss/10 rounded w-5/6"></div>
+                        </div>
+                      )}
+
+                      {aiReportContent && !aiReportLoading && (
+                        <div className="mt-4 bg-brand-cream/30 border border-brand-moss/10 p-4 rounded-xl font-mono text-[10px] text-brand-moss space-y-2">
+                          <pre className="whitespace-pre-wrap leading-relaxed">
+                            {aiReportContent}
+                          </pre>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              toast.success(
+                                "Draft Report successfully published and sent to parent dashboard!",
+                              );
+                              setAiReportContent("");
+                            }}
+                            className="w-full py-2 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-lg font-heading text-[9px] uppercase tracking-wider font-bold"
+                          >
+                            ✓ Publish Draft to Parent
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 4: EARNINGS & PAYOUTS */}
+                {activeTab === "earnings" && (
+                  <div className="space-y-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                      {/* Earnings info card & Payout Request */}
+                      <div className="lg:col-span-4 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm flex flex-col justify-between hover-lift min-h-[16rem]">
+                        <div>
+                          <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">
+                            AVAILABLE SETTLED BALANCE
+                          </span>
+                          <span className="font-heading font-bold text-3xl text-brand-moss block">
+                            {formatCurrency(wallet.balance, selectedCurrency)}
+                          </span>
+                          <span className="font-sans text-[10px] text-brand-charcoal/50 block mt-1">
+                            Ready for transfer to connected payout method.
+                          </span>
+                        </div>
+
+                        <form
+                          onSubmit={handlePayoutRequest}
+                          className="mt-4 space-y-3 font-sans text-xs"
+                        >
+                          <div>
+                            <label className="font-bold text-[9px] uppercase tracking-wider text-brand-charcoal/50 block mb-1">
+                              Request Amount (Minor Units)
+                            </label>
+                            <input
+                              type="number"
+                              required
+                              min="1"
+                              max={wallet.balance}
+                              value={payoutRequestAmount}
+                              onChange={(e) =>
+                                setPayoutRequestAmount(parseInt(e.target.value))
+                              }
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none focus:border-brand-clay"
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            disabled={isRequestingPayout || wallet.balance <= 0}
+                            className="w-full py-2.5 bg-brand-moss hover:bg-brand-clay disabled:bg-brand-charcoal/20 text-white rounded-xl font-heading font-bold uppercase text-[10px] tracking-wider transition-colors"
+                          >
+                            {isRequestingPayout
+                              ? "Processing..."
+                              : "Request Payout"}
+                          </button>
+                          {payoutMessage && (
+                            <div className="text-center font-mono text-[9px] font-bold mt-2 animate-pulse text-emerald-600">
+                              {payoutMessage}
+                            </div>
+                          )}
+                        </form>
+
+                        <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 border border-brand-moss/10 rounded-full px-3 py-1 w-fit mt-4">
+                          <ShieldCheck className="w-3.5 h-3.5 text-brand-clay" />{" "}
+                          Payout Active
+                        </div>
+                      </div>
+
+                      {/* Payout configuration settings */}
+                      <div className="lg:col-span-8 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm space-y-4 font-sans text-xs">
+                        <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">
+                          Payout Settings & Financials
+                        </h5>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">
+                              Payout Method
+                            </label>
+                            <select
+                              value={payoutMethod}
+                              onChange={(e) => setPayoutMethod(e.target.value)}
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2.5 text-xs focus:outline-none"
+                            >
+                              <option value="Wise Bank Direct">
+                                Wise Bank Direct
+                              </option>
+                              <option value="Paystack Bank Account">
+                                Paystack Bank Account
+                              </option>
+                              <option value="Mobile Money Wallet">
+                                Mobile Money Wallet
+                              </option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">
+                              Min Threshold
+                            </label>
+                            <input
+                              type="number"
+                              value={minPayout}
+                              onChange={(e) =>
+                                setMinPayout(parseInt(e.target.value))
+                              }
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2.5 text-xs focus:outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        {payoutMethod === "Paystack Bank Account" && (
+                          <div className="border border-brand-moss/10 bg-brand-cream/10 p-4 rounded-2xl space-y-3.5 mt-2">
+                            <span className="font-mono text-[9px] text-brand-clay font-bold tracking-widest uppercase block mb-1">
+                              Local NGN Bank Details
+                            </span>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">
+                                  Account Number
+                                </label>
+                                <input
+                                  type="text"
+                                  required
+                                  placeholder="e.g. 0123456789 (10 digits)"
+                                  maxLength="10"
+                                  value={accountNumber}
+                                  onChange={(e) =>
+                                    setAccountNumber(
+                                      e.target.value.replace(/\D/g, ""),
+                                    )
+                                  }
+                                  className="w-full bg-white border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none focus:border-brand-clay text-xs"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">
+                                  Account Name
+                                </label>
+                                <input
+                                  type="text"
+                                  required
+                                  placeholder="e.g. John Doe"
+                                  value={accountName}
+                                  onChange={(e) =>
+                                    setAccountName(e.target.value)
+                                  }
+                                  className="w-full bg-white border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none focus:border-brand-clay text-xs"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">
+                                Select Bank
+                              </label>
+                              <select
+                                value={selectedBankCode}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setSelectedBankCode(val);
+                                  const bName =
+                                    [
+                                      {
+                                        code: "058",
+                                        name: "Guaranty Trust Bank (GTBank)",
+                                      },
+                                      { code: "057", name: "Zenith Bank" },
+                                      { code: "044", name: "Access Bank" },
+                                      {
+                                        code: "033",
+                                        name: "United Bank for Africa (UBA)",
+                                      },
+                                      {
+                                        code: "011",
+                                        name: "First Bank of Nigeria",
+                                      },
+                                      { code: "050", name: "Sterling Bank" },
+                                      {
+                                        code: "219",
+                                        name: "Stanbic IBTC Bank",
+                                      },
+                                    ].find((b) => b.code === val)?.name ||
+                                    "GTBank";
+                                  setSelectedBankName(bName);
+                                }}
+                                className="w-full bg-white border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none text-xs"
+                              >
+                                <option value="058">
+                                  Guaranty Trust Bank (GTBank)
+                                </option>
+                                <option value="057">Zenith Bank</option>
+                                <option value="044">Access Bank</option>
+                                <option value="033">
+                                  United Bank for Africa (UBA)
+                                </option>
+                                <option value="011">
+                                  First Bank of Nigeria
+                                </option>
+                                <option value="050">Sterling Bank</option>
+                                <option value="219">Stanbic IBTC Bank</option>
+                              </select>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* payout ledger log */}
+                        <div className="pt-4 border-t border-brand-moss/5">
+                          <span className="text-[9px] text-brand-charcoal/50 uppercase font-bold block mb-1.5">
+                            Payout History Ledger
+                          </span>
+                          <div className="space-y-1.5 text-[10px] font-mono">
+                            {transactions && transactions.length > 0 ? (
+                              transactions
+                                .filter((t) => t.paymentProcessor === "payout")
+                                .map((t, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="flex justify-between border-b border-brand-moss/5 pb-1"
+                                  >
+                                    <span>
+                                      {new Date(
+                                        t.date || t.createdAt,
+                                      ).toLocaleDateString()}
+                                      :{" "}
+                                      {formatCurrency(
+                                        t.amount - (t.commission || 0),
+                                        selectedCurrency,
+                                      )}
+                                    </span>
+                                    <span className="text-emerald-700">
+                                      Settled (Ref #{t.id?.slice(0, 4) || idx})
+                                    </span>
+                                  </div>
+                                ))
+                            ) : (
+                              <div className="text-brand-charcoal/40 text-2xs">
+                                No processed payouts found.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 5: REPUTATION & GROWTH */}
+                {activeTab === "reputation" && (
+                  <div className="space-y-8 animate-fade-up">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                      {/* Badge Progress & Ratings */}
+                      <div className="lg:col-span-6 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
+                        {/* Badge Checklist */}
+                        <div className="space-y-3">
+                          <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">
+                            Badge Progress (Tutor level)
+                          </h5>
+                          <div className="grid grid-cols-2 gap-2">
+                            {[
+                              {
+                                badge: "Verified Tutor",
+                                status: "Earned",
+                                color:
+                                  "bg-emerald-50 text-emerald-800 border-emerald-200",
+                              },
+                              {
+                                badge: "Elite Certified",
+                                status: "Earned",
+                                color:
+                                  "bg-emerald-50 text-emerald-800 border-emerald-200",
+                              },
+                              {
+                                badge: "Top Rated",
+                                status: "Earned",
+                                color:
+                                  "bg-emerald-50 text-emerald-800 border-emerald-200",
+                              },
+                              {
+                                badge: "Elite Educator",
+                                status: "Locked (80%)",
+                                color:
+                                  "bg-amber-50 text-amber-800 border-amber-200",
+                              },
+                            ].map((b, i) => (
+                              <div
+                                key={i}
+                                className={`p-2 border rounded-xl flex justify-between items-center text-[10px] ${b.color}`}
+                              >
+                                <span className="font-bold">{b.badge}</span>
+                                <span className="text-[8px] uppercase">
+                                  {b.status}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Ratings Breakdown */}
+                        <div className="space-y-2 border-t border-brand-moss/5 pt-4">
+                          <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">
+                            Ratings Breakdown (5 dimensions)
+                          </h5>
+                          <div className="space-y-1 text-[11px] font-sans text-brand-charcoal/80">
+                            <div className="flex justify-between">
+                              <span>Punctuality</span>
+                              <span className="font-bold text-brand-moss">
+                                4.9★
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Teaching Quality</span>
+                              <span className="font-bold text-brand-moss">
+                                5.0★
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Communication</span>
+                              <span className="font-bold text-brand-moss">
+                                4.8★
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Preparedness</span>
+                              <span className="font-bold text-brand-moss">
+                                4.9★
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Student Progress</span>
+                              <span className="font-bold text-brand-moss">
+                                4.9★
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Leaderboard Position */}
+                      <div className="lg:col-span-6 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-4">
+                        <div>
+                          <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
+                            WEEKLY COMPETITION
+                          </span>
+                          <h4 className="font-heading font-bold text-base text-brand-moss">
+                            Leaderboard Position
+                          </h4>
+                          <p className="font-sans text-[10px] text-brand-charcoal/60 mt-0.5">
+                            Your ranking compared to all vetted tutors in Lagos.
+                          </p>
+                        </div>
+
+                        <div className="bg-brand-cream/20 border border-brand-moss/5 p-4 rounded-2xl flex justify-between items-center">
+                          <div>
+                            <span className="font-mono text-[10px] text-brand-charcoal/50 block">
+                              CURRENT RANK
+                            </span>
+                            <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-0.5">
+                              #4 in Lagos
+                            </span>
+                            <span className="font-mono text-[9px] text-emerald-600 block mt-1 font-bold">
+                              ↑ Moved up 2 spots this week
+                            </span>
+                          </div>
+                          <Trophy className="w-10 h-10 text-brand-clay animate-pulse" />
+                        </div>
+
+                        <div className="flex items-center justify-between font-sans text-xs border-t border-brand-moss/5 pt-4">
+                          <div>
+                            <span className="font-bold block">
+                              Opt-in to Teacher Leaderboard
+                            </span>
+                            <span className="text-[10px] text-brand-charcoal/50">
+                              Show rank publically to parents.
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setLeaderboardOptIn(!leaderboardOptIn)
+                            }
+                            className={`w-10 h-5 rounded-full transition-all relative ${leaderboardOptIn ? "bg-brand-moss" : "bg-brand-charcoal/20"}`}
+                          >
+                            <div
+                              className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.5 transition-all ${leaderboardOptIn ? "right-1" : "left-1"}`}
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Growth tools: referrals and profile views */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* Referral Programme */}
+                      <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
+                        <div>
+                          <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
+                            GROWTH CAMPAIGN
+                          </span>
+                          <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">
+                            Referral Programme
+                          </h4>
+                          <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">
+                            Earn 10% commission on referred teacher revenues for
+                            3 months.
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            readOnly
+                            value={`https://eduvista.com/register?ref=${currentUser.uid}`}
+                            className="flex-1 bg-brand-cream/50 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs font-mono select-all focus:outline-none"
+                          />
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                `https://eduvista.com/register?ref=${currentUser.uid}`,
+                              );
+                              toast.success(
+                                "Referral link copied to clipboard!",
+                              );
+                            }}
+                            className="bg-brand-clay text-white px-4 py-2 rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-sm hover:bg-brand-clay/90"
+                          >
+                            Copy Link
+                          </button>
+                        </div>
+
+                        <div className="overflow-x-auto pt-4 border-t border-brand-moss/5">
+                          <span className="text-[10px] text-brand-charcoal/50 uppercase font-bold block mb-2">
+                            Referred Teachers
+                          </span>
+                          <table className="w-full text-left font-sans text-2xs border-collapse">
+                            <thead>
+                              <tr className="border-b border-brand-moss/10 text-brand-charcoal/40 font-mono uppercase tracking-wider">
+                                <th className="py-2">Teacher Name</th>
+                                <th className="py-2">Status</th>
+                                <th className="py-2 text-right">
+                                  Commission Earned
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-brand-moss/5 text-brand-charcoal/80">
+                              {referrals.map((r, idx) => (
+                                <tr key={idx}>
+                                  <td className="py-2 font-bold text-brand-moss">
+                                    {r.name}
+                                  </td>
+                                  <td className="py-2">
+                                    <span className="font-mono bg-emerald-50 text-emerald-800 py-0.5 px-2 rounded-full uppercase tracking-wider text-[8px] border border-emerald-100">
+                                      {r.status}
+                                    </span>
+                                  </td>
+                                  <td className="py-2 text-right font-bold text-brand-moss">
+                                    {formatCurrency(
+                                      r.commission,
+                                      selectedCurrency,
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* Profile Analytics */}
+                      <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-4">
+                        <div>
+                          <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
+                            PERFORMANCE INSIGHTS
+                          </span>
+                          <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">
+                            Profile Analytics
+                          </h4>
+                          <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">
+                            Track traffic impressions and keyword optimization
+                            levels.
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2 text-center font-sans text-xs">
+                          <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
+                            <span className="text-brand-charcoal/50 block text-[9px] font-mono">
+                              Views (30d)
+                            </span>
+                            <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">
+                              0 views
+                            </span>
+                            <span className="text-[9px] text-emerald-600 block font-bold">
+                              No previous data
+                            </span>
+                          </div>
+                          <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
+                            <span className="text-brand-charcoal/50 block text-[9px] font-mono">
+                              Impressions
+                            </span>
+                            <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">
+                              0
+                            </span>
+                            <span className="text-[9px] text-brand-charcoal/50 block">
+                              Keyword searches
+                            </span>
+                          </div>
+                          <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
+                            <span className="text-brand-charcoal/50 block text-[9px] font-mono">
+                              Conversion
+                            </span>
+                            <span className="font-heading font-bold text-base text-brand-clay block mt-0.5">
+                              0%
+                            </span>
+                            <span className="text-[9px] text-brand-charcoal/50 block">
+                              Views to Bookings
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-3.5 text-[11px] font-sans flex items-start gap-2.5 mt-2">
+                          <Sparkles className="w-5 h-5 text-brand-clay shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-bold block text-brand-clay uppercase tracking-wider font-mono text-[9px]">
+                              AI BIO TIP SUGGESTION
+                            </span>
+                            Tutors who upload a short 60-second video
+                            introduction increase their profile request booking
+                            conversion rates by 40%. Upload an intro file now.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 6: AI ACADEMY */}
+                {activeTab === "academy" && (
+                  <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm space-y-8 animate-fade-up">
+                    <div>
+                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
+                        ACADEMIC MODULE PROGRESSION
+                      </span>
+                      <h3 className="font-heading font-bold text-xl text-brand-moss mt-0.5">
+                        EduVista Teacher Academy
+                      </h3>
+                      <p className="font-sans text-xs text-brand-charcoal/60 mt-1">
+                        Complete structural teaching modules and receive
+                        certificate credentials.
+                      </p>
+                    </div>
+
+                    {/* Modules list progress */}
+                    <div className="space-y-4">
+                      {[
+                        {
+                          title: "Module 1: Platform Billing & Escrow Rules",
+                          status: "Locked",
+                          score: null,
+                        },
+                        {
+                          title:
+                            "Module 2: Direct Interactive Teaching Methods",
+                          status: "Locked",
+                          score: null,
+                        },
+                        {
+                          title: "Module 3: Deploying Gemini AI Tools in class",
+                          status: "Locked",
+                          score: null,
+                        },
+                        {
+                          title: "Module 4: Student Motivation Techniques",
+                          status: "Locked",
+                          score: null,
+                        },
+                        {
+                          title: "Module 5: Dispute Claims Management",
+                          status: "Locked",
+                          score: null,
+                        },
+                        {
+                          title:
+                            "Module 6: Capstone Teaching Roleplay Practice",
+                          status: "Locked",
+                          score: null,
+                        },
+                      ].map((m, idx) => (
+                        <div
+                          key={idx}
+                          className="border border-brand-moss/5 rounded-2xl p-4 bg-brand-cream/5 flex justify-between items-center text-xs"
+                        >
+                          <div>
+                            <span className="font-bold text-brand-moss block">
+                              {m.title}
+                            </span>
+                            <span className="text-[10px] text-brand-charcoal/50 mt-0.5 block">
+                              Module {idx + 1} Vetting Program
+                            </span>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <span
+                              className={`font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full border ${
+                                m.status === "Passed"
+                                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                                  : m.status === "In Progress"
+                                    ? "bg-amber-50 border-amber-200 text-amber-800 animate-pulse"
+                                    : "bg-rose-50 border-rose-200 text-rose-800"
+                              }`}
+                            >
+                              {m.status} {m.score ? `(${m.score})` : ""}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Certificate sharing */}
+                    <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] p-6 text-brand-cream flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div className="space-y-1">
+                        <h4 className="font-heading font-bold text-base text-white">
+                          Academy Certifications
+                        </h4>
+                        <p className="font-sans text-[11px] text-brand-cream/70 leading-relaxed">
+                          You have successfully completed 3 of 6 training
+                          levels. Your final certificate will release upon
+                          passing the Capstone Roleplay test.
+                        </p>
+                      </div>
+
+                      <button
+                        disabled
+                        className="py-3 px-6 bg-brand-cream/20 text-brand-cream rounded-full font-heading font-bold text-[10px] uppercase tracking-wider opacity-50 shrink-0"
+                      >
+                        Download Certificate PDF
                       </button>
                     </div>
                   </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">Teacher Feedback</label>
-                    <textarea
-                      value={gradingFeedback}
-                      onChange={(e) => setGradingFeedback(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-3 text-white focus:outline-none focus:border-brand-clay h-16 resize-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="btn-magnetic w-full py-2.5 px-4 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-2xs uppercase tracking-wider"
-                  >
-                    Grade Submission
-                  </button>
-
-                  {isGraded && (
-                    <div className="text-center text-emerald-400 font-mono text-[9px] animate-pulse">
-                      ✓ Grade recorded successfully.
-                    </div>
-                  )}
-                </form>
-              </div>
-            </div>
-
-            {/* AI Progress Report Generator */}
-            <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
-              <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">PROGRESS REPORT BUILDER</span>
-              <h4 className="font-heading font-bold text-sm text-brand-moss mb-4">Gemini Progress Report Generator</h4>
-              <button
-                type="button"
-                onClick={() => handleGenerateReport('Tunde')}
-                className="w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 text-brand-clay animate-pulse" /> Generate Gemini Report for Tunde
-              </button>
-
-              {aiReportLoading && (
-                <div className="animate-pulse space-y-2 mt-4">
-                  <div className="h-3 bg-brand-moss/10 rounded w-3/4"></div>
-                  <div className="h-3 bg-brand-moss/10 rounded w-5/6"></div>
-                </div>
-              )}
-
-              {aiReportContent && !aiReportLoading && (
-                <div className="mt-4 bg-brand-cream/30 border border-brand-moss/10 p-4 rounded-xl font-mono text-[10px] text-brand-moss space-y-2">
-                  <pre className="whitespace-pre-wrap leading-relaxed">{aiReportContent}</pre>
-                  <button
-                    type="button"
-                    onClick={() => { toast.success('Draft Report successfully published and sent to parent dashboard!'); setAiReportContent(''); }}
-                    className="w-full py-2 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-lg font-heading text-[9px] uppercase tracking-wider font-bold"
-                  >
-                    ✓ Publish Draft to Parent
-                  </button>
-                </div>
-              )}
-            </div>
+                )}
+              </>
+            )}
           </div>
-        )}
 
-        {/* TAB 4: EARNINGS & PAYOUTS */}
-        {activeTab === 'earnings' && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
-              {/* Earnings info card & Payout Request */}
-              <div className="lg:col-span-4 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm flex flex-col justify-between hover-lift min-h-[16rem]">
-                <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">AVAILABLE SETTLED BALANCE</span>
-                  <span className="font-heading font-bold text-3xl text-brand-moss block">
-                    {formatCurrency(wallet.balance, selectedCurrency)}
-                  </span>
-                  <span className="font-sans text-[10px] text-brand-charcoal/50 block mt-1">Ready for transfer to connected payout method.</span>
-                </div>
-                
-                <form onSubmit={handlePayoutRequest} className="mt-4 space-y-3 font-sans text-xs">
-                  <div>
-                    <label className="font-bold text-[9px] uppercase tracking-wider text-brand-charcoal/50 block mb-1">Request Amount (Minor Units)</label>
-                    <input
-                      type="number"
-                      required
-                      min="1"
-                      max={wallet.balance}
-                      value={payoutRequestAmount}
-                      onChange={(e) => setPayoutRequestAmount(parseInt(e.target.value))}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none focus:border-brand-clay"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isRequestingPayout || wallet.balance <= 0}
-                    className="w-full py-2.5 bg-brand-moss hover:bg-brand-clay disabled:bg-brand-charcoal/20 text-white rounded-xl font-heading font-bold uppercase text-[10px] tracking-wider transition-colors"
-                  >
-                    {isRequestingPayout ? 'Processing...' : 'Request Payout'}
-                  </button>
-                  {payoutMessage && (
-                    <div className="text-center font-mono text-[9px] font-bold mt-2 animate-pulse text-emerald-600">
-                      {payoutMessage}
-                    </div>
-                  )}
-                </form>
+          {/* INDEPENDENT STUDENT DETAILS ROSTER MODAL */}
+          {selectedRosterStudent && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div
+                className="absolute inset-0 bg-brand-charcoal/40 backdrop-blur-xs"
+                onClick={() => setSelectedRosterStudent(null)}
+              />
 
-                <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 border border-brand-moss/10 rounded-full px-3 py-1 w-fit mt-4">
-                  <ShieldCheck className="w-3.5 h-3.5 text-brand-clay" /> Payout Active
-                </div>
-              </div>
+              <div className="bg-brand-cream border border-brand-moss/10 rounded-[2.5rem] p-8 w-full max-w-lg relative z-10 shadow-2xl animate-fade-up">
+                <button
+                  onClick={() => setSelectedRosterStudent(null)}
+                  className="absolute top-6 right-6 text-brand-charcoal/60 hover:text-brand-charcoal font-bold text-base"
+                >
+                  ✕
+                </button>
+                <h3 className="font-heading font-bold text-xl text-brand-moss mb-1">
+                  {selectedRosterStudent.name}
+                </h3>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block mb-4">
+                  Student Profile & Private Teacher Notes
+                </span>
 
-              {/* Payout configuration settings */}
-              <div className="lg:col-span-8 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm space-y-4 font-sans text-xs">
-                <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">Payout Settings & Financials</h5>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">Payout Method</label>
-                    <select
-                      value={payoutMethod}
-                      onChange={(e) => setPayoutMethod(e.target.value)}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2.5 text-xs focus:outline-none"
-                    >
-                      <option value="Wise Bank Direct">Wise Bank Direct</option>
-                      <option value="Paystack Bank Account">Paystack Bank Account</option>
-                      <option value="Mobile Money Wallet">Mobile Money Wallet</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">Min Threshold</label>
-                    <input
-                      type="number"
-                      value={minPayout}
-                      onChange={(e) => setMinPayout(parseInt(e.target.value))}
-                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-2.5 text-xs focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                {payoutMethod === 'Paystack Bank Account' && (
-                  <div className="border border-brand-moss/10 bg-brand-cream/10 p-4 rounded-2xl space-y-3.5 mt-2">
-                    <span className="font-mono text-[9px] text-brand-clay font-bold tracking-widest uppercase block mb-1">Local NGN Bank Details</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">Account Number</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. 0123456789 (10 digits)"
-                          maxLength="10"
-                          value={accountNumber}
-                          onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
-                          className="w-full bg-white border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none focus:border-brand-clay text-xs"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">Account Name</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. John Doe"
-                          value={accountName}
-                          onChange={(e) => setAccountName(e.target.value)}
-                          className="w-full bg-white border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none focus:border-brand-clay text-xs"
-                        />
-                      </div>
+                <div className="bg-white border border-brand-moss/10 rounded-2xl p-4 mb-4 font-sans text-xs space-y-3">
+                  <div className="grid grid-cols-2 gap-4 border-b border-brand-moss/5 pb-2">
+                    <div>
+                      <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">
+                        Curriculum Subject
+                      </span>
+                      <span className="font-bold text-brand-moss block mt-0.5">
+                        {selectedRosterStudent.subject} Instruction
+                      </span>
                     </div>
                     <div>
-                      <label className="block text-[9px] text-brand-charcoal/50 uppercase font-bold mb-1">Select Bank</label>
-                      <select
-                        value={selectedBankCode}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setSelectedBankCode(val);
-                          const bName = [
-                            { code: '058', name: 'Guaranty Trust Bank (GTBank)' },
-                            { code: '057', name: 'Zenith Bank' },
-                            { code: '044', name: 'Access Bank' },
-                            { code: '033', name: 'United Bank for Africa (UBA)' },
-                            { code: '011', name: 'First Bank of Nigeria' },
-                            { code: '050', name: 'Sterling Bank' },
-                            { code: '219', name: 'Stanbic IBTC Bank' }
-                          ].find(b => b.code === val)?.name || 'GTBank';
-                          setSelectedBankName(bName);
-                        }}
-                        className="w-full bg-white border border-brand-moss/10 rounded-xl p-2.5 focus:outline-none text-xs"
-                      >
-                        <option value="058">Guaranty Trust Bank (GTBank)</option>
-                        <option value="057">Zenith Bank</option>
-                        <option value="044">Access Bank</option>
-                        <option value="033">United Bank for Africa (UBA)</option>
-                        <option value="011">First Bank of Nigeria</option>
-                        <option value="050">Sterling Bank</option>
-                        <option value="219">Stanbic IBTC Bank</option>
-                      </select>
+                      <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">
+                        Last Lesson Date
+                      </span>
+                      <span className="font-bold text-brand-moss block mt-0.5">
+                        {selectedRosterStudent.lastSession}
+                      </span>
                     </div>
                   </div>
-                )}
-                
-                {/* payout ledger log */}
-                <div className="pt-4 border-t border-brand-moss/5">
-                  <span className="text-[9px] text-brand-charcoal/50 uppercase font-bold block mb-1.5">Payout History Ledger</span>
-                  <div className="space-y-1.5 text-[10px] font-mono">
-                    {transactions && transactions.length > 0 ? (
-                      transactions.filter(t => t.paymentProcessor === 'payout').map((t, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-brand-moss/5 pb-1">
-                          <span>{new Date(t.date || t.createdAt).toLocaleDateString()}: {formatCurrency(t.amount - (t.commission || 0), selectedCurrency)}</span>
-                          <span className="text-emerald-700">Settled (Ref #{t.id?.slice(0, 4) || idx})</span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-brand-charcoal/40 text-2xs">No processed payouts found.</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* TAB 5: REPUTATION & GROWTH */}
-        {activeTab === 'reputation' && (
-          <div className="space-y-8 animate-fade-up">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
-              {/* Badge Progress & Ratings */}
-              <div className="lg:col-span-6 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
-                
-                {/* Badge Checklist */}
-                <div className="space-y-3">
-                  <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">Badge Progress (Tutor level)</h5>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { badge: "Verified Tutor", status: "Earned", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-                      { badge: "Elite Certified", status: "Earned", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-                      { badge: "Top Rated", status: "Earned", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-                      { badge: "Elite Educator", status: "Locked (80%)", color: "bg-amber-50 text-amber-800 border-amber-200" }
-                    ].map((b, i) => (
-                      <div key={i} className={`p-2 border rounded-xl flex justify-between items-center text-[10px] ${b.color}`}>
-                        <span className="font-bold">{b.badge}</span>
-                        <span className="text-[8px] uppercase">{b.status}</span>
-                      </div>
-                    ))}
+                  <div className="grid grid-cols-2 gap-4 border-b border-brand-moss/5 pb-2">
+                    <div>
+                      <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">
+                        Next Lesson Slot
+                      </span>
+                      <span className="font-bold text-brand-moss block mt-0.5">
+                        {selectedRosterStudent.nextSession}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">
+                        Progress Milestone
+                      </span>
+                      <span className="font-bold text-brand-moss block mt-0.5">
+                        {selectedRosterStudent.trend} Comprehension
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Ratings Breakdown */}
-                <div className="space-y-2 border-t border-brand-moss/5 pt-4">
-                  <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">Ratings Breakdown (5 dimensions)</h5>
-                  <div className="space-y-1 text-[11px] font-sans text-brand-charcoal/80">
-                    <div className="flex justify-between"><span>Punctuality</span><span className="font-bold text-brand-moss">4.9★</span></div>
-                    <div className="flex justify-between"><span>Teaching Quality</span><span className="font-bold text-brand-moss">5.0★</span></div>
-                    <div className="flex justify-between"><span>Communication</span><span className="font-bold text-brand-moss">4.8★</span></div>
-                    <div className="flex justify-between"><span>Preparedness</span><span className="font-bold text-brand-moss">4.9★</span></div>
-                    <div className="flex justify-between"><span>Student Progress</span><span className="font-bold text-brand-moss">4.9★</span></div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Leaderboard Position */}
-              <div className="lg:col-span-6 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-4">
-                <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">WEEKLY COMPETITION</span>
-                  <h4 className="font-heading font-bold text-base text-brand-moss">Leaderboard Position</h4>
-                  <p className="font-sans text-[10px] text-brand-charcoal/60 mt-0.5">Your ranking compared to all vetted tutors in Lagos.</p>
-                </div>
-                
-                <div className="bg-brand-cream/20 border border-brand-moss/5 p-4 rounded-2xl flex justify-between items-center">
                   <div>
-                    <span className="font-mono text-[10px] text-brand-charcoal/50 block">CURRENT RANK</span>
-                    <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-0.5">#4 in Lagos</span>
-                    <span className="font-mono text-[9px] text-emerald-600 block mt-1 font-bold">↑ Moved up 2 spots this week</span>
+                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-moss block mb-2">
+                      Private Lesson Diary Notes
+                    </label>
+                    <textarea
+                      value={rosterNoteInput}
+                      onChange={(e) => setRosterNoteInput(e.target.value)}
+                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-3 text-brand-charcoal focus:outline-none focus:border-brand-clay h-24 resize-none text-xs leading-relaxed"
+                    />
                   </div>
-                  <Trophy className="w-10 h-10 text-brand-clay animate-pulse" />
-                </div>
-
-                <div className="flex items-center justify-between font-sans text-xs border-t border-brand-moss/5 pt-4">
-                  <div>
-                    <span className="font-bold block">Opt-in to Teacher Leaderboard</span>
-                    <span className="text-[10px] text-brand-charcoal/50">Show rank publically to parents.</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setLeaderboardOptIn(!leaderboardOptIn)}
-                    className={`w-10 h-5 rounded-full transition-all relative ${leaderboardOptIn ? 'bg-brand-moss' : 'bg-brand-charcoal/20'}`}
-                  >
-                    <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.5 transition-all ${leaderboardOptIn ? 'right-1' : 'left-1'}`} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Growth tools: referrals and profile views */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Referral Programme */}
-              <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
-                <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">GROWTH CAMPAIGN</span>
-                  <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">Referral Programme</h4>
-                  <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">Earn 10% commission on referred teacher revenues for 3 months.</p>
                 </div>
 
                 <div className="flex gap-2">
-                  <input
-                    type="text"
-                    readOnly
-                    value={`https://eduvista.com/register?ref=${currentUser.uid}`}
-                    className="flex-1 bg-brand-cream/50 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs font-mono select-all focus:outline-none"
-                  />
                   <button
-                    onClick={() => { navigator.clipboard.writeText(`https://eduvista.com/register?ref=${currentUser.uid}`); toast.success('Referral link copied to clipboard!'); }}
-                    className="bg-brand-clay text-white px-4 py-2 rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-sm hover:bg-brand-clay/90"
+                    onClick={() => setSelectedRosterStudent(null)}
+                    className="flex-1 border border-brand-moss/10 hover:border-brand-moss hover:bg-white rounded-xl py-3 font-heading font-bold text-brand-charcoal text-xs uppercase"
                   >
-                    Copy Link
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setRoster((prev) =>
+                        prev.map((s) =>
+                          s.uid === selectedRosterStudent.uid
+                            ? { ...s, note: rosterNoteInput }
+                            : s,
+                        ),
+                      );
+                      toast.success(
+                        "Private student progress notes updated successfully!",
+                      );
+                      setSelectedRosterStudent(null);
+                    }}
+                    className="flex-1 bg-brand-moss hover:bg-brand-clay text-white rounded-xl py-3 font-heading font-bold uppercase tracking-wider text-xs"
+                  >
+                    Save Private Note
                   </button>
                 </div>
-
-                <div className="overflow-x-auto pt-4 border-t border-brand-moss/5">
-                  <span className="text-[10px] text-brand-charcoal/50 uppercase font-bold block mb-2">Referred Teachers</span>
-                  <table className="w-full text-left font-sans text-2xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-brand-moss/10 text-brand-charcoal/40 font-mono uppercase tracking-wider">
-                        <th className="py-2">Teacher Name</th>
-                        <th className="py-2">Status</th>
-                        <th className="py-2 text-right">Commission Earned</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-brand-moss/5 text-brand-charcoal/80">
-                      {referrals.map((r, idx) => (
-                        <tr key={idx}>
-                          <td className="py-2 font-bold text-brand-moss">{r.name}</td>
-                          <td className="py-2"><span className="font-mono bg-emerald-50 text-emerald-800 py-0.5 px-2 rounded-full uppercase tracking-wider text-[8px] border border-emerald-100">{r.status}</span></td>
-                          <td className="py-2 text-right font-bold text-brand-moss">{formatCurrency(r.commission, selectedCurrency)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Profile Analytics */}
-              <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-4">
-                <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">PERFORMANCE INSIGHTS</span>
-                  <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">Profile Analytics</h4>
-                  <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">Track traffic impressions and keyword optimization levels.</p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 text-center font-sans text-xs">
-                  <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
-                    <span className="text-brand-charcoal/50 block text-[9px] font-mono">Views (30d)</span>
-                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">0 views</span>
-                    <span className="text-[9px] text-emerald-600 block font-bold">No previous data</span>
-                  </div>
-                  <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
-                    <span className="text-brand-charcoal/50 block text-[9px] font-mono">Impressions</span>
-                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">0</span>
-                    <span className="text-[9px] text-brand-charcoal/50 block">Keyword searches</span>
-                  </div>
-                  <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
-                    <span className="text-brand-charcoal/50 block text-[9px] font-mono">Conversion</span>
-                    <span className="font-heading font-bold text-base text-brand-clay block mt-0.5">0%</span>
-                    <span className="text-[9px] text-brand-charcoal/50 block">Views to Bookings</span>
-                  </div>
-                </div>
-
-                <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-3.5 text-[11px] font-sans flex items-start gap-2.5 mt-2">
-                  <Sparkles className="w-5 h-5 text-brand-clay shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold block text-brand-clay uppercase tracking-wider font-mono text-[9px]">AI BIO TIP SUGGESTION</span>
-                    Tutors who upload a short 60-second video introduction increase their profile request booking conversion rates by 40%. Upload an intro file now.
-                  </div>
-                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* TAB 6: AI ACADEMY */}
-        {activeTab === 'academy' && (
-          <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm space-y-8 animate-fade-up">
-            <div>
-              <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">ACADEMIC MODULE PROGRESSION</span>
-              <h3 className="font-heading font-bold text-xl text-brand-moss mt-0.5">EduVista Teacher Academy</h3>
-              <p className="font-sans text-xs text-brand-charcoal/60 mt-1">Complete structural teaching modules and receive certificate credentials.</p>
-            </div>
+          {/* SESSION CLOCK LOG TIMELINE MODAL */}
+          {isClockLogOpen && selectedClockSession && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div
+                className="absolute inset-0 bg-brand-charcoal/40 backdrop-blur-xs"
+                onClick={() => setIsClockLogOpen(false)}
+              />
 
-            {/* Modules list progress */}
-            <div className="space-y-4">
-              {[
-                { title: 'Module 1: Platform Billing & Escrow Rules', status: 'Locked', score: null },
-                { title: 'Module 2: Direct Interactive Teaching Methods', status: 'Locked', score: null },
-                { title: 'Module 3: Deploying Gemini AI Tools in class', status: 'Locked', score: null },
-                { title: 'Module 4: Student Motivation Techniques', status: 'Locked', score: null },
-                { title: 'Module 5: Dispute Claims Management', status: 'Locked', score: null },
-                { title: 'Module 6: Capstone Teaching Roleplay Practice', status: 'Locked', score: null }
-              ].map((m, idx) => (
-                <div key={idx} className="border border-brand-moss/5 rounded-2xl p-4 bg-brand-cream/5 flex justify-between items-center text-xs">
-                  <div>
-                    <span className="font-bold text-brand-moss block">{m.title}</span>
-                    <span className="text-[10px] text-brand-charcoal/50 mt-0.5 block">Module {idx+1} Vetting Program</span>
-                  </div>
+              <div className="bg-brand-cream border border-brand-moss/10 rounded-[2.5rem] p-8 w-full max-w-md relative z-10 shadow-2xl animate-fade-up">
+                <button
+                  onClick={() => setIsClockLogOpen(false)}
+                  className="absolute top-6 right-6 text-brand-charcoal/60 hover:text-brand-charcoal font-bold text-base"
+                >
+                  ✕
+                </button>
+                <h3 className="font-heading font-bold text-xl text-brand-moss mb-2">
+                  Lesson Clock Log
+                </h3>
+                <p className="font-sans text-xs text-brand-charcoal/70 mb-4">
+                  Tamper-proof server clock records for session with{" "}
+                  <span className="font-bold">
+                    {selectedClockSession.studentName}
+                  </span>
+                  .
+                </p>
 
-                  <div className="text-right shrink-0">
-                    <span className={`font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full border ${
-                      m.status === 'Passed'
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                        : m.status === 'In Progress'
-                        ? 'bg-amber-50 border-amber-200 text-amber-800 animate-pulse'
-                        : 'bg-rose-50 border-rose-200 text-rose-800'
-                    }`}>
-                      {m.status} {m.score ? `(${m.score})` : ''}
+                <div className="bg-white border border-brand-moss/10 rounded-2xl p-4 mb-4 font-mono text-[11px] space-y-2">
+                  <div className="flex justify-between border-b border-brand-moss/5 pb-2">
+                    <span>Scheduled Slot:</span>
+                    <span className="font-bold">
+                      {selectedClockSession.slot.day} at{" "}
+                      {selectedClockSession.slot.time}
                     </span>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Certificate sharing */}
-            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] p-6 text-brand-cream flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div className="space-y-1">
-                <h4 className="font-heading font-bold text-base text-white">Academy Certifications</h4>
-                <p className="font-sans text-[11px] text-brand-cream/70 leading-relaxed">
-                  You have successfully completed 3 of 6 training levels. Your final certificate will release upon passing the Capstone Roleplay test.
-                </p>
-              </div>
-
-              <button
-                disabled
-                className="py-3 px-6 bg-brand-cream/20 text-brand-cream rounded-full font-heading font-bold text-[10px] uppercase tracking-wider opacity-50 shrink-0"
-              >
-                Download Certificate PDF
-              </button>
-            </div>
-          </div>
-        )}
-          </>
-        )}
-
-      </div>
-
-      {/* INDEPENDENT STUDENT DETAILS ROSTER MODAL */}
-      {selectedRosterStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-brand-charcoal/40 backdrop-blur-xs" onClick={() => setSelectedRosterStudent(null)} />
-          
-          <div className="bg-brand-cream border border-brand-moss/10 rounded-[2.5rem] p-8 w-full max-w-lg relative z-10 shadow-2xl animate-fade-up">
-            <button 
-              onClick={() => setSelectedRosterStudent(null)} 
-              className="absolute top-6 right-6 text-brand-charcoal/60 hover:text-brand-charcoal font-bold text-base"
-            >
-              ✕
-            </button>
-            <h3 className="font-heading font-bold text-xl text-brand-moss mb-1">{selectedRosterStudent.name}</h3>
-            <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block mb-4">
-              Student Profile & Private Teacher Notes
-            </span>
-
-            <div className="bg-white border border-brand-moss/10 rounded-2xl p-4 mb-4 font-sans text-xs space-y-3">
-              <div className="grid grid-cols-2 gap-4 border-b border-brand-moss/5 pb-2">
-                <div>
-                  <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">Curriculum Subject</span>
-                  <span className="font-bold text-brand-moss block mt-0.5">{selectedRosterStudent.subject} Instruction</span>
-                </div>
-                <div>
-                  <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">Last Lesson Date</span>
-                  <span className="font-bold text-brand-moss block mt-0.5">{selectedRosterStudent.lastSession}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 border-b border-brand-moss/5 pb-2">
-                <div>
-                  <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">Next Lesson Slot</span>
-                  <span className="font-bold text-brand-moss block mt-0.5">{selectedRosterStudent.nextSession}</span>
-                </div>
-                <div>
-                  <span className="text-brand-charcoal/50 block text-[9px] uppercase font-bold">Progress Milestone</span>
-                  <span className="font-bold text-brand-moss block mt-0.5">{selectedRosterStudent.trend} Comprehension</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-moss block mb-2">Private Lesson Diary Notes</label>
-                <textarea
-                  value={rosterNoteInput}
-                  onChange={(e) => setRosterNoteInput(e.target.value)}
-                  className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-3 text-brand-charcoal focus:outline-none focus:border-brand-clay h-24 resize-none text-xs leading-relaxed"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => setSelectedRosterStudent(null)}
-                className="flex-1 border border-brand-moss/10 hover:border-brand-moss hover:bg-white rounded-xl py-3 font-heading font-bold text-brand-charcoal text-xs uppercase"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setRoster(prev => prev.map(s => s.uid === selectedRosterStudent.uid ? { ...s, note: rosterNoteInput } : s));
-                  toast.success('Private student progress notes updated successfully!');
-                  setSelectedRosterStudent(null);
-                }}
-                className="flex-1 bg-brand-moss hover:bg-brand-clay text-white rounded-xl py-3 font-heading font-bold uppercase tracking-wider text-xs"
-              >
-                Save Private Note
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SESSION CLOCK LOG TIMELINE MODAL */}
-      {isClockLogOpen && selectedClockSession && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-brand-charcoal/40 backdrop-blur-xs" onClick={() => setIsClockLogOpen(false)} />
-          
-          <div className="bg-brand-cream border border-brand-moss/10 rounded-[2.5rem] p-8 w-full max-w-md relative z-10 shadow-2xl animate-fade-up">
-            <button 
-              onClick={() => setIsClockLogOpen(false)} 
-              className="absolute top-6 right-6 text-brand-charcoal/60 hover:text-brand-charcoal font-bold text-base"
-            >
-              ✕
-            </button>
-            <h3 className="font-heading font-bold text-xl text-brand-moss mb-2">Lesson Clock Log</h3>
-            <p className="font-sans text-xs text-brand-charcoal/70 mb-4">
-              Tamper-proof server clock records for session with <span className="font-bold">{selectedClockSession.studentName}</span>.
-            </p>
-
-            <div className="bg-white border border-brand-moss/10 rounded-2xl p-4 mb-4 font-mono text-[11px] space-y-2">
-              <div className="flex justify-between border-b border-brand-moss/5 pb-2">
-                <span>Scheduled Slot:</span>
-                <span className="font-bold">{selectedClockSession.slot.day} at {selectedClockSession.slot.time}</span>
-              </div>
-              <div className="flex justify-between border-b border-brand-moss/5 pb-2">
-                <span>Total Billed Time:</span>
-                <span className="font-bold text-brand-moss">60 minutes</span>
-              </div>
-              <div className="pt-2">
-                <span className="text-[9px] uppercase font-bold text-brand-clay block mb-1">Server Clock Timeline Audit</span>
-                <div className="space-y-1.5 text-[9px] text-brand-charcoal/80">
-                  <div className="flex justify-between">
-                    <span>🟢 Video Channel Opened</span>
-                    <span>{selectedClockSession.slot.time}</span>
+                  <div className="flex justify-between border-b border-brand-moss/5 pb-2">
+                    <span>Total Billed Time:</span>
+                    <span className="font-bold text-brand-moss">
+                      60 minutes
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>🔴 Video Channel Closed</span>
-                    <span>Completed (+60m)</span>
+                  <div className="pt-2">
+                    <span className="text-[9px] uppercase font-bold text-brand-clay block mb-1">
+                      Server Clock Timeline Audit
+                    </span>
+                    <div className="space-y-1.5 text-[9px] text-brand-charcoal/80">
+                      <div className="flex justify-between">
+                        <span>🟢 Video Channel Opened</span>
+                        <span>{selectedClockSession.slot.time}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>🔴 Video Channel Closed</span>
+                        <span>Completed (+60m)</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                <button
+                  onClick={() =>
+                    toast.success(
+                      "Clock Log evidence PDF exported and downloaded successfully!",
+                    )
+                  }
+                  className="btn-magnetic w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md"
+                >
+                  <Download className="w-4 h-4" /> Download Evidence PDF
+                </button>
               </div>
             </div>
-
-            <button
-              onClick={() => toast.success('Clock Log evidence PDF exported and downloaded successfully!')}
-              className="btn-magnetic w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md"
-            >
-              <Download className="w-4 h-4" /> Download Evidence PDF
-            </button>
-          </div>
+          )}
         </div>
-      )}
-
-    </section>
+      </main>
+    </div>
   );
 }
