@@ -51,6 +51,8 @@ const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const TeacherPublicProfile = lazy(() => import('./components/TeacherPublicProfile'));
 const StudentPortal = lazy(() => import('./components/StudentPortal'));
 const PrivacyModal = lazy(() => import('./components/PrivacyModal'));
+const Blog = lazy(() => import('./pages/Blog'));
+const BlogPost = lazy(() => import('./pages/BlogPost'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -1123,6 +1125,7 @@ export default function App() {
           
           <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
+            <Link to="/blog" className="hover:text-brand-clay transition-colors hover-lift">Blog</Link>
             {currentUser?.role === 'Parent' && (
               <a href="#marketplace" onClick={scrollToSection('marketplace')} className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
             )}
@@ -1314,7 +1317,7 @@ export default function App() {
                 </button>
               </div>
             )}
-
+            
             {/* Mobile Hamburger menu toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -1367,36 +1370,36 @@ export default function App() {
             </div>
 
             {/* Mobile Nav Links */}
-            {currentUser && (
-              <div className="flex flex-col gap-2.5 font-sans font-bold text-xs uppercase tracking-wider text-white/80 border-t border-white/5 pt-3">
-                {currentUser.role === 'Parent' && (
-                  <a 
-                    href="#marketplace" 
-                    onClick={(e) => {
-                      setIsMobileMenuOpen(false);
-                      const el = document.getElementById('marketplace');
-                      if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    }} 
-                    className="hover:text-brand-clay transition-colors py-1"
-                  >
-                    {t('navFindTeachers')}
-                  </a>
-                )}
-                {currentUser.role === 'Teacher' && (
-                  <a 
-                    href="#academy" 
-                    onClick={(e) => {
-                      setIsMobileMenuOpen(false);
-                      const el = document.getElementById('academy');
-                      if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    }} 
-                    className="hover:text-brand-clay transition-colors py-1"
-                  >
-                    {t('navAcademy')}
-                  </a>
-                )}
-              </div>
-            )}
+            <div className="flex flex-col gap-2.5 font-sans font-bold text-xs uppercase tracking-wider text-white/80 border-t border-white/5 pt-3">
+              <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1">About Us</Link>
+              <Link to="/blog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1">Blog</Link>
+              {currentUser?.role === 'Parent' && (
+                <a 
+                  href="#marketplace" 
+                  onClick={(e) => {
+                    setIsMobileMenuOpen(false);
+                    const el = document.getElementById('marketplace');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }} 
+                  className="hover:text-brand-clay transition-colors py-1"
+                >
+                  {t('navFindTeachers')}
+                </a>
+              )}
+              {currentUser?.role === 'Teacher' && (
+                <a 
+                  href="#academy" 
+                  onClick={(e) => {
+                    setIsMobileMenuOpen(false);
+                    const el = document.getElementById('academy');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }} 
+                  className="hover:text-brand-clay transition-colors py-1"
+                >
+                  {t('navAcademy')}
+                </a>
+              )}
+            </div>
 
             {/* Profile & Action items */}
             <div className="flex flex-col gap-2.5 border-t border-white/5 pt-3">
@@ -1524,6 +1527,18 @@ export default function App() {
               openFaqIdx={openFaqIdx}
               setOpenFaqIdx={setOpenFaqIdx}
             />
+          } />
+
+          <Route path="/blog" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <Blog />
+            </Suspense>
+          } />
+          
+          <Route path="/blog/:slug" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <BlogPost />
+            </Suspense>
           } />
 
           <Route path="/teacher" element={

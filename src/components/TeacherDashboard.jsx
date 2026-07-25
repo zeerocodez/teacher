@@ -88,7 +88,7 @@ export default function TeacherDashboard({
   // Group Class States
   const [groupName, setGroupName] = useState('');
   const [groupFee, setGroupFee] = useState(15000);
-  const [isGroupCreated, setIsGroupCreated] = useState(false);
+  // Removed unused group class state
 
   // AI Progress Report States
   const [activeReportStudent, setActiveReportStudent] = useState(null);
