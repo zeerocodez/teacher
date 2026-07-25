@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import {
   Sparkles,
@@ -177,16 +177,16 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
 
   const API_BASE = "/api";
 
-  const getAuthHeaders = (extraHeaders = {}) => {
+  const getAuthHeaders = useCallback((extraHeaders = {}) => {
     const token = localStorage.getItem("eduvista_token");
     return {
       "Content-Type": "application/json",
       ...extraHeaders,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
-  };
+  }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!currentUser) return;
     try {
       const res = await fetch(
@@ -275,11 +275,11 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
           "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
       });
     }
-  };
+  }, [currentUser, getAuthHeaders]);
 
   useEffect(() => {
     fetchData();
-  }, [currentUser]);
+  }, [fetchData]);
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();

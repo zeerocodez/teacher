@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Star, ShieldCheck, Video, Calendar, ArrowLeft, Heart, Languages, MapPin, Award, CheckCircle2, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
+
 export default function TeacherPublicProfile({ 
   username, 
   onBack, 
@@ -19,8 +21,6 @@ export default function TeacherPublicProfile({
   const [calendarMonth, setCalendarMonth] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlots, setSelectedSlots] = useState([]); // Array of { day, time, dateString }
-
-  const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
   const getDaysInMonth = (d) => {
     return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
@@ -323,7 +323,7 @@ export default function TeacherPublicProfile({
           setReviews(teacher.reviews || []);
         });
     }
-  }, [teacher?.uid, teacher?.id]);
+  }, [teacher]);
 
   if (loading) {
     return (

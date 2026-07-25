@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { Sparkles, Trophy, Flame, Award, BarChart3, Calendar, FileText, CheckCircle2, Clock, PlayCircle, FolderOpen, ArrowRight, User, Download } from 'lucide-react';
 
@@ -30,15 +30,15 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
   const API_BASE = '/api';
   const studentUid = currentUser?.uid || 'student_1';
 
-  const getAuthHeaders = () => {
+  const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem('eduvista_token');
     return {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
-  };
+  }, []);
 
-  const fetchStudentData = async () => {
+  const fetchStudentData = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/students/dashboard/${studentUid}`, {
         headers: getAuthHeaders()
@@ -73,11 +73,11 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
     } catch (err) {
       console.warn("Failed to fetch student details from API, using simulated state:", err);
     }
-  };
+  }, [studentUid, getAuthHeaders]);
 
   useEffect(() => {
     fetchStudentData();
-  }, [studentUid]);
+  }, [fetchStudentData]);
 
   useEffect(() => {
     // Sync simulated details from local parameters
