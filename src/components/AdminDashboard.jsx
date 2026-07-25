@@ -41,7 +41,8 @@ import {
   BookOpen,
   ArrowRight,
   User,
-  LogOut
+  LogOut,
+  TrendingUp
 } from 'lucide-react';
 
 import AdminBlogManager from './AdminBlogManager';
