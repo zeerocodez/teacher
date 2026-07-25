@@ -255,15 +255,23 @@ export default function AuthModal({ isOpen, onClose }) {
     setError('');
     setLoading(true);
     try {
+      const targetEmail = email && email.includes('@') ? email : 'zeerocodes@gmail.com';
+      const nameFromEmail = targetEmail.split('@')[0];
+      const formattedName = targetEmail.toLowerCase() === 'zeerocodes@gmail.com' 
+        ? 'Zeerocodes Super Admin' 
+        : targetEmail.toLowerCase() === 'morichcare@gmail.com'
+        ? 'Morichcare Admin'
+        : `${nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1)} Admin`;
+
       const adminUser = {
-        uid: 'admin_zeerocodes',
-        displayName: 'Zeerocodes Super Admin',
-        email: 'zeerocodes@gmail.com',
+        uid: `admin_${Date.now()}`,
+        displayName: formattedName,
+        email: targetEmail,
         role: 'Admin',
         country: 'Nigeria',
         token: `admin_token_${Date.now()}`
       };
-      toast.success("🔑 Authenticated as Admin (Zeerocodes)");
+      toast.success(`🔑 Admin Dashboard Access Granted: ${adminUser.displayName}`);
       handleSuccess(adminUser);
     } catch (err) {
       console.error("Admin Login Error:", err);
