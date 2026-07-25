@@ -24,6 +24,7 @@ export default function TeacherDashboard({
   const [transactions, setTransactions] = useState([]);
   const [classLinkInputs, setClassLinkInputs] = useState({});
   const [submittingClassLink, setSubmittingClassLink] = useState(null);
+  const [editingClassLink, setEditingClassLink] = useState(null);
 
   // Tab State
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'profile' | 'students' | 'earnings' | 'reputation' | 'academy'
@@ -375,6 +376,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       if (res.ok) {
         fetchData();
         toast.success("Class link saved successfully!");
+        setEditingClassLink(null);
       } else {
         const errorData = await res.json();
         toast.error(errorData.error || "Failed to submit link.");
@@ -838,12 +840,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                         </span>
                         
                         <div className="mt-3 w-full sm:w-80">
-                          {(!session.classLink && session.status !== 'Completed') ? (
+                          {(!session.classLink || editingClassLink === session.id) && session.status !== 'Completed' ? (
                             <div className="flex gap-2">
                               <input
                                 type="url"
                                 placeholder="Paste Class Link (e.g. Zoom/Meet)"
-                                value={classLinkInputs[session.id] || ''}
+                                value={classLinkInputs[session.id] !== undefined ? classLinkInputs[session.id] : (session.classLink || '')}
                                 onChange={e => setClassLinkInputs({ ...classLinkInputs, [session.id]: e.target.value })}
                                 className="flex-1 text-[10px] px-3 py-2 bg-white border border-brand-moss/20 rounded-xl outline-none focus:border-brand-moss"
                               />
@@ -852,12 +854,22 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                                 disabled={submittingClassLink === session.id}
                                 className="px-3 py-2 bg-brand-moss hover:bg-brand-clay text-white rounded-xl text-[9px] uppercase tracking-wider font-bold shrink-0 disabled:opacity-50"
                               >
-                                Submit Link
+                                {submittingClassLink === session.id ? 'Submitting...' : 'Submit Link'}
                               </button>
                             </div>
                           ) : session.classLink ? (
-                            <div className="w-full text-[10px] text-brand-moss bg-brand-moss/5 border border-brand-moss/10 px-3 py-2 rounded-xl truncate">
-                              <b>Class Link:</b> <a href={session.classLink} target="_blank" rel="noreferrer" className="underline font-mono">{session.classLink}</a>
+                            <div className="w-full text-[10px] text-brand-moss bg-brand-moss/5 border border-brand-moss/10 px-3 py-2 rounded-xl truncate flex justify-between items-center gap-2">
+                              <div className="truncate">
+                                <b>Class Link:</b> <a href={session.classLink} target="_blank" rel="noreferrer" className="underline font-mono">{session.classLink}</a>
+                              </div>
+                              {session.status !== 'Completed' && (
+                                <button 
+                                  onClick={() => setEditingClassLink(session.id)}
+                                  className="text-[9px] uppercase font-bold text-brand-clay hover:text-brand-moss shrink-0 border border-brand-clay/20 px-2 py-1 rounded-lg bg-white"
+                                >
+                                  Edit
+                                </button>
+                              )}
                             </div>
                           ) : null}
                         </div>
@@ -1350,7 +1362,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
               <div className="lg:col-span-5 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
                 <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">GROUP MODULE</span>
                 <h4 className="font-heading font-bold text-sm text-brand-moss mb-4">Create Group Session (Max 10)</h4>
-                <form onSubmit={(e) => { e.preventDefault(); setIsGroupCreated(true); setTimeout(() => { setIsGroupCreated(false); setGroupName(''); }, 3000); }} className="space-y-4 font-sans text-xs">
+                <form onSubmit={(e) => { e.preventDefault(); toast.success('Group Classes are coming soon! This feature is under construction.'); }} className="space-y-4 font-sans text-xs">
                   <input
                     type="text"
                     required
@@ -1371,9 +1383,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                     <span className="text-[10px] text-brand-charcoal/60 self-center">System auto-splits cost</span>
                   </div>
                   <button type="submit" className="w-full py-2.5 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors">
-                    Create Group Class
+                    Create Group Class (Coming Soon)
                   </button>
-                  {isGroupCreated && <span className="text-emerald-600 block text-[9px] font-mono text-center animate-pulse">✓ Group session scheduled. Invites ready!</span>}
                 </form>
               </div>
             </div>
@@ -1403,7 +1414,15 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                       onChange={(e) => setAssignStudent(e.target.value)}
                       className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay text-brand-charcoal"
                     >
-                      <option value="Tunde" className="text-brand-charcoal">Tunde (Parent: Ngozi A.)</option>
+                      {roster.length > 0 ? (
+                        roster.map(student => (
+                          <option key={student.uid} value={student.name} className="text-brand-charcoal">
+                            {student.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" className="text-brand-charcoal">No active students</option>
+                      )}
                     </select>
                   </div>
 
