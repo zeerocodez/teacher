@@ -37,7 +37,8 @@ import {
   LayoutDashboard,
   Bell,
   Mail,
-  ChevronDown
+  ChevronDown,
+  BookOpen
 } from 'lucide-react';
 
 import AdminBlogManager from './AdminBlogManager';
