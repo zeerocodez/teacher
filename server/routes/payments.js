@@ -185,29 +185,40 @@ router.post('/paystack/dva', authenticateToken, async (req, res) => {
       const email = parentUser.email || 'customer@eduvista.com';
       const name = parentUser.displayName || 'EduVista Parent';
       
-      // 1. Create or get customer
+      const firstName = name.split(' ')[0] || 'Parent';
+      const lastName = name.split(' ').slice(1).join(' ') || 'User';
+      const phone = parentUser.phoneNumber || '+2348000000000';
+      
+      const payload = { email, first_name: firstName, last_name: lastName, phone };
+
+      // 1. Create customer
       const customerRes = await fetch('https://api.paystack.co/customer', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${paystackSecret}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, first_name: name })
+        body: JSON.stringify(payload)
       });
       const customerData = await customerRes.json();
-      if (!customerRes.ok && customerData.code !== 'duplicate') {
+      if (!customerRes.ok) {
         throw new Error(customerData.message || 'Failed to create Paystack customer');
       }
 
-      // If duplicate, we need to fetch the customer code
       let customerCode = customerData.data?.customer_code;
-      if (!customerCode && customerData.code === 'duplicate') {
-        const fetchCustRes = await fetch(`https://api.paystack.co/customer/${email}`, {
-          headers: { 'Authorization': `Bearer ${paystackSecret}` }
-        });
-        const fetchCustData = await fetchCustRes.json();
-        customerCode = fetchCustData.data.customer_code;
+      if (!customerCode) {
+        throw new Error('Could not retrieve Paystack customer code');
       }
+
+      // Update customer to ensure phone is set (required for DVA) if they were already created previously without it
+      await fetch(`https://api.paystack.co/customer/${customerCode}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${paystackSecret}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
 
       // 2. Create DVA
       const dvaRes = await fetch('https://api.paystack.co/dedicated_account', {
