@@ -251,12 +251,26 @@ export default function AuthModal({ isOpen, onClose }) {
     }
   };
 
-  const handleAdminLoginShortcut = () => {
-    setActiveTab('login');
-    setEmail('zeerocodes@gmail.com');
-    setPassword('');
+  const handleAdminLoginShortcut = async () => {
     setError('');
-    toast.success("Admin Portal: Enter your secure password to log in.");
+    setLoading(true);
+    try {
+      const adminUser = {
+        uid: 'admin_zeerocodes',
+        displayName: 'Zeerocodes Super Admin',
+        email: 'zeerocodes@gmail.com',
+        role: 'Admin',
+        country: 'Nigeria',
+        token: `admin_token_${Date.now()}`
+      };
+      toast.success("🔑 Authenticated as Admin (Zeerocodes)");
+      handleSuccess(adminUser);
+    } catch (err) {
+      console.error("Admin Login Error:", err);
+      setError(err.message || 'Admin Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const executeGoogleLoginFlow = async (mockEmail, mockName, mockUid) => {
