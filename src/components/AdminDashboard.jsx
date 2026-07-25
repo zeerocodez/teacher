@@ -38,12 +38,15 @@ import {
   Bell,
   Mail,
   ChevronDown,
-  BookOpen
+  BookOpen,
+  ArrowRight,
+  User,
+  LogOut
 } from 'lucide-react';
 
 import AdminBlogManager from './AdminBlogManager';
 
-export default function AdminDashboard({ currentUser, selectedCurrency, formatCurrency, convertMinor, onBack }) {
+export default function AdminDashboard({ currentUser, selectedCurrency, formatCurrency, convertMinor, onLogout, onBack }) {
   const API_BASE = '/api';
 
   const getAuthHeaders = () => {
@@ -947,18 +950,28 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
           </nav>
         </div>
 
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-gray-100 space-y-1">
           <button 
             onClick={() => setActiveSubSection('config')}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
           >
             <Settings size={18} className="text-gray-400" />
             Settings
           </button>
+          <button 
+            onClick={() => {
+              if (onLogout) onLogout();
+              else if (onBack) onBack();
+            }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition-all"
+          >
+            <LogOut size={18} className="text-red-500" />
+            Log Out
+          </button>
           {onBack && (
             <button 
               onClick={onBack}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all mt-1"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
             >
               <ArrowRight size={18} className="text-gray-400 rotate-180" />
               Exit to App
@@ -972,17 +985,27 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         
         {/* Top Header */}
         <header className="h-20 bg-white/50 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
               <Bell size={20} />
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
-            <div className="flex items-center gap-3 pl-6 border-l border-gray-200 cursor-pointer group">
+            <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
                 <User size={16} />
               </div>
-              <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">Admin</span>
+              <span className="text-sm font-bold text-gray-700">Admin</span>
             </div>
+            <button
+              onClick={() => {
+                if (onLogout) onLogout();
+                else if (onBack) onBack();
+              }}
+              className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold px-3 py-2 rounded-xl transition-all"
+            >
+              <LogOut size={15} />
+              <span>Log Out</span>
+            </button>
           </div>
         </header>
 
