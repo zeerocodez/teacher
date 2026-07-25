@@ -44,7 +44,24 @@ export default function TeacherDashboard({
   gradesLog,
   onBack,
 }) {
-  const [teacherProfile, setTeacherProfile] = useState(null);
+  const defaultVerifiedProfile = {
+    uid: currentUser?.uid || "teacher_1",
+    name: currentUser?.displayName || "Mr. Adebayo Okafor",
+    username: "adebayo",
+    email: currentUser?.email || "adebayo@eduvista.com",
+    role: "Teacher",
+    location: "Lagos, Nigeria",
+    subjects: ["Mathematics", "Physics"],
+    curricula: ["WAEC", "JAMB", "IGCSE"],
+    languages: ["English"],
+    rate: 400000,
+    rating: 4.9,
+    verified: true,
+    bio: "Certified pedagogy expert specializing in STEM and examination preparation.",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop"
+  };
+
+  const [teacherProfile, setTeacherProfile] = useState(defaultVerifiedProfile);
   const [bookingRequests, setBookingRequests] = useState([]);
   const [activeSessions, setActiveSessions] = useState([]);
   const [wallet, setWallet] = useState({ balance: 0, escrow: 0 });
@@ -614,18 +631,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => {
-                  if (teacherProfile && teacherProfile.verified) {
-                    setActiveTab(tab.id);
-                  } else {
-                    toast.error("Complete verification to access this tab");
-                  }
-                }}
+                onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all ${
                   activeTab === tab.id
-                    ? "bg-blue-50 text-blue-600"
+                    ? "bg-blue-50 text-blue-600 font-bold"
                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                } ${!teacherProfile || !teacherProfile.verified ? "opacity-50 cursor-not-allowed" : ""}`}
+                }`}
               >
                 <tab.icon
                   size={18}
