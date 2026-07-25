@@ -1635,8 +1635,11 @@ export default function App() {
                   </Suspense>
                 </div>
               )
-            ) : null
+            ) : (
+              <Navigate to="/" replace />
+            )
           } />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 

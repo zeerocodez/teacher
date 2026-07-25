@@ -17,6 +17,10 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
+      const errorMessage = this.state.error
+        ? this.state.error.message || String(this.state.error)
+        : 'Unknown runtime error';
+
       return (
         <div className="min-h-[60vh] bg-[#F2F0E9] text-[#1A1A1A] flex flex-col items-center justify-center p-6 text-center font-sans">
           <div className="bg-white rounded-[2.5rem] shadow-2xl p-8 sm:p-12 max-w-lg w-full border border-[#2E4036]/15 flex flex-col items-center">
@@ -29,9 +33,14 @@ class ErrorBoundary extends React.Component {
             <h1 className="text-2xl sm:text-3xl font-heading font-bold text-[#2E4036] mb-3">
               Application Encountered an Error
             </h1>
-            <p className="text-[#1A1A1A]/70 mb-8 text-xs sm:text-sm leading-relaxed">
+            <p className="text-[#1A1A1A]/70 mb-4 text-xs sm:text-sm leading-relaxed">
               A temporary runtime component error occurred. You can retry mounting the component or refresh your session.
             </p>
+
+            <div className="w-full font-mono text-[10px] text-[#CC5833] bg-[#CC5833]/5 p-3.5 rounded-2xl border border-[#CC5833]/20 mb-6 text-left overflow-x-auto">
+              <span className="font-bold uppercase tracking-wider block mb-1">Diagnostic Log:</span>
+              <span>{errorMessage}</span>
+            </div>
 
             <div className="w-full space-y-3">
               <button
@@ -43,11 +52,13 @@ class ErrorBoundary extends React.Component {
               </button>
 
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => {
+                  window.location.href = '/';
+                }}
                 className="flex items-center justify-center gap-2 border border-[#2E4036]/20 text-[#2E4036] hover:bg-[#2E4036]/5 font-heading font-bold py-3 px-6 rounded-full w-full text-xs uppercase tracking-wider transition-colors duration-300"
               >
                 <RefreshCw size={16} />
-                <span>Reload Page</span>
+                <span>Return to Home</span>
               </button>
             </div>
           </div>
