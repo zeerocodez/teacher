@@ -530,44 +530,22 @@ export default function App() {
   useEffect(() => {
     const handleUrlCheck = () => {
       const path = window.location.pathname;
-      const hash = window.location.hash;
       const match = path.match(/\/teacher\/([^/]+)/);
       
       if (match) {
         const username = match[1];
         navigate('/teacher');
         setProfileUsername(username);
-      } else {
-        const savedUser = localStorage.getItem('eduvista_user');
-        if (hash === '#topup' || hash === '#billing') {
-          if (!savedUser) {
-            navigate('/');
-            setProfileUsername('');
-            setAuthTab('login');
-            setIsAuthOpen(true);
-          } else {
-            navigate('/dashboard');
-            setProfileUsername('');
-          }
-        } else {
-          // If no specific hash, set to dashboard if logged in, or home
-          const saved = localStorage.getItem('eduvista_user');
-          navigate(saved ? '/dashboard' : '/');
-          setProfileUsername('');
-          // Refresh ScrollTrigger and reset timeline when returning home
-          setTimeout(() => {
-            ScrollTrigger.refresh();
-          }, 100);
-        }
+      } else if (path === '/dashboard' || path.startsWith('/dashboard')) {
+        // Stay on dashboard, do not trigger home redirection
+        return;
       }
     };
 
     handleUrlCheck();
     window.addEventListener('popstate', handleUrlCheck);
-    window.addEventListener('hashchange', handleUrlCheck);
     return () => {
       window.removeEventListener('popstate', handleUrlCheck);
-      window.removeEventListener('hashchange', handleUrlCheck);
     };
   }, []);
 

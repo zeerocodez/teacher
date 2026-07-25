@@ -495,7 +495,6 @@ export default function ParentDashboard({
                 key={tab.id}
                 onClick={() => {
                   setActiveTab(tab.id);
-                  window.location.hash = '#dashboard';
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all ${
                   activeTab === tab.id 
