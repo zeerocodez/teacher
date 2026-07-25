@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, User, Clock } from 'lucide-react';
 
@@ -86,6 +87,28 @@ export const mockBlogPosts = [
 ];
 
 const Blog = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch('/api/blog');
+        if (res.ok) {
+          const data = await res.json();
+          setPosts(data.length > 0 ? data : mockBlogPosts);
+        } else {
+          setPosts(mockBlogPosts);
+        }
+      } catch (err) {
+        setPosts(mockBlogPosts);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
   return (
     <div className="min-h-screen bg-brand-cream/30 pt-32 pb-24 font-sans text-brand-charcoal">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
@@ -103,9 +126,13 @@ const Blog = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {mockBlogPosts.map((post, index) => (
+          {loading ? (
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-20 text-brand-charcoal/50 font-bold animate-pulse">
+              Loading latest stories...
+            </div>
+          ) : posts.map((post, index) => (
             <div 
-              key={post.id} 
+              key={post.id || post.slug} 
               className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-moss/5 flex flex-col group animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >

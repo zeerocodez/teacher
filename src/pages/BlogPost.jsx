@@ -1,11 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Clock, Share2, Link as LinkIcon, MessageCircle } from 'lucide-react';
 import { mockBlogPosts } from './Blog';
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const post = mockBlogPosts.find(p => p.slug === slug);
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const res = await fetch(`/api/blog/${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPost(data);
+        } else {
+          // Fallback to mock data
+          const mockPost = mockBlogPosts.find(p => p.slug === slug);
+          setPost(mockPost || null);
+        }
+      } catch (err) {
+        const mockPost = mockBlogPosts.find(p => p.slug === slug);
+        setPost(mockPost || null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-brand-cream/30 pt-32 flex justify-center">
+        <div className="animate-pulse font-bold text-brand-charcoal/50">Loading article...</div>
+      </div>
+    );
+  }
 
   if (!post) {
     return <Navigate to="/blog" replace />;

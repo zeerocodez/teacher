@@ -36,6 +36,8 @@ import {
   Percent
 } from 'lucide-react';
 
+import AdminBlogManager from './AdminBlogManager';
+
 export default function AdminDashboard({ currentUser, selectedCurrency, formatCurrency, convertMinor, onBack }) {
   const API_BASE = '/api';
 
@@ -922,6 +924,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
             { id: 'groups', label: 'Groups & Bundles' },
             { id: 'compliance', label: 'Compliance & Safety' },
             { id: 'b2b', label: 'B2B Partners' },
+            { id: 'blog', label: 'Blog Manager' },
             { id: 'config', label: 'Config & Moderation' },
             { id: 'emails', label: 'Emails & Notifications' }
           ].map(tab => (
@@ -3596,6 +3599,11 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
             </div>
           </div>
         </div>
+      )}
+
+      {/* SECTION 9: BLOG MANAGEMENT */}
+      {activeSubSection === 'blog' && (
+        <AdminBlogManager getAuthHeaders={getAuthHeaders} />
       )}
 
       {/* CREDENTIAL DOCUMENT VIEWER MODAL */}

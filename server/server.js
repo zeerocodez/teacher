@@ -392,6 +392,9 @@ app.use('/api/teachers', teacherRoutes);
 import adminRoutes from './routes/admin.routes.js';
 app.use('/api/admin', adminRoutes);
 
+import blogRoutes from './routes/blog.routes.js';
+app.use('/api/blog', blogRoutes);
+
 
 // --- 3. PARENT & STUDENT ENDPOINTS ---
 
