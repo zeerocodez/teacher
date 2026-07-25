@@ -885,6 +885,16 @@ export default function ParentDashboard({
           {/* Booked Sessions & Chat Controls */}
           <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
             <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-4">YOUR TUTORING SESSIONS</span>
+            
+            <div className="bg-brand-clay/5 border border-brand-clay/20 rounded-xl p-4 mb-6">
+              <h4 className="font-heading font-bold text-sm text-brand-clay mb-2">How to Access Your Classes</h4>
+              <ol className="list-decimal list-inside space-y-1.5 font-sans text-xs text-brand-charcoal/80">
+                <li>Check the status of your booked session below. If it says <strong>Pending Confirmation</strong>, the tutor is reviewing it.</li>
+                <li>Once the tutor accepts, it becomes <strong>Scheduled</strong>.</li>
+                <li>When the tutor provides the class link, a green <strong>Join Session</strong> button will appear next to the session.</li>
+                <li>Click <strong>Join Session</strong> at the scheduled time to enter the class.</li>
+              </ol>
+            </div>
             {studentSessions.length === 0 ? (
               <div className="text-center text-brand-charcoal/40 text-xs py-8 font-sans">
                 No booked lessons yet. Click on the <b>Find & Book Tutors</b> tab to find and book a vetted teacher.

@@ -764,6 +764,17 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                 </span>
               </h3>
 
+              <div className="bg-brand-clay/5 border border-brand-clay/20 rounded-xl p-4 mb-6">
+                <h4 className="font-heading font-bold text-sm text-brand-clay mb-2">Step-by-Step Guide for Booking Requests</h4>
+                <ol className="list-decimal list-inside space-y-1.5 font-sans text-xs text-brand-charcoal/80">
+                  <li><strong>Review</strong> the student's request, noting the subject and proposed time slot.</li>
+                  <li>Click <strong>Confirm</strong> to accept the class, or <strong>Reject</strong> if you are unavailable.</li>
+                  <li>Once confirmed, the class moves to <strong>Active Tutoring Classrooms</strong> below.</li>
+                  <li>In the Active Classrooms section, paste your <strong>Class Link (e.g., Zoom/Google Meet)</strong> and submit it.</li>
+                  <li>After the class concludes, click <strong>Complete & Claim Escrow</strong> to receive your payout.</li>
+                </ol>
+              </div>
+
               {bookingRequests.length === 0 ? (
                 <div className="py-8 text-center text-brand-charcoal/50 text-sm font-sans">
                   No pending booking confirmation requests.

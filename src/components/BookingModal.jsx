@@ -72,10 +72,12 @@ export default function BookingModal({
       if (onBook) onBook();
     }, 1500);
   };
-  const isFirstTrial = !bookedSessions || bookedSessions.length === 0;
+  const validSessions = (bookedSessions || []).filter(s => s.status !== 'Cancelled' && s.status !== 'Rejected' && s.status !== 'Declined');
+  const isFirstTrial = validSessions.length === 0;
   const teacherRateMinor = teacher ? (teacher.rate || 0) : 350000;
   const activeRateMinor = isFirstTrial ? 0 : teacherRateMinor;
-  const convertedRateMinor = convertMinor(activeRateMinor, selectedCurrency);
+  // We use teacherRateMinor for convertedRateMinor so we can show the original price if they buy more than 1
+  const convertedRateMinor = convertMinor(teacherRateMinor, selectedCurrency);
   const formattedRate = isFirstTrial ? "Free (First Trial Class)" : formatCurrency(convertedRateMinor, selectedCurrency);
 
   // Generate upcoming slots based on teacher availability mapped to actual calendar dates
@@ -178,7 +180,10 @@ export default function BookingModal({
   }, [isOpen, preselectedSlots, slots]);
 
   const numSelected = selectedSlots.length > 0 ? selectedSlots.length : 1;
-  const totalRateMinor = activeRateMinor * numSelected;
+  
+  // If it's their first trial, only the FIRST slot is free. Subsequent slots in the same booking are paid.
+  const totalRateMinor = isFirstTrial ? Math.max(0, (numSelected - 1) * teacherRateMinor) : numSelected * teacherRateMinor;
+  
   const formattedTotalRate = formatCurrency(convertMinor(totalRateMinor, selectedCurrency), selectedCurrency);
 
   const isSlotBooked = (slot) => {
@@ -225,7 +230,10 @@ export default function BookingModal({
     
     if (paymentMethod === 'paystack') {
       // Direct integration triggered via App.jsx
-      onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
+      Promise.resolve(onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum }))
+        .finally(() => {
+          setIsProcessing(false);
+        });
       // Don't close or reset yet, let the redirect happen
     } else if (paymentMethod === 'bank') {
       // Bank Transfer - let App.jsx handle the pending booking via /sessions/book
