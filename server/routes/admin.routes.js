@@ -170,4 +170,43 @@ router.post('/transactions/:id/reject', authenticateToken, requireRole(['Admin']
   res.json({ success: true });
 });
 
+// POST Reset all non-admin signups (Parents, Teachers, Students, Sessions, Assignments, Disputes, Transactions) for live production
+router.post('/reset-signups', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  try {
+    const adminEmails = ['zeerocodes@gmail.com', 'morichcare@gmail.com', 'admin@eduvista.com', 'admin@eduvistar.com'];
+    
+    // 1. Delete all non-admin users
+    const allUsers = await db.find('users');
+    let deletedUsers = 0;
+    for (const u of allUsers) {
+      const emailLower = (u.email || '').toLowerCase();
+      if (u.role !== 'Admin' && !adminEmails.includes(emailLower)) {
+        await db.delete('users', u.id || u.uid);
+        deletedUsers++;
+      }
+    }
+
+    // 2. Clear Parents, Teachers, Students, Sessions, Assignments, Disputes, Transactions
+    const collectionsToClear = ['parents', 'teachers', 'students', 'sessions', 'assignments', 'disputes', 'transactions', 'notifications'];
+    const summary = { deletedUsers };
+
+    for (const col of collectionsToClear) {
+      const docs = await db.find(col);
+      for (const d of docs) {
+        await db.delete(col, d.id || d.uid);
+      }
+      summary[col] = docs.length;
+    }
+
+    res.json({
+      success: true,
+      message: "All test parent and teacher signups have been cleared for live production.",
+      summary
+    });
+  } catch (err) {
+    console.error("Failed to reset signups:", err);
+    res.status(500).json({ error: "Failed to reset signups: " + err.message });
+  }
+});
+
 export default router;

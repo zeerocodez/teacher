@@ -50,7 +50,7 @@ app.use(async (req, res, next) => {
 });
 
 // CORS origin security configuration
-const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const clientOrigin = process.env.CLIENT_ORIGIN || 'https://www.eduvistar.com';
 app.use(cors({
   origin: (origin, callback) => {
     callback(null, true); // Allow all origins to prevent 500 HTML errors on custom domains
@@ -114,6 +114,15 @@ async function initDefaultCreds() {
 // Initialize Database & Seed Guarantees
 async function guaranteeInitialProfiles() {
   await initDefaultCreds();
+  
+  // Clear legacy assignments to guarantee 0 average grade for production
+  try {
+    const legacyAssignments = await db.find('assignments');
+    for (const a of legacyAssignments) {
+      await db.delete('assignments', a.id || a.uid);
+    }
+  } catch (e) {}
+
   // Guarantee Admin User and Teacher Usernames for Testing
   const adminUser = await db.findOne('users', u => u.role === 'Admin');
   if (!adminUser) {
@@ -162,9 +171,9 @@ async function guaranteeInitialProfiles() {
 
   const teacher1User = await db.findOne('users', u => u.uid === 'teacher_1');
   if (!teacher1User) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "teacher_1",
-      email: "teacher@eduvista.com",
+      email: "teacher_1@eduvistar.com",
       displayName: "Mr. Adebayo Okafor",
       role: "Teacher",
       country: "Nigeria",
@@ -172,14 +181,14 @@ async function guaranteeInitialProfiles() {
       salt: defaultCreds.salt,
       passwordHash: defaultCreds.hash
     });
-    console.log("Guaranteed teacher@eduvista.com teacher profile.");
+    console.log("Guaranteed teacher_1@eduvistar.com teacher profile.");
   }
 
   const testPayTeacherUser = await db.findOne('users', u => u.uid === 'teacher_test_pay');
   if (!testPayTeacherUser) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "teacher_test_pay",
-      email: "testpay@eduvista.com",
+      email: "teacher_testpay@eduvistar.com",
       displayName: "Test Pay Teacher",
       role: "Teacher",
       country: "Nigeria",
@@ -187,14 +196,14 @@ async function guaranteeInitialProfiles() {
       salt: defaultCreds.salt,
       passwordHash: defaultCreds.hash
     });
-    console.log("Guaranteed testpay@eduvista.com teacher profile.");
+    console.log("Guaranteed teacher_testpay@eduvistar.com teacher profile.");
   }
 
   const parent1User = await db.findOne('users', u => u.uid === 'parent_1');
   if (!parent1User) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "parent_1",
-      email: "parent@eduvista.com",
+      email: "parent_1@eduvistar.com",
       displayName: "Ngozi Adeleke",
       role: "Parent",
       country: "Nigeria",
@@ -202,14 +211,14 @@ async function guaranteeInitialProfiles() {
       salt: defaultCreds.salt,
       passwordHash: defaultCreds.hash
     });
-    console.log("Guaranteed parent@eduvista.com parent profile.");
+    console.log("Guaranteed parent_1@eduvistar.com parent profile.");
   }
 
   const student1User = await db.findOne('users', u => u.uid === 'student_1');
   if (!student1User) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "student_1",
-      email: "student@eduvista.com",
+      email: "student_1@eduvistar.com",
       displayName: "Tunde Okafor",
       role: "Student",
       country: "Nigeria",
@@ -217,15 +226,15 @@ async function guaranteeInitialProfiles() {
       salt: defaultCreds.salt,
       passwordHash: defaultCreds.hash
     });
-    console.log("Guaranteed student@eduvista.com student profile.");
+    console.log("Guaranteed student_1@eduvistar.com student profile.");
   }
 
   // Guarantee fresh teacher for onboarding flow testing
   const freshTeacherUser = await db.findOne('users', u => u.uid === 'teacher_fresh');
   if (!freshTeacherUser) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "teacher_fresh",
-      email: "newteacher@eduvista.com",
+      email: "teacher_fresh@eduvistar.com",
       displayName: "Dr. Chidi Johnson",
       role: "Teacher",
       country: "Nigeria",
@@ -233,7 +242,7 @@ async function guaranteeInitialProfiles() {
       salt: defaultCreds.salt,
       passwordHash: defaultCreds.hash
     });
-    await await db.insert('teachers', {
+    await db.insert('teachers', {
       uid: "teacher_fresh",
       name: "Dr. Chidi Johnson",
       location: "Enugu, Nigeria",
@@ -903,7 +912,7 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
 
   // Automated dispute email alerts (teacher, parent, admins)
   try {
-    const parentUser = await db.findOne('users', u => u.uid === session.parentId) || { email: "parent@eduvista.com" };
+    const parentUser = await db.findOne('users', u => u.uid === session.parentId) || { email: "parent_1@eduvistar.com" };
     const teacherUser = await db.findOne('users', u => u.uid === session.teacherId);
     if (teacherUser && teacherUser.email) {
       sendTransactionalEmail(teacherUser.email, "EduVista: Billing Dispute Opened", "dispute_created", {
@@ -963,6 +972,127 @@ app.post('/api/sessions/:id/complete', authenticateToken, async (req, res) => {
   );
 
   res.json({ success: true, message: "Session marked as completed. Escrow 24-hour clearance initiated.", autoReleaseAt });
+});
+
+// Automated Escrow Release Processor (Releases locked session funds after 24 hours or on trigger)
+export async function processEscrowClearance(sessionId = null) {
+  try {
+    const completedSessions = sessionId 
+      ? await db.find('sessions', s => s.id === sessionId)
+      : await db.find('sessions', s => s.status === 'Completed');
+
+    const now = new Date();
+    let releasedCount = 0;
+
+    for (const session of completedSessions) {
+      // Check if session autoReleaseAt has elapsed (or if manually triggered)
+      const releaseTime = session.autoReleaseAt ? new Date(session.autoReleaseAt) : now;
+      if (sessionId || now >= releaseTime) {
+        // Verify no pending disputes exist
+        const activeDispute = await db.findOne('disputes', d => d.sessionId === session.id && (d.status === 'Pending' || d.status === 'Open'));
+        if (activeDispute) {
+          console.log(`[ESCROW ENGINE] Session ${session.id} has an open dispute. Escrow remains locked.`);
+          continue;
+        }
+
+        const totalCost = session.cost || 2500000;
+        const commission = Math.round(totalCost * 0.15);
+        const teacherShare = totalCost - commission;
+
+        // Update session status
+        await db.update('sessions', session.id, {
+          status: 'Cleared',
+          clearedAt: now.toISOString()
+        });
+
+        // Update Teacher Wallet: deduct escrow, add to available balance
+        let teacherWallet = await db.findOne('wallets', w => w.uid === session.teacherId || w.userUid === session.teacherId);
+        if (teacherWallet) {
+          await db.update('wallets', teacherWallet.id, {
+            escrow: Math.max(0, (teacherWallet.escrow || 0) - teacherShare),
+            balance: (teacherWallet.balance || 0) + teacherShare,
+            updatedAt: now.toISOString()
+          });
+        }
+
+        // Update Admin Wallet: add 15% platform commission
+        const adminUser = await db.findOne('users', u => u.role === 'Admin') || { uid: 'admin_1' };
+        let adminWallet = await db.findOne('wallets', w => w.uid === adminUser.uid);
+        if (adminWallet) {
+          await db.update('wallets', adminWallet.id, {
+            balance: (adminWallet.balance || 0) + commission,
+            updatedAt: now.toISOString()
+          });
+        }
+
+        // Log Escrow Release Transaction
+        await db.insert('transactions', {
+          id: `tx_escrow_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+          fromUserId: 'escrow_engine',
+          toUserId: session.teacherId,
+          sessionId: session.id,
+          amount: teacherShare,
+          type: 'escrow_release',
+          status: 'completed',
+          date: now.toISOString(),
+          description: `Escrow funds cleared for completed session #${session.id}`
+        });
+
+        // Notifications
+        await createNotification(
+          session.teacherId,
+          'escrow_released',
+          'Escrow Funds Released',
+          `₦${(teacherShare / 100).toLocaleString()} has been credited to your withdrawable wallet balance for session #${session.id}.`
+        );
+
+        const teacherUser = await db.findOne('users', u => u.uid === session.teacherId);
+        if (teacherUser && teacherUser.email) {
+          sendTransactionalEmail(teacherUser.email, "EduVista: Escrow Funds Released", "escrow_released", {
+            teacherName: session.teacherName || teacherUser.displayName,
+            formattedPayout: `₦${(teacherShare / 100).toLocaleString()}`,
+            formattedCommission: `₦${(commission / 100).toLocaleString()}`
+          });
+        }
+
+        releasedCount++;
+        console.log(`[ESCROW ENGINE] Released ₦${teacherShare / 100} to teacher ${session.teacherId} for session ${session.id}.`);
+      }
+    }
+    return releasedCount;
+  } catch (err) {
+    console.error("[ESCROW ENGINE ERROR]:", err);
+    return 0;
+  }
+}
+
+// Interval runner: Check and clear matured escrows every 60 seconds
+setInterval(() => {
+  processEscrowClearance().catch(err => console.error("Escrow background error:", err));
+}, 60000);
+
+// POST Escrow Manual/Instant Release Endpoint
+app.post('/api/escrow/release-now', authenticateToken, async (req, res) => {
+  const { sessionId } = req.body;
+  if (!sessionId) {
+    return res.status(400).json({ error: "sessionId is required." });
+  }
+
+  const session = await db.findOne('sessions', s => s.id === sessionId);
+  if (!session) {
+    return res.status(404).json({ error: "Session not found." });
+  }
+
+  if (session.parentId !== req.user.uid && session.teacherId !== req.user.uid && req.user.role !== 'Admin') {
+    return res.status(403).json({ error: "Not authorized to release escrow for this session." });
+  }
+
+  const releasedCount = await processEscrowClearance(sessionId);
+  if (releasedCount > 0) {
+    return res.json({ success: true, message: `Escrow funds successfully released for session #${sessionId}.` });
+  } else {
+    return res.status(400).json({ error: "Session escrow could not be released. Check if session has active disputes or is already cleared." });
+  }
 });
 
 // POST Admin Dispute Resolution (Refund Parent or Release to Teacher)

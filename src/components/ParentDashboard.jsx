@@ -434,9 +434,10 @@ export default function ParentDashboard({
     return pNameLower === activeNameLower || pNameLower === selectedChildLower || (selectedChildLower === 'tunde' && pNameLower === 'tunde') || (selectedChildLower === 'yinka' && pNameLower === 'zara');
   });
 
-  const avgGrade = studentGrades.length > 0
-    ? Math.round(studentGrades.reduce((sum, g) => sum + (g.grade?.score || g.score), 0) / studentGrades.length)
-    : 82;
+  const gradedItems = studentGrades.filter(g => (g.grade?.score !== undefined || g.score !== undefined));
+  const avgGrade = gradedItems.length > 0
+    ? Math.round(gradedItems.reduce((sum, g) => sum + (g.grade?.score || g.score || 0), 0) / gradedItems.length)
+    : 0;
 
   // Calculate Wallet spend breakdowns from Transactions ledger
   const parentTransactions = dashboardData?.transactions || [];
@@ -661,7 +662,7 @@ export default function ParentDashboard({
               <span className="block text-xs font-medium text-purple-100 mb-1 opacity-90">Escrow Balance</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold tracking-tight">
-                  {formatCurrency(convertMinor(parentEscrowBalance, selectedCurrency), selectedCurrency)}
+                  {formatCurrency(convertMinor(parentEscrowBalance || dashboardData?.escrowBalance || 0, selectedCurrency), selectedCurrency)}
                 </span>
               </div>
               <span className="block text-xs font-medium text-purple-100 mt-2 opacity-90">Held securely</span>
@@ -694,7 +695,7 @@ export default function ParentDashboard({
                   <span className="text-2xl font-bold text-gray-900">{attendanceRate}%</span>
                   <span className="text-xs font-medium text-gray-400">vs {Math.max(attendanceRate - 5, 0)}%</span>
                 </div>
-                <span className="text-xs font-bold text-emerald-500 mt-1">+5% increase</span>
+                <span className="text-xs font-bold text-emerald-500 mt-1">{attendanceRate > 0 ? '+5% increase' : 'No sessions recorded'}</span>
               </div>
 
               <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
@@ -704,7 +705,7 @@ export default function ParentDashboard({
                   <span className="text-2xl font-bold text-gray-900">{avgGrade}</span>
                   <span className="text-xs font-medium text-gray-400">vs {Math.max(avgGrade - 2, 0)}</span>
                 </div>
-                <span className="text-xs font-bold text-emerald-500 mt-1">Improving</span>
+                <span className="text-xs font-bold text-emerald-500 mt-1">{avgGrade > 0 ? 'Improving' : 'No graded work yet'}</span>
               </div>
               
               <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
@@ -714,7 +715,7 @@ export default function ParentDashboard({
                   <span className="text-2xl font-bold text-gray-900">{studentGrades.length}</span>
                   <span className="text-xs font-medium text-gray-400">vs {Math.max(studentGrades.length - 1, 0)}</span>
                 </div>
-                <span className="text-xs font-bold text-emerald-500 mt-1">+1 new</span>
+                <span className="text-xs font-bold text-emerald-500 mt-1">{studentGrades.length > 0 ? '+1 new' : 'None completed'}</span>
               </div>
 
               <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
@@ -1426,7 +1427,7 @@ export default function ParentDashboard({
                 <div>
                   <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">SECURED IN LIVE ESCROW</span>
                   <span className="font-heading font-bold text-3xl text-brand-moss block">
-                    {formatCurrency(convertMinor(parentEscrowBalance, selectedCurrency), selectedCurrency)}
+                    {formatCurrency(convertMinor(parentEscrowBalance || dashboardData?.escrowBalance || 0, selectedCurrency), selectedCurrency)}
                   </span>
                   <span className="font-sans text-[10px] text-brand-charcoal/50 block mt-1">Locked in escrow until lesson completion approval</span>
                 </div>

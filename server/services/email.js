@@ -23,6 +23,7 @@ try {
 }
 
 const EMAIL_LOG_FILE = path.join(DATA_DIR, 'sent_emails.json');
+const APP_URL = (process.env.CLIENT_ORIGIN || process.env.APP_URL || 'https://www.eduvistar.com').replace(/\/$/, '');
 
 // Helper to read sent emails log
 export function readSentEmails() {
@@ -173,7 +174,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
   let htmlBody = '';
 
   if (templateName === 'welcome') {
-    const verificationUrl = `http://localhost:5173/verify-email?token=${crypto.randomBytes(16).toString('hex')}`;
+    const verificationUrl = `${APP_URL}/verify-email?token=${crypto.randomBytes(16).toString('hex')}`;
     
     if (templateData.role === 'Teacher') {
       body = `Welcome to EduVista Africa, ${templateData.displayName}!\n\nYour profile as a professional educator is now ready for onboarding.\n\nNext Steps:\n1. Verify Email: ${verificationUrl}\n2. Complete Profile: List subjects, curriculum, and hourly rates.\n3. Set Availability: Choose slots for parent booking.\n\nBest regards,\nEduVista Africa Support`;
@@ -236,16 +237,16 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
       `);
     }
   } else if (templateName === 'booking_secured') {
-    body = `Hello Parent,\n\nYour session with ${templateData.teacherName} has been booked. A payment of ${templateData.formattedCost} has been safely locked in the EduVista Timed Escrow Engine for the slot: ${templateData.slot.day} at ${templateData.slot.time}.\n\nEscrow details: https://localhost:5173/dashboard/billing\n\nThanks,\nEduVista Billing`;
+    body = `Hello Parent,\n\nYour session with ${templateData.teacherName} has been booked. A payment of ${templateData.formattedCost} has been safely locked in the EduVista Timed Escrow Engine for the slot: ${templateData.slot.day} at ${templateData.slot.time}.\n\nEscrow details: ${APP_URL}/dashboard/billing\n\nThanks,\nEduVista Billing`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Escrow Payment Secured</h2>
       <p>Hello Parent,</p>
       <p>Your 1-on-1 private lesson session with <strong>${templateData.teacherName}</strong> has been booked. A payment of <strong>${templateData.formattedCost}</strong> has been safely locked in the EduVista Timed Escrow Engine for the slot: <strong>${templateData.slot.day} at ${templateData.slot.time}</strong>.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard/billing">View Escrow Details</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard/billing">View Escrow Details</a></p>
       <p>Thanks,<br>EduVista Billing</p>
     `);
   } else if (templateName === 'booking_received') {
-    body = `Hello Teacher,\n\nYou have received a new tutoring request from Parent ${templateData.parentName} for student ${templateData.studentName}.\n\nDetails:\n- Subject: ${templateData.subject}\n- Syllabus: ${templateData.curriculum}\n- Slot: ${templateData.slot.day} at ${templateData.slot.time}\n- Payout Share: ${templateData.formattedPayout}\n\nPlease respond to this request in your dashboard: http://localhost:5173/dashboard\n\nThanks,\nEduVista Team`;
+    body = `Hello Teacher,\n\nYou have received a new tutoring request from Parent ${templateData.parentName} for student ${templateData.studentName}.\n\nDetails:\n- Subject: ${templateData.subject}\n- Syllabus: ${templateData.curriculum}\n- Slot: ${templateData.slot.day} at ${templateData.slot.time}\n- Payout Share: ${templateData.formattedPayout}\n\nPlease respond to this request in your dashboard: ${APP_URL}/dashboard\n\nThanks,\nEduVista Team`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>New Session Booking Request</h2>
       <p>Hello Teacher,</p>
@@ -258,44 +259,44 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <li>Your Payout Share: <strong>${templateData.formattedPayout}</strong></li>
       </ul>
       <p>Please review and accept/decline this session request from your dashboard.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard">Respond to Request</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard">Respond to Request</a></p>
     `);
   } else if (templateName === 'booking_confirmed') {
-    body = `Hello Parent,\n\nGreat news! Your booking request with private tutor ${templateData.teacherName} has been confirmed for ${templateData.slot.day} at ${templateData.slot.time}. Your classroom is now scheduled.\n\nOpen dashboard: http://localhost:5173/dashboard\n\nWarm regards,\nEduVista Support`;
+    body = `Hello Parent,\n\nGreat news! Your booking request with private tutor ${templateData.teacherName} has been confirmed for ${templateData.slot.day} at ${templateData.slot.time}. Your classroom is now scheduled.\n\nOpen dashboard: ${APP_URL}/dashboard\n\nWarm regards,\nEduVista Support`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Lessons Scheduled!</h2>
       <p>Hello Parent,</p>
       <p>Great news! Your booking request with private tutor <strong>${templateData.teacherName}</strong> has been confirmed for <strong>${templateData.slot.day} at ${templateData.slot.time}</strong>. Your online classroom link is now active.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard">Open Parent Portal</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard">Open Parent Portal</a></p>
       <p>Warm regards,<br>EduVista Support</p>
     `);
   } else if (templateName === 'booking_rejected') {
-    body = `Hello Parent,\n\nYour booking request with tutor ${templateData.teacherName} has been declined. The escrow amount of ${templateData.formattedCost} has been fully refunded back to your wallet balance.\n\nCheck billing: http://localhost:5173/dashboard\n\nEduVista Billing`;
+    body = `Hello Parent,\n\nYour booking request with tutor ${templateData.teacherName} has been declined. The escrow amount of ${templateData.formattedCost} has been fully refunded back to your wallet balance.\n\nCheck billing: ${APP_URL}/dashboard\n\nEduVista Billing`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Booking Request Declined</h2>
       <p>Hello Parent,</p>
       <p>Your booking request with private tutor <strong>${templateData.teacherName}</strong> has been declined. The escrow amount of <strong>${templateData.formattedCost}</strong> has been fully refunded back to your wallet balance.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard">Open Parent Portal</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard">Open Parent Portal</a></p>
       <p>Warm regards,<br>EduVista Billing</p>
     `);
   } else if (templateName === 'session_completed') {
-    body = `Hello Parent,\n\nYour private online lesson with tutor ${templateData.teacherName} is complete. The server classroom timer recorded a duration of 58 minutes. Escrow funds have been settled.\n\nView AI report: http://localhost:5173/dashboard/progress`;
+    body = `Hello Parent,\n\nYour private online lesson with tutor ${templateData.teacherName} is complete. The server classroom timer recorded a duration of 58 minutes. Escrow funds have been settled.\n\nView AI report: ${APP_URL}/dashboard/progress`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Tutoring Session Complete</h2>
       <p>Hello Parent,</p>
       <p>Your private online lesson with tutor <strong>${templateData.teacherName}</strong> is complete. The server classroom timer recorded a duration of <strong>58 minutes</strong>. Escrow funds have been settled.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard/progress">View Student Progress</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard/progress">View Student Progress</a></p>
     `);
   } else if (templateName === 'escrow_released') {
-    body = `Hello Teacher,\n\nYour session payment has been settled! A payout of ${templateData.formattedPayout} has been released and transferred to your wallet balance (commission fee: ${templateData.formattedCommission}).\n\nOpen wallet: http://localhost:5173/dashboard`;
+    body = `Hello Teacher,\n\nYour session payment has been settled! A payout of ${templateData.formattedPayout} has been released and transferred to your wallet balance (commission fee: ${templateData.formattedCommission}).\n\nOpen wallet: ${APP_URL}/dashboard`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Escrow Funds Released</h2>
       <p>Hello Teacher,</p>
       <p>Your session payment has been settled! A payout of <strong>${templateData.formattedPayout}</strong> has been released and transferred to your wallet balance (commission fee: ${templateData.formattedCommission}).</p>
-      <p><a class="button" href="http://localhost:5173/dashboard">View Wallet Balance</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard">View Wallet Balance</a></p>
     `);
   } else if (templateName === 'assignment_submitted') {
-    body = `Hello Teacher,\n\nStudent ${templateData.studentName} has submitted homework for review.\n\nAssignment: "${templateData.title}"\nSubmitted At: ${templateData.submittedAt}\n\nPlease grade the submission: http://localhost:5173/dashboard`;
+    body = `Hello Teacher,\n\nStudent ${templateData.studentName} has submitted homework for review.\n\nAssignment: "${templateData.title}"\nSubmitted At: ${templateData.submittedAt}\n\nPlease grade the submission: ${APP_URL}/dashboard`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Homework Assignment Submitted</h2>
       <p>Hello Teacher,</p>
@@ -306,10 +307,10 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <li>Submitted At: ${templateData.submittedAt}</li>
       </ul>
       <p>Please grade the submission in your dashboard.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard">Grade Assignment</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard">Grade Assignment</a></p>
     `);
   } else if (templateName === 'assignment_graded') {
-    body = `Hi Parent,\n\nAn assignment score card has been posted for ${templateData.studentName}.\n\nAssignment: "${templateData.title}"\nGrade: ${templateData.score}/100\nFeedback: "${templateData.feedback}"\n\nCheck detailed grades: http://localhost:5173/dashboard/progress`;
+    body = `Hi Parent,\n\nAn assignment score card has been posted for ${templateData.studentName}.\n\nAssignment: "${templateData.title}"\nGrade: ${templateData.score}/100\nFeedback: "${templateData.feedback}"\n\nCheck detailed grades: ${APP_URL}/dashboard/progress`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Homework Score Card Ready</h2>
       <p>Hi Parent,</p>
@@ -320,15 +321,15 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <li>Grade: <span class="badge">${templateData.score}/100</span></li>
         <li>Teacher Feedback: "${templateData.feedback}"</li>
       </ul>
-      <p><a class="button" href="http://localhost:5173/dashboard/progress">View Student Progress</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard/progress">View Student Progress</a></p>
     `);
   } else if (templateName === 'payout_approved') {
-    body = `Hello Teacher,\n\nYour payout request has been approved! The amount of ${templateData.formattedAmount} is being processed and sent to your bank card/mobile money wallet.\n\nOpen wallet: http://localhost:5173/dashboard`;
+    body = `Hello Teacher,\n\nYour payout request has been approved! The amount of ${templateData.formattedAmount} is being processed and sent to your bank card/mobile money wallet.\n\nOpen wallet: ${APP_URL}/dashboard`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Payout Request Approved</h2>
       <p>Hello Teacher,</p>
       <p>Your payout request has been approved! The amount of <strong>${templateData.formattedAmount}</strong> is being processed and sent to your bank card/mobile money wallet.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard">Go to Wallet</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard">Go to Wallet</a></p>
     `);
   } else if (templateName === 'payout_rejected') {
     body = `Hello Teacher,\n\nYour payout request for ${templateData.formattedAmount} was declined.\n\nReason: "${templateData.reason}"\n\nThe funds have been returned to your wallet balance.`;
@@ -338,7 +339,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
       <p>Your payout request for <strong>${templateData.formattedAmount}</strong> was declined.</p>
       <p><strong>Reason:</strong> "${templateData.reason}"</p>
       <p>The funds have been returned to your wallet balance.</p>
-      <p><a class="button" href="http://localhost:5173/dashboard">View Details</a></p>
+      <p><a class="button" href="${APP_URL}/dashboard">View Details</a></p>
     `);
   } else if (templateName === 'dispute_created') {
     body = `Hello,\n\nA billing dispute has been opened for the session on ${templateData.slot.day} at ${templateData.slot.time} by Parent ${templateData.parentName}.\n\nDispute Reason: "${templateData.reason}"\n\nFunds are locked in dispute escrow. Admin will review within 24 hours.`;
@@ -382,13 +383,13 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
       </p>
 
       <div style="text-align: center;">
-        <a class="button" href="http://localhost:5173/dashboard/billing">View Wallet Balance</a>
+        <a class="button" href="${APP_URL}/dashboard/billing">View Wallet Balance</a>
       </div>
       <p style="margin-top: 30px; font-size: 14px;">Best regards,<br>EduVista Billing</p>
     `);
   } else if (templateName === 'admin_notification' || templateName === 'custom' || templateName === 'alert') {
 
-    body = `Dear ${templateData.displayName || 'User'},\n\nWe have a new update for you regarding your EduVista account:\n\n${templateData.message}\n\nTo view this update and take action, please log in to your dashboard at http://localhost:5173/\n\nWarm regards,\nEduVista Administration`;
+    body = `Dear ${templateData.displayName || 'User'},\n\nWe have a new update for you regarding your EduVista account:\n\n${templateData.message}\n\nTo view this update and take action, please log in to your dashboard at ${APP_URL}/\n\nWarm regards,\nEduVista Administration`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>EduVista Administration Update</h2>
       <p>Dear ${templateData.displayName || 'User'},</p>
@@ -397,7 +398,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         "${templateData.message}"
       </p>
       <p>To view this update and take action, please log in to your dashboard:</p>
-      <p><a class="button" href="http://localhost:5173/">Log In to Dashboard</a></p>
+      <p><a class="button" href="${APP_URL}/">Log In to Dashboard</a></p>
       <p>Warm regards,<br>EduVista Administration</p>
     `);
   } else {

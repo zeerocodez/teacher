@@ -273,7 +273,7 @@ router.post('/assignments/grade', authenticateToken, requireRole(['Teacher']), a
   );
 
   // Trigger transactional email to parent
-  const parentUser = await db.findOne('users', u => u.uid === parentUid) || { email: "parent@eduvista.com" };
+  const parentUser = await db.findOne('users', u => u.uid === parentUid) || { email: "parent_1@eduvistar.com" };
   sendTransactionalEmail(parentUser.email, "EduVista: Assignment Graded Card", "assignment_graded", {
     studentName: assignment.studentName,
     title: assignment.title,

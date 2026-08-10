@@ -113,10 +113,10 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
   ];
 
   const subjects = [
-    { name: "Algebra", percentage: 82, color: "bg-brand-moss" },
-    { name: "Quadratic equations", percentage: 54, color: "bg-brand-clay" },
-    { name: "Trigonometry", percentage: 31, color: "bg-rose-600" },
-    { name: "Statistics", percentage: 91, color: "bg-emerald-600" }
+    { name: "Algebra", percentage: 0, color: "bg-brand-moss" },
+    { name: "Quadratic equations", percentage: 0, color: "bg-brand-clay" },
+    { name: "Trigonometry", percentage: 0, color: "bg-rose-600" },
+    { name: "Statistics", percentage: 0, color: "bg-emerald-600" }
   ];
 
 
@@ -208,10 +208,20 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
           <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm flex flex-col justify-between hover-lift">
             <div>
               <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">AVERAGE GRADE</span>
-              <span className="font-heading font-bold text-4xl text-brand-moss block">86%</span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-600 font-bold block mt-1">
-                ✓ Comprehension Level High
-              </span>
+              {(() => {
+                const gradedList = assignments.filter(a => a.status === 'Graded' && (a.score !== undefined || a.grade !== undefined));
+                const studentAvgGrade = gradedList.length > 0
+                  ? Math.round(gradedList.reduce((sum, a) => sum + (a.score || a.grade || 0), 0) / gradedList.length)
+                  : 0;
+                return (
+                  <>
+                    <span className="font-heading font-bold text-4xl text-brand-moss block">{studentAvgGrade}%</span>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-600 font-bold block mt-1">
+                      {studentAvgGrade > 0 ? '✓ Comprehension Level High' : 'No Graded Work Yet'}
+                    </span>
+                  </>
+                );
+              })()}
             </div>
           </div>
 

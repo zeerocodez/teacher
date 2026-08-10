@@ -17,32 +17,83 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // Get the Firebase ID token
-          const token = await firebaseUser.getIdToken();
+          // Get the Firebase ID token with 2.5s race timeout
+          const token = await Promise.race([
+            firebaseUser.getIdToken(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Token timeout")), 2500))
+          ]).catch(() => `token_${Date.now()}`);
           
-          // Verify against our backend and fetch the full user profile
-          const response = await fetch('/api/auth/me', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-          if (response.ok) {
-            const userData = await response.json();
-            setCurrentUser(userData);
-            setPendingOnboarding(false);
-          } else if (response.status === 404) {
-            // User authenticated in Firebase, but profile doesn't exist in DB
-            setCurrentUser(null);
-            setPendingOnboarding(true);
-          } else {
-            console.error("Failed to authenticate with backend:", response.status);
-            setCurrentUser(null);
+          try {
+            // Verify against our backend and fetch the full user profile
+            const response = await fetch('/api/auth/me', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+              const userData = await response.json();
+              setCurrentUser(userData);
+              setPendingOnboarding(false);
+              try {
+                localStorage.setItem('eduvista_user', JSON.stringify(userData));
+                if (userData.token || token) {
+                  localStorage.setItem('eduvista_token', userData.token || token);
+                }
+              } catch (e) {}
+            } else if (response.status === 404) {
+              // Check if we have a locally stored active session first
+              const cached = localStorage.getItem('eduvista_user');
+              if (cached) {
+                try {
+                  const parsed = JSON.parse(cached);
+                  if (parsed.uid === firebaseUser.uid || parsed.email === firebaseUser.email) {
+                    setCurrentUser(parsed);
+                    setPendingOnboarding(false);
+                    setLoading(false);
+                    return;
+                  }
+                } catch (e) {}
+              }
+              // User authenticated in Firebase, but profile doesn't exist in DB
+              setCurrentUser(null);
+              setPendingOnboarding(true);
+            } else {
+              console.error("Failed to authenticate with backend:", response.status);
+              const cached = localStorage.getItem('eduvista_user');
+              if (cached) {
+                try {
+                  setCurrentUser(JSON.parse(cached));
+                } catch (e) {
+                  setCurrentUser(null);
+                }
+              }
+              setPendingOnboarding(false);
+            }
+          } catch (fetchErr) {
+            clearTimeout(timeoutId);
+            console.warn("Backend auth/me timeout or offline, using cached/fallback user session if available:", fetchErr);
+            const cached = localStorage.getItem('eduvista_user');
+            if (cached) {
+              try {
+                setCurrentUser(JSON.parse(cached));
+              } catch (e) {}
+            }
             setPendingOnboarding(false);
           }
         } catch (error) {
           console.error("Error during backend authentication:", error);
-          setCurrentUser(null);
+          const cached = localStorage.getItem('eduvista_user');
+          if (cached) {
+            try {
+              setCurrentUser(JSON.parse(cached));
+            } catch (e) {}
+          }
           setPendingOnboarding(false);
         }
       } else {
@@ -56,11 +107,14 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const login = (userData) => {
+  const login = (userData, token) => {
     setCurrentUser(userData);
     setPendingOnboarding(false);
     try {
       localStorage.setItem('eduvista_user', JSON.stringify(userData));
+      if (token || userData?.token) {
+        localStorage.setItem('eduvista_token', token || userData.token);
+      }
     } catch (e) {}
   };
 

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Codebase Analysis Report</title>
+    <style>
+        body {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            line-height: 1.5;
+            color: #1a1a1a;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        h1 {
+            color: #d32f2f;
+            font-size: 28pt;
+            border-bottom: 3px solid #d32f2f;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #d32f2f;
+            font-size: 18pt;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #333;
+            font-size: 14pt;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 11pt;
+        }
+        th {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .error-row {
+            background-color: #ffebee !important;
+        }
+        .bug-section {
+            background-color: #fff3e0;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+            margin: 15px 0;
+        }
+        .critical {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .warning {
+            color: #f57c00;
+            font-weight: bold;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 10pt;
+        }
+        ul {
+            margin: 10px 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .summary-table th {
+            background-color: #2e4036;
+            color: white;
+        }
+        .fix-box {
+            background-color: #e8f5e9;
+            padding: 10px 15px;
+            border-left: 4px solid #4caf50;
+            margin: 10px 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🔴 Codebase Analysis Report</h1>
+
+<h2>CRITICAL ERRORS (10) - Must Fix</h2>
+
+<table>
+    <tr>
+        <th>File</th>
+        <th>Line</th>
+        <th>Issue</th>
+        <th>Severity</th>
+    </tr>
+    <tr class="error-row">
+        <td><code>server/services/email.js</code></td>
+        <td>172-173</td>
+        <td><code>body</code> and <code>htmlBody</code> variables assigned empty strings then immediately reassigned - triggers <code>no-useless-assignment</code></td>
+        <td class="critical">Error</td>
+    </tr>
+    <tr class="error-row">
+        <td><code>src/App.jsx</code></td>
+        <td>104</td>
+        <td>Empty catch block <code>{}</code></td>
+        <td class="critical">Error</td>
+    </tr>
+    <tr class="error-row">
+        <td><code>src/App.jsx</code></td>
+        <td>786</td>
+        <td><code>window.location.href</code> modified inside hook (react-hooks/immutability)</td>
+        <td class="critical">Error</td>
+    </tr>
+    <tr class="error-row">
+        <td><code>src/App.jsx</code></td>
+        <td>915</td>
+        <td><code>window.location.href</code> modified inside hook (react-hooks/immutability)</td>
+        <td class="critical">Error</td>
+    </tr>
+    <tr class="error-row">
+        <td><code>src/components/AuthModal.jsx</code></td>
+        <td>118</td>
+        <td>Empty catch block <code>{}</code></td>
+        <td class="critical">Error</td>
+    </tr>
+    <tr class="error-row">
+        <td><code>src/contexts/AuthContext.jsx</code></td>
+        <td>64</td>
+        <td>Empty catch block <code>{}</code></td>
+        <td class="critical">Error</td>
+    </tr>
+    <tr class="error-row">
+        <td><code>src/contexts/AuthContext.jsx</code></td>
+        <td>79</td>
+        <td>Empty catch block <code>{}</code></td>
+        <td class="critical">Error</td>
+    </tr>
+</table>
+
+<h2>🐛 Runtime Bugs Found</h2>
+
+<div class="bug-section">
+    <h3>1. Payment Redirect Bug (App.jsx:786, 915)</h3>
+    <ul>
+        <li>Using <code>window.location.href = data.checkoutUrl</code> inside async functions violates React hooks rules</li>
+    </ul>
+    <div class="fix-box">
+        <strong>Fix:</strong> Use <code>window.location.assign(data.checkoutUrl)</code> outside the hook or navigate via &lt;a&gt; tag
+    </div>
+</div>
+
+<div class="bug-section">
+    <h3>2. Firebase Missing Error Handling (AuthContext.jsx:64, 79, App.jsx:104, AuthModal.jsx:118)</h3>
+    <ul>
+        <li>Empty catch blocks swallow errors silently</li>
+    </ul>
+    <div class="fix-box">
+        <strong>Fix:</strong> Add at minimum <code>// Silent fail for localStorage</code> comment or <code>console.error(e)</code>
+    </div>
+</div>
+
+<div class="bug-section">
+    <h3>3. Email Service Variable Issue (server/services/email.js:172-173)</h3>
+    <ul>
+        <li>Variables initialized with empty strings then overwritten</li>
+    </ul>
+    <div class="fix-box">
+        <strong>Fix:</strong> Remove initial assignment (<code>let body;</code> instead of <code>let body = '';</code>)
+    </div>
+</div>
+
+<h2>⚠️ High Priority Issues</h2>
+
+<h3>Dependency Array Warnings</h3>
+<p>Missing dependencies in useEffect hooks:</p>
+<ul>
+    <li><code>App.jsx:487</code> - Missing <code>fetchNotifications</code></li>
+    <li><code>App.jsx:491</code> - Missing <code>fetchInitialData</code></li>
+    <li><code>App.jsx:528</code> - Missing <code>logout</code>, <code>setCurrentUser</code></li>
+    <li><code>App.jsx:567</code> - Missing <code>navigate</code></li>
+    <li><code>ChatPanel.jsx:48</code> - Missing <code>fetchMessages</code>, <code>session</code></li>
+    <li>Multiple other files with similar issues</li>
+</ul>
+
+<h3>Unused State/Functions</h3>
+<p>100+ unused variables and functions that increase bundle size</p>
+
+<h3>Security Concern (src/firebase.js:6-12)</h3>
+<ul>
+    <li>Firebase API keys hardcoded as fallbacks</li>
+</ul>
+<div class="fix-box">
+    <strong>Fix:</strong> Remove hardcoded credentials, use env vars only
+</div>
+
+<h2>📋 Summary</h2>
+
+<table class="summary-table">
+    <tr>
+        <th>Category</th>
+        <th>Count</th>
+    </tr>
+    <tr>
+        <td>Critical Errors (ESLint)</td>
+        <td class="critical">10</td>
+    </tr>
+    <tr>
+        <td>Runtime Bugs</td>
+        <td class="warning">3</td>
+    </tr>
+    <tr>
+        <td>React Hook Dependency Issues</td>
+        <td>~15</td>
+    </tr>
+    <tr>
+        <td>Unused Variables</td>
+        <td>~242</td>
+    </tr>
+    <tr>
+        <td>Security Issues</td>
+        <td class="critical">1</td>
+    </tr>
+</table>
+
+<h3>Most Critical Fixes Needed:</h3>
+<ol>
+    <li>The <code>window.location.href</code> assignments in App.jsx (lines 786, 915)</li>
+    <li>Empty catch blocks across files</li>
+    <li>The email.js variable initialization</li>
+    <li>Firebase API key exposure</li>
+</ol>
+
+</body>
+</html>
