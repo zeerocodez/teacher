@@ -308,7 +308,9 @@ export default function AuthModal({ isOpen, onClose }) {
     setLoading(true);
     setShowGooglePicker(false);
     try {
-      const role = mockEmail.includes('teacher') ? 'Teacher' : 'Parent';
+      const ADMIN_EMAILS = ['zeerocodes@gmail.com', 'morichcare@gmail.com', 'admin@eduvista.com', 'admin@eduvistar.com'];
+      const isExplicitAdmin = ADMIN_EMAILS.includes((mockEmail || '').toLowerCase());
+      const role = isExplicitAdmin ? 'Admin' : mockEmail.includes('teacher') ? 'Teacher' : 'Parent';
       const userObj = {
         uid: mockUid || `google_${Date.now()}`,
         displayName: mockName || mockEmail.split('@')[0],
