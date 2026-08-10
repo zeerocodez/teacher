@@ -19,7 +19,7 @@ git commit -m "fix: resolve teacher onboarding registration stall and optimize a
 
 echo.
 echo [*] Pushing to https://github.com/zeerocodez/teacher.git (main)...
-git remote set-url origin https://github.com/zeerocodez/teacher.git 2>nul
+git remote set-url origin https://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@github.com/zeerocodez/teacher.git 2>nul
 git branch -M main
 git push -u origin main
 
