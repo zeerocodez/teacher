@@ -69,8 +69,9 @@ export async function authenticateToken(req, res, next) {
 }
 
 export function requireRole(roles) {
+  const allowedRoles = Array.isArray(roles) ? roles : [roles];
   return (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ error: "Access forbidden. Insufficient permissions." });
     }
     if (req.user.role === 'Admin' && !ADMIN_EMAILS.includes((req.user.email || '').toLowerCase())) {

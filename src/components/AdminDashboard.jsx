@@ -892,6 +892,37 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
     triggerToast(`Review moderated. Action: ${action} ${reason ? `(${reason})` : ''}`);
   };
 
+  const [isResettingData, setIsResettingData] = useState(false);
+  const handleResetProductionData = async () => {
+    if (!window.confirm("⚠️ WARNING: Are you sure you want to reset all test platform data, sessions, bookings, transactions, and balances to ₦0 for live production? Only guaranteed admin accounts will be retained.")) {
+      return;
+    }
+    setIsResettingData(true);
+    try {
+      const response = await fetch(`${API_BASE}/admin/reset-signups`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("✓ Platform data reset to ₦0 across the board!");
+        triggerToast("Platform data reset to 0 across the board!");
+        setAdminWalletBalance(0);
+        setDisputes([]);
+        setPayouts([]);
+        setPendingTransfers([]);
+        setApplications([]);
+      } else {
+        toast.error(data.error || "Failed to reset platform data.");
+      }
+    } catch (err) {
+      console.error("Reset error:", err);
+      toast.error("Network error during production reset.");
+    } finally {
+      setIsResettingData(false);
+    }
+  };
+
   const pendingApps = applications.filter(a => a.status === 'pending_approval');
   const infoRequestedApps = applications.filter(a => a.status === 'info_requested');
 
@@ -3504,6 +3535,30 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Production Readiness & Zero-State Data Reset Card */}
+            <div className="lg:col-span-12 bg-red-50/60 border-2 border-red-200 rounded-[2.5rem] p-6 md:p-8 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase px-2.5 py-0.5 rounded-full bg-red-600 text-white font-bold tracking-wider">Production Zero-State</span>
+                    <h4 className="font-heading font-bold text-base text-red-950">Reset All Platform Data to ₦0</h4>
+                  </div>
+                  <p className="font-sans text-xs text-red-900/80 max-w-2xl leading-relaxed">
+                    Clears all test parent/teacher registrations, sessions, bookings, escrow balances, homework logs, dispute tickets, and notifications. Re-zeros all wallet balances to ₦0 while preserving authorized production Admin credentials.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleResetProductionData}
+                  disabled={isResettingData}
+                  className="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-heading font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-full shadow-lg shadow-red-600/20 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isResettingData ? 'animate-spin' : ''}`} />
+                  {isResettingData ? 'Resetting Data...' : 'Reset Data to ₦0'}
+                </button>
               </div>
             </div>
 

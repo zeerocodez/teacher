@@ -15,6 +15,7 @@ import { authenticateToken, requireRole, requireOwnerOrAdmin } from './middlewar
 dotenv.config();
 
 const app = express();
+app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.use(helmet()); // Apply HTTP security headers globally
 const PORT = process.env.PORT || 5000;
@@ -123,10 +124,10 @@ async function guaranteeInitialProfiles() {
     }
   } catch (e) {}
 
-  // Guarantee Admin User and Teacher Usernames for Testing
+  // Guarantee Production Admin Users
   const adminUser = await db.findOne('users', u => u.role === 'Admin');
   if (!adminUser) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "admin_1",
       email: "admin@eduvista.com",
       displayName: "System Admin",
@@ -141,7 +142,7 @@ async function guaranteeInitialProfiles() {
 
   const zeerocodesAdmin = await db.findOne('users', u => u.email.toLowerCase() === 'zeerocodes@gmail.com');
   if (!zeerocodesAdmin) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "admin_zeerocodes",
       email: "zeerocodes@gmail.com",
       displayName: "Zeerocodes Super Admin",
@@ -156,7 +157,7 @@ async function guaranteeInitialProfiles() {
 
   const morichcareAdmin = await db.findOne('users', u => u.email.toLowerCase() === 'morichcare@gmail.com');
   if (!morichcareAdmin) {
-    await await db.insert('users', {
+    await db.insert('users', {
       uid: "admin_morichcare",
       email: "morichcare@gmail.com",
       displayName: "Morichcare Admin",
@@ -169,142 +170,25 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed morichcare@gmail.com admin profile.");
   }
 
-  const teacher1User = await db.findOne('users', u => u.uid === 'teacher_1');
-  if (!teacher1User) {
-    await db.insert('users', {
-      uid: "teacher_1",
-      email: "teacher_1@eduvistar.com",
-      displayName: "Mr. Adebayo Okafor",
-      role: "Teacher",
-      country: "Nigeria",
-      status: "active",
-      salt: defaultCreds.salt,
-      passwordHash: defaultCreds.hash
-    });
-    console.log("Guaranteed teacher_1@eduvistar.com teacher profile.");
-  }
+  // Guarantee wallets for production admins with zero balance
+  const adminProfiles = [
+    { uid: 'admin_1' },
+    { uid: 'admin_zeerocodes' },
+    { uid: 'admin_morichcare' }
+  ];
 
-  const testPayTeacherUser = await db.findOne('users', u => u.uid === 'teacher_test_pay');
-  if (!testPayTeacherUser) {
-    await db.insert('users', {
-      uid: "teacher_test_pay",
-      email: "teacher_testpay@eduvistar.com",
-      displayName: "Test Pay Teacher",
-      role: "Teacher",
-      country: "Nigeria",
-      status: "active",
-      salt: defaultCreds.salt,
-      passwordHash: defaultCreds.hash
-    });
-    console.log("Guaranteed teacher_testpay@eduvistar.com teacher profile.");
-  }
-
-  const parent1User = await db.findOne('users', u => u.uid === 'parent_1');
-  if (!parent1User) {
-    await db.insert('users', {
-      uid: "parent_1",
-      email: "parent_1@eduvistar.com",
-      displayName: "Ngozi Adeleke",
-      role: "Parent",
-      country: "Nigeria",
-      status: "active",
-      salt: defaultCreds.salt,
-      passwordHash: defaultCreds.hash
-    });
-    console.log("Guaranteed parent_1@eduvistar.com parent profile.");
-  }
-
-  const student1User = await db.findOne('users', u => u.uid === 'student_1');
-  if (!student1User) {
-    await db.insert('users', {
-      uid: "student_1",
-      email: "student_1@eduvistar.com",
-      displayName: "Tunde Okafor",
-      role: "Student",
-      country: "Nigeria",
-      status: "active",
-      salt: defaultCreds.salt,
-      passwordHash: defaultCreds.hash
-    });
-    console.log("Guaranteed student_1@eduvistar.com student profile.");
-  }
-
-  // Guarantee fresh teacher for onboarding flow testing
-  const freshTeacherUser = await db.findOne('users', u => u.uid === 'teacher_fresh');
-  if (!freshTeacherUser) {
-    await db.insert('users', {
-      uid: "teacher_fresh",
-      email: "teacher_fresh@eduvistar.com",
-      displayName: "Dr. Chidi Johnson",
-      role: "Teacher",
-      country: "Nigeria",
-      status: "active",
-      salt: defaultCreds.salt,
-      passwordHash: defaultCreds.hash
-    });
-    await db.insert('teachers', {
-      uid: "teacher_fresh",
-      name: "Dr. Chidi Johnson",
-      location: "Enugu, Nigeria",
-      subjects: [],
-      curricula: [],
-      rate: 0,
-      rating: 5.0,
-      reviewsCount: 0,
-      badges: [],
-      bio: "",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
-      online: true,
-      availability: {},
-      languages: [],
-      verified: false,
-      status: "pending_approval",
-      stats: { sessionsTaught: 0, responseRate: 100 },
-      leaderboardOptIn: true
-    });
-    console.log("Guaranteed newteacher@eduvista.com onboarding testing profile.");
-  }
-
-  // Guarantee SEO usernames for seeded teachers
-  const teacher_1 = await db.findOne('teachers', t => t.uid === 'teacher_1');
-  if (teacher_1 && (!teacher_1.username || teacher_1.username !== 'adebayo' || teacher_1.status !== 'verified')) {
-    await await db.update('teachers', teacher_1.id, { username: "adebayo", status: "verified" });
-  }
-  const teacher_2 = await db.findOne('teachers', t => t.uid === 'teacher_2');
-  if (teacher_2 && (!teacher_2.username || teacher_2.username !== 'kofi' || teacher_2.status !== 'verified')) {
-    await await db.update('teachers', teacher_2.id, { username: "kofi", status: "verified" });
-  }
-  const teacher_3 = await db.findOne('teachers', t => t.uid === 'teacher_3');
-  if (teacher_3 && (!teacher_3.username || teacher_3.username !== 'chioma' || teacher_3.status !== 'verified')) {
-    await await db.update('teachers', teacher_3.id, { username: "chioma", status: "verified" });
-  }
-  const teacher_4 = await db.findOne('teachers', t => t.uid === 'teacher_4');
-  if (teacher_4 && (!teacher_4.username || teacher_4.username !== 'aminata' || teacher_4.status !== 'verified')) {
-    await await db.update('teachers', teacher_4.id, { username: "aminata", status: "verified" });
-  }
-  const teacher_5 = await db.findOne('teachers', t => t.uid === 'teacher_5');
-  if (teacher_5 && (!teacher_5.username || teacher_5.username !== 'fatima' || teacher_5.status !== 'verified')) {
-    await await db.update('teachers', teacher_5.id, { username: "fatima", status: "verified" });
-  }
-
-  // Guarantee wallets for admin_1 and teacher_1
-  let adminWallet = await db.findOne('wallets', w => w.uid === 'admin_1');
-  if (!adminWallet) {
-    await await db.insert('wallets', {
-      uid: 'admin_1',
-      balance: 15000000, // ₦150,000 in minor units
-      escrow: 0
-    });
-    console.log("Guaranteed admin_1 wallet.");
-  }
-  let teacher1Wallet = await db.findOne('wallets', w => w.uid === 'teacher_1');
-  if (!teacher1Wallet) {
-    await await db.insert('wallets', {
-      uid: 'teacher_1',
-      balance: 8500000, // ₦85,000 in minor units
-      escrow: 0
-    });
-    console.log("Guaranteed teacher_1 wallet.");
+  for (const adm of adminProfiles) {
+    let wallet = await db.findOne('wallets', w => w.uid === adm.uid);
+    if (!wallet) {
+      await db.insert('wallets', {
+        uid: adm.uid,
+        userUid: adm.uid,
+        balance: 0,
+        escrow: 0,
+        currency: "NGN",
+        history: []
+      });
+    }
   }
 }
 
@@ -435,36 +319,7 @@ app.get('/api/leaderboard', async (req, res) => {
 app.get('/api/teachers/:uid/reviews', async (req, res) => {
   const { uid } = req.params;
   const reviews = await db.find('reviews', r => r.teacherId === uid);
-  // Add some mock 5-dimension reviews if none exist, so the UI can be populated
-  if (reviews.length === 0) {
-    const mockReviews = [
-      {
-        id: 'rev_1',
-        teacherId: uid,
-        parentId: 'parent_1',
-        parentName: 'Ngozi A.',
-        overallRating: 5,
-        dimensions: { Punctuality: 5, Quality: 5, Communication: 4, Preparedness: 5, Impact: 5 },
-        comment: 'Fantastic tutor. Helped my child significantly with algebra concepts.',
-        createdAt: new Date().toISOString(),
-        reply: 'Thank you Ngozi! It was a pleasure teaching Tunde.'
-      },
-      {
-        id: 'rev_2',
-        teacherId: uid,
-        parentId: 'parent_2',
-        parentName: 'David K.',
-        overallRating: 4.5,
-        dimensions: { Punctuality: 4, Quality: 5, Communication: 5, Preparedness: 4, Impact: 4.5 },
-        comment: 'Great session. My daughter really enjoyed the interactive tools.',
-        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
-      }
-    ];
-    res.json(mockReviews);
-  } else {
-    // Mock parent names for real reviews if needed
-    res.json(reviews.map(r => ({ ...r, parentName: r.parentName || 'Verified Parent' })));
-  }
+  res.json(reviews.map(r => ({ ...r, parentName: r.parentName || 'Verified Parent' })));
 });
 
 // POST /api/reviews/reply

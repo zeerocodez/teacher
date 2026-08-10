@@ -1,17 +1,19 @@
 import express from 'express';
 import { db } from '../db.js';
+import { publicActionRateLimiter } from '../middleware/limiters.js';
 
 const router = express.Router();
+router.use(publicActionRateLimiter);
 
 // Middleware: Authenticate B2B School API Key
-function authenticateB2BSchool(req, res, next) {
+async function authenticateB2BSchool(req, res, next) {
   const apiKey = req.headers['x-b2b-api-key'];
   if (!apiKey) {
     return res.status(401).json({ error: "B2B API authentication key is required in 'x-b2b-api-key' header." });
   }
 
   // Check if API key exists in platform B2B school configurations
-  const school = db.findOne('b2b_schools', s => s.apiKey === apiKey);
+  const school = await db.findOne('b2b_schools', s => s.apiKey === apiKey);
   if (!school) {
     return res.status(403).json({ error: "Invalid B2B school API key." });
   }
@@ -29,9 +31,9 @@ function authenticateB2BSchool(req, res, next) {
  * GET list of vetted teachers matching school B2B filters (Subject, Rate limits)
  * URL: http://localhost:5000/api/b2b/schools/tutors
  */
-router.get('/tutors', authenticateB2BSchool, (req, res) => {
+router.get('/tutors', authenticateB2BSchool, async (req, res) => {
   const { subject, maxRate } = req.query;
-  let teachers = db.find('teachers', t => t.verified && t.status === 'verified');
+  let teachers = await db.find('teachers', t => t.verified && t.status === 'verified');
 
   if (subject) {
     teachers = teachers.filter(t => t.subjects.some(s => s.toLowerCase() === subject.toLowerCase()));
@@ -91,12 +93,12 @@ router.post('/register-bulk-students', authenticateB2BSchool, async (req, res) =
  * GET compliance sessions and escrow timesheets
  * URL: http://localhost:5000/api/b2b/schools/compliance
  */
-router.get('/compliance', authenticateB2BSchool, (req, res) => {
+router.get('/compliance', authenticateB2BSchool, async (req, res) => {
   // Find all sessions involving students registered by this school
-  const students = db.find('students', s => s.parentUid === req.school.uid);
+  const students = await db.find('students', s => s.parentUid === req.school.uid);
   const studentNames = students.map(s => s.name);
 
-  const sessions = db.find('sessions', s => studentNames.includes(s.studentName));
+  const sessions = await db.find('sessions', s => studentNames.includes(s.studentName));
 
   res.json({
     school: req.school.name,
@@ -109,7 +111,7 @@ router.get('/compliance', authenticateB2BSchool, (req, res) => {
       costNgnMinor: s.cost,
       status: s.status,
       slot: s.slot,
-      clockedSeconds: s.clockLog ? s.clockLog.length * 60 : 3600 // mock durations
+      clockedSeconds: s.clockLog ? s.clockLog.length * 60 : 3600
     }))
   });
 });

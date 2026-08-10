@@ -170,7 +170,7 @@ router.post('/transactions/:id/reject', authenticateToken, requireRole(['Admin']
   res.json({ success: true });
 });
 
-// POST Reset all non-admin signups (Parents, Teachers, Students, Sessions, Assignments, Disputes, Transactions) for live production
+// POST Reset all non-admin data (Parents, Teachers, Students, Sessions, Assignments, Disputes, Transactions, Wallets, Reviews, Messages) for live production
 router.post('/reset-signups', authenticateToken, requireRole(['Admin']), async (req, res) => {
   try {
     const adminEmails = ['zeerocodes@gmail.com', 'morichcare@gmail.com', 'admin@eduvista.com', 'admin@eduvistar.com'];
@@ -186,8 +186,23 @@ router.post('/reset-signups', authenticateToken, requireRole(['Admin']), async (
       }
     }
 
-    // 2. Clear Parents, Teachers, Students, Sessions, Assignments, Disputes, Transactions
-    const collectionsToClear = ['parents', 'teachers', 'students', 'sessions', 'assignments', 'disputes', 'transactions', 'notifications'];
+    // 2. Clear all activity collections
+    const collectionsToClear = [
+      'parents',
+      'students',
+      'sessions',
+      'assignments',
+      'disputes',
+      'transactions',
+      'notifications',
+      'reviews',
+      'messages',
+      'sent_emails',
+      'waitlist',
+      'academy_progress',
+      'academy_forum'
+    ];
+    
     const summary = { deletedUsers };
 
     for (const col of collectionsToClear) {
@@ -198,9 +213,40 @@ router.post('/reset-signups', authenticateToken, requireRole(['Admin']), async (
       summary[col] = docs.length;
     }
 
+    // 3. Reset Wallets to 0 for admins and remove non-admin wallets
+    const allWallets = await db.find('wallets');
+    let resetWallets = 0;
+    for (const w of allWallets) {
+      const isOwnerAdmin = ['admin_1', 'admin_zeerocodes', 'admin_morichcare'].includes(w.uid || w.userUid);
+      if (isOwnerAdmin) {
+        await db.update('wallets', w.id, {
+          balance: 0,
+          escrow: 0,
+          history: [],
+          updatedAt: new Date().toISOString()
+        });
+        resetWallets++;
+      } else {
+        await db.delete('wallets', w.id);
+      }
+    }
+    summary.walletsResetToZero = resetWallets;
+
+    // 4. Reset Teacher metrics to zero baseline
+    const teachers = await db.find('teachers');
+    for (const t of teachers) {
+      await db.update('teachers', t.id, {
+        rating: 5.0,
+        reviewsCount: 0,
+        stats: { sessionsTaught: 0, responseRate: 100 },
+        updatedAt: new Date().toISOString()
+      });
+    }
+    summary.teachersReset = teachers.length;
+
     res.json({
       success: true,
-      message: "All test parent and teacher signups have been cleared for live production.",
+      message: "All platform data has been securely reset to 0 across the board for live production.",
       summary
     });
   } catch (err) {
