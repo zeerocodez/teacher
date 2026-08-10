@@ -686,30 +686,7 @@ export default function App() {
       }
     } catch (err) {
       console.error('Auth error:', err);
-      // Fallback local simulation if backend offline
-      if (authTab === 'login') {
-        const lowerEmail = authEmail.toLowerCase();
-        if (lowerEmail.includes('parent')) {
-          const u = { uid: 'parent_1', displayName: 'Ngozi Adeleke', role: 'Parent', email: authEmail, country: 'Nigeria' };
-          handleAuthSuccess(u);
-        } else if (lowerEmail.includes('teacher')) {
-          const u = { uid: 'teacher_1', displayName: 'Mr. Adebayo Okafor', role: 'Teacher', email: authEmail, country: 'Nigeria' };
-          handleAuthSuccess(u);
-        } else if (lowerEmail.includes('student')) {
-          const u = { uid: 'student_1', displayName: 'Tunde Okafor', role: 'Student', email: authEmail };
-          handleAuthSuccess(u);
-        } else if (lowerEmail === 'zeerocodes@gmail.com' || lowerEmail.includes('admin')) {
-          const u = { uid: 'admin_zeerocodes', displayName: 'Zeerocodes Super Admin', role: 'Admin', email: authEmail };
-          handleAuthSuccess(u);
-        } else {
-          setAuthError('Simulated error: use parent@eduvista.com, teacher@eduvista.com, student@eduvista.com or admin@eduvista.com');
-        }
-      } else {
-        const mockUid = `user_${Date.now()}`;
-        const finalRole = authEmail.toLowerCase() === 'zeerocodes@gmail.com' ? 'Admin' : authRole;
-        const u = { uid: mockUid, displayName: authName, role: finalRole, email: authEmail, country: authCountry };
-        handleAuthSuccess(u);
-      }
+      setAuthError('Authentication failed. Please verify your credentials or network connection.');
     } finally {
       setAuthLoading(false);
     }

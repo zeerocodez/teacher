@@ -22,7 +22,7 @@ export default function AuthModal({ isOpen, onClose }) {
   useEffect(() => {
     if (currentUser && isOpen) {
       onClose();
-      if (currentUser.role === 'Parent' || currentUser.role === 'Teacher') {
+      if (currentUser.role === 'Parent' || currentUser.role === 'Teacher' || currentUser.role === 'Admin' || currentUser.role === 'Student') {
         navigate('/dashboard');
       }
     }
@@ -178,56 +178,20 @@ export default function AuthModal({ isOpen, onClose }) {
         try {
           await signInWithEmailAndPassword(auth, email, password);
         } catch (firebaseErr) {
-          console.warn("Firebase Auth fallback triggered:", firebaseErr.message);
-          const lowerEmail = email.toLowerCase();
-          let userObj = null;
-
-          if (lowerEmail.includes('admin') || lowerEmail === 'zeerocodes@gmail.com' || lowerEmail === 'morichcare@gmail.com' || lowerEmail === 'admin@eduvista.com') {
-            userObj = {
-              uid: 'admin_zeerocodes',
-              displayName: lowerEmail === 'morichcare@gmail.com' ? 'Morichcare Admin' : lowerEmail === 'admin@eduvista.com' ? 'System Admin' : 'Zeerocodes Super Admin',
-              email,
-              role: 'Admin',
-              country: 'Nigeria',
-              token: `auth_token_${Date.now()}`
-            };
-          } else if (lowerEmail.includes('teacher')) {
-            userObj = {
-              uid: 'teacher_1',
-              displayName: 'Mr. Adebayo Okafor',
-              email,
-              role: 'Teacher',
-              country: 'Nigeria',
-              token: `auth_token_${Date.now()}`
-            };
-          } else if (lowerEmail.includes('student')) {
-            userObj = {
-              uid: 'student_1',
-              displayName: 'Tunde Okafor',
-              email,
-              role: 'Student',
-              country: 'Nigeria',
-              token: `auth_token_${Date.now()}`
-            };
-          } else {
-            const nameFromEmail = email.split('@')[0];
-            const capitalizedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
-            userObj = {
-              uid: `user_${Date.now()}`,
-              displayName: capitalizedName,
-              email,
-              role: role || 'Parent',
-              country: country || 'Nigeria',
-              token: `auth_token_${Date.now()}`
-            };
+          console.error("Authentication error:", firebaseErr);
+          let msg = "Invalid email or password. Please check your credentials.";
+          if (firebaseErr.code === 'auth/user-not-found') {
+            msg = "No account found with this email address. Please register first.";
+          } else if (firebaseErr.code === 'auth/wrong-password' || firebaseErr.code === 'auth/invalid-credential') {
+            msg = "Incorrect password. Please try again.";
+          } else if (firebaseErr.code === 'auth/too-many-requests') {
+            msg = "Too many failed login attempts. Please try again later.";
+          } else if (firebaseErr.code === 'auth/invalid-email') {
+            msg = "Please enter a valid email address.";
           }
-
-          if (userObj) {
-            toast.success(`Welcome back, ${userObj.displayName}!`);
-            handleSuccess(userObj);
-            setLoading(false);
-            return;
-          }
+          setError(msg);
+          setLoading(false);
+          return;
         }
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -340,45 +304,11 @@ export default function AuthModal({ isOpen, onClose }) {
     }
   };
 
-  const handleAdminLoginShortcut = async () => {
-    setError('');
-    setLoading(true);
-    try {
-      const targetEmail = email && email.includes('@') ? email : 'zeerocodes@gmail.com';
-      const nameFromEmail = targetEmail.split('@')[0];
-      const formattedName = targetEmail.toLowerCase() === 'zeerocodes@gmail.com' 
-        ? 'Zeerocodes Super Admin' 
-        : targetEmail.toLowerCase() === 'morichcare@gmail.com'
-        ? 'Morichcare Admin'
-        : `${nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1)} Admin`;
-
-      const adminUser = {
-        uid: `admin_${Date.now()}`,
-        displayName: formattedName,
-        email: targetEmail,
-        role: 'Admin',
-        country: 'Nigeria',
-        token: `admin_token_${Date.now()}`
-      };
-      toast.success(`🔑 Admin Dashboard Access Granted: ${adminUser.displayName}`);
-      handleSuccess(adminUser);
-    } catch (err) {
-      console.error("Admin Login Error:", err);
-      setError(err.message || 'Admin Login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const executeGoogleLoginFlow = async (mockEmail, mockName, mockUid) => {
     setLoading(true);
     setShowGooglePicker(false);
     try {
-      const role = mockEmail.includes('teacher')
-        ? 'Teacher'
-        : mockEmail.includes('admin') || mockEmail.toLowerCase() === 'zeerocodes@gmail.com'
-        ? 'Admin'
-        : 'Parent';
+      const role = mockEmail.includes('teacher') ? 'Teacher' : 'Parent';
       const userObj = {
         uid: mockUid || `google_${Date.now()}`,
         displayName: mockName || mockEmail.split('@')[0],
@@ -387,11 +317,11 @@ export default function AuthModal({ isOpen, onClose }) {
         country: 'Nigeria',
         token: `google_auth_token_${Date.now()}`
       };
-      toast.success(`Authenticated with Google as ${userObj.displayName}`);
+      toast.success(`Authenticated as ${userObj.displayName}`);
       handleSuccess(userObj);
     } catch (err) {
-      console.error("Google authentication error:", err);
-      setError(err.message || 'Google authentication failed.');
+      console.error("Authentication error:", err);
+      setError(err.message || 'Authentication failed.');
     } finally {
       setLoading(false);
     }
@@ -514,22 +444,6 @@ export default function AuthModal({ isOpen, onClose }) {
           </div>
 
           <div className="space-y-3 font-sans text-xs">
-            {/* Super Admin Option */}
-            <button
-              type="button"
-              onClick={() => executeGoogleLoginFlow('zeerocodes@gmail.com', 'Zeerocodes Super Admin', 'admin_zeero')}
-              className="w-full text-left p-3.5 rounded-2xl border-2 border-brand-clay/30 hover:border-brand-clay bg-brand-clay/5 hover:bg-brand-clay/10 transition-all flex items-center gap-3.5 group cursor-pointer shadow-xs"
-            >
-              <div className="w-10 h-10 rounded-full bg-brand-clay text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
-                Z
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">Zeerocodes (Super Admin)</span>
-                <span className="font-mono text-[10px] text-brand-clay font-bold block truncate">zeerocodes@gmail.com</span>
-              </div>
-              <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-brand-clay text-white font-bold shrink-0">Super Admin</span>
-            </button>
-
             {/* Account Option 1 */}
             <button
               type="button"
@@ -560,22 +474,6 @@ export default function AuthModal({ isOpen, onClose }) {
                 <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">teacher.google@eduvista.com</span>
               </div>
               <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-brand-clay/10 text-brand-clay font-bold shrink-0">Teacher</span>
-            </button>
-
-            {/* Account Option 3 */}
-            <button
-              type="button"
-              onClick={() => executeGoogleLoginFlow('admin.google@eduvista.com', 'System Admin', 'google_admin_1')}
-              className="w-full text-left p-3.5 rounded-2xl border border-brand-moss/10 hover:border-brand-clay bg-brand-cream/30 hover:bg-brand-cream/60 transition-all flex items-center gap-3.5 group cursor-pointer"
-            >
-              <div className="w-10 h-10 rounded-full bg-brand-charcoal text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
-                S
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">System Administrator</span>
-                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">admin.google@eduvista.com</span>
-              </div>
-              <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-bold shrink-0">Admin</span>
             </button>
 
             {/* Custom Email Input */}
@@ -1265,23 +1163,13 @@ export default function AuthModal({ isOpen, onClose }) {
                 Next <ArrowRight className="w-4 h-4" />
               </button>
             ) : activeTab === 'login' ? (
-              <>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-magnetic flex-grow py-4 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2"
-                >
-                  {loading ? 'Processing...' : 'Log In'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAdminLoginShortcut}
-                  disabled={loading}
-                  className="flex-grow py-4 rounded-full border border-brand-moss/20 hover:border-brand-moss/45 bg-white hover:bg-brand-moss/5 text-brand-moss font-bold text-xs uppercase tracking-wider text-center cursor-pointer flex items-center justify-center gap-2 transition-all duration-300 shadow-sm"
-                >
-                  🔑 Admin
-                </button>
-              </>
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-magnetic w-full py-4 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2"
+              >
+                {loading ? 'Processing...' : 'Log In'}
+              </button>
             ) : (
               <button
                 type="submit"
