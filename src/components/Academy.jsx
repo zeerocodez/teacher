@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, 
   Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, 
@@ -14,6 +15,7 @@ export default function Academy({
   onUnlockBadge,
   onRegisterClick
 }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('modules'); // 'modules', 'roleplay', 'forum', 'certificate'
   const [enrolled, setEnrolled] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -315,8 +317,8 @@ export default function Academy({
       const updated = { ...JSON.parse(localCache), enrolled: true, completedModules: [], xp: 0 };
       localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
       
-      // Redirect to the Savvy Teachers Trybe Replit
-      window.location.href = "https://savvyteacherstrybe.replit.app/";
+      // Redirect to the Elite Teachers Academy LMS
+      navigate('/academy');
     }, 1500);
   };
 
@@ -634,14 +636,12 @@ export default function Academy({
 
                 <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-3 py-2 mt-auto flex justify-between items-center">
                   <span className="font-sans text-xs text-white font-medium">{mod.modulesCount}</span>
-                  <a 
-                    href="https://savvyteacherstrybe.replit.app/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <Link 
+                    to="/academy" 
                     className="font-mono text-[9px] text-brand-clay uppercase cursor-pointer hover:underline"
                   >
                     Explore →
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -649,14 +649,12 @@ export default function Academy({
 
           {/* Registration CTA underneath grid */}
           <div className="text-center mb-16">
-            <a 
-              href="https://savvyteacherstrybe.replit.app/" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <Link 
+              to="/academy" 
               className="inline-block btn-magnetic py-4 px-10 bg-brand-clay hover:bg-brand-clay/95 rounded-full text-white font-bold uppercase tracking-widest text-xs shadow-lg shadow-brand-clay/10 transition-transform hover:scale-105"
             >
               Register for the Academy
-            </a>
+            </Link>
           </div>
 
           {/* Why become an elite teacher */}
@@ -686,15 +684,12 @@ export default function Academy({
             <p className="font-sans text-xs text-brand-cream/70 max-w-md mx-auto">
               Access to the Elite Academy dashboard, quiz workspace, discussion forums, and simulated certification modules is reserved exclusively for registered tutors.
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                window.location.href = 'https://savvyteacherstrybe.replit.app/';
-              }}
+            <Link
+              to="/academy"
               className="inline-block btn-magnetic py-3 px-8 bg-brand-clay hover:bg-brand-clay/95 rounded-full text-white font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/10"
             >
               Register for Academy
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -798,17 +793,14 @@ export default function Academy({
             <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-6 shadow-2xl flex flex-col justify-center items-center text-center space-y-6">
               <h3 className="font-heading font-bold text-2xl text-white">Join the Elite Trybe</h3>
               <p className="font-sans text-sm text-brand-cream/80 max-w-sm">
-                All academy registrations, vetting processes, and onboarding payments are handled securely via our Savvy Teachers portal.
+                All academy registrations, vetting processes, and accredited modules are hosted inside the EduBridge Elite Teachers Academy LMS.
               </p>
-              <button
-                type="button"
-                onClick={() => {
-                  window.location.href = 'https://savvyteacherstrybe.replit.app/';
-                }}
-                className="btn-magnetic w-full max-w-xs py-4 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/15"
+              <Link
+                to="/academy"
+                className="btn-magnetic w-full max-w-xs py-4 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/15 text-center"
               >
-                Proceed to Registration
-              </button>
+                Proceed to Academy LMS
+              </Link>
             </div>
           </div>
         ) : (

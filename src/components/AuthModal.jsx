@@ -22,7 +22,9 @@ export default function AuthModal({ isOpen, onClose }) {
   useEffect(() => {
     if (currentUser && isOpen) {
       onClose();
-      if (currentUser.role === 'Parent' || currentUser.role === 'Teacher' || currentUser.role === 'Admin' || currentUser.role === 'Student') {
+      if (currentUser.role === 'Teacher') {
+        navigate('/academy');
+      } else if (currentUser.role === 'Parent' || currentUser.role === 'Admin' || currentUser.role === 'Student') {
         navigate('/dashboard');
       }
     }
@@ -32,7 +34,11 @@ export default function AuthModal({ isOpen, onClose }) {
     login(user, user.token);
     setPendingOnboarding(false);
     onClose();
-    navigate('/dashboard');
+    if (user?.role === 'Teacher') {
+      navigate('/academy');
+    } else {
+      navigate('/dashboard');
+    }
   };
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
   const [email, setEmail] = useState('');
