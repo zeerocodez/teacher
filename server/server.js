@@ -190,6 +190,13 @@ async function guaranteeInitialProfiles() {
       });
     }
   }
+
+  // Seed LMS Courses if not present
+  try {
+    await seedLmsCoursesIfEmpty();
+  } catch (e) {
+    console.warn("LMS Courses seed warning:", e);
+  }
 }
 
 
@@ -299,6 +306,9 @@ app.use('/api', newPaymentRoutes);
 
 import videoRoutes from './routes/video.routes.js';
 app.use('/api/video', videoRoutes);
+
+import lmsRoutes, { seedLmsCoursesIfEmpty } from './routes/lms.routes.js';
+app.use('/api/lms', lmsRoutes);
 
 
 // --- 6. REPUTATION ENGINE ENDPOINTS ---

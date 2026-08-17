@@ -54,6 +54,10 @@ const StudentPortal = lazy(() => import('./components/StudentPortal'));
 const PrivacyModal = lazy(() => import('./components/PrivacyModal'));
 const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
+const LMSHub = lazy(() => import('./components/lms/LMSHub'));
+const CourseClassroom = lazy(() => import('./components/lms/CourseClassroom'));
+const LiveClassroom = lazy(() => import('./components/lms/LiveClassroom'));
+const CertificateViewer = lazy(() => import('./components/lms/CertificateViewer'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -1101,6 +1105,10 @@ export default function App() {
           <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
             <Link to="/blog" className="hover:text-brand-clay transition-colors hover-lift">Blog</Link>
+            <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift flex items-center gap-1 font-bold text-white">
+              <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+              Academy
+            </Link>
             {currentUser?.role === 'Admin' && (
               <Link to="/dashboard" className="hover:text-brand-clay transition-colors hover-lift font-bold text-brand-moss">Admin Panel</Link>
             )}
@@ -1108,7 +1116,7 @@ export default function App() {
               <a href="#marketplace" onClick={scrollToSection('marketplace')} className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
             )}
             {currentUser?.role === 'Teacher' && (
-              <a href="#academy" onClick={scrollToSection('academy')} className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</a>
+              <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</Link>
             )}
           </div>
 
@@ -1351,6 +1359,10 @@ export default function App() {
             <div className="flex flex-col gap-2.5 font-sans font-bold text-xs uppercase tracking-wider text-white/80 border-t border-white/5 pt-3">
               <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1">About Us</Link>
               <Link to="/blog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1">Blog</Link>
+              <Link to="/academy" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1 flex items-center gap-1.5 font-bold text-amber-300">
+                <Sparkles className="w-3.5 h-3.5" />
+                Elite Academy
+              </Link>
               {currentUser?.role === 'Admin' && (
                 <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1 font-bold text-brand-moss">Admin Panel</Link>
               )}
@@ -1365,19 +1377,6 @@ export default function App() {
                   className="hover:text-brand-clay transition-colors py-1"
                 >
                   {t('navFindTeachers')}
-                </a>
-              )}
-              {currentUser?.role === 'Teacher' && (
-                <a 
-                  href="#academy" 
-                  onClick={(e) => {
-                    setIsMobileMenuOpen(false);
-                    const el = document.getElementById('academy');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }} 
-                  className="hover:text-brand-clay transition-colors py-1"
-                >
-                  {t('navAcademy')}
                 </a>
               )}
             </div>
@@ -1519,6 +1518,52 @@ export default function App() {
           <Route path="/blog/:slug" element={
             <Suspense fallback={<LoadingFallback />}>
               <BlogPost />
+            </Suspense>
+          } />
+
+          {/* LMS Elite Teachers Academy Routes */}
+          <Route path="/academy" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <LMSHub 
+                currentUser={currentUser} 
+                selectedCurrency={selectedCurrency}
+                formatCurrency={formatCurrency}
+                convertMinor={convertMinor}
+              />
+            </Suspense>
+          } />
+
+          <Route path="/academy/course/:courseId" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <CourseClassroom 
+                currentUser={currentUser} 
+                selectedCurrency={selectedCurrency}
+                formatCurrency={formatCurrency}
+                convertMinor={convertMinor}
+              />
+            </Suspense>
+          } />
+
+          <Route path="/academy/classroom/:courseId" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <CourseClassroom 
+                currentUser={currentUser} 
+                selectedCurrency={selectedCurrency}
+                formatCurrency={formatCurrency}
+                convertMinor={convertMinor}
+              />
+            </Suspense>
+          } />
+
+          <Route path="/academy/live/:classId" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <LiveClassroom currentUser={currentUser} />
+            </Suspense>
+          } />
+
+          <Route path="/academy/certificate/:certId" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <CertificateViewer currentUser={currentUser} />
             </Suspense>
           } />
 

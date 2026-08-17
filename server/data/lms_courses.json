@@ -1,0 +1,397 @@
+[
+  {
+    "id": "course_ai_pedagogy",
+    "title": "AI-Powered Pedagogy: Transforming Classroom Teaching with Gemini & ChatGPT",
+    "subtitle": "Master prompting, lesson automation, rubric generation, and personalized tutoring workflows",
+    "slug": "ai-powered-pedagogy",
+    "category": "Classroom Tech & AI",
+    "level": "Intermediate",
+    "price": 2500000,
+    "accessType": "vetted_teachers_only",
+    "requiresVetting": true,
+    "duration": "6 Hours",
+    "durationMinutes": 360,
+    "instructorName": "Dr. Femi Ojo & AI Lead",
+    "instructorAvatar": "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop",
+    "instructorBio": "PhD in Education Technology with 10+ years optimizing digital classrooms and personalized learning engines.",
+    "thumbnail": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
+    "coverImage": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop",
+    "rating": 4.95,
+    "reviewsCount": 184,
+    "enrolledCount": 420,
+    "isPublished": true,
+    "featured": true,
+    "tags": ["AI in Education", "Prompt Engineering", "Lesson Planning", "Personalized Tutoring"],
+    "overview": "This premier master course trains educators to ethically, creatively, and powerfully harness Generative AI tools like Google Gemini and ChatGPT. You will learn to construct high-impact lesson plans in minutes, build automated differentiated homework rubrics, create diagnostic formative assessments, and position yourself as a 21st-century tech-enabled elite teacher.",
+    "learningOutcomes": [
+      "Craft multi-shot prompts for WAEC, Cambridge IGCSE, and IB curriculum standards",
+      "Generate differentiated lesson plans catering to diverse learner cognitive levels in minutes",
+      "Automate grading rubrics and provide qualitative student feedback at 5x speed",
+      "Deploy safe, ethical AI study buddies for students during interactive live sessions",
+      "Produce interactive multimedia quizzes and flashcards automatically from syllabus codes"
+    ],
+    "modules": [
+      {
+        "id": "mod_ai_1",
+        "title": "Module 1: Foundations of AI in Modern Education",
+        "description": "Understanding generative models, prompt anatomy, and academic integrity policies.",
+        "order": 1,
+        "lessons": [
+          {
+            "id": "les_ai_1_1",
+            "title": "Introduction to Generative AI in the Modern Classroom",
+            "type": "video",
+            "duration": "14 min",
+            "videoUrl": "https://www.youtube.com/watch?v=kY3PbgfO3l4",
+            "isFreePreview": true,
+            "lectureNotes": "Key concepts covered:\n1. Difference between LLMs and search engines\n2. The Teacher-in-the-Loop paradigm: AI as a co-pilot, not replacement\n3. Preventing hallucination through structured context priming\n4. Data privacy: Never input student PII (Personally Identifiable Information) into public LLMs.",
+            "resources": [
+              { "title": "Teacher AI Cheat Sheet (PDF)", "url": "https://example.com/resources/ai-cheat-sheet.pdf", "type": "pdf" },
+              { "title": "Curriculum Prompt Frameworks", "url": "https://example.com/resources/prompts.docx", "type": "doc" }
+            ]
+          },
+          {
+            "id": "les_ai_1_2",
+            "title": "Ethical AI Guidelines & Plagiarism Policy for Teachers",
+            "type": "document",
+            "duration": "10 min",
+            "documentText": "# Ethical AI Framework for Elite Educators\n\n### 1. Transparency Principle\nAlways declare AI assistance when building public course materials. Encourage students to disclose AI brainstorming transparently.\n\n### 2. Hallucination Guardrails\nNever accept historical dates, chemical equations, or mathematical proofs without secondary fact-checking against syllabus benchmarks (WAEC/Cambridge).\n\n### 3. Student Data Sovereignty (NDPR & GDPR Compliance)\n- Do not use real student names, addresses, or private diagnostic logs in prompt inputs.\n- Use pseudonym identifiers like 'Student A (Grade 9, struggling with Quadratic roots)'.\n\n### 4. Cognitive Offloading vs. Deeper Mastery\nEnsure AI is used to spark curiosity and scaffold problem solving, rather than bypassing foundational conceptual thinking.",
+            "resources": [
+              { "title": "Classroom AI Policy Template", "url": "https://example.com/resources/ai-policy.pdf", "type": "pdf" }
+            ]
+          },
+          {
+            "id": "les_ai_1_3",
+            "title": "Knowledge Check: AI Ethics & Prompt Architecture",
+            "type": "quiz",
+            "duration": "8 min",
+            "quizQuestions": [
+              {
+                "id": "q_ai_1",
+                "question": "When prompting an AI tool to create a lesson plan, what is the best practice for accurate curriculum alignment?",
+                "options": [
+                  "Provide specific curriculum standards, target grade level, student learning objectives, and structured output formatting.",
+                  "Ask a short 1-line question without context to let the AI be creative.",
+                  "Paste an entire textbook chapter without specific questions.",
+                  "Prompt the AI in multiple unrelated topics in one turn."
+                ],
+                "correctAnswer": 0,
+                "explanation": "Giving explicit role framing, syllabus standards (e.g., Cambridge 0580), grade level, and structured schema yields highly accurate, pedagogically sound lesson plans."
+              },
+              {
+                "id": "q_ai_2",
+                "question": "What is the primary compliance rule regarding student personal data when using AI tools?",
+                "options": [
+                  "Always anonymize student names, emails, and identifiers before inputting data into generative models.",
+                  "Only upload scanned report cards with full names visible.",
+                  "Ask students to create public LLM accounts using school emails without consent.",
+                  "Share student assessment logs publicly for open benchmarking."
+                ],
+                "correctAnswer": 0,
+                "explanation": "Under NDPR and GDPR regulations, educator prompt inputs must anonymize student PII (Personally Identifiable Information) to protect learner privacy."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mod_ai_2",
+        "title": "Module 2: Prompt Engineering for Differentiated Lesson Design",
+        "description": "Constructing multi-tier prompts that generate tier-1, tier-2, and tier-3 differentiated instructional materials.",
+        "order": 2,
+        "lessons": [
+          {
+            "id": "les_ai_2_1",
+            "title": "The C.R.A.F.T. Prompt Engineering Framework for Teachers",
+            "type": "video",
+            "duration": "18 min",
+            "videoUrl": "https://www.youtube.com/watch?v=jfqUvXyFv5k",
+            "lectureNotes": "C.R.A.F.T. Model:\n- C = Context (Grade level, student background, prerequisites)\n- R = Role (Act as an expert Cambridge IGCSE Math Examiner)\n- A = Action (Generate 3 differentiated problem sets)\n- F = Format (Table with Solution, Hint, and Common Pitfalls)\n- T = Target (Prepare students for 90% score on WAEC Section B).",
+            "resources": [
+              { "title": "CRAFT Prompt Formula Sheet", "url": "https://example.com/craft-template.pdf", "type": "pdf" }
+            ]
+          },
+          {
+            "id": "les_ai_2_2",
+            "title": "Capstone Assignment: Build an AI-Assisted Differentiated Lesson Plan",
+            "type": "assignment",
+            "duration": "45 min",
+            "assignmentPrompt": "Design a complete 45-minute lesson plan for your chosen subject (e.g., Mathematics, English, Physics, or Biology) using AI prompting. Your submission must include:\n1. The exact prompt(s) you used with Gemini or ChatGPT.\n2. The 3-tier differentiated student activities (Support Tier, Core Tier, Extension/Gifted Tier).\n3. A 5-point formative assessment rubric.\n\nSubmit your final text outline or attach a shared Google Doc / PDF link.",
+            "rubric": [
+              { "criterion": "Prompt Quality & Context Specificity", "maxScore": 25, "description": "Includes role, syllabus codes, grade level, and clear constraints." },
+              { "criterion": "Differentiation Depth", "maxScore": 30, "description": "Clear multi-tiered scaffolds for struggling, average, and advanced learners." },
+              { "criterion": "Pedagogical Clarity & Flow", "maxScore": 25, "description": "Structured into warm-up, direct instruction, guided practice, and exit ticket." },
+              { "criterion": "Assessment Rubric Precision", "maxScore": 20, "description": "Objective criteria for student evaluation." }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mod_ai_3",
+        "title": "Module 3: Live Masterclass & Practical Simulation",
+        "description": "Participate in the live interactive training workshop with master instructors.",
+        "order": 3,
+        "lessons": [
+          {
+            "id": "les_ai_3_1",
+            "title": "Live Interactive Masterclass: AI in Live Tutoring Rooms",
+            "type": "live_class",
+            "duration": "60 min",
+            "liveSchedule": {
+              "startTime": "2026-08-20T17:00:00.000Z",
+              "endTime": "2026-08-20T18:00:00.000Z",
+              "status": "upcoming",
+              "meetingLink": "/academy/live/live_masterclass_ai_1",
+              "hostName": "Dr. Femi Ojo & Lead Instructors",
+              "agenda": "1. Live prompt demonstration on screen\n2. Real-time handling of student questions with AI assists\n3. Interactive whiteboard exercises with trainee teachers\n4. Q&A session & Certificate graduation announcement."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "course_cambridge_mastery",
+    "title": "Cambridge IGCSE & International Curricula Mastery",
+    "subtitle": "Navigating Pearson Edexcel, Cambridge Checkpoint, and IGCSE grading rubrics with excellence",
+    "slug": "cambridge-igcse-curricula-mastery",
+    "category": "Curriculum & Standards",
+    "level": "Advanced",
+    "price": 3500000,
+    "accessType": "vetted_teachers_only",
+    "requiresVetting": true,
+    "duration": "8 Hours",
+    "durationMinutes": 480,
+    "instructorName": "Mr. Adebayo Okafor",
+    "instructorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+    "instructorBio": "Over 12 years preparing students across Nigeria, Ghana, and UK for top Cambridge and WAEC honors.",
+    "thumbnail": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop",
+    "coverImage": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1200&auto=format&fit=crop",
+    "rating": 4.98,
+    "reviewsCount": 210,
+    "enrolledCount": 380,
+    "isPublished": true,
+    "featured": true,
+    "tags": ["Cambridge IGCSE", "British Curriculum", "Mark Schemes", "Examiner Techniques"],
+    "overview": "International tutoring commands premium pricing, but requires rigorous adherence to syllabus codes, examiner mark schemes, and command word precision. This course equips you to coach students to A* results in Cambridge IGCSE, Edexcel, and IB MYP/DP qualifications.",
+    "learningOutcomes": [
+      "Decode Cambridge command words (Evaluate, Explain, Deduce, Calculate, Discuss) with precision",
+      "Structure answers that hit maximum marks on standard mark schemes",
+      "Diagnose student calculation and written reasoning errors accurately",
+      "Design past-paper progressive drills that build exam stamina and confidence"
+    ],
+    "modules": [
+      {
+        "id": "mod_cam_1",
+        "title": "Module 1: Cambridge Command Words & Mark Scheme Decoders",
+        "description": "Mastering the language of international examiners.",
+        "order": 1,
+        "lessons": [
+          {
+            "id": "les_cam_1_1",
+            "title": "Decoding Cambridge Command Words (State vs Explain vs Evaluate)",
+            "type": "video",
+            "duration": "16 min",
+            "videoUrl": "https://www.youtube.com/watch?v=aircAruvnKk",
+            "isFreePreview": true,
+            "lectureNotes": "Breakdown of Cambridge command words:\n- 'State': Give concise statement with no explanation required (1 mark)\n- 'Explain': Give reasons and causal connections (2-4 marks)\n- 'Evaluate': Weigh up evidence for and against, concluding with a supported judgment (6-8 marks).",
+            "resources": [
+              { "title": "Cambridge Command Words Matrix (PDF)", "url": "https://example.com/command-words.pdf", "type": "pdf" }
+            ]
+          },
+          {
+            "id": "les_cam_1_2",
+            "title": "Mark Scheme Anatomy & Point Allocation Strategy",
+            "type": "document",
+            "duration": "12 min",
+            "documentText": "# Cambridge Mark Scheme Architecture\n\n### The M-A-B-C Marking System in Sciences & Mathematics\n- **M Marks (Method)**: Awarded for applying the correct scientific or mathematical process, even if an arithmetic calculation error occurs.\n- **A Marks (Accuracy)**: Awarded only if the prior M mark was earned and the numerical answer is correct to the required significant figures.\n- **B Marks (Independent)**: Awarded unconditionally for a specific factual statement or correct diagram label.\n- **C Marks (Communication/Conclusion)**: Awarded in extended response questions for coherent English and logical sequencing.",
+            "resources": []
+          },
+          {
+            "id": "les_cam_1_3",
+            "title": "Cambridge Mark Scheme Diagnostic Assessment",
+            "type": "quiz",
+            "duration": "10 min",
+            "quizQuestions": [
+              {
+                "id": "q_cam_1",
+                "question": "In a Cambridge Physics or Mathematics exam, if a student writes the correct final answer but shows NO working steps for a 4-mark question with method marks (M), what is the typical examiner outcome?",
+                "options": [
+                  "The student may lose all or most of the Method (M) marks because no working was demonstrated.",
+                  "The student automatically gets 100% full marks with no penalty.",
+                  "The examiner reports the student for cheating.",
+                  "The exam paper is cancelled."
+                ],
+                "correctAnswer": 0,
+                "explanation": "Cambridge mark schemes explicitly require method marks (M1, M2) to award subsequent accuracy marks (A1). Without working, candidate marks are capped."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mod_cam_2",
+        "title": "Module 2: Practical Marking Assignment",
+        "description": "Grade authentic student past-paper responses against an official Cambridge rubric.",
+        "order": 2,
+        "lessons": [
+          {
+            "id": "les_cam_2_1",
+            "title": "Examiner Marking Assignment: Student Past-Paper Script Review",
+            "type": "assignment",
+            "duration": "35 min",
+            "assignmentPrompt": "Review the simulated student response for Cambridge IGCSE Extended Question 4. Identify: \n1. Where the student earned M and A marks.\n2. The exact conceptual mistake that caused them to drop 2 marks.\n3. The written feedback you will give to prevent this in the final examination.",
+            "rubric": [
+              { "criterion": "Mark Scheme Application", "maxScore": 50, "description": "Accurately awarded marks based on official criteria." },
+              { "criterion": "Constructive Feedback & Action Steps", "maxScore": 50, "description": "Clear, encouraging, and actionable remediation notes." }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "course_executive_branding",
+    "title": "Executive Educator Branding & High-Value Online Tutoring",
+    "subtitle": "Build your global educator brand, optimize client conversion, and scale hourly earnings",
+    "slug": "executive-educator-branding",
+    "category": "Executive Branding",
+    "level": "Mastery",
+    "price": 2000000,
+    "accessType": "open_enrollment",
+    "requiresVetting": false,
+    "duration": "5 Hours",
+    "durationMinutes": 300,
+    "instructorName": "Mrs. Ngozi Adeleke & Business Coaches",
+    "instructorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
+    "instructorBio": "Education consultant helping over 500 African teachers transition to high-yield global tutoring markets.",
+    "thumbnail": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
+    "coverImage": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+    "rating": 4.92,
+    "reviewsCount": 165,
+    "enrolledCount": 310,
+    "isPublished": true,
+    "featured": false,
+    "tags": ["Tutor Branding", "Pricing Strategy", "Parent Communication", "Global Clients"],
+    "overview": "Transform your tutoring practice into a thriving, high-reputation educational brand. Learn profile copywriting that converts international parents, trial lesson closing frameworks, camera presence, and scalable package structuring.",
+    "learningOutcomes": [
+      "Craft high-converting tutor bio and video intro scripts that build instant trust",
+      "Structure trial lessons that convert 80%+ of prospective parents into monthly retained packages",
+      "Calculate and position competitive international hourly rates (in USD, GBP, and NGN)",
+      "Manage parent communication and milestone reporting professionally to generate 5-star reviews"
+    ],
+    "modules": [
+      {
+        "id": "mod_brand_1",
+        "title": "Module 1: The High-Converting Tutor Profile",
+        "description": "Bio architecture, video intro setup, and trust signals.",
+        "order": 1,
+        "lessons": [
+          {
+            "id": "les_brand_1_1",
+            "title": "Anatomy of a 5-Star Tutor Video Intro",
+            "type": "video",
+            "duration": "12 min",
+            "videoUrl": "https://www.youtube.com/watch?v=fJ9rUzIMcZQ",
+            "isFreePreview": true,
+            "lectureNotes": "The 60-second Video Script Formula:\n1. Hook (0-10s): State who you help and their exact transformation\n2. Credentials & Experience (10-25s): Mention key curriculums and student success metrics\n3. Unique Teaching Methodology (25-45s): Visual demonstrations & diagnostic approach\n4. Call to Action (45-60s): Invite them to book a diagnostic trial session.",
+            "resources": [
+              { "title": "60-Second Video Script Template", "url": "https://example.com/video-template.pdf", "type": "pdf" }
+            ]
+          },
+          {
+            "id": "les_brand_1_2",
+            "title": "Parent Psychology & The First Trial Lesson Framework",
+            "type": "document",
+            "duration": "10 min",
+            "documentText": "# The 45-Minute High-Conversion Trial Lesson Blueprint\n\n### Minutes 0-5: Rapport & Warm-up\nEstablish a warm, encouraging atmosphere. Ask the student about their favorite topics and learning goals.\n\n### Minutes 5-15: Diagnostic Assessment\nGive a 3-question diagnostic puzzle that gently tests prerequisite understanding.\n\n### Minutes 15-35: The 'Aha!' Teaching Moment\nTeach one challenging concept using visual analogies and step-by-step scaffolding until the student succeeds independently.\n\n### Minutes 35-45: Parent Debrief & Roadmapped Action Plan\nInvite the parent onto the camera. Present a clear 8-week structured roadmap showing exactly how you will take their child from their current grade to an A*.",
+            "resources": []
+          },
+          {
+            "id": "les_brand_1_3",
+            "title": "Action Assignment: Submit Your 60-Second Video Script & Bio",
+            "type": "assignment",
+            "duration": "30 min",
+            "assignmentPrompt": "Draft your updated tutor bio using the EduBridge 3-paragraph framework and write out your 60-second video introduction script. Submit your script for instructor review and badge qualification.",
+            "rubric": [
+              { "criterion": "Clear Value Proposition", "maxScore": 40, "description": "States exact subject, curriculum, and learner target audience." },
+              { "criterion": "Credibility & Trust Markers", "maxScore": 30, "description": "Highlights verifiable results and credentials." },
+              { "criterion": "Engaging Call-to-Action", "maxScore": 30, "description": "Welcoming, confident invitation to book trial session." }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "course_differentiated_instruction",
+    "title": "Differentiated Instruction & Inclusive Learning Strategies",
+    "subtitle": "Proven frameworks to engage neurodiverse learners and mixed-ability classrooms",
+    "slug": "differentiated-instruction-inclusive-learning",
+    "category": "Pedagogy & Classroom",
+    "level": "Beginner",
+    "price": 1500000,
+    "accessType": "open_enrollment",
+    "requiresVetting": false,
+    "duration": "4.5 Hours",
+    "durationMinutes": 270,
+    "instructorName": "Mrs. Grace Ojo",
+    "instructorAvatar": "https://images.unsplash.com/photo-1531123897727-8f129e1bfa82?q=80&w=200&auto=format&fit=crop",
+    "instructorBio": "Early childhood and primary education specialist with expertise in multi-sensory and Montessori learning models.",
+    "thumbnail": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop",
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop",
+    "rating": 4.88,
+    "reviewsCount": 128,
+    "enrolledCount": 260,
+    "isPublished": true,
+    "featured": false,
+    "tags": ["Inclusion", "Differentiation", "Universal Design for Learning", "Special Needs Support"],
+    "overview": "No two students learn at the same pace or via the same sensory modality. This foundational course gives educators the practical toolkit to adapt content, process, and products for visual, auditory, and kinesthetic learners.",
+    "learningOutcomes": [
+      "Implement Universal Design for Learning (UDL) principles in 1-on-1 and group lessons",
+      "Scaffold reading comprehension for dyslexic and English as Additional Language (EAL) learners",
+      "Deploy multi-sensory math tools (virtual manipulatives, number lines, color coding)",
+      "Design low-floor, high-ceiling mathematical tasks where every student participates"
+    ],
+    "modules": [
+      {
+        "id": "mod_diff_1",
+        "title": "Module 1: Principles of Universal Design for Learning (UDL)",
+        "description": "Engagement, Representation, and Action/Expression.",
+        "order": 1,
+        "lessons": [
+          {
+            "id": "les_diff_1_1",
+            "title": "The 3 Pillars of Universal Design for Learning",
+            "type": "video",
+            "duration": "14 min",
+            "videoUrl": "https://www.youtube.com/watch?v=AGQ_7K35ysA",
+            "isFreePreview": true,
+            "lectureNotes": "Key takeaways:\n1. Multiple Means of Engagement (The 'Why' of learning)\n2. Multiple Means of Representation (The 'What' of learning)\n3. Multiple Means of Action and Expression (The 'How' of learning).",
+            "resources": []
+          },
+          {
+            "id": "les_diff_1_2",
+            "title": "Diagnostic Assessment: Differentiation Strategy Check",
+            "type": "quiz",
+            "duration": "8 min",
+            "quizQuestions": [
+              {
+                "id": "q_diff_1",
+                "question": "What does a 'Low-Floor, High-Ceiling' task mean in differentiated instruction?",
+                "options": [
+                  "An activity that is easily accessible to all learners with basic skills, but can be extended to deep complexity for advanced students.",
+                  "A lesson taught in a classroom with low physical ceilings.",
+                  "A quiz that only tests multiple choice questions with low pass marks.",
+                  "A task designed strictly for remedial students only."
+                ],
+                "correctAnswer": 0,
+                "explanation": "Low-floor, high-ceiling tasks ensure zero barrier to entry for hesitant students while providing boundless depth for fast finishers."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

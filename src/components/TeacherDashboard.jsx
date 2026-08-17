@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Sparkles,
   ShieldCheck,
@@ -32,7 +33,9 @@ import {
   TrendingDown,
   BarChart2,
   Search,
-  LogOut
+  LogOut,
+  BookOpen,
+  Play
 } from "lucide-react";
 
 export default function TeacherDashboard({
@@ -2819,107 +2822,133 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                   </div>
                 )}
 
-                {/* TAB 6: AI ACADEMY */}
+                {/* TAB 6: AI ACADEMY & LMS */}
                 {activeTab === "academy" && (
                   <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm space-y-8 animate-fade-up">
-                    <div>
-                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
-                        ACADEMIC MODULE PROGRESSION
-                      </span>
-                      <h3 className="font-heading font-bold text-xl text-brand-moss mt-0.5">
-                        EduVista Teacher Academy
-                      </h3>
-                      <p className="font-sans text-xs text-brand-charcoal/60 mt-1">
-                        Complete structural teaching modules and receive
-                        certificate credentials.
-                      </p>
-                    </div>
-
-                    {/* Modules list progress */}
-                    <div className="space-y-4">
-                      {[
-                        {
-                          title: "Module 1: Platform Billing & Escrow Rules",
-                          status: "Locked",
-                          score: null,
-                        },
-                        {
-                          title:
-                            "Module 2: Direct Interactive Teaching Methods",
-                          status: "Locked",
-                          score: null,
-                        },
-                        {
-                          title: "Module 3: Deploying Gemini AI Tools in class",
-                          status: "Locked",
-                          score: null,
-                        },
-                        {
-                          title: "Module 4: Student Motivation Techniques",
-                          status: "Locked",
-                          score: null,
-                        },
-                        {
-                          title: "Module 5: Dispute Claims Management",
-                          status: "Locked",
-                          score: null,
-                        },
-                        {
-                          title:
-                            "Module 6: Capstone Teaching Roleplay Practice",
-                          status: "Locked",
-                          score: null,
-                        },
-                      ].map((m, idx) => (
-                        <div
-                          key={idx}
-                          className="border border-brand-moss/5 rounded-2xl p-4 bg-brand-cream/5 flex justify-between items-center text-xs"
-                        >
-                          <div>
-                            <span className="font-bold text-brand-moss block">
-                              {m.title}
-                            </span>
-                            <span className="text-[10px] text-brand-charcoal/50 mt-0.5 block">
-                              Module {idx + 1} Vetting Program
-                            </span>
-                          </div>
-
-                          <div className="text-right shrink-0">
-                            <span
-                              className={`font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full border ${
-                                m.status === "Passed"
-                                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                                  : m.status === "In Progress"
-                                    ? "bg-amber-50 border-amber-200 text-amber-800 animate-pulse"
-                                    : "bg-rose-50 border-rose-200 text-rose-800"
-                              }`}
-                            >
-                              {m.status} {m.score ? `(${m.score})` : ""}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Certificate sharing */}
-                    <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] p-6 text-brand-cream flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                      <div className="space-y-1">
-                        <h4 className="font-heading font-bold text-base text-white">
-                          Academy Certifications
-                        </h4>
-                        <p className="font-sans text-[11px] text-brand-cream/70 leading-relaxed">
-                          You have successfully completed 3 of 6 training
-                          levels. Your final certificate will release upon
-                          passing the Capstone Roleplay test.
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block">
+                          ACCREDITED TEACHER DEVELOPMENT
+                        </span>
+                        <h3 className="font-heading font-bold text-2xl text-brand-moss mt-0.5">
+                          EduBridge Elite Teachers Academy
+                        </h3>
+                        <p className="font-sans text-xs text-brand-charcoal/60 mt-1">
+                          Master international curricula (Cambridge/WAEC), AI-powered pedagogy, differentiated instruction, and earn verifiable accreditation.
                         </p>
                       </div>
 
-                      <button
-                        disabled
-                        className="py-3 px-6 bg-brand-cream/20 text-brand-cream rounded-full font-heading font-bold text-[10px] uppercase tracking-wider opacity-50 shrink-0"
+                      <Link
+                        to="/academy"
+                        className="py-3 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2 shrink-0 transition-transform scale-100 hover:scale-103"
                       >
-                        Download Certificate PDF
-                      </button>
+                        <BookOpen className="w-4 h-4" />
+                        Explore Full Course Catalog
+                      </Link>
+                    </div>
+
+                    {/* Featured Teacher Training Courses */}
+                    <div className="space-y-4">
+                      <h4 className="font-heading font-bold text-sm text-brand-moss flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-brand-clay" />
+                        Accredited Masterclass Curriculum
+                      </h4>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[
+                          {
+                            id: "course_ai_pedagogy",
+                            title: "AI-Powered Pedagogy with Gemini & ChatGPT",
+                            level: "Intermediate",
+                            duration: "6 Hours",
+                            category: "Classroom Tech & AI",
+                            thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
+                            desc: "Learn prompting, automated rubrics, and personalized tutoring workflows for Cambridge & WAEC."
+                          },
+                          {
+                            id: "course_cambridge_mastery",
+                            title: "Cambridge IGCSE & Curricula Mastery",
+                            level: "Advanced",
+                            duration: "8 Hours",
+                            category: "Curriculum & Standards",
+                            thumbnail: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop",
+                            desc: "Examiner techniques, mark scheme decoders, and command word precision for top candidate grades."
+                          },
+                          {
+                            id: "course_executive_branding",
+                            title: "Executive Educator Branding & High-Value Tutoring",
+                            level: "Mastery",
+                            duration: "5 Hours",
+                            category: "Executive Branding",
+                            thumbnail: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
+                            desc: "Bio copywriting, parent trial conversion formulas, and positioning international hourly rates."
+                          },
+                          {
+                            id: "course_differentiated_instruction",
+                            title: "Differentiated Instruction & Inclusive Learning",
+                            level: "Beginner",
+                            duration: "4.5 Hours",
+                            category: "Pedagogy & Classroom",
+                            thumbnail: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop",
+                            desc: "Universal Design for Learning (UDL) frameworks for mixed-ability and neurodiverse learners."
+                          }
+                        ].map((c) => (
+                          <div
+                            key={c.id}
+                            className="bg-brand-cream/20 border border-brand-moss/10 rounded-2xl p-5 hover:border-brand-clay/40 transition-all flex flex-col justify-between space-y-4"
+                          >
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-mono text-[9px] uppercase font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                                  {c.category}
+                                </span>
+                                <span className="text-[10px] font-mono text-brand-charcoal/50">{c.duration}</span>
+                              </div>
+                              <h5 className="font-heading font-bold text-base text-brand-moss">
+                                {c.title}
+                              </h5>
+                              <p className="text-xs text-brand-charcoal/70 leading-relaxed">
+                                {c.desc}
+                              </p>
+                            </div>
+
+                            <div className="pt-3 border-t border-brand-moss/10 flex items-center justify-between">
+                              <span className="font-mono text-xs text-brand-clay font-bold">{c.level}</span>
+                              <Link
+                                to={`/academy/classroom/${c.id}`}
+                                className="py-2 px-4 rounded-full bg-brand-moss hover:bg-brand-clay text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors"
+                              >
+                                <Play className="w-3.5 h-3.5 fill-current" />
+                                Start Classroom
+                              </Link>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Live Masterclasses Banner */}
+                    <div className="bg-gradient-to-r from-brand-charcoal via-brand-moss to-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-6 sm:p-8 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-xl">
+                      <div className="space-y-2 max-w-xl">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold uppercase">
+                          <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+                          Live Interactive Masterclass
+                        </div>
+                        <h4 className="font-heading font-bold text-lg text-white">
+                          AI in Live Tutoring Rooms: Whiteboard Demonstration & Drills
+                        </h4>
+                        <p className="font-sans text-xs text-brand-cream/70 leading-relaxed">
+                          Join former examiners and AI coaches for interactive whiteboard exercises, screen sharing, and live Q&A.
+                        </p>
+                      </div>
+
+                      <Link
+                        to="/academy/live/live_masterclass_ai_1"
+                        className="py-3 px-6 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-heading font-bold text-xs uppercase tracking-wider shadow-lg flex items-center gap-2 shrink-0 transition-transform scale-100 hover:scale-105"
+                      >
+                        <Video className="w-4 h-4" />
+                        Join Live Studio
+                      </Link>
                     </div>
                   </div>
                 )}

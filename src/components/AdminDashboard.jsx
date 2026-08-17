@@ -46,6 +46,7 @@ import {
 } from 'lucide-react';
 
 import AdminBlogManager from './AdminBlogManager';
+import AdminLMSManager from './lms/AdminLMSManager';
 
 export default function AdminDashboard({ currentUser, selectedCurrency, formatCurrency, convertMinor, onLogout, onBack }) {
   const API_BASE = '/api';
@@ -957,6 +958,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
           <nav className="p-4 flex flex-col gap-1 mt-2">
             {[
               { id: 'financials', label: 'Dashboard', icon: LayoutDashboard },
+              { id: 'lms', label: 'LMS & Training', icon: Sparkles },
               { id: 'vetting', label: 'Teachers', icon: Users },
               { id: 'groups', label: 'Lesson Plans', icon: BookOpen },
               { id: 'config', label: 'AI Recommendations', icon: ShieldCheck },
@@ -3818,6 +3820,11 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
             </div>
           </div>
         </div>
+      )}
+
+      {/* SECTION LMS: LMS & TRAINING ACADEMY */}
+      {activeSubSection === 'lms' && (
+        <AdminLMSManager currentUser={currentUser} />
       )}
 
       {/* SECTION 9: BLOG MANAGEMENT */}
