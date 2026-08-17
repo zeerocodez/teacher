@@ -807,20 +807,19 @@ export default function CourseClassroom({ currentUser, selectedCurrency = 'NGN',
                     <span>Next: {nextLesson.title.slice(0, 24)}...</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
-                ) : (
-                    {enrollment?.certificateIssued ? (
-                      <Link
-                        to={`/academy/certificate/${enrollment.certificateId}`}
-                        className="flex items-center gap-2 py-3 px-8 rounded-full bg-amber-600 hover:bg-amber-700 text-xs font-bold text-white uppercase tracking-wider transition-all shadow-lg"
-                      >
-                        <Award className="w-4 h-4" />
-                        <span>Graduation: View Certificate</span>
-                      </Link>
-                    ) : <div />}
-                  </div>
-                </>
-              )}
-            </div>
+                ) : enrollment?.certificateIssued ? (
+                  <Link
+                    to={`/academy/certificate/${enrollment.certificateId}`}
+                    className="flex items-center gap-2 py-3 px-8 rounded-full bg-amber-600 hover:bg-amber-700 text-xs font-bold text-white uppercase tracking-wider transition-all shadow-lg"
+                  >
+                    <Award className="w-4 h-4" />
+                    <span>Graduation: View Certificate</span>
+                  </Link>
+                ) : <div />}
+              </div>
+            </>
+          )}
+        </div>
           ) : (
             <div className="flex-1 flex items-center justify-center p-12 text-center">
               <div className="max-w-md space-y-3">
