@@ -2,7 +2,7 @@
 import { exec } from 'child_process';
 
 console.log("=================================================================");
-console.log("                 EDUBRIDGE WEB SHARING SUITE                     ");
+console.log("                 EDUVISTAR WEB SHARING SUITE                     ");
 console.log("=================================================================");
 console.log("Expose the local development environment using secure tunnels.");
 console.log("\n[Option A] Expose Frontend (Vite on Port 5173):");

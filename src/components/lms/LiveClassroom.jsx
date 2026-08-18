@@ -72,7 +72,7 @@ export default function LiveClassroom({ classId: propClassId, currentUser }) {
               instructorAvatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop",
               scheduledStartTime: new Date().toISOString(),
               durationMinutes: 60,
-              roomUrl: "https://edubridge.daily.co/demo-masterclass",
+              roomUrl: "https://eduvistar.daily.co/demo-masterclass",
               agenda: [
                 "1. Priming ChatGPT and Gemini with Cambridge Syllabus Codes",
                 "2. Live screen share: Co-teaching with AI assistants",
@@ -95,7 +95,7 @@ export default function LiveClassroom({ classId: propClassId, currentUser }) {
           instructorAvatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop",
           scheduledStartTime: new Date().toISOString(),
           durationMinutes: 60,
-          roomUrl: "https://edubridge.daily.co/demo-masterclass",
+          roomUrl: "https://eduvistar.daily.co/demo-masterclass",
           agenda: [
             "1. Priming ChatGPT and Gemini with Cambridge Syllabus Codes",
             "2. Live screen share: Co-teaching with AI assistants",

@@ -2831,7 +2831,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                           ACCREDITED TEACHER DEVELOPMENT
                         </span>
                         <h3 className="font-heading font-bold text-2xl text-brand-moss mt-0.5">
-                          EduBridge Elite Teachers Academy
+                          EduVistar Elite Teachers Academy
                         </h3>
                         <p className="font-sans text-xs text-brand-charcoal/60 mt-1">
                           Master international curricula (Cambridge/WAEC), AI-powered pedagogy, differentiated instruction, and earn verifiable accreditation.

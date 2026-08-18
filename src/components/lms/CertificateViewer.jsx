@@ -36,7 +36,7 @@ export default function CertificateViewer({ certId: propCertId, currentUser }) {
             userName: currentUser?.displayName || "Elite Educator",
             courseTitle: "AI-Powered Pedagogy: Transforming Classroom Teaching with Gemini & ChatGPT",
             completionDate: new Date().toISOString(),
-            issuedBy: "EduBridge Elite Teachers Academy Accreditation Board",
+            issuedBy: "EduVistar Elite Teachers Academy Accreditation Board",
             verificationHash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
           });
         }
@@ -48,7 +48,7 @@ export default function CertificateViewer({ certId: propCertId, currentUser }) {
           userName: currentUser?.displayName || "Elite Educator",
           courseTitle: "AI-Powered Pedagogy: Transforming Classroom Teaching with Gemini & ChatGPT",
           completionDate: new Date().toISOString(),
-          issuedBy: "EduBridge Elite Teachers Academy Accreditation Board",
+          issuedBy: "EduVistar Elite Teachers Academy Accreditation Board",
           verificationHash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         });
       } finally {
@@ -160,7 +160,7 @@ export default function CertificateViewer({ certId: propCertId, currentUser }) {
         <div className="text-center relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-moss/5 border border-brand-moss/15 text-brand-moss text-[10px] font-mono uppercase tracking-widest font-bold">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            Official Verified Credential · EduBridge Africa
+            Official Verified Credential · EduVistar Africa
           </div>
 
           <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-brand-moss uppercase tracking-wider mt-2">
@@ -242,7 +242,7 @@ export default function CertificateViewer({ certId: propCertId, currentUser }) {
 
         {/* Bottom micro security banner */}
         <div className="mt-8 pt-4 border-t border-dashed border-brand-moss/10 flex flex-wrap justify-between items-center text-[9px] font-mono text-brand-charcoal/40">
-          <span>EduBridge Global Educator Registry (NITDA / Cambridge Compliant)</span>
+          <span>EduVistar Global Educator Registry (NITDA / Cambridge Compliant)</span>
           <span className="flex items-center gap-1 text-emerald-700 font-bold">
             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
             Cryptographically Authenticated Record

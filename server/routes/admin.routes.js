@@ -102,7 +102,7 @@ router.post('/applications/respond', authenticateToken, requireRole(['Admin']), 
   if (user && user.email) {
     const subject = action === "Approve" ? "Teacher Application Approved!" : "Teacher Application Update";
     const message = action === "Approve"
-      ? `Hello ${teacher.name},\n\nCongratulations! Your teacher onboarding application has been approved. You are now live on the EduBridge platform and can start accepting students.`
+      ? `Hello ${teacher.name},\n\nCongratulations! Your teacher onboarding application has been approved. You are now live on the EduVistar platform and can start accepting students.`
       : `Hello ${teacher.name},\n\nUnfortunately, your teacher application was declined at this time. Please verify your credentials and submit again or contact support for more details.`;
       
     sendTransactionalEmail(user.email, subject, "alert", { message });

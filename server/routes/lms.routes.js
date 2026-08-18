@@ -205,7 +205,7 @@ router.post('/courses', authenticateToken, requireRole(['Admin']), lmsAdminLimit
       durationMinutes: 240,
       instructorName: instructorName || req.user.displayName || "Master Instructor",
       instructorAvatar: instructorAvatar || "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop",
-      instructorBio: instructorBio || "Certified EduBridge Lead Trainer.",
+      instructorBio: instructorBio || "Certified EduVistar Lead Trainer.",
       thumbnail: thumbnail || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
       coverImage: coverImage || thumbnail || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop",
       rating: 5.0,
@@ -512,7 +512,7 @@ router.post('/courses/:id/purchase', authenticateToken, lmsPurchaseLimiter, asyn
         `Payment Receipt: ${course.title}`,
         "alert",
         {
-          message: `Hello ${req.user.displayName || 'Educator'},\n\nThank you for enrolling in "${course.title}" at the EduBridge Elite Teachers Academy.\n\nAmount: ₦${(coursePrice / 100).toLocaleString()}\nPayment Method: ${paymentMethod === 'wallet' ? 'Platform Wallet' : 'Paystack Card'}\nStatus: Confirmed\n\nYou can access your classroom at any time.`
+          message: `Hello ${req.user.displayName || 'Educator'},\n\nThank you for enrolling in "${course.title}" at the EduVistar Elite Teachers Academy.\n\nAmount: ₦${(coursePrice / 100).toLocaleString()}\nPayment Method: ${paymentMethod === 'wallet' ? 'Platform Wallet' : 'Paystack Card'}\nStatus: Confirmed\n\nYou can access your classroom at any time.`
         }
       );
     }
@@ -598,7 +598,7 @@ router.post('/courses/:id/progress', authenticateToken, async (req, res) => {
         courseId: course.id,
         courseTitle: course.title,
         completionDate: new Date().toISOString(),
-        issuedBy: "EduBridge Elite Teachers Academy Accreditation Board",
+        issuedBy: "EduVistar Elite Teachers Academy Accreditation Board",
         verificationHash: crypto.createHash('sha256').update(`${userId}-${course.id}-${Date.now()}`).digest('hex')
       };
 
@@ -947,7 +947,7 @@ router.post('/assignments/:id/grade', authenticateToken, requireRole(['Admin']),
         `Assignment Graded: ${submission.lessonTitle} (${numScore}/100)`,
         "alert",
         {
-          message: `Hello ${submission.studentName},\n\nYour assignment submission for "${submission.lessonTitle}" in course "${submission.courseTitle}" has been graded.\n\nScore: ${numScore}/100\nFeedback: ${feedback || 'Well done.'}\n\nLog in to EduBridge Academy to view your full rubric review.`
+          message: `Hello ${submission.studentName},\n\nYour assignment submission for "${submission.lessonTitle}" in course "${submission.courseTitle}" has been graded.\n\nScore: ${numScore}/100\nFeedback: ${feedback || 'Well done.'}\n\nLog in to EduVistar Academy to view your full rubric review.`
         }
       );
     }
@@ -983,7 +983,7 @@ router.get('/live-classes', async (req, res) => {
           scheduledStartTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           durationMinutes: 60,
           status: "upcoming",
-          roomUrl: "https://edubridge.daily.co/masterclass-ai-pedagogy",
+          roomUrl: "https://eduvistar.daily.co/masterclass-ai-pedagogy",
           maxParticipants: 100,
           attendeesCount: 48,
           agenda: [
@@ -1006,7 +1006,7 @@ router.get('/live-classes', async (req, res) => {
           scheduledStartTime: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
           durationMinutes: 75,
           status: "upcoming",
-          roomUrl: "https://edubridge.daily.co/masterclass-cambridge-mastery",
+          roomUrl: "https://eduvistar.daily.co/masterclass-cambridge-mastery",
           maxParticipants: 100,
           attendeesCount: 62,
           agenda: [
@@ -1053,7 +1053,7 @@ router.post('/live-classes', authenticateToken, requireRole(['Admin']), lmsAdmin
     }
 
     const classId = `live_${Date.now()}_${crypto.randomBytes(2).toString('hex')}`;
-    let roomUrl = `https://edubridge.daily.co/${classId}`;
+    let roomUrl = `https://eduvistar.daily.co/${classId}`;
 
     // If Daily API Key is present, attempt live Daily room provisioning
     if (DAILY_API_KEY && !DAILY_API_KEY.includes('your_key_here')) {

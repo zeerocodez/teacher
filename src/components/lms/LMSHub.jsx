@@ -134,7 +134,7 @@ export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCu
           <div className="relative z-10 max-w-3xl space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
               <Sparkles className="w-4 h-4 animate-pulse" />
-              EduBridge Elite Teachers Academy
+              EduVistar Elite Teachers Academy
             </div>
 
             <h1 className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight leading-tight">
@@ -517,7 +517,7 @@ export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCu
                       <img src={live.instructorAvatar} alt="" className="w-10 h-10 rounded-full object-cover border border-brand-moss/20" />
                       <div>
                         <span className="font-heading font-bold text-xs text-brand-moss block">{live.instructorName}</span>
-                        <span className="text-[10px] text-brand-charcoal/60 font-mono">Senior Lead Trainer · EduBridge Academy</span>
+                        <span className="text-[10px] text-brand-charcoal/60 font-mono">Senior Lead Trainer · EduVistar Academy</span>
                       </div>
                     </div>
 

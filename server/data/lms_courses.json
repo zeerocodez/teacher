@@ -312,7 +312,7 @@
             "title": "Action Assignment: Submit Your 60-Second Video Script & Bio",
             "type": "assignment",
             "duration": "30 min",
-            "assignmentPrompt": "Draft your updated tutor bio using the EduBridge 3-paragraph framework and write out your 60-second video introduction script. Submit your script for instructor review and badge qualification.",
+            "assignmentPrompt": "Draft your updated tutor bio using the EduVistar 3-paragraph framework and write out your 60-second video introduction script. Submit your script for instructor review and badge qualification.",
             "rubric": [
               { "criterion": "Clear Value Proposition", "maxScore": 40, "description": "States exact subject, curriculum, and learner target audience." },
               { "criterion": "Credibility & Trust Markers", "maxScore": 30, "description": "Highlights verifiable results and credentials." },

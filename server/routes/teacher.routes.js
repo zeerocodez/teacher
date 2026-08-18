@@ -204,7 +204,7 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
   const teacherUser = await db.findOne('users', u => u.uid === uid);
   if (teacherUser && teacherUser.email) {
     sendTransactionalEmail(teacherUser.email, "Application Received - Pending Verification", "alert", {
-      message: `Hello ${sanitizeText(name)},\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduBridge platform. Please keep an eye on your email for updates regarding your approval status.`
+      message: `Hello ${sanitizeText(name)},\n\nYour teacher application has been successfully submitted and is currently pending verification on the EduVistar platform. Please keep an eye on your email for updates regarding your approval status.`
     });
   }
 

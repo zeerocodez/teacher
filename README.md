@@ -1,6 +1,6 @@
-# EduBridge Africa — Education Platform
+# EduVistar Africa — Education Platform
 
-EduBridge Africa connects verified African educators with global parent markets. The platform includes secure credit card checkouts, multi-language support (English, French, Swahili), biometric validation checks, escrow scheduling, an AI customer support bot, and parents affiliate/referral portals.
+EduVistar Africa connects verified African educators with global parent markets. The platform includes secure credit card checkouts, multi-language support (English, French, Swahili), biometric validation checks, escrow scheduling, an AI customer support bot, and parents affiliate/referral portals.
 
 ---
 

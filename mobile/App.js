@@ -34,7 +34,7 @@ export default function App() {
       
       {/* HEADER SECTION */}
       <View style={styles.header}>
-        <Text style={styles.logoText}>EduBridge Africa</Text>
+        <Text style={styles.logoText}>EduVistar Africa</Text>
         <Text style={styles.subText}>Mobile Learning Portal</Text>
       </View>
 
@@ -47,7 +47,7 @@ export default function App() {
             
             <View style={styles.inputGroup}>
               <Text style={styles.label}>EMAIL ADDRESS</Text>
-              <TextInput style={styles.input} placeholder="parent@edubridge.com" placeholderTextColor="#888" keyboardType="email-address" />
+              <TextInput style={styles.input} placeholder="parent@eduvistar.com" placeholderTextColor="#888" keyboardType="email-address" />
             </View>
 
             <View style={styles.inputGroup}>

@@ -793,7 +793,7 @@ export default function Academy({
             <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-6 shadow-2xl flex flex-col justify-center items-center text-center space-y-6">
               <h3 className="font-heading font-bold text-2xl text-white">Join the Elite Trybe</h3>
               <p className="font-sans text-sm text-brand-cream/80 max-w-sm">
-                All academy registrations, vetting processes, and accredited modules are hosted inside the EduBridge Elite Teachers Academy LMS.
+                All academy registrations, vetting processes, and accredited modules are hosted inside the EduVistar Elite Teachers Academy LMS.
               </p>
               <Link
                 to="/academy"
