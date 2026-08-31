@@ -7,7 +7,7 @@ import {
   Users, PlusCircle, CreditCard, Clock, Globe
 } from 'lucide-react';
 
-const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/EduVistarEliteTeachers';
+const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4';
 
 export default function Academy({ 
   currentUser, 
