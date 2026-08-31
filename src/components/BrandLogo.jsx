@@ -1,8 +1,8 @@
-﻿import React from 'react';
+import React from 'react';
 
 export default function BrandLogo({ light = false, className = '', iconOnly = false }) {
   return (
-    <div className={`flex items-center gap-3.5 bg-transparent ${className}`}>
+    <div className={`flex items-center gap-2.5 md:gap-3 bg-transparent select-none whitespace-nowrap ${className}`}>
       {/* Emblem Circle with Transparent SVG Wrapper */}
       <svg 
         viewBox="0 0 200 200" 
@@ -45,11 +45,11 @@ export default function BrandLogo({ light = false, className = '', iconOnly = fa
           </svg>
 
           {/* Text branding */}
-          <div className="flex flex-col select-none leading-none justify-center">
-            <span className={`font-heading font-black text-lg md:text-xl lg:text-2xl tracking-tight uppercase ${light ? 'text-white' : 'text-brand-charcoal'}`}>
+          <div className="flex flex-col select-none leading-none justify-center pr-2 md:pr-4">
+            <span className={`font-heading font-black text-base sm:text-lg lg:text-xl xl:text-2xl tracking-tight uppercase ${light ? 'text-white' : 'text-brand-charcoal'}`}>
               EDUVISTAR
             </span>
-            <span className={`font-heading font-bold text-[10px] md:text-[11px] lg:text-[12px] tracking-[0.28em] uppercase mt-1 ${light ? 'text-brand-cream/80' : 'text-brand-charcoal/70'}`}>
+            <span className={`font-heading font-bold text-[9px] sm:text-[10px] lg:text-[11px] tracking-[0.28em] uppercase mt-1 ${light ? 'text-brand-cream/80' : 'text-brand-charcoal/70'}`}>
               AFRICA
             </span>
           </div>

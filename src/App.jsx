@@ -1104,19 +1104,19 @@ export default function App() {
 
 
       {/* Static Header Navbar */}
-      <nav className="w-full bg-brand-charcoal text-white py-4 px-6 md:px-12 border-b border-brand-cream/10 z-50 relative">
-        <div className="flex items-center justify-between">
+      <nav className="w-full bg-brand-charcoal text-white py-3.5 px-4 md:px-8 lg:px-10 border-b border-brand-cream/10 z-50 relative">
+        <div className="flex items-center justify-between gap-4 md:gap-6 lg:gap-8 flex-nowrap">
           <div 
             onClick={() => {
               setIsMobileMenuOpen(false);
               navigate('/');
             }}
-            className="cursor-pointer select-none"
+            className="cursor-pointer select-none flex-shrink-0 mr-3 md:mr-6 lg:mr-8"
           >
             <BrandLogo light={true} className="h-11 md:h-12 lg:h-13 transition-transform duration-300 hover:scale-105" />
           </div>
           
-          <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-7 font-sans font-semibold text-xs uppercase tracking-wider text-white/80 flex-shrink-0 mr-4 whitespace-nowrap">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
             <Link to="/blog" className="hover:text-brand-clay transition-colors hover-lift">Blog</Link>
             <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift flex items-center gap-1 font-bold text-white">
@@ -1136,7 +1136,7 @@ export default function App() {
 
           <div className="flex items-center gap-4">
             {/* Desktop selectors (hidden on mobile/tablet) */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-3 xl:gap-5 flex-shrink-0 whitespace-nowrap">
               {/* Multilingual Selector */}
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-white/65">
