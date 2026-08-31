@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { MessageCircle, Crown, useNavigate, Link } from 'react-router-dom';
-import { 
-  Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, 
-  Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, 
-  Users, PlusCircle, CreditCard, Clock, Globe
-} from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { MessageCircle, Crown, Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, Users, PlusCircle, CreditCard, Clock, Globe } from 'lucide-react';
+
 
 const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4';
 
