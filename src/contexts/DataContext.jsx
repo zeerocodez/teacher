@@ -19,7 +19,7 @@ export const DataProvider = ({ children }) => {
   const [gradesLog, setGradesLog] = useState([]);
 
   const getAuthHeaders = useCallback(() => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem('eduvistar_token');
     return token ? { 'Authorization': `Bearer ${token}` } : {};
   }, []);
 

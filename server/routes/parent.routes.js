@@ -274,7 +274,7 @@ router.post('/assignments/grade', authenticateToken, requireRole(['Teacher']), a
 
   // Trigger transactional email to parent
   const parentUser = await db.findOne('users', u => u.uid === parentUid) || { email: "parent_1@eduvistar.com" };
-  sendTransactionalEmail(parentUser.email, "EduVista: Assignment Graded Card", "assignment_graded", {
+  sendTransactionalEmail(parentUser.email, "EduVistar: Assignment Graded Card", "assignment_graded", {
     studentName: assignment.studentName,
     title: assignment.title,
     score,
@@ -352,7 +352,7 @@ router.post('/assignments/submit', authenticateToken, async (req, res) => {
     const studentObj = await db.findOne('students', s => s.id === assignment.studentId) || { name: "Student" };
     const teacherUser = await db.findOne('users', u => u.uid === assignment.teacherId);
     if (teacherUser && teacherUser.email) {
-      sendTransactionalEmail(teacherUser.email, "EduVista: Homework Assignment Submitted", "assignment_submitted", {
+      sendTransactionalEmail(teacherUser.email, "EduVistar: Homework Assignment Submitted", "assignment_submitted", {
         studentName: studentObj.name,
         title: assignment.title,
         submittedAt: new Date().toLocaleDateString()

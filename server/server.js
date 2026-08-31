@@ -96,7 +96,7 @@ app.use(async (req, res, next) => {
   next();
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || 'eduvista_jwt_secret_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'eduvistar_jwt_secret_2026';
 
 app.use(globalRateLimiter);
 
@@ -129,7 +129,7 @@ async function guaranteeInitialProfiles() {
   if (!adminUser) {
     await db.insert('users', {
       uid: "admin_1",
-      email: "admin@eduvista.com",
+      email: "admin@eduvistar.com",
       displayName: "System Admin",
       role: "Admin",
       country: "Nigeria",
@@ -137,7 +137,7 @@ async function guaranteeInitialProfiles() {
       salt: defaultCreds.salt,
       passwordHash: defaultCreds.hash
     });
-    console.log("Guaranteed admin@eduvista.com admin profile.");
+    console.log("Guaranteed admin@eduvistar.com admin profile.");
   }
 
   const zeerocodesAdmin = await db.findOne('users', u => u.email.toLowerCase() === 'zeerocodes@gmail.com');
@@ -217,16 +217,16 @@ app.post('/api/support/message', authenticateToken, supportRateLimiter, async (r
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     // Elegant regex-based local fallback support answers
-    let reply = "I'm the EduVista Support Assistant. I'm here to help you coordinate with vetted teachers, secure escrow payments, or audit lessons. Could you please specify your concern?";
+    let reply = "I'm the EduVistar Support Assistant. I'm here to help you coordinate with vetted teachers, secure escrow payments, or audit lessons. Could you please specify your concern?";
     const msgLower = message.toLowerCase();
     if (msgLower.includes('tutor') || msgLower.includes('teacher') || msgLower.includes('instructor')) {
       reply = "Our teachers undergo government ID checks, credentials handbook verification, and a 4-week onboarding priority audit. You can explore tutors directly on our marketplace.";
     } else if (msgLower.includes('escrow') || msgLower.includes('pay') || msgLower.includes('fee') || msgLower.includes('cost')) {
-      reply = "EduVista operates a timed escrow payment engine. When you book a lesson, funds are secured in escrow and only released to the teacher 24 hours after a class validation check. A 15% commission is kept by the platform.";
+      reply = "EduVistar operates a timed escrow payment engine. When you book a lesson, funds are secured in escrow and only released to the teacher 24 hours after a class validation check. A 15% commission is kept by the platform.";
     } else if (msgLower.includes('dispute') || msgLower.includes('refund') || msgLower.includes('cancel')) {
       reply = "If a session has an issue, you can file a dispute claim directly from the session log. Escrow funds will remain locked while an admin resolves the claim within 24 hours.";
     } else if (msgLower.includes('language') || msgLower.includes('translate') || msgLower.includes('french') || msgLower.includes('swahili')) {
-      reply = "EduVista provides a multilingual interface supporting English, French, and Swahili. You can switch your preferred language at the top navbar.";
+      reply = "EduVistar provides a multilingual interface supporting English, French, and Swahili. You can switch your preferred language at the top navbar.";
     } else if (msgLower.includes('b2b') || msgLower.includes('school') || msgLower.includes('api')) {
       reply = "We offer robust school B2B APIs for partner academic institutions to request tutor batches and compliance audits programmatically. Generate a B2B API token inside the Admin Portal.";
     }
@@ -253,7 +253,7 @@ app.post('/api/support/message', authenticateToken, supportRateLimiter, async (r
 
     const systemInstruction = {
       parts: [{
-        text: "You are the official EduVista AI Customer Support Agent. You represent EduVista Africa, an elite tutoring marketplace connecting verified African educators (specializing in WAEC, Cambridge, SAT, and foundational tutoring) with global parent markets. You explain concepts clearly, resolve dispute inquiries gracefully, explain escrow locks (which release 24 hours after a lesson is verified), and explain commission rates (15% commission fee). Maintain a polite, professional, and supportive tone. Keep answers under 100 words."
+        text: "You are the official EduVistar AI Customer Support Agent. You represent EduVistar Africa, an elite tutoring marketplace connecting verified African educators (specializing in WAEC, Cambridge, SAT, and foundational tutoring) with global parent markets. You explain concepts clearly, resolve dispute inquiries gracefully, explain escrow locks (which release 24 hours after a lesson is verified), and explain commission rates (15% commission fee). Maintain a polite, professional, and supportive tone. Keep answers under 100 words."
       }]
     };
 
@@ -677,7 +677,7 @@ app.post('/api/admin/emails/send-welcome', authenticateToken, requireRole(['Admi
     return res.status(400).json({ error: "Email, display name, and role are required." });
   }
   try {
-    const record = sendTransactionalEmail(email, "Welcome to EduVista Africa!", "welcome", {
+    const record = sendTransactionalEmail(email, "Welcome to EduVistar Africa!", "welcome", {
       displayName,
       role
     });
@@ -780,21 +780,21 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
     const parentUser = await db.findOne('users', u => u.uid === session.parentId) || { email: "parent_1@eduvistar.com" };
     const teacherUser = await db.findOne('users', u => u.uid === session.teacherId);
     if (teacherUser && teacherUser.email) {
-      sendTransactionalEmail(teacherUser.email, "EduVista: Billing Dispute Opened", "dispute_created", {
+      sendTransactionalEmail(teacherUser.email, "EduVistar: Billing Dispute Opened", "dispute_created", {
         slot: session.slot,
         parentName: parentUser.displayName || parentUser.email.split('@')[0],
         reason
       });
     }
     
-    sendTransactionalEmail(parentUser.email, "EduVista: Dispute Registered", "admin_notification", {
+    sendTransactionalEmail(parentUser.email, "EduVistar: Dispute Registered", "admin_notification", {
       displayName: parentUser.displayName || "Parent",
       message: `Your dispute for the session on ${session.slot.day} at ${session.slot.time} with ${session.teacherName} has been registered. Our billing support team is reviewing it and will contact you shortly.`
     });
 
     const admins = await db.find('users', u => u.role === 'Admin');
     for (const admin of admins) {
-      sendTransactionalEmail(admin.email, "EduVista ADMIN: New Dispute Filed", "dispute_created", {
+      sendTransactionalEmail(admin.email, "EduVistar ADMIN: New Dispute Filed", "dispute_created", {
         slot: session.slot,
         parentName: parentUser.displayName || parentUser.email.split('@')[0],
         reason
@@ -913,7 +913,7 @@ export async function processEscrowClearance(sessionId = null) {
 
         const teacherUser = await db.findOne('users', u => u.uid === session.teacherId);
         if (teacherUser && teacherUser.email) {
-          sendTransactionalEmail(teacherUser.email, "EduVista: Escrow Funds Released", "escrow_released", {
+          sendTransactionalEmail(teacherUser.email, "EduVistar: Escrow Funds Released", "escrow_released", {
             teacherName: session.teacherName || teacherUser.displayName,
             formattedPayout: `₦${(teacherShare / 100).toLocaleString()}`,
             formattedCommission: `₦${(commission / 100).toLocaleString()}`
@@ -1120,7 +1120,7 @@ app.post('/api/ai/progress-report', authenticateToken, async (req, res) => {
       const payload = {
         contents: [{
           parts: [{
-            text: `You are an AI Educational Specialist for EduVista Africa. Generate a detailed 4-point student progress report for parent review.
+            text: `You are an AI Educational Specialist for EduVistar Africa. Generate a detailed 4-point student progress report for parent review.
             Student Name: ${studentName}
             Average Grade: ${avgGrade}%
             Teacher Notes: ${teacherNotes || 'Consistently attentive and active.'}
@@ -1274,7 +1274,7 @@ app.get('/api/reports/download/:studentId', authenticateToken, async (req, res) 
     <html lang="en">
     <head>
       <meta charset="UTF-8">
-      <title>EduVista Progress Report - ${student.name}</title>
+      <title>EduVistar Progress Report - ${student.name}</title>
       <style>
         body { font-family: 'Inter', system-ui, sans-serif; background: #FAF8F5; color: #1A1A1A; padding: 40px; margin: 0; }
         .card { max-width: 800px; margin: 0 auto; background: #FFF; border: 1px solid #2E4036; border-radius: 24px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
@@ -1302,7 +1302,7 @@ app.get('/api/reports/download/:studentId', authenticateToken, async (req, res) 
     <body>
       <div class="card">
         <div class="header">
-          <div class="logo">EduVista Africa</div>
+          <div class="logo">EduVistar Africa</div>
           <div class="title">Official Progress Report</div>
         </div>
         
@@ -1349,7 +1349,7 @@ app.get('/api/reports/download/:studentId', authenticateToken, async (req, res) 
         </div>
 
         <div class="footer">
-          Generated on ${new Date().toLocaleDateString()} · Official EduVista Academic Registry Record.
+          Generated on ${new Date().toLocaleDateString()} · Official EduVistar Academic Registry Record.
         </div>
       </div>
     </body>
@@ -1362,19 +1362,19 @@ app.get('/api/reports/download/:studentId', authenticateToken, async (req, res) 
 
 // App initialization status check
 app.get('/api/status', async (req, res) => {
-  res.json({ status: "healthy", version: "2.0.0", message: "EduVista API Server Active." });
+  res.json({ status: "healthy", version: "2.0.0", message: "EduVistar API Server Active." });
 });
 
 // Start Server conditionally (only when not running inside Vercel serverless environment)
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   ensureDb().then(() => {
     app.listen(PORT, () => {
-      console.log(`EduVista Africa Backend Server running on http://localhost:${PORT}`);
+      console.log(`EduVistar Africa Backend Server running on http://localhost:${PORT}`);
     });
   }).catch(err => {
     console.error("Database initialization failed, starting server with fallback...", err);
     app.listen(PORT, () => {
-      console.log(`EduVista Africa Backend Server running on http://localhost:${PORT} (failed init fallback)`);
+      console.log(`EduVistar Africa Backend Server running on http://localhost:${PORT} (failed init fallback)`);
     });
   });
 }

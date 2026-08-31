@@ -11,8 +11,8 @@ try {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 } catch (err) {
-  console.warn("Read-only filesystem detected for email service, falling back to /tmp/eduvista_data");
-  DATA_DIR = path.join('/tmp', 'eduvista_data');
+  console.warn("Read-only filesystem detected for email service, falling back to /tmp/eduvistar_data");
+  DATA_DIR = path.join('/tmp', 'eduvistar_data');
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -104,14 +104,14 @@ function getHtmlWrapper(title, contentHtml) {
       <body>
         <div class="container">
           <div class="header">
-            <h1>EduVista</h1>
+            <h1>EduVistar</h1>
           </div>
           <div class="content">
             ${contentHtml}
           </div>
           <div class="footer">
             <p>SYSTEM ACTIVE // ESCROW PROTECTED // SECURED BY GEMINI AI</p>
-            <p>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>
+            <p>© 2026 EduVistar Africa. A product of Zeerocodes Automation Limited. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -125,7 +125,7 @@ function getHtmlWrapper(title, contentHtml) {
 async function sendViaZeptomailAPI(to, subject, textBody, htmlBody) {
   const apiKey = process.env.ZEPTOMAIL_API_KEY;
   const fromEmail = process.env.ZEPTOMAIL_SENDER_EMAIL || 'onboarding@zeptomail.com';
-  const fromName = process.env.ZEPTOMAIL_SENDER_NAME || 'EduVista';
+  const fromName = process.env.ZEPTOMAIL_SENDER_NAME || 'EduVistar';
   
   const payload = {
     from: {
@@ -177,13 +177,13 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
     const verificationUrl = `${APP_URL}/verify-email?token=${crypto.randomBytes(16).toString('hex')}`;
     
     if (templateData.role === 'Teacher') {
-      body = `Welcome to EduVista Africa, ${templateData.displayName}!\n\nYour profile as a professional educator is now ready for onboarding.\n\nNext Steps:\n1. Verify Email: ${verificationUrl}\n2. Complete Profile: List subjects, curriculum, and hourly rates.\n3. Set Availability: Choose slots for parent booking.\n\nBest regards,\nEduVista Africa Support`;
+      body = `Welcome to EduVistar Africa, ${templateData.displayName}!\n\nYour profile as a professional educator is now ready for onboarding.\n\nNext Steps:\n1. Verify Email: ${verificationUrl}\n2. Complete Profile: List subjects, curriculum, and hourly rates.\n3. Set Availability: Choose slots for parent booking.\n\nBest regards,\nEduVistar Africa Support`;
       htmlBody = getHtmlWrapper(subject, `
         <div style="text-align: center; margin-bottom: 25px;">
           <span class="badge" style="letter-spacing: 1px; text-transform: uppercase;">Educator Portal</span>
         </div>
         <h2 style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;">Empower the Next Generation of Minds.</h2>
-        <p>Welcome to EduVista Africa, <strong>${templateData.displayName}</strong>. Your profile as a professional educator is now ready for onboarding.</p>
+        <p>Welcome to EduVistar Africa, <strong>${templateData.displayName}</strong>. Your profile as a professional educator is now ready for onboarding.</p>
         
         <div style="background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 20px; margin: 25px 0;">
           <h3 style="color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;">Next Steps to Live Status:</h3>
@@ -201,16 +201,16 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <div style="text-align: center;">
           <a class="button" href="${verificationUrl}">Verify Account & Log In</a>
         </div>
-        <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVista Team</p>
+        <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVistar Team</p>
       `);
     } else {
-      body = `Welcome to EduVista Africa, ${templateData.displayName}!\n\nYour parental hub has been successfully created.\n\nHere is what you can expect and your next steps:\n\n1. Verify Email: ${verificationUrl}\n2. Top Up Wallet: Add funds to your secure wallet to pay for lessons.\n3. Discover Tutors: Browse vetted educators by subject, rate, and curriculum.\n4. Book Lessons: Schedule 1-on-1 virtual sessions securely.\n\nEvery lesson is backed by the EduVista Escrow System.\n\nIf a tutor is a no-show, experiences continuous connectivity failures, or files incorrect hours, you can register a dispute within 48 hours of lesson completion. Escrow funds are immediately frozen pending manual administrator reviews.\n\nBest regards,\nEduVista Africa Support`;
+      body = `Welcome to EduVistar Africa, ${templateData.displayName}!\n\nYour parental hub has been successfully created.\n\nHere is what you can expect and your next steps:\n\n1. Verify Email: ${verificationUrl}\n2. Top Up Wallet: Add funds to your secure wallet to pay for lessons.\n3. Discover Tutors: Browse vetted educators by subject, rate, and curriculum.\n4. Book Lessons: Schedule 1-on-1 virtual sessions securely.\n\nEvery lesson is backed by the EduVistar Escrow System.\n\nIf a tutor is a no-show, experiences continuous connectivity failures, or files incorrect hours, you can register a dispute within 48 hours of lesson completion. Escrow funds are immediately frozen pending manual administrator reviews.\n\nBest regards,\nEduVistar Africa Support`;
       htmlBody = getHtmlWrapper(subject, `
         <div style="text-align: center; margin-bottom: 25px;">
           <span class="badge" style="letter-spacing: 1px; text-transform: uppercase;">Parental Hub</span>
         </div>
         <h2 style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;">Unlocking Academic Excellence.</h2>
-        <p>Welcome to EduVista Africa, <strong>${templateData.displayName}</strong>. Your family portal has been successfully created.</p>
+        <p>Welcome to EduVistar Africa, <strong>${templateData.displayName}</strong>. Your family portal has been successfully created.</p>
         
         <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5;">Here is exactly what you can expect and your next steps to get started with finding the perfect tutor for your child:</p>
 
@@ -225,7 +225,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         </div>
 
         <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;">
-          <strong>What to expect during a session:</strong> Every lesson is backed by the EduVista Escrow System — your funds are safely locked when booking, and are only released to the tutor once the classroom timer records a successful lesson completion.
+          <strong>What to expect during a session:</strong> Every lesson is backed by the EduVistar Escrow System — your funds are safely locked when booking, and are only released to the tutor once the classroom timer records a successful lesson completion.
           <br><br>
           If a tutor is a no-show, experiences continuous connectivity failures, or files incorrect hours, you can register a dispute within 48 hours of lesson completion. Escrow funds are immediately frozen pending manual administrator reviews.
         </p>
@@ -233,20 +233,20 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
         <div style="text-align: center;">
           <a class="button" href="${verificationUrl}">Verify Account & Explore Tutors</a>
         </div>
-        <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVista Team</p>
+        <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVistar Team</p>
       `);
     }
   } else if (templateName === 'booking_secured') {
-    body = `Hello Parent,\n\nYour session with ${templateData.teacherName} has been booked. A payment of ${templateData.formattedCost} has been safely locked in the EduVista Timed Escrow Engine for the slot: ${templateData.slot.day} at ${templateData.slot.time}.\n\nEscrow details: ${APP_URL}/dashboard/billing\n\nThanks,\nEduVista Billing`;
+    body = `Hello Parent,\n\nYour session with ${templateData.teacherName} has been booked. A payment of ${templateData.formattedCost} has been safely locked in the EduVistar Timed Escrow Engine for the slot: ${templateData.slot.day} at ${templateData.slot.time}.\n\nEscrow details: ${APP_URL}/dashboard/billing\n\nThanks,\nEduVistar Billing`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Escrow Payment Secured</h2>
       <p>Hello Parent,</p>
-      <p>Your 1-on-1 private lesson session with <strong>${templateData.teacherName}</strong> has been booked. A payment of <strong>${templateData.formattedCost}</strong> has been safely locked in the EduVista Timed Escrow Engine for the slot: <strong>${templateData.slot.day} at ${templateData.slot.time}</strong>.</p>
+      <p>Your 1-on-1 private lesson session with <strong>${templateData.teacherName}</strong> has been booked. A payment of <strong>${templateData.formattedCost}</strong> has been safely locked in the EduVistar Timed Escrow Engine for the slot: <strong>${templateData.slot.day} at ${templateData.slot.time}</strong>.</p>
       <p><a class="button" href="${APP_URL}/dashboard/billing">View Escrow Details</a></p>
-      <p>Thanks,<br>EduVista Billing</p>
+      <p>Thanks,<br>EduVistar Billing</p>
     `);
   } else if (templateName === 'booking_received') {
-    body = `Hello Teacher,\n\nYou have received a new tutoring request from Parent ${templateData.parentName} for student ${templateData.studentName}.\n\nDetails:\n- Subject: ${templateData.subject}\n- Syllabus: ${templateData.curriculum}\n- Slot: ${templateData.slot.day} at ${templateData.slot.time}\n- Payout Share: ${templateData.formattedPayout}\n\nPlease respond to this request in your dashboard: ${APP_URL}/dashboard\n\nThanks,\nEduVista Team`;
+    body = `Hello Teacher,\n\nYou have received a new tutoring request from Parent ${templateData.parentName} for student ${templateData.studentName}.\n\nDetails:\n- Subject: ${templateData.subject}\n- Syllabus: ${templateData.curriculum}\n- Slot: ${templateData.slot.day} at ${templateData.slot.time}\n- Payout Share: ${templateData.formattedPayout}\n\nPlease respond to this request in your dashboard: ${APP_URL}/dashboard\n\nThanks,\nEduVistar Team`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>New Session Booking Request</h2>
       <p>Hello Teacher,</p>
@@ -262,22 +262,22 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
       <p><a class="button" href="${APP_URL}/dashboard">Respond to Request</a></p>
     `);
   } else if (templateName === 'booking_confirmed') {
-    body = `Hello Parent,\n\nGreat news! Your booking request with private tutor ${templateData.teacherName} has been confirmed for ${templateData.slot.day} at ${templateData.slot.time}. Your classroom is now scheduled.\n\nOpen dashboard: ${APP_URL}/dashboard\n\nWarm regards,\nEduVista Support`;
+    body = `Hello Parent,\n\nGreat news! Your booking request with private tutor ${templateData.teacherName} has been confirmed for ${templateData.slot.day} at ${templateData.slot.time}. Your classroom is now scheduled.\n\nOpen dashboard: ${APP_URL}/dashboard\n\nWarm regards,\nEduVistar Support`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Lessons Scheduled!</h2>
       <p>Hello Parent,</p>
       <p>Great news! Your booking request with private tutor <strong>${templateData.teacherName}</strong> has been confirmed for <strong>${templateData.slot.day} at ${templateData.slot.time}</strong>. Your online classroom link is now active.</p>
       <p><a class="button" href="${APP_URL}/dashboard">Open Parent Portal</a></p>
-      <p>Warm regards,<br>EduVista Support</p>
+      <p>Warm regards,<br>EduVistar Support</p>
     `);
   } else if (templateName === 'booking_rejected') {
-    body = `Hello Parent,\n\nYour booking request with tutor ${templateData.teacherName} has been declined. The escrow amount of ${templateData.formattedCost} has been fully refunded back to your wallet balance.\n\nCheck billing: ${APP_URL}/dashboard\n\nEduVista Billing`;
+    body = `Hello Parent,\n\nYour booking request with tutor ${templateData.teacherName} has been declined. The escrow amount of ${templateData.formattedCost} has been fully refunded back to your wallet balance.\n\nCheck billing: ${APP_URL}/dashboard\n\nEduVistar Billing`;
     htmlBody = getHtmlWrapper(subject, `
       <h2>Booking Request Declined</h2>
       <p>Hello Parent,</p>
       <p>Your booking request with private tutor <strong>${templateData.teacherName}</strong> has been declined. The escrow amount of <strong>${templateData.formattedCost}</strong> has been fully refunded back to your wallet balance.</p>
       <p><a class="button" href="${APP_URL}/dashboard">Open Parent Portal</a></p>
-      <p>Warm regards,<br>EduVista Billing</p>
+      <p>Warm regards,<br>EduVistar Billing</p>
     `);
   } else if (templateName === 'session_completed') {
     body = `Hello Parent,\n\nYour private online lesson with tutor ${templateData.teacherName} is complete. The server classroom timer recorded a duration of 58 minutes. Escrow funds have been settled.\n\nView AI report: ${APP_URL}/dashboard/progress`;
@@ -352,7 +352,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
       <p>Funds are locked in dispute escrow. An administrator will review within 24 hours.</p>
     `);
   } else if (templateName === 'wallet_topup') {
-    body = `Hello ${templateData.displayName},\n\nYour wallet top-up of ${templateData.formattedAmount} was successful!\n\nReference: ${templateData.reference}\nDate: ${new Date().toLocaleString()}\n\nThank you for using EduVista,\nEduVista Billing`;
+    body = `Hello ${templateData.displayName},\n\nYour wallet top-up of ${templateData.formattedAmount} was successful!\n\nReference: ${templateData.reference}\nDate: ${new Date().toLocaleString()}\n\nThank you for using EduVistar,\nEduVistar Billing`;
     htmlBody = getHtmlWrapper(subject, `
       <div style="text-align: center; margin-bottom: 25px;">
         <span class="badge" style="letter-spacing: 1px; text-transform: uppercase;">Payment Confirmed</span>
@@ -385,26 +385,26 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
       <div style="text-align: center;">
         <a class="button" href="${APP_URL}/dashboard/billing">View Wallet Balance</a>
       </div>
-      <p style="margin-top: 30px; font-size: 14px;">Best regards,<br>EduVista Billing</p>
+      <p style="margin-top: 30px; font-size: 14px;">Best regards,<br>EduVistar Billing</p>
     `);
   } else if (templateName === 'admin_notification' || templateName === 'custom' || templateName === 'alert') {
 
-    body = `Dear ${templateData.displayName || 'User'},\n\nWe have a new update for you regarding your EduVista account:\n\n${templateData.message}\n\nTo view this update and take action, please log in to your dashboard at ${APP_URL}/\n\nWarm regards,\nEduVista Administration`;
+    body = `Dear ${templateData.displayName || 'User'},\n\nWe have a new update for you regarding your EduVistar account:\n\n${templateData.message}\n\nTo view this update and take action, please log in to your dashboard at ${APP_URL}/\n\nWarm regards,\nEduVistar Administration`;
     htmlBody = getHtmlWrapper(subject, `
-      <h2>EduVista Administration Update</h2>
+      <h2>EduVistar Administration Update</h2>
       <p>Dear ${templateData.displayName || 'User'},</p>
-      <p>We have a new update for you regarding your EduVista account:</p>
+      <p>We have a new update for you regarding your EduVistar account:</p>
       <p style="background-color: #f7f7f7; padding: 15px; border-radius: 8px; font-style: italic;">
         "${templateData.message}"
       </p>
       <p>To view this update and take action, please log in to your dashboard:</p>
       <p><a class="button" href="${APP_URL}/">Log In to Dashboard</a></p>
-      <p>Warm regards,<br>EduVista Administration</p>
+      <p>Warm regards,<br>EduVistar Administration</p>
     `);
   } else {
     body = `Subject: ${subject}\nData: ${JSON.stringify(templateData)}`;
     htmlBody = getHtmlWrapper(subject, `
-      <h2>EduVista Alert</h2>
+      <h2>EduVistar Alert</h2>
       <p><strong>Subject:</strong> ${subject}</p>
       <pre style="background-color: #f7f7f7; padding: 15px; border-radius: 8px;">${JSON.stringify(templateData, null, 2)}</pre>
     `);
@@ -430,7 +430,7 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
   // 2. Print beautiful ASCII card to terminal for local auditing
   console.log(`
 ┌────────────────────────────────────────────────────────────┐
-│                  EDUVISTA TRANS-EMAIL LOG                 │
+│                  EDUVISTAR TRANS-EMAIL LOG                 │
 ├────────────────────────────────────────────────────────────┤
 │ ID:      ${emailId.substring(0, 32)}...
 │ TO:      ${to}
@@ -469,7 +469,7 @@ ${body.split('\n').map(line => `│ ${line.padEnd(58).substring(0, 58)}│`).joi
       });
   } else {
     // B. Fallback to SMTP
-    const from = process.env.SMTP_FROM || 'EduVista <onboarding@resend.dev>';
+    const from = process.env.SMTP_FROM || 'EduVistar <onboarding@resend.dev>';
     const client = getTransporter();
 
     client.sendMail({

@@ -125,7 +125,7 @@ export default function TeacherPublicProfile({
           setTeacher(data);
           
           // SEO Metadata optimization on mount
-          document.title = `${data.name || 'Tutor'} | Online Home Tutoring & Lessons | EduVista`;
+          document.title = `${data.name || 'Tutor'} | Online Home Tutoring & Lessons | EduVistar`;
           
           // Update or insert SEO meta description tag
           let metaDesc = document.querySelector('meta[name="description"]');
@@ -135,7 +135,7 @@ export default function TeacherPublicProfile({
             document.head.appendChild(metaDesc);
           }
           const subjects = Array.isArray(data.subjects) ? data.subjects.join(', ') : 'subjects';
-          metaDesc.setAttribute('content', `Book premium online home tutoring and private lessons with ${data.name || 'this tutor'} on EduVista. Specializes in ${subjects}. Vetted credentials, secure escrow payment protection.`);
+          metaDesc.setAttribute('content', `Book premium online home tutoring and private lessons with ${data.name || 'this tutor'} on EduVistar. Specializes in ${subjects}. Vetted credentials, secure escrow payment protection.`);
         } else {
           const errData = await response.json().catch(() => ({}));
           setError(errData.error || 'Tutor public profile page not found.');
@@ -170,7 +170,7 @@ export default function TeacherPublicProfile({
             ]
           };
           setTeacher(mockAdebayo);
-          document.title = `${mockAdebayo.name} | Online Home Tutoring & Lessons | EduVista`;
+          document.title = `${mockAdebayo.name} | Online Home Tutoring & Lessons | EduVistar`;
         } else if (usernameLower === 'kofi') {
           const mockKofi = {
             uid: "teacher_2",
@@ -194,7 +194,7 @@ export default function TeacherPublicProfile({
             reviews: []
           };
           setTeacher(mockKofi);
-          document.title = `${mockKofi.name} | Online Home Tutoring & Lessons | EduVista`;
+          document.title = `${mockKofi.name} | Online Home Tutoring & Lessons | EduVistar`;
         } else if (usernameLower === 'chioma') {
           const mockChioma = {
             uid: "teacher_3",
@@ -218,7 +218,7 @@ export default function TeacherPublicProfile({
             reviews: []
           };
           setTeacher(mockChioma);
-          document.title = `${mockChioma.name} | Online Home Tutoring & Lessons | EduVista`;
+          document.title = `${mockChioma.name} | Online Home Tutoring & Lessons | EduVistar`;
         } else if (usernameLower === 'aminata') {
           const mockAminata = {
             uid: "teacher_4",
@@ -241,7 +241,7 @@ export default function TeacherPublicProfile({
             reviews: []
           };
           setTeacher(mockAminata);
-          document.title = `${mockAminata.name} | Online Home Tutoring & Lessons | EduVista`;
+          document.title = `${mockAminata.name} | Online Home Tutoring & Lessons | EduVistar`;
         } else if (usernameLower === 'fatima') {
           const mockFatima = {
             uid: "teacher_5",
@@ -300,7 +300,7 @@ export default function TeacherPublicProfile({
   // Clean up SEO tags when unmounting
   useEffect(() => {
     return () => {
-      document.title = 'EduVista | Premium 1-on-1 Online Home Tutoring & Private Lessons';
+      document.title = 'EduVistar | Premium 1-on-1 Online Home Tutoring & Private Lessons';
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
         metaDesc.setAttribute('content', 'Connect with certified, background-checked private tutors for online home tutoring and personalized academic lessons.');
@@ -352,9 +352,9 @@ export default function TeacherPublicProfile({
   return (
     <>
       <Helmet>
-        <title>{teacher?.name ? `${teacher.name} | Online Home Tutoring & Lessons | EduVista` : 'Tutor | EduVista'}</title>
-        <meta name="description" content={`Book premium online home tutoring and private lessons with ${teacher?.name || 'this tutor'} on EduVista. Specializes in ${teacher?.subjects ? (Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : teacher.subjects) : 'various subjects'}. Vetted credentials, secure escrow payment protection.`} />
-        <meta property="og:title" content={`${teacher?.name || 'Tutor'} | EduVista`} />
+        <title>{teacher?.name ? `${teacher.name} | Online Home Tutoring & Lessons | EduVistar` : 'Tutor | EduVistar'}</title>
+        <meta name="description" content={`Book premium online home tutoring and private lessons with ${teacher?.name || 'this tutor'} on EduVistar. Specializes in ${teacher?.subjects ? (Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : teacher.subjects) : 'various subjects'}. Vetted credentials, secure escrow payment protection.`} />
+        <meta property="og:title" content={`${teacher?.name || 'Tutor'} | EduVistar`} />
       </Helmet>
       <article className="bg-brand-cream min-h-screen pb-24 text-brand-charcoal">
       

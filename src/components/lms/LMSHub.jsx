@@ -27,7 +27,7 @@ export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCu
   const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE || '/api';
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem('eduvistar_token');
     return {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})

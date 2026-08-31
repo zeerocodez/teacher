@@ -83,9 +83,9 @@ export default function Home({
   return (
     <>
       <Helmet>
-        <title>EduVista | Premium 1-on-1 Online Home Tutoring & Private Lessons</title>
+        <title>EduVistar | Premium 1-on-1 Online Home Tutoring & Private Lessons</title>
         <meta name="description" content="Connect with certified, background-checked private tutors for online home tutoring and personalized academic lessons." />
-        <meta property="og:title" content="EduVista | Online Home Tutoring" />
+        <meta property="og:title" content="EduVistar | Online Home Tutoring" />
         <meta property="og:description" content="Connect with certified, background-checked private tutors for online home tutoring." />
       </Helmet>
       <section className="relative h-[95dvh] w-full overflow-hidden flex items-end justify-start md:justify-end pb-20 px-6 md:px-16 lg:px-24">
@@ -144,7 +144,7 @@ export default function Home({
           </h2>
 
           <p className="trust-fade font-sans font-light text-brand-cream/80 text-base sm:text-lg md:text-xl max-w-3xl mt-8 leading-relaxed">
-            EduVista Africa connects you with certified, background-checked
+            EduVistar Africa connects you with certified, background-checked
             private tutors for online home tutoring and lessons. Every study
             session is server-timed, escrow-protected, and parent-monitored so
             you can see exactly how your child grows.
@@ -304,7 +304,7 @@ export default function Home({
               <div className="w-3 h-3 rounded-full bg-amber-400" />
               <div className="w-3 h-3 rounded-full bg-emerald-400" />
               <div className="mx-auto flex items-center bg-white border border-gray-200 rounded-md px-3 py-1 text-xs text-gray-400 font-mono">
-                <Lock className="w-3 h-3 mr-1" /> eduvista.africa/dashboard
+                <Lock className="w-3 h-3 mr-1" /> eduvistar.africa/dashboard
               </div>
             </div>
 
@@ -683,7 +683,7 @@ export default function Home({
               <div className="flex items-center gap-3 mb-3 text-brand-clay">
                 <Sparkles className="w-5 h-5 animate-pulse" />
                 <span className="font-mono text-2xs uppercase tracking-widest font-extrabold">
-                  EduVista Guarantee
+                  EduVistar Guarantee
                 </span>
               </div>
               <h3 className="font-heading font-bold text-2xl text-white mb-2 uppercase tracking-tight">
@@ -703,7 +703,7 @@ export default function Home({
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-3">
-              THE EDUVISTA STANDARD
+              THE EDUVISTAR STANDARD
             </span>
             <h2 className="font-heading font-bold text-3xl sm:text-5xl text-brand-moss tracking-tight leading-tight">
               Vetted Private Tutors for <br className="hidden sm:inline" />
@@ -782,7 +782,7 @@ export default function Home({
                 </div>
                 <p className="font-sans italic text-sm sm:text-base text-brand-charcoal/85 leading-relaxed">
                   "I have tried two other platforms and three Facebook tutors.
-                  EduVista is the only one where I actually feel in control. The
+                  EduVistar is the only one where I actually feel in control. The
                   dashboard shows me everything. I do not have to chase the
                   teacher for updates."
                 </p>
@@ -818,7 +818,7 @@ export default function Home({
                 <p className="font-sans italic text-sm sm:text-base text-brand-charcoal/85 leading-relaxed">
                   "My daughter moved from D to B in IGCSE Chemistry in 8 weeks.
                   But what I value most is the trust. I know who is teaching
-                  her, I see how long, I see the homework. EduVista gave me that
+                  her, I see how long, I see the homework. EduVistar gave me that
                   transparency."
                 </p>
                 <div className="flex items-center gap-3 pt-4 border-t border-brand-moss/5">
@@ -1097,7 +1097,7 @@ export default function Home({
               },
               {
                 q: "How do I know the teacher is really qualified?",
-                a: "Every teacher on EduVista has submitted government-issued ID and qualification documents reviewed by our admin team. They have also completed our ELITE TEACHERS ACADEMY and hold a verified badge. Fewer than 1 in 5 applicants are accepted.",
+                a: "Every teacher on EduVistar has submitted government-issued ID and qualification documents reviewed by our admin team. They have also completed our ELITE TEACHERS ACADEMY and hold a verified badge. Fewer than 1 in 5 applicants are accepted.",
               },
               {
                 q: "What happens if the teacher does not show up?",
@@ -1160,7 +1160,7 @@ export default function Home({
             </h2>
             <p className="font-sans text-brand-cream/80 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed pt-2">
               Join 18,000+ families across Africa and the diaspora who trust
-              EduVista Africa for their children's private tutoring. Verified
+              EduVistar Africa for their children's private tutoring. Verified
               teachers. Transparent progress. Payment protection. Always.
             </p>
 

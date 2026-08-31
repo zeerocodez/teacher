@@ -47,7 +47,7 @@ async function executePaystackTransfer(amountMinor, recipient) {
         source: 'balance',
         amount: Math.round(amountMinor),
         recipient: recipientCode,
-        reason: 'EduVista Payout Withdrawal'
+        reason: 'EduVistar Payout Withdrawal'
       })
     });
 
@@ -174,7 +174,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
 
   // Retrieve parent email to notify
   const parentUser = await db.findOne('users', u => u.uid === parentId) || { email: "parent_1@eduvistar.com" };
-  sendTransactionalEmail(parentUser.email, "EduVista: Session Escrow Secured", "booking_secured", {
+  sendTransactionalEmail(parentUser.email, "EduVistar: Session Escrow Secured", "booking_secured", {
     teacherName,
     formattedCost: `₦${cost/100}`,
     slot
@@ -184,7 +184,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
   try {
     const teacherUser = await db.findOne('users', u => u.uid === teacherId);
     if (teacherUser && teacherUser.email) {
-      sendTransactionalEmail(teacherUser.email, "EduVista: New Session Booking Request", "booking_received", {
+      sendTransactionalEmail(teacherUser.email, "EduVistar: New Session Booking Request", "booking_received", {
         parentName: parentUser.displayName || parentUser.email.split('@')[0],
         studentName,
         subject,
@@ -245,7 +245,7 @@ router.post('/sessions/respond', authenticateToken, requireRole(['Teacher']), as
     try {
       const parentUser = await db.findOne('users', u => u.uid === session.parentId);
       if (parentUser && parentUser.email) {
-        sendTransactionalEmail(parentUser.email, "EduVista: Booking Request Confirmed", "booking_confirmed", {
+        sendTransactionalEmail(parentUser.email, "EduVistar: Booking Request Confirmed", "booking_confirmed", {
           teacherName: session.teacherName,
           slot: session.slot
         });
@@ -279,7 +279,7 @@ router.post('/sessions/respond', authenticateToken, requireRole(['Teacher']), as
     try {
       const parentUser = await db.findOne('users', u => u.uid === session.parentId);
       if (parentUser && parentUser.email) {
-        sendTransactionalEmail(parentUser.email, "EduVista: Booking Request Declined", "booking_rejected", {
+        sendTransactionalEmail(parentUser.email, "EduVistar: Booking Request Declined", "booking_rejected", {
           teacherName: session.teacherName,
           formattedCost: `₦${session.cost/100}`
         });
@@ -495,14 +495,14 @@ router.post('/sessions/end', authenticateToken, requireRole(['Parent']), async (
   try {
     const parentUser = await db.findOne('users', u => u.uid === session.parentId);
     if (parentUser && parentUser.email) {
-      sendTransactionalEmail(parentUser.email, "EduVista: Tutoring Session Completed Summary", "session_completed", {
+      sendTransactionalEmail(parentUser.email, "EduVistar: Tutoring Session Completed Summary", "session_completed", {
         teacherName: session.teacherName
       });
     }
 
     const teacherUser = await db.findOne('users', u => u.uid === session.teacherId);
     if (teacherUser && teacherUser.email) {
-      sendTransactionalEmail(teacherUser.email, "EduVista: Escrow Funds Released", "escrow_released", {
+      sendTransactionalEmail(teacherUser.email, "EduVistar: Escrow Funds Released", "escrow_released", {
         formattedPayout: `₦${payout/100}`,
         formattedCommission: `₦${commission/100}`
       });
@@ -640,7 +640,7 @@ router.post('/admin/payouts/:id/respond', authenticateToken, requireRole(['Admin
     if (bankDetails && bankDetails.accountNumber && bankDetails.bankCode) {
       try {
         const transferResult = await executePaystackTransfer(payoutReq.amount, {
-          name: bankDetails.accountName || 'EduVista Partner',
+          name: bankDetails.accountName || 'EduVistar Partner',
           accountNumber: bankDetails.accountNumber,
           bankCode: bankDetails.bankCode,
           bankName: bankDetails.bankName
@@ -673,7 +673,7 @@ router.post('/admin/payouts/:id/respond', authenticateToken, requireRole(['Admin
     try {
       const teacherUser = await db.findOne('users', u => u.uid === payoutReq.teacherId);
       if (teacherUser && teacherUser.email) {
-        sendTransactionalEmail(teacherUser.email, "EduVista: Payout Request Approved", "payout_approved", {
+        sendTransactionalEmail(teacherUser.email, "EduVistar: Payout Request Approved", "payout_approved", {
           formattedAmount: `₦${payoutReq.amount/100}`
         });
       }
@@ -693,7 +693,7 @@ router.post('/admin/payouts/:id/respond', authenticateToken, requireRole(['Admin
     try {
       const teacherUser = await db.findOne('users', u => u.uid === payoutReq.teacherId);
       if (teacherUser && teacherUser.email) {
-        sendTransactionalEmail(teacherUser.email, "EduVista: Payout Request Declined", "payout_rejected", {
+        sendTransactionalEmail(teacherUser.email, "EduVistar: Payout Request Declined", "payout_rejected", {
           formattedAmount: `₦${payoutReq.amount/100}`,
           reason: "Administrative verification check required."
         });

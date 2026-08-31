@@ -172,7 +172,7 @@ export default function Marketplace({
   return (
     <section id="marketplace" className={`${isNested ? 'pt-6 pb-24' : 'py-24'} px-6 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto`}>
       <div className="text-center max-w-3xl mx-auto mb-12">
-        <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-3">EduVista Marketplace</span>
+        <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-3">EduVistar Marketplace</span>
         <h2 className="font-heading font-bold text-3xl sm:text-5xl text-brand-moss tracking-tight">
           Find Your Perfect Verified Instructor
         </h2>
@@ -482,7 +482,7 @@ export default function Marketplace({
 
                 {/* Bio text excerpt */}
                 <p className="font-sans text-xs text-brand-charcoal/80 leading-relaxed mb-6 line-clamp-2">
-                  "{teacher.bio || 'Professional African educator vetted by EduVista standards.'}"
+                  "{teacher.bio || 'Professional African educator vetted by EduVistar standards.'}"
                 </p>
               </div>
 

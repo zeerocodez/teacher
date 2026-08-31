@@ -16,7 +16,7 @@ export default function AboutUs() {
             Empowering the Next Generation <br className="hidden md:block"/> of African Learners
           </h1>
           <p className="text-brand-charcoal/70 max-w-2xl mx-auto text-lg leading-relaxed">
-            EduVista Africa bridges the gap between ambitious students and world-class educators. 
+            EduVistar Africa bridges the gap between ambitious students and world-class educators. 
             We are building a robust ecosystem where learning is accessible, personalized, and deeply impactful.
           </p>
         </div>
@@ -48,7 +48,7 @@ export default function AboutUs() {
           <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
           <div className="relative z-10 space-y-12">
             <div className="text-center">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Why Choose EduVista?</h2>
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Why Choose EduVistar?</h2>
               <p className="text-brand-cream/70 max-w-xl mx-auto">We don't just find tutors; we cultivate educational experiences.</p>
             </div>
             

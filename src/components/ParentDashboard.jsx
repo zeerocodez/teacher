@@ -215,7 +215,7 @@ export default function ParentDashboard({
   const parentUid = currentUser?.uid || 'parent_1'; // Seeded test parent or active user
 
   const getAuthHeaders = (extraHeaders = {}) => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem('eduvistar_token');
     return {
       'Content-Type': 'application/json',
       ...extraHeaders,
@@ -1555,10 +1555,10 @@ export default function ParentDashboard({
                   const hasDva = dashboardData?.dva && dashboardData.dva.accountNumber;
                   const details = hasDva ? dashboardData.dva : {
                     NGN: { bank: 'KudaBank', number: '3002410020', name: 'ZEEROCODES AUTOMATION LIMITED', extraLabel: null, extraVal: null },
-                    USD: { bank: 'Citibank NY', number: '9988223311', name: 'EduVista Africa Ltd', extraLabel: 'ROUTING / ABA', extraVal: '021000021' },
-                    GBP: { bank: 'Barclays Bank London', number: '88776655', name: 'EduVista Africa Ltd', extraLabel: 'SORT CODE', extraVal: '20-00-00' },
-                    EUR: { bank: 'Deutsche Bank Frankfurt', number: 'DE89370400440532013000', name: 'EduVista Africa Ltd', extraLabel: 'IBAN', extraVal: 'DE89370400440532013000' },
-                    GHS: { bank: 'Ecobank Ghana', number: '77665544', name: 'EduVista Africa Ltd', extraLabel: 'BRANCH', extraVal: 'Accra High St' }
+                    USD: { bank: 'Citibank NY', number: '9988223311', name: 'EduVistar Africa Ltd', extraLabel: 'ROUTING / ABA', extraVal: '021000021' },
+                    GBP: { bank: 'Barclays Bank London', number: '88776655', name: 'EduVistar Africa Ltd', extraLabel: 'SORT CODE', extraVal: '20-00-00' },
+                    EUR: { bank: 'Deutsche Bank Frankfurt', number: 'DE89370400440532013000', name: 'EduVistar Africa Ltd', extraLabel: 'IBAN', extraVal: 'DE89370400440532013000' },
+                    GHS: { bank: 'Ecobank Ghana', number: '77665544', name: 'EduVistar Africa Ltd', extraLabel: 'BRANCH', extraVal: 'Accra High St' }
                   }[topupCurrency] || { bank: 'KudaBank', number: '3002410020', name: 'ZEEROCODES AUTOMATION LIMITED', extraLabel: null, extraVal: null };
 
                   return (

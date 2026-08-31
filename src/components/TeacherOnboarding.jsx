@@ -128,7 +128,7 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
   const API_BASE = '/api';
 
   const getAuthHeaders = (extraHeaders = {}) => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem('eduvistar_token');
     return {
       'Content-Type': 'application/json',
       ...extraHeaders,
@@ -324,7 +324,7 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
                       placeholder="adebayo-maths"
                     />
                   </div>
-                  <span className="text-[10px] text-brand-charcoal/40 mt-1 block px-1">Your profile URL: eduvista.africa/teacher/{username || 'username'}</span>
+                  <span className="text-[10px] text-brand-charcoal/40 mt-1 block px-1">Your profile URL: eduvistar.africa/teacher/{username || 'username'}</span>
                 </div>
               </div>
 

@@ -194,7 +194,7 @@ export default function Academy({
   ];
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem('eduvistar_token');
     return {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -1316,7 +1316,7 @@ export default function Academy({
                         </svg>
                       </div>
                       <div className="font-mono text-[8px] text-brand-charcoal/50 leading-relaxed max-w-[100px]">
-                        Scan to verify educator status on EduVista live directory.
+                        Scan to verify educator status on EduVistar live directory.
                       </div>
                     </div>
                   </div>

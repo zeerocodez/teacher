@@ -53,7 +53,7 @@ router.post('/', authenticateToken, requireRole('Admin'), async (req, res) => {
       excerpt: excerpt || '',
       content,
       category: category || 'General',
-      author: author || 'EduVista Team',
+      author: author || 'EduVistar Team',
       image: image || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop',
       readTime: readTime || '5 min read',
       date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),

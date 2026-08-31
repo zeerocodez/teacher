@@ -31,7 +31,7 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
   const studentUid = currentUser?.uid || 'student_1';
 
   const getAuthHeaders = useCallback(() => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem('eduvistar_token');
     return {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})

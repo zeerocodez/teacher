@@ -177,7 +177,7 @@ export default function AuthModal({ isOpen, onClose }) {
     }
 
     setLoading(true);
-    const refCode = localStorage.getItem('eduvista_ref');
+    const refCode = localStorage.getItem('eduvistar_ref');
 
     try {
       if (activeTab === 'login') {
@@ -265,7 +265,7 @@ export default function AuthModal({ isOpen, onClose }) {
           const data = await response.json().catch(() => ({}));
           if (response.ok || data.error === "User profile already exists." || response.status === 200 || response.status === 201) {
             setPendingOnboarding(false);
-            toast.success(`Welcome to EduVista, ${registeredUser.displayName}!`);
+            toast.success(`Welcome to EduVistar, ${registeredUser.displayName}!`);
             onClose();
             handleSuccess(registeredUser);
             return;
@@ -277,7 +277,7 @@ export default function AuthModal({ isOpen, onClose }) {
           clearTimeout(timeoutId);
           console.warn("Backend registration timeout/error, completing locally:", fetchErr);
           setPendingOnboarding(false);
-          toast.success(`Welcome to EduVista, ${registeredUser.displayName}!`);
+          toast.success(`Welcome to EduVistar, ${registeredUser.displayName}!`);
           onClose();
           handleSuccess(registeredUser);
           return;
@@ -314,7 +314,7 @@ export default function AuthModal({ isOpen, onClose }) {
     setLoading(true);
     setShowGooglePicker(false);
     try {
-      const ADMIN_EMAILS = ['zeerocodes@gmail.com', 'morichcare@gmail.com', 'admin@eduvista.com', 'admin@eduvistar.com'];
+      const ADMIN_EMAILS = ['zeerocodes@gmail.com', 'morichcare@gmail.com', 'admin@eduvistar.com', 'admin@eduvistar.com'];
       const isExplicitAdmin = ADMIN_EMAILS.includes((mockEmail || '').toLowerCase());
       const role = isExplicitAdmin ? 'Admin' : mockEmail.includes('teacher') ? 'Teacher' : 'Parent';
       const userObj = {
@@ -340,12 +340,12 @@ export default function AuthModal({ isOpen, onClose }) {
     setError('');
     setLoading(true);
 
-    const refCode = localStorage.getItem('eduvista_ref');
+    const refCode = localStorage.getItem('eduvistar_ref');
 
     try {
       const firebaseUser = auth.currentUser;
       const effectiveName = name || (firebaseUser && firebaseUser.displayName) || 'User';
-      const effectiveEmail = (firebaseUser && firebaseUser.email) || email || 'user@eduvista.com';
+      const effectiveEmail = (firebaseUser && firebaseUser.email) || email || 'user@eduvistar.com';
       const effectiveUid = (firebaseUser && firebaseUser.uid) || `user_${Date.now()}`;
 
       let token = `token_${Date.now()}`;
@@ -448,14 +448,14 @@ export default function AuthModal({ isOpen, onClose }) {
               </svg>
             </div>
             <h3 className="font-heading font-bold text-xl text-brand-moss">Choose a Google Account</h3>
-            <p className="font-sans text-xs text-brand-charcoal/70 mt-1">to continue to <strong>EduVista Africa</strong></p>
+            <p className="font-sans text-xs text-brand-charcoal/70 mt-1">to continue to <strong>EduVistar Africa</strong></p>
           </div>
 
           <div className="space-y-3 font-sans text-xs">
             {/* Account Option 1 */}
             <button
               type="button"
-              onClick={() => executeGoogleLoginFlow('parent.google@eduvista.com', 'Ngozi Adeleke (Parent)', 'google_parent_1')}
+              onClick={() => executeGoogleLoginFlow('parent.google@eduvistar.com', 'Ngozi Adeleke (Parent)', 'google_parent_1')}
               className="w-full text-left p-3.5 rounded-2xl border border-brand-moss/10 hover:border-brand-clay bg-brand-cream/30 hover:bg-brand-cream/60 transition-all flex items-center gap-3.5 group cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-brand-moss text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
@@ -463,7 +463,7 @@ export default function AuthModal({ isOpen, onClose }) {
               </div>
               <div className="flex-1 min-w-0">
                 <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">Ngozi Adeleke</span>
-                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">parent.google@eduvista.com</span>
+                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">parent.google@eduvistar.com</span>
               </div>
               <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold shrink-0">Parent</span>
             </button>
@@ -471,7 +471,7 @@ export default function AuthModal({ isOpen, onClose }) {
             {/* Account Option 2 */}
             <button
               type="button"
-              onClick={() => executeGoogleLoginFlow('teacher.google@eduvista.com', 'Dr. Adebayo Okafor (Teacher)', 'google_teacher_1')}
+              onClick={() => executeGoogleLoginFlow('teacher.google@eduvistar.com', 'Dr. Adebayo Okafor (Teacher)', 'google_teacher_1')}
               className="w-full text-left p-3.5 rounded-2xl border border-brand-moss/10 hover:border-brand-clay bg-brand-cream/30 hover:bg-brand-cream/60 transition-all flex items-center gap-3.5 group cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-brand-clay text-white flex items-center justify-center font-bold font-heading text-sm shrink-0">
@@ -479,7 +479,7 @@ export default function AuthModal({ isOpen, onClose }) {
               </div>
               <div className="flex-1 min-w-0">
                 <span className="font-bold text-brand-moss block truncate group-hover:text-brand-clay">Dr. Adebayo Okafor</span>
-                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">teacher.google@eduvista.com</span>
+                <span className="font-mono text-[10px] text-brand-charcoal/60 block truncate">teacher.google@eduvistar.com</span>
               </div>
               <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-brand-clay/10 text-brand-clay font-bold shrink-0">Teacher</span>
             </button>

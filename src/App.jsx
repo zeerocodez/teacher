@@ -102,9 +102,9 @@ export default function App() {
     await logout();
     setCurrentUser(null);
     try {
-      localStorage.removeItem('eduvista_user');
-      localStorage.removeItem('eduvista_token');
-      localStorage.removeItem('eduvista_ref');
+      localStorage.removeItem('eduvistar_user');
+      localStorage.removeItem('eduvistar_token');
+      localStorage.removeItem('eduvistar_ref');
     } catch (e) {}
     setWalletBalance(0);
     setEscrowBalance(0);
@@ -161,7 +161,7 @@ export default function App() {
   // AI Customer Support Agent States
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [supportMessages, setSupportMessages] = useState([
-    { sender: 'agent', text: "Hello! I am your EduVista Virtual Assistant. How can I help you navigate our platform today?" }
+    { sender: 'agent', text: "Hello! I am your EduVistar Virtual Assistant. How can I help you navigate our platform today?" }
   ]);
   const [supportInput, setSupportInput] = useState('');
   const [supportLoading, setSupportLoading] = useState(false);
@@ -335,7 +335,7 @@ export default function App() {
   const API_BASE = '/api';
 
   const getAuthHeaders = (extraHeaders = {}) => {
-    const token = localStorage.getItem('eduvista_token');
+    const token = localStorage.getItem('eduvistar_token');
     return {
       'Content-Type': 'application/json',
       ...extraHeaders,
@@ -498,7 +498,7 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const token = await user.getIdToken();
-        localStorage.setItem('eduvista_token', token);
+        localStorage.setItem('eduvistar_token', token);
         
         try {
           const response = await fetch(`${API_BASE}/users/${user.uid}`, {
@@ -510,14 +510,14 @@ export default function App() {
           if (response.ok) {
             const profile = await response.json();
             const fullUser = { ...profile, token };
-            localStorage.setItem('eduvista_user', JSON.stringify(fullUser));
+            localStorage.setItem('eduvistar_user', JSON.stringify(fullUser));
             setCurrentUser(fullUser);
           }
         } catch (err) {
           console.warn("Failed to retrieve database profile for Firebase user:", err);
         }
       } else {
-        const savedUserStr = localStorage.getItem('eduvista_user');
+        const savedUserStr = localStorage.getItem('eduvistar_user');
         if (savedUserStr) {
           const savedUser = JSON.parse(savedUserStr);
           if (savedUser.uid && (savedUser.uid.startsWith('user_') || savedUser.uid.includes('_1'))) {
@@ -535,7 +535,7 @@ export default function App() {
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get('ref');
     if (ref) {
-      localStorage.setItem('eduvista_ref', ref);
+      localStorage.setItem('eduvistar_ref', ref);
       fetch(`${API_BASE}/parents/referral/hit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -608,7 +608,7 @@ export default function App() {
   };
 
   const handleBackToHome = () => {
-    const basePath = window.location.pathname.startsWith('/EduVista') ? '/EduVista/' : '/';
+    const basePath = window.location.pathname.startsWith('/EduVistar') ? '/EduVistar/' : '/';
     window.history.pushState({}, '', basePath);
     navigate('/');
     setProfileUsername('');
@@ -620,7 +620,7 @@ export default function App() {
     }, 100);
   };
   const handleTutorProfileSelect = (username) => {
-    const basePath = window.location.pathname.startsWith('/EduVista') ? '/EduVista' : '';
+    const basePath = window.location.pathname.startsWith('/EduVistar') ? '/EduVistar' : '';
     window.history.pushState({}, '', `${basePath}/teacher/${username}`);
     navigate('/teacher');
     setProfileUsername(username);
@@ -670,7 +670,7 @@ export default function App() {
     setAuthLoading(true);
 
     const endpoint = authTab === 'login' ? '/auth/login' : '/auth/register';
-    const refCode = localStorage.getItem('eduvista_ref');
+    const refCode = localStorage.getItem('eduvistar_ref');
     const payload = authTab === 'login' 
       ? { email: authEmail, password: authPassword } 
       : { email: authEmail, displayName: authName, role: authRole, country: authCountry, password: authPassword, referredBy: refCode || undefined };
@@ -1729,7 +1729,7 @@ export default function App() {
           </div>
           
           <div className="flex gap-6 font-sans text-[11px] text-brand-cream/50">
-            <span>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</span>
+            <span>© 2026 EduVistar Africa. A product of Zeerocodes Automation Limited. All rights reserved.</span>
           </div>
         </div>
       </footer>

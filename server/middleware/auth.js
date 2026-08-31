@@ -5,7 +5,7 @@ import { db } from '../db.js';
 export const ADMIN_EMAILS = [
   'zeerocodes@gmail.com',
   'morichcare@gmail.com',
-  'admin@eduvista.com',
+  'admin@eduvistar.com',
   'admin@eduvistar.com'
 ];
 
@@ -28,7 +28,7 @@ export async function authenticateToken(req, res, next) {
         return next();
       }
     }
-    req.user = { uid: userUid || 'client_user', role: 'Parent', email: 'user@eduvista.com', status: 'active' };
+    req.user = { uid: userUid || 'client_user', role: 'Parent', email: 'user@eduvistar.com', status: 'active' };
     return next();
   }
 
@@ -63,7 +63,7 @@ export async function authenticateToken(req, res, next) {
     }
   } else {
     // If Firebase Admin is not initialized, fallback safely to standard user
-    req.user = { uid: 'fallback_uid', role: 'Parent', email: 'user@eduvista.com', status: 'active' };
+    req.user = { uid: 'fallback_uid', role: 'Parent', email: 'user@eduvistar.com', status: 'active' };
     next();
   }
 }

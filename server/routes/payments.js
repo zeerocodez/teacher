@@ -12,7 +12,7 @@ import { authenticateToken } from '../middleware/auth.js';
 dotenv.config();
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'eduvista_jwt_secret_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'eduvistar_jwt_secret_2026';
 
 const checkoutRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -44,7 +44,7 @@ router.post('/checkout', authenticateToken, checkoutRateLimiter, async (req, res
     try {
       // Find parent user to get email
       const parentUser = await db.findOne('users', u => u.uid === parentId || u.id === parentId);
-      const email = parentUser ? parentUser.email : 'customer@eduvista.com';
+      const email = parentUser ? parentUser.email : 'customer@eduvistar.com';
 
       // We need to send amount in minor units to Paystack.
       // Paystack expects amount as integer.
@@ -182,8 +182,8 @@ router.post('/paystack/dva', authenticateToken, async (req, res) => {
     }
 
     if (isPaystackLive) {
-      const email = parentUser.email || 'customer@eduvista.com';
-      const name = parentUser.displayName || 'EduVista Parent';
+      const email = parentUser.email || 'customer@eduvistar.com';
+      const name = parentUser.displayName || 'EduVistar Parent';
       
       const firstName = name.split(' ')[0] || 'Parent';
       const lastName = name.split(' ').slice(1).join(' ') || 'User';
@@ -248,7 +248,7 @@ router.post('/paystack/dva', authenticateToken, async (req, res) => {
       const mockDva = {
         bankName: 'Mock Bank PLC',
         accountNumber: '0123456789',
-        accountName: parentUser.displayName || 'EduVista Virtual Account',
+        accountName: parentUser.displayName || 'EduVistar Virtual Account',
         customerCode: 'CUS_mock123'
       };
       await db.update('wallets', wallet.id, { dva: mockDva, paystackCustomerCode: 'CUS_mock123' });
@@ -463,7 +463,7 @@ router.post('/webhook', async (req, res) => {
 
       const parentUser = await db.findOne('users', u => u.uid === parentId);
       if (parentUser) {
-        sendTransactionalEmail(parentUser.email, "EduVista: Session Escrow Secured", "booking_secured", {
+        sendTransactionalEmail(parentUser.email, "EduVistar: Session Escrow Secured", "booking_secured", {
           displayName: parentUser.displayName,
           formattedAmount: `₦${(amountNgnMinor / 100).toLocaleString()}`,
           reference: reference || 'N/A',
@@ -473,7 +473,7 @@ router.post('/webhook', async (req, res) => {
 
       const teacherUser = await db.findOne('users', u => u.uid === teacherId);
       if (teacherUser) {
-        sendTransactionalEmail(teacherUser.email, "EduVista: New Booking Request", "booking_received", {
+        sendTransactionalEmail(teacherUser.email, "EduVistar: New Booking Request", "booking_received", {
           displayName: teacherUser.displayName,
           studentName: studentName,
           subject: subject
@@ -521,7 +521,7 @@ router.post('/webhook', async (req, res) => {
       // Send transactional confirmation email
       const parentUser = await db.findOne('users', u => u.uid === parentId || u.id === parentId);
       if (parentUser) {
-        sendTransactionalEmail(parentUser.email, "EduVista: Wallet Deposit Confirmed", "wallet_topup", {
+        sendTransactionalEmail(parentUser.email, "EduVistar: Wallet Deposit Confirmed", "wallet_topup", {
           displayName: parentUser.displayName,
           formattedAmount: `₦${(amountNgnMinor / 100).toLocaleString()}`,
           reference: reference || 'N/A',

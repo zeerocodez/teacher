@@ -11,7 +11,7 @@ export const mockBlogPosts = [
     excerpt: 'How artificial intelligence is bridging the educational gap across the continent and providing personalized learning experiences.',
     content: `
       Artificial Intelligence is rapidly transforming how students learn globally, and Africa is not left behind. 
-      With tools like EduVista, AI can analyze a student's learning pace, identify weak areas, and generate custom lesson plans. 
+      With tools like EduVistar, AI can analyze a student's learning pace, identify weak areas, and generate custom lesson plans. 
       This is particularly revolutionary in areas where classroom sizes are large, making one-on-one attention difficult.
       
       ### Breaking Down Barriers
@@ -34,7 +34,7 @@ export const mockBlogPosts = [
     excerpt: 'Expert advice from top-rated tutors on how to prepare effectively and ace your upcoming WAEC examinations.',
     content: `
       Preparing for WAEC can be stressful, but with the right strategy, success is within your reach. 
-      Here are the top 5 tips recommended by our elite EduVista tutors:
+      Here are the top 5 tips recommended by our elite EduVistar tutors:
       
       ### 1. Start Early and Plan
       Don't wait until the last minute. Create a study schedule that covers all your subjects, dedicating more time to the ones you find challenging.
@@ -44,7 +44,7 @@ export const mockBlogPosts = [
       
       ### 3. Join a Study Group or Get a Tutor
       Sometimes, explaining concepts to others or having an expert break them down for you is the best way to learn. 
-      EduVista connects you with top tutors who specialize in WAEC preparation.
+      EduVistar connects you with top tutors who specialize in WAEC preparation.
       
       ### 4. Take Care of Your Health
       Get enough sleep, eat well, and stay hydrated. A healthy brain retains information better.
@@ -115,7 +115,7 @@ const Blog = () => {
         
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <span className="inline-block py-1 px-3 rounded-full bg-brand-clay/10 text-brand-clay font-bold text-xs uppercase tracking-wider mb-4 border border-brand-clay/20">
-            EduVista Insights
+            EduVistar Insights
           </span>
           <h1 className="text-4xl md:text-5xl font-heading font-bold text-brand-moss mb-6 leading-tight">
             Our Latest <span className="text-brand-clay">Thoughts & News</span>

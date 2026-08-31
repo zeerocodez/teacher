@@ -53,7 +53,7 @@ export default function TeacherDashboard({
     uid: currentUser?.uid || "teacher_1",
     name: currentUser?.displayName || "Mr. Adebayo Okafor",
     username: "adebayo",
-    email: currentUser?.email || "adebayo@eduvista.com",
+    email: currentUser?.email || "adebayo@eduvistar.com",
     role: "Teacher",
     location: "Lagos, Nigeria",
     subjects: ["Mathematics", "Physics"],
@@ -200,7 +200,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
   const API_BASE = "/api";
 
   const getAuthHeaders = useCallback((extraHeaders = {}) => {
-    const token = localStorage.getItem("eduvista_token");
+    const token = localStorage.getItem("eduvistar_token");
     return {
       "Content-Type": "application/json",
       ...extraHeaders,
@@ -744,7 +744,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                     Access Gated: Vetting in Progress
                   </h3>
                   <p className="font-sans text-xs text-brand-charcoal/70 leading-relaxed">
-                    Welcome to EduVista Africa! You have successfully registered
+                    Welcome to EduVistar Africa! You have successfully registered
                     your educator profile. Before you can start taking classes,
                     tutoring students, or earning payouts, our Admin team must
                     manually audit your credentials.
@@ -2699,13 +2699,13 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                           <input
                             type="text"
                             readOnly
-                            value={`https://eduvista.com/register?ref=${currentUser.uid}`}
+                            value={`https://eduvistar.com/register?ref=${currentUser.uid}`}
                             className="flex-1 bg-brand-cream/50 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs font-mono select-all focus:outline-none"
                           />
                           <button
                             onClick={() => {
                               navigator.clipboard.writeText(
-                                `https://eduvista.com/register?ref=${currentUser.uid}`,
+                                `https://eduvistar.com/register?ref=${currentUser.uid}`,
                               );
                               toast.success(
                                 "Referral link copied to clipboard!",

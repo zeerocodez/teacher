@@ -41,14 +41,14 @@ export const AuthProvider = ({ children }) => {
               setCurrentUser(userData);
               setPendingOnboarding(false);
               try {
-                localStorage.setItem('eduvista_user', JSON.stringify(userData));
+                localStorage.setItem('eduvistar_user', JSON.stringify(userData));
                 if (userData.token || token) {
-                  localStorage.setItem('eduvista_token', userData.token || token);
+                  localStorage.setItem('eduvistar_token', userData.token || token);
                 }
               } catch (e) {}
             } else if (response.status === 404) {
               // Check if we have a locally stored active session first
-              const cached = localStorage.getItem('eduvista_user');
+              const cached = localStorage.getItem('eduvistar_user');
               if (cached) {
                 try {
                   const parsed = JSON.parse(cached);
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
               setPendingOnboarding(true);
             } else {
               console.error("Failed to authenticate with backend:", response.status);
-              const cached = localStorage.getItem('eduvista_user');
+              const cached = localStorage.getItem('eduvistar_user');
               if (cached) {
                 try {
                   setCurrentUser(JSON.parse(cached));
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
           } catch (fetchErr) {
             clearTimeout(timeoutId);
             console.warn("Backend auth/me timeout or offline, using cached/fallback user session if available:", fetchErr);
-            const cached = localStorage.getItem('eduvista_user');
+            const cached = localStorage.getItem('eduvistar_user');
             if (cached) {
               try {
                 setCurrentUser(JSON.parse(cached));
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           console.error("Error during backend authentication:", error);
-          const cached = localStorage.getItem('eduvista_user');
+          const cached = localStorage.getItem('eduvistar_user');
           if (cached) {
             try {
               setCurrentUser(JSON.parse(cached));
@@ -111,9 +111,9 @@ export const AuthProvider = ({ children }) => {
     setCurrentUser(userData);
     setPendingOnboarding(false);
     try {
-      localStorage.setItem('eduvista_user', JSON.stringify(userData));
+      localStorage.setItem('eduvistar_user', JSON.stringify(userData));
       if (token || userData?.token) {
-        localStorage.setItem('eduvista_token', token || userData.token);
+        localStorage.setItem('eduvistar_token', token || userData.token);
       }
     } catch (e) {}
   };
@@ -127,9 +127,9 @@ export const AuthProvider = ({ children }) => {
     setCurrentUser(null);
     setPendingOnboarding(false);
     try {
-      localStorage.removeItem('eduvista_user');
-      localStorage.removeItem('eduvista_token');
-      localStorage.removeItem('eduvista_ref');
+      localStorage.removeItem('eduvistar_user');
+      localStorage.removeItem('eduvistar_token');
+      localStorage.removeItem('eduvistar_ref');
     } catch (e) {}
   };
 

@@ -1,9 +1,9 @@
-import toast from 'react-hot-toast';
+﻿import toast from 'react-hot-toast';
 
 export const API_BASE = '/api';
 
 export const getAuthHeaders = (extraHeaders = {}) => {
-  const token = localStorage.getItem('eduvista_token');
+  const token = localStorage.getItem('eduvistar_token') || localStorage.getItem('eduvista_token');
   return {
     'Content-Type': 'application/json',
     ...extraHeaders,
@@ -30,8 +30,8 @@ export const fetchApi = async (endpoint, options = {}) => {
       
       // Auto logout on 401
       if (response.status === 401) {
-        localStorage.removeItem('eduvista_token');
-        localStorage.removeItem('eduvista_user');
+        localStorage.removeItem('eduvistar_token');
+        localStorage.removeItem('eduvistar_user');
         window.location.href = '/'; // Simple redirect for now
         toast.error("Session expired. Please log in again.");
       } else {
@@ -49,3 +49,4 @@ export const fetchApi = async (endpoint, options = {}) => {
     throw error;
   }
 };
+

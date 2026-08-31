@@ -342,7 +342,7 @@ export default function BookingModal({
             <div className="bg-brand-moss text-brand-cream p-6 rounded-2xl shadow-md space-y-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-clay/10 rounded-full blur-xl pointer-events-none" />
               <div className="flex justify-between items-center">
-                <span className="font-heading font-bold text-xs uppercase tracking-widest opacity-60">EduVista Secure Card</span>
+                <span className="font-heading font-bold text-xs uppercase tracking-widest opacity-60">EduVistar Secure Card</span>
                 <Lock className="w-4 h-4 text-brand-clay" />
               </div>
               <div className="space-y-1">
@@ -575,7 +575,7 @@ export default function BookingModal({
                   }`}
                 >
                   <div>
-                    <span className="text-xs font-bold block text-brand-charcoal">EduVista Balance Wallet</span>
+                    <span className="text-xs font-bold block text-brand-charcoal">EduVistar Balance Wallet</span>
                     <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
                       Available: {formatCurrency(convertMinor(walletBalance, selectedCurrency), selectedCurrency)}
                     </span>

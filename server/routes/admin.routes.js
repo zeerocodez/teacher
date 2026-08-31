@@ -94,7 +94,7 @@ router.post('/applications/respond', authenticateToken, requireRole(['Admin']), 
     "application_response",
     action === "Approve" ? "Application Approved!" : "Application Rejected",
     action === "Approve"
-      ? "Welcome to EduVista! Your teacher onboarding profile is approved and live."
+      ? "Welcome to EduVistar! Your teacher onboarding profile is approved and live."
       : "Your onboarding application was declined. Please verify your credentials and submit again."
   );
 
@@ -173,7 +173,7 @@ router.post('/transactions/:id/reject', authenticateToken, requireRole(['Admin']
 // POST Reset all non-admin data (Parents, Teachers, Students, Sessions, Assignments, Disputes, Transactions, Wallets, Reviews, Messages) for live production
 router.post('/reset-signups', authenticateToken, requireRole(['Admin']), async (req, res) => {
   try {
-    const adminEmails = ['zeerocodes@gmail.com', 'morichcare@gmail.com', 'admin@eduvista.com', 'admin@eduvistar.com'];
+    const adminEmails = ['zeerocodes@gmail.com', 'morichcare@gmail.com', 'admin@eduvistar.com', 'admin@eduvistar.com'];
     
     // 1. Delete all non-admin users
     const allUsers = await db.find('users');

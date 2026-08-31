@@ -48,7 +48,7 @@ const BlogPost = () => {
   return (
     <>
       <Helmet>
-        <title>{post.title} | EduVista Blog</title>
+        <title>{post.title} | EduVistar Blog</title>
         <meta name="description" content={post.excerpt || `Read ${post.title} by ${post.author}`} />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />

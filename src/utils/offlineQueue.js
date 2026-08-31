@@ -4,7 +4,7 @@
  * and automatically flushes queued payload when back online.
  */
 
-const STORAGE_KEY = 'eduvista_offline_queue_v1';
+const STORAGE_KEY = 'eduvistar_offline_queue_v1';
 
 export function enqueueOfflinePayload(actionType, payload) {
   try {

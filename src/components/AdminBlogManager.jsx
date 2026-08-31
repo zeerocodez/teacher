@@ -155,7 +155,7 @@ export default function AdminBlogManager({ getAuthHeaders }) {
             <div className="p-12 text-center flex flex-col items-center justify-center border-dashed border-2 border-brand-moss/10 m-6 rounded-2xl">
               <span className="bg-brand-moss/5 text-brand-moss px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">No Posts Found</span>
               <h4 className="font-heading font-bold text-xl text-brand-moss mb-2">Start Your Blog</h4>
-              <p className="text-sm text-brand-charcoal/60 mb-6 max-w-sm mx-auto">Create your first blog post to engage parents and students on the EduVista platform.</p>
+              <p className="text-sm text-brand-charcoal/60 mb-6 max-w-sm mx-auto">Create your first blog post to engage parents and students on the EduVistar platform.</p>
               <button 
                 onClick={() => { resetForm(); setView('create'); }}
                 className="btn-magnetic border-2 border-brand-clay text-brand-clay hover:bg-brand-clay hover:text-white px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider transition-colors"

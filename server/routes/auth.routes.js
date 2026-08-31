@@ -162,7 +162,7 @@ router.post('/register', authRateLimiter, async (req, res) => {
     }
 
     try {
-      sendTransactionalEmail(sanitizedEmail, "Welcome to EduVista Africa!", "welcome", {
+      sendTransactionalEmail(sanitizedEmail, "Welcome to EduVistar Africa!", "welcome", {
         displayName: sanitizedDisplayName,
         role: finalRole
       });
