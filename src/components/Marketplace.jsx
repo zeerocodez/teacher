@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Search, Star, ShieldCheck, CheckCircle2, Award, Zap, HelpCircle, Play } from 'lucide-react';
+import { Crown, Search, Star, ShieldCheck, CheckCircle2, Award, Zap, HelpCircle, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const DEFAULT_6_TEACHERS = [
@@ -402,6 +402,14 @@ export default function Marketplace({
                   {/* Vetting standard display */}
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
                     <div className="flex gap-1.5 flex-wrap">
+                      
+                      {(teacher.isVipTeacher || teacher.vipVerified || (teacher.badges || []).includes('badge-vip')) && (
+                        <span key="badge-vip" className="bg-amber-100 text-amber-900 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full border border-amber-300 shadow-sm flex items-center gap-1 whitespace-nowrap">
+                          <Crown className="w-2.5 h-2.5 text-amber-600 inline" />
+                          <span>VIP Educator</span>
+                        </span>
+                      )}
+
                       {(teacher.badges || []).map(badge => {
                         if (badge === 'badge-top-rated') {
                           return (

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate, Link } from 'react-router-dom';
+import { MessageCircle, Crown, useNavigate, Link } from 'react-router-dom';
 import { 
   Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, 
   Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, 
   Users, PlusCircle, CreditCard, Clock, Globe
 } from 'lucide-react';
+
+const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/EduVistarEliteTeachers';
 
 export default function Academy({ 
   currentUser, 
@@ -18,6 +20,8 @@ export default function Academy({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('modules'); // 'modules', 'roleplay', 'forum', 'certificate'
   const [enrolled, setEnrolled] = useState(false);
+  const [level4Completed, setLevel4Completed] = useState(false);
+  const [isVipTeacher, setIsVipTeacher] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submittingPayment, setSubmittingPayment] = useState(false);
   
@@ -200,6 +204,19 @@ export default function Academy({
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
   };
+
+  
+  // Check Level 4 completion
+  useEffect(() => {
+    const hasL4 = [1, 2, 3, 4].every(m => completedModules.includes(m));
+    if (hasL4 && !level4Completed) {
+      setLevel4Completed(true);
+      fetch(`${API_BASE}/academy/complete-level4`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      }).catch(() => {});
+    }
+  }, [completedModules, level4Completed]);
 
   // Fetch Academy enrollment & progress status
   const fetchStatus = async () => {

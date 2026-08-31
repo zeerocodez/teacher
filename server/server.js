@@ -472,6 +472,77 @@ app.post('/api/academy/submit-quiz', authenticateToken, requireRole(['Teacher'])
   });
 });
 
+
+// POST Complete Level 4 & Request VIP Teacher Promotion
+app.post('/api/academy/complete-level4', authenticateToken, requireRole(['Teacher']), async (req, res) => {
+  const userId = req.user.uid;
+  const teacher = await db.findOne('teachers', t => t.uid === userId || t.id === userId);
+  if (!teacher) {
+    return res.status(404).json({ error: "Teacher profile not found." });
+  }
+
+  await db.update('teachers', teacher.id, {
+    level4Completed: true,
+    level4CompletedAt: new Date().toISOString(),
+    vipStatus: 'Pending Admin Verification'
+  });
+
+  // Notify admin
+  await db.insert('notifications', {
+    userId: 'admin',
+    title: "New Level 4 Graduate Ready for VIP Promotion",
+    message: `Teacher ${teacher.name || teacher.email} has completed Level 4 Academy modules and is ready for VIP promotion.`,
+    read: false,
+    createdAt: new Date().toISOString()
+  });
+
+  res.json({
+    success: true,
+    message: "Level 4 completed! Your profile has been submitted to Admin for VIP Teacher promotion.",
+    level4Completed: true,
+    vipStatus: 'Pending Admin Verification'
+  });
+});
+
+// GET Level 4 Academy Graduates (Admin Only)
+app.get('/api/admin/level4-graduates', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  try {
+    const teachers = await db.find('teachers');
+    const graduates = teachers.filter(t => t.level4Completed || t.vipVerified || t.isVipTeacher);
+    res.json(graduates);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch graduates" });
+  }
+});
+
+// POST Promote Teacher to VIP (Admin Only)
+app.post('/api/admin/promote-vip', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const { teacherUid } = req.body;
+  if (!teacherUid) return res.status(400).json({ error: "teacherUid is required" });
+
+  const teacher = await db.findOne('teachers', t => t.uid === teacherUid || t.id === teacherUid);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found" });
+
+  const updated = await db.update('teachers', teacher.id, {
+    isVipTeacher: true,
+    vipVerified: true,
+    vipStatus: 'Verified VIP Educator',
+    vipGrantedAt: new Date().toISOString()
+  });
+
+  // Send notification to teacher
+  await db.insert('notifications', {
+    userId: teacher.uid || teacher.id,
+    title: "🏆 Promoted to Verified VIP Educator!",
+    message: "Congratulations! You have been verified as an official EduVistar VIP Teacher by our admin team after completing Level 4 Academy Mastery.",
+    read: false,
+    createdAt: new Date().toISOString()
+  });
+
+  res.json({ success: true, message: `Teacher ${teacher.name || teacher.email} successfully promoted to VIP Teacher!`, teacher: updated });
+});
+
+
 // POST Gemini Roleplay Classroom Simulation Endpoint
 app.post('/api/academy/roleplay', authenticateToken, requireRole(['Teacher']), async (req, res) => {
   const { scenario, message, history } = req.body;

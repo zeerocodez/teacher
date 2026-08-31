@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { 
+import { Crown, MessageCircle, 
   ShieldCheck, 
   UserCheck, 
   UserX, 
@@ -64,6 +64,41 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   const [b2bSubTab, setB2bSubTab] = useState('accounts'); // 'accounts' | 'api_manager'
   
   // Interactive mock lists
+  
+  const [level4Graduates, setLevel4Graduates] = useState([
+    { uid: 't_demo_1', name: 'Mr. Adebayo Okafor', email: 'adebayo.tutor@eduvistar.africa', level4CompletedAt: '2026-08-28', isVipTeacher: false },
+    { uid: 't_demo_2', name: 'Mr. Kofi Mensah', email: 'kofi.mensah@eduvistar.africa', level4CompletedAt: '2026-08-30', isVipTeacher: true }
+  ]);
+
+  useEffect(() => {
+    fetch('/api/admin/level4-graduates', {
+      headers: getAuthHeaders()
+    })
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLevel4Graduates(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handlePromoteVip = async (teacherUid) => {
+    try {
+      const res = await fetch('/api/admin/promote-vip', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ teacherUid })
+      });
+      if (res.ok) {
+        toast.success("Teacher successfully promoted to Verified VIP Educator!");
+      }
+    } catch (err) {}
+
+    setLevel4Graduates(prev => prev.map(t => (t.uid === teacherUid || t.id === teacherUid) ? { ...t, isVipTeacher: true, vipStatus: 'Verified VIP Educator' } : t));
+  };
+
+
   const [applications, setApplications] = useState([]);
   
   const [selectedApp, setSelectedApp] = useState(null);
