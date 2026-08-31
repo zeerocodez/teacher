@@ -39,25 +39,39 @@ import BrandLogo from './components/BrandLogo';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 
-const BookingModal = lazy(() => import('./components/BookingModal'));
-const Marketplace = lazy(() => import('./components/Marketplace'));
-const SessionEngine = lazy(() => import('./components/SessionEngine'));
-const ParentDashboard = lazy(() => import('./components/ParentDashboard'));
-const Academy = lazy(() => import('./components/Academy'));
-const AuthModal = lazy(() => import('./components/AuthModal'));
-const ChatPanel = lazy(() => import('./components/ChatPanel'));
-const TeacherDashboard = lazy(() => import('./components/TeacherDashboard'));
-const TeacherOnboarding = lazy(() => import('./components/TeacherOnboarding'));
-const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
-const TeacherPublicProfile = lazy(() => import('./components/TeacherPublicProfile'));
-const StudentPortal = lazy(() => import('./components/StudentPortal'));
-const PrivacyModal = lazy(() => import('./components/PrivacyModal'));
-const Blog = lazy(() => import('./pages/Blog'));
-const BlogPost = lazy(() => import('./pages/BlogPost'));
-const LMSHub = lazy(() => import('./components/lms/LMSHub'));
-const CourseClassroom = lazy(() => import('./components/lms/CourseClassroom'));
-const LiveClassroom = lazy(() => import('./components/lms/LiveClassroom'));
-const CertificateViewer = lazy(() => import('./components/lms/CertificateViewer'));
+
+const safeLazy = (importFn) => lazy(() => {
+  return importFn().catch(error => {
+    console.warn("Dynamic import failed, reloading to fetch latest app bundle:", error);
+    const reloadKey = 'eduvistar_chunk_reload_' + window.location.pathname;
+    const lastReload = sessionStorage.getItem(reloadKey);
+    if (!lastReload || Date.now() - parseInt(lastReload, 10) > 10000) {
+      sessionStorage.setItem(reloadKey, Date.now().toString());
+      window.location.reload();
+    }
+    throw error;
+  });
+});
+
+const BookingModal = safeLazy(() => import('./components/BookingModal'));
+const Marketplace = safeLazy(() => import('./components/Marketplace'));
+const SessionEngine = safeLazy(() => import('./components/SessionEngine'));
+const ParentDashboard = safeLazy(() => import('./components/ParentDashboard'));
+const Academy = safeLazy(() => import('./components/Academy'));
+const AuthModal = safeLazy(() => import('./components/AuthModal'));
+const ChatPanel = safeLazy(() => import('./components/ChatPanel'));
+const TeacherDashboard = safeLazy(() => import('./components/TeacherDashboard'));
+const TeacherOnboarding = safeLazy(() => import('./components/TeacherOnboarding'));
+const AdminDashboard = safeLazy(() => import('./components/AdminDashboard'));
+const TeacherPublicProfile = safeLazy(() => import('./components/TeacherPublicProfile'));
+const StudentPortal = safeLazy(() => import('./components/StudentPortal'));
+const PrivacyModal = safeLazy(() => import('./components/PrivacyModal'));
+const Blog = safeLazy(() => import('./pages/Blog'));
+const BlogPost = safeLazy(() => import('./pages/BlogPost'));
+const LMSHub = safeLazy(() => import('./components/lms/LMSHub'));
+const CourseClassroom = safeLazy(() => import('./components/lms/CourseClassroom'));
+const LiveClassroom = safeLazy(() => import('./components/lms/LiveClassroom'));
+const CertificateViewer = safeLazy(() => import('./components/lms/CertificateViewer'));
 
 gsap.registerPlugin(ScrollTrigger);
 

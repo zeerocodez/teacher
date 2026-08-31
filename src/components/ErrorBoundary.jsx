@@ -13,13 +13,48 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error("ErrorBoundary caught an unhandled error:", error, errorInfo);
+
+    const isChunkError = error?.message && (
+      error.message.includes('Failed to fetch dynamically imported module') ||
+      error.message.includes('Loading chunk') ||
+      error.message.includes('dynamically imported module') ||
+      error.message.includes('Importing a module script failed')
+    );
+
+    if (isChunkError) {
+      const reloadKey = 'eduvistar_chunk_reload_' + window.location.pathname;
+      const lastReload = sessionStorage.getItem(reloadKey);
+      if (!lastReload || Date.now() - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem(reloadKey, Date.now().toString());
+        window.location.reload();
+      }
+    }
   }
+
+  handleRetry = () => {
+    const errorMessage = this.state.error?.message || '';
+    const isChunkError = errorMessage.includes('Failed to fetch dynamically imported module') ||
+                         errorMessage.includes('Loading chunk') ||
+                         errorMessage.includes('dynamically imported module') ||
+                         errorMessage.includes('Importing a module script failed');
+
+    if (isChunkError) {
+      window.location.reload();
+    } else {
+      this.setState({ hasError: false, error: null });
+    }
+  };
 
   render() {
     if (this.state.hasError) {
       const errorMessage = this.state.error
         ? this.state.error.message || String(this.state.error)
         : 'Unknown runtime error';
+
+      const isChunkError = errorMessage.includes('Failed to fetch dynamically imported module') ||
+                           errorMessage.includes('Loading chunk') ||
+                           errorMessage.includes('dynamically imported module') ||
+                           errorMessage.includes('Importing a module script failed');
 
       return (
         <div className="min-h-[60vh] bg-[#F2F0E9] text-[#1A1A1A] flex flex-col items-center justify-center p-6 text-center font-sans">
@@ -34,7 +69,10 @@ class ErrorBoundary extends React.Component {
               Application Encountered an Error
             </h1>
             <p className="text-[#1A1A1A]/70 mb-4 text-xs sm:text-sm leading-relaxed">
-              A temporary runtime component error occurred. You can retry mounting the component or refresh your session.
+              {isChunkError
+                ? "A new version of EduVistar was recently deployed. Please retry or refresh to load the latest application updates."
+                : "A temporary runtime component error occurred. You can retry mounting the component or refresh your session."
+              }
             </p>
 
             <div className="w-full font-mono text-[10px] text-[#CC5833] bg-[#CC5833]/5 p-3.5 rounded-2xl border border-[#CC5833]/20 mb-6 text-left overflow-x-auto">
@@ -44,11 +82,11 @@ class ErrorBoundary extends React.Component {
 
             <div className="w-full space-y-3">
               <button
-                onClick={() => this.setState({ hasError: false, error: null })}
+                onClick={this.handleRetry}
                 className="btn-magnetic flex items-center justify-center gap-2 bg-[#2E4036] hover:bg-[#CC5833] text-white font-heading font-bold py-3.5 px-6 rounded-full w-full text-xs uppercase tracking-wider transition-colors duration-300 shadow-md"
               >
                 <RotateCcw size={16} />
-                <span>Retry Component</span>
+                <span>{isChunkError ? "Reload Latest App Version" : "Retry Component"}</span>
               </button>
 
               <button
