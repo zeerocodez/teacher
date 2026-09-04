@@ -6,42 +6,60 @@ import { sendTransactionalEmail } from '../services/email.js';
 
 const router = express.Router();
 
-// GET vetted teachers list with filter supports
+// GET vetted teachers list with filter supports (6 per page, rotated/shuffled among verified)
 router.get('/', async (req, res) => {
-    const { subject, curriculum, rateMax, location, search, page = 1, limit = 12 } = req.query;
+    const { subject, curriculum, rateMax, location, search, page = 1, limit = 6 } = req.query;
     
     let teachers = await db.find('teachers');
-    teachers = teachers.filter(t => !t.status || (t.status !== 'suspended' && t.status !== 'rejected'));
+    
+    // Only verified educators who are active
+    teachers = teachers.filter(t => (t.verified === true || t.status === 'verified') && t.status !== 'suspended' && t.status !== 'rejected');
     
     if (subject && subject !== 'All') {
-      teachers = teachers.filter(t => t.subjects && t.subjects.some(s => s.toLowerCase() === subject.toLowerCase()));
+      const sLower = subject.toLowerCase().trim();
+      teachers = teachers.filter(t => 
+        t.subjects && Array.isArray(t.subjects) && t.subjects.some(s => {
+          if (!s) return false;
+          const str = String(s).toLowerCase().trim();
+          return str === sLower || str.includes(sLower) || sLower.includes(str);
+        })
+      );
     }
     if (curriculum && curriculum !== 'All') {
-      teachers = teachers.filter(t => t.curricula && t.curricula.some(c => c.toLowerCase() === curriculum.toLowerCase()));
+      const cLower = curriculum.toLowerCase().trim();
+      teachers = teachers.filter(t => 
+        t.curricula && Array.isArray(t.curricula) && t.curricula.some(c => {
+          if (!c) return false;
+          const str = String(c).toLowerCase().trim();
+          return str === cLower || str.includes(cLower) || cLower.includes(str);
+        })
+      );
     }
     if (rateMax) {
       const maxVal = parseInt(rateMax, 10);
       teachers = teachers.filter(t => t.rate <= maxVal);
     }
     if (location) {
-      teachers = teachers.filter(t => t.location && t.location.toLowerCase().includes(location.toLowerCase()));
+      teachers = teachers.filter(t => t.location && t.location.toLowerCase().includes(location.toLowerCase().trim()));
     }
-    if (search) {
-      const q = search.toLowerCase();
+    if (search && search.trim()) {
+      const q = search.toLowerCase().trim();
       teachers = teachers.filter(t => 
         (t.name && t.name.toLowerCase().includes(q)) || 
         (t.bio && t.bio.toLowerCase().includes(q)) ||
-        (t.subjects && t.subjects.some(s => s.toLowerCase().includes(q)))
+        (t.location && t.location.toLowerCase().includes(q)) ||
+        (t.subjects && Array.isArray(t.subjects) && t.subjects.some(s => s && String(s).toLowerCase().includes(q))) ||
+        (t.curricula && Array.isArray(t.curricula) && t.curricula.some(c => c && String(c).toLowerCase().includes(q)))
       );
     }
     
-    // Sort logic to favor Elite verified teachers
+    // Rotate / sort logic: prioritize Elite verified teachers, and shuffle/rotate within tiers
     teachers.sort((a, b) => {
       const aElite = (a.badges || []).includes('badge-ai-cert');
       const bElite = (b.badges || []).includes('badge-ai-cert');
       if (aElite && !bElite) return -1;
       if (!aElite && bElite) return 1;
-      // Randomize ties
+      // Randomize / rotate order
       return Math.random() - 0.5;
     });
     

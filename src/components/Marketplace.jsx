@@ -21,7 +21,47 @@ export default function Marketplace({
   const [searchQuery, setSearchQuery] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
 
-  const displayTeachers = teachers || [];
+  const displayTeachers = React.useMemo(() => {
+    let list = teachers || [];
+    
+    // Only verified teachers
+    list = list.filter(t => (t.verified === true || t.status === 'verified') && t.status !== 'suspended' && t.status !== 'rejected');
+
+    if (searchQuery && searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(t => 
+        (t.name && t.name.toLowerCase().includes(q)) || 
+        (t.bio && t.bio.toLowerCase().includes(q)) ||
+        (t.location && t.location.toLowerCase().includes(q)) ||
+        (t.subjects && Array.isArray(t.subjects) && t.subjects.some(s => s && String(s).toLowerCase().includes(q))) ||
+        (t.curricula && Array.isArray(t.curricula) && t.curricula.some(c => c && String(c).toLowerCase().includes(q)))
+      );
+    }
+
+    if (subjectFilter && subjectFilter !== 'All') {
+      const sLower = subjectFilter.toLowerCase().trim();
+      list = list.filter(t => 
+        t.subjects && Array.isArray(t.subjects) && t.subjects.some(s => {
+          if (!s) return false;
+          const str = String(s).toLowerCase().trim();
+          return str === sLower || str.includes(sLower) || sLower.includes(str);
+        })
+      );
+    }
+
+    if (curriculumFilter && curriculumFilter !== 'All') {
+      const cLower = curriculumFilter.toLowerCase().trim();
+      list = list.filter(t => 
+        t.curricula && Array.isArray(t.curricula) && t.curricula.some(c => {
+          if (!c) return false;
+          const str = String(c).toLowerCase().trim();
+          return str === cLower || str.includes(cLower) || cLower.includes(str);
+        })
+      );
+    }
+
+    return list;
+  }, [teachers, searchQuery, subjectFilter, curriculumFilter]);
 
   React.useEffect(() => {
     fetch('/api/leaderboard')
@@ -121,7 +161,7 @@ export default function Marketplace({
           </div>
 
           <div className="text-xs text-brand-charcoal/50 font-mono">
-            SHOWING {teachers.length} OF {teachers.length} EDUCATORS
+            SHOWING {displayTeachers.length} {displayTeachers.length === 1 ? 'EDUCATOR' : 'EDUCATORS'}
           </div>
         </div>
 

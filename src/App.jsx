@@ -240,7 +240,7 @@ export default function App() {
     try {
       const queryParams = new URLSearchParams({
         page,
-        limit: 12,
+        limit: 6,
         ...filters
       });
 
@@ -261,18 +261,17 @@ export default function App() {
         newTeachers = teachersData;
       }
 
-      if (newTeachers && newTeachers.length > 0) {
-        if (append && page > 1) {
-          setTeachers(prev => {
-            const combined = [...prev, ...newTeachers];
-            return Array.from(new Map(combined.map(t => [t.uid || t.id, t])).values());
-          });
-        } else {
-          setTeachers(newTeachers);
-        }
+      if (append && page > 1) {
+        setTeachers(prev => {
+          const combined = [...prev, ...newTeachers];
+          return Array.from(new Map(combined.map(t => [t.uid || t.id, t])).values());
+        });
+      } else {
+        setTeachers(newTeachers);
       }
 
-      setHasMoreTeachers(!!teachersData.hasMore);
+      const totalPages = teachersData.pagination?.totalPages || 1;
+      setHasMoreTeachers(page < totalPages);
       setTeachersPage(page);
     } catch (err) {
       console.warn("Using local teachers fallback:", err.message);
