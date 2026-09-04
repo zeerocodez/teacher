@@ -663,12 +663,15 @@ export default function Academy({
 
           {/* Registration CTA underneath grid */}
           <div className="text-center mb-16">
-            <Link 
-              to="/academy" 
-              className="inline-block btn-magnetic py-4 px-10 bg-brand-clay hover:bg-brand-clay/95 rounded-full text-white font-bold uppercase tracking-widest text-xs shadow-lg shadow-brand-clay/10 transition-transform hover:scale-105"
+            <a 
+              href={WHATSAPP_COMMUNITY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 btn-magnetic py-4 px-10 bg-[#25D366] hover:bg-[#20bd5a] rounded-full text-white font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#25D366]/20 transition-transform hover:scale-105"
             >
-              Register for the Academy
-            </Link>
+              <MessageCircle className="w-5 h-5 fill-white text-[#25D366]" />
+              Join Elite Teachers Academy on WhatsApp
+            </a>
           </div>
 
           {/* Why become an elite teacher */}
@@ -694,16 +697,19 @@ export default function Academy({
 
           <div className="bg-brand-moss/10 border border-brand-cream/10 rounded-[2.5rem] p-8 max-w-3xl mx-auto text-center space-y-6">
             <ShieldAlert className="w-8 h-8 text-brand-clay mx-auto" />
-            <h3 className="font-heading font-bold text-xl text-white">Are you a registered educator?</h3>
+            <h3 className="font-heading font-bold text-xl text-white">Join the Live WhatsApp Cohort</h3>
             <p className="font-sans text-xs text-brand-cream/70 max-w-md mx-auto">
-              Access to the Elite Academy dashboard, quiz workspace, discussion forums, and simulated certification modules is reserved exclusively for registered tutors.
+              The Elite Teachers Academy is hosted directly on WhatsApp. Connect with master educators, receive live masterclass notifications, and earn verified accreditations.
             </p>
-            <Link
-              to="/academy"
-              className="inline-block btn-magnetic py-3 px-8 bg-brand-clay hover:bg-brand-clay/95 rounded-full text-white font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/10"
+            <a
+              href={WHATSAPP_COMMUNITY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 btn-magnetic py-3 px-8 bg-[#25D366] hover:bg-[#20bd5a] rounded-full text-white font-bold uppercase tracking-wider text-xs shadow-lg shadow-[#25D366]/20 transition-transform hover:scale-105"
             >
-              Register for Academy
-            </Link>
+              <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
+              Join WhatsApp Academy Group
+            </a>
           </div>
         </div>
       </section>
@@ -804,17 +810,25 @@ export default function Academy({
             </div>
 
             {/* Redirect Form Column */}
-            <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-6 shadow-2xl flex flex-col justify-center items-center text-center space-y-6">
-              <h3 className="font-heading font-bold text-2xl text-white">Join the Elite Trybe</h3>
-              <p className="font-sans text-sm text-brand-cream/80 max-w-sm">
-                All academy registrations, vetting processes, and accredited modules are hosted inside the EduVistar Elite Teachers Academy LMS.
-              </p>
-              <Link
-                to="/academy"
-                className="btn-magnetic w-full max-w-xs py-4 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/15 text-center"
+            <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-8 shadow-2xl flex flex-col justify-center items-center text-center space-y-6">
+              <div className="w-16 h-16 rounded-full bg-[#25D366]/10 border border-[#25D366]/30 flex items-center justify-center">
+                <MessageCircle className="w-8 h-8 text-[#25D366]" />
+              </div>
+              <div>
+                <h3 className="font-heading font-bold text-2xl text-white">Join the Elite Academy</h3>
+                <p className="font-sans text-xs text-brand-cream/80 max-w-sm mt-2">
+                  The Elite Teachers Academy is hosted directly on WhatsApp. Join the official group to participate in masterclasses, connect with peers, and get certified.
+                </p>
+              </div>
+              <a
+                href={WHATSAPP_COMMUNITY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-magnetic w-full max-w-xs py-4 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-[#25D366]/20 text-center flex items-center justify-center gap-2 transition-transform hover:scale-105"
               >
-                Proceed to Academy LMS
-              </Link>
+                <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
+                Join WhatsApp Academy Group
+              </a>
             </div>
           </div>
         ) : (

@@ -4,10 +4,12 @@ import {
   BookOpen, Sparkles, Video, Award, Users, CheckCircle2,
   Clock, ArrowRight, Search, Filter, Play, Star, ChevronRight,
   TrendingUp, ShieldCheck, Download, Calendar, ExternalLink, RefreshCw,
-  Lock, Wallet, CreditCard
+  Lock, Wallet, CreditCard, MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CourseCheckoutModal from './CourseCheckoutModal';
+
+const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4';
 
 export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCurrency, convertMinor }) {
   const navigate = useNavigate();
@@ -144,6 +146,18 @@ export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCu
             <p className="text-xs sm:text-sm text-brand-cream/80 leading-relaxed font-sans max-w-2xl">
               Elevate your teaching career with accredited masterclasses in Cambridge IGCSE, AI-powered lesson design, rubric evaluation, and high-yield educator branding.
             </p>
+
+            <div className="pt-2">
+              <a
+                href={WHATSAPP_COMMUNITY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#25D366]/20 transition-all hover:scale-105 active:scale-95"
+              >
+                <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
+                Join Official Academy WhatsApp Group
+              </a>
+            </div>
 
             {/* Quick Metrics Strip */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
