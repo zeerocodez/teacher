@@ -1101,22 +1101,20 @@ export default function App() {
   return (
     <div className="relative min-h-screen bg-brand-cream text-brand-charcoal overflow-x-hidden selection:bg-brand-clay selection:text-white">
       
-
-
       {/* Static Header Navbar */}
-      <nav className="w-full bg-brand-charcoal text-white py-3.5 px-4 md:px-8 lg:px-10 border-b border-brand-cream/10 z-50 relative">
-        <div className="flex items-center justify-between gap-4 md:gap-6 lg:gap-8 flex-nowrap">
+      <nav className="w-full bg-brand-charcoal text-white py-3 px-3 sm:px-6 lg:px-8 border-b border-brand-cream/10 z-50 relative">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 lg:gap-6 flex-nowrap">
           <div 
             onClick={() => {
               setIsMobileMenuOpen(false);
               navigate('/');
             }}
-            className="cursor-pointer select-none flex-shrink-0 mr-3 md:mr-6 lg:mr-8"
+            className="cursor-pointer select-none flex-shrink-0 mr-1 sm:mr-3 lg:mr-4"
           >
-            <BrandLogo light={true} className="h-11 md:h-12 lg:h-13 transition-transform duration-300 hover:scale-105" />
+            <BrandLogo light={true} className="h-8 sm:h-9 md:h-9 transition-transform duration-300 hover:scale-105" />
           </div>
           
-          <div className="hidden lg:flex items-center gap-4 xl:gap-7 font-sans font-semibold text-xs uppercase tracking-wider text-white/80 flex-shrink-0 mr-4 whitespace-nowrap">
+          <div className="hidden lg:flex items-center gap-3 xl:gap-5 font-sans font-semibold text-xs uppercase tracking-wider text-white/80 flex-shrink-0 whitespace-nowrap">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
             <Link to="/blog" className="hover:text-brand-clay transition-colors hover-lift">Blog</Link>
             <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift flex items-center gap-1 font-bold text-white">
@@ -1134,62 +1132,51 @@ export default function App() {
             )}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Desktop selectors (hidden on mobile/tablet) */}
-            <div className="hidden lg:flex items-center gap-3 xl:gap-5 flex-shrink-0 whitespace-nowrap">
+            <div className="hidden lg:flex items-center gap-2 xl:gap-3 flex-shrink-0 whitespace-nowrap">
               {/* Multilingual Selector */}
-              <div className="flex items-center gap-1.5">
-                <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-white/65">
-                  Lang:
-                </span>
-                <div className="flex items-center bg-black/15 border border-white/10 rounded-full p-1 select-none">
-                  {[
-                    { code: 'en', label: 'EN' },
-                    { code: 'fr', label: 'FR' },
-                    { code: 'sw', label: 'SW' }
-                  ].map(item => (
-                    <button
-                      key={item.code}
-                      type="button"
-                      onClick={() => setLang(item.code)}
-                      className={`py-1 px-2.5 rounded-full font-mono text-[9px] font-bold tracking-wider transition-all duration-300 ${
-                        lang === item.code
-                          ? 'bg-brand-cream text-brand-moss shadow-sm'
-                          : 'text-white/70 hover:bg-white/5'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
+              <div className="flex items-center bg-black/25 border border-white/10 rounded-full p-0.5 select-none">
+                {[
+                  { code: 'en', label: 'EN' },
+                  { code: 'fr', label: 'FR' },
+                  { code: 'sw', label: 'SW' }
+                ].map(item => (
+                  <button
+                    key={item.code}
+                    type="button"
+                    onClick={() => setLang(item.code)}
+                    className={`py-1 px-2 rounded-full font-mono text-[9px] font-bold tracking-wider transition-all duration-300 ${
+                      lang === item.code
+                        ? 'bg-brand-cream text-brand-moss shadow-sm'
+                        : 'text-white/70 hover:bg-white/5'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
 
-              {/* Multi-currency Selector */}
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-white/65">
-                  {t('chooseCurrency')}
-                </span>
-                <div className="flex items-center bg-black/15 border border-white/10 rounded-full p-1 select-none">
+              {/* Compact Multi-currency Selector Dropdown */}
+              <div className="flex items-center bg-black/25 border border-white/10 rounded-full px-2.5 py-1 text-white select-none hover:border-white/25 transition-colors">
+                <Globe className="w-3 h-3 text-brand-clay mr-1.5 shrink-0" />
+                <select
+                  value={selectedCurrency}
+                  onChange={(e) => setSelectedCurrency(e.target.value)}
+                  className="bg-transparent text-white font-mono text-[9px] font-bold tracking-wider outline-none cursor-pointer pr-1"
+                  aria-label="Currency"
+                >
                   {['NGN', 'USD', 'GBP', 'EUR', 'GHS', 'CAD'].map(curr => (
-                    <button
-                      key={curr}
-                      type="button"
-                      onClick={() => setSelectedCurrency(curr)}
-                      className={`py-1 px-2.5 rounded-full font-mono text-[9px] font-bold tracking-wider transition-all duration-300 ${
-                        selectedCurrency === curr
-                          ? 'bg-brand-cream text-brand-moss shadow-sm'
-                          : 'text-white/70 hover:bg-white/5'
-                      }`}
-                    >
+                    <option key={curr} value={curr} className="bg-brand-charcoal text-white font-mono text-xs">
                       {curr}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
             </div>
 
             {currentUser ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 flex-shrink-0">
                 {/* Notification Bell Icon */}
                 <div className="relative">
                   <button
@@ -1258,7 +1245,7 @@ export default function App() {
                 {currentUser.role === 'Teacher' && (
                   <a 
                     href="#academy" 
-                    className="hidden lg:flex btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full items-center gap-1.5"
+                    className="hidden lg:flex btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full items-center gap-1.5 whitespace-nowrap"
                   >
                     <Sparkles className="w-3.5 h-3.5 animate-pulse" />
                     Academy Enrollment
@@ -1268,16 +1255,16 @@ export default function App() {
                 {location.pathname.startsWith('/dashboard') ? (
                   <button
                     onClick={handleBackToHome}
-                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border border-white text-white hover:bg-white hover:text-brand-charcoal"
+                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full border border-white text-white hover:bg-white hover:text-brand-charcoal whitespace-nowrap"
                   >
                     Back to Home
                   </button>
                 ) : (
                   <button
                     onClick={() => navigate('/dashboard')}
-                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90"
+                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90 whitespace-nowrap"
                   >
-                    Go to Dashboard
+                    Dashboard
                   </button>
                 )}
                 <button
@@ -1290,28 +1277,30 @@ export default function App() {
                     logout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border bg-brand-cream border-brand-cream text-brand-moss hover:bg-brand-clay hover:border-brand-clay hover:text-white"
+                  className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full border bg-brand-cream border-brand-cream text-brand-moss hover:bg-brand-clay hover:border-brand-clay hover:text-white whitespace-nowrap"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <div className="hidden lg:flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-2.5 flex-shrink-0 whitespace-nowrap">
                 <button
                   onClick={() => {
                     setAuthTab('login');
+                    setAuthRole('Parent');
                     setIsAuthOpen(true);
                   }}
-                  className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border border-white/20 text-white hover:bg-white/10"
+                  className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full border border-white/20 text-white hover:bg-white/10 whitespace-nowrap shrink-0"
                 >
                   Log In
                 </button>
                 <button
                   onClick={() => {
                     setAuthTab('register');
+                    setAuthRole('Parent');
                     setIsAuthOpen(true);
                   }}
-                  className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90"
+                  className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90 shadow-sm whitespace-nowrap shrink-0"
                 >
                   Sign Up
                 </button>
@@ -1509,6 +1498,7 @@ export default function App() {
               currentUser={currentUser}
               handleUnlockBadge={handleUnlockBadge}
               setAuthTab={setAuthTab}
+              setAuthRole={setAuthRole}
               setIsAuthOpen={setIsAuthOpen}
               waitlistName={waitlistName}
               setWaitlistName={setWaitlistName}
@@ -1768,6 +1758,8 @@ export default function App() {
         <AuthModal 
           isOpen={isAuthOpen} 
           onClose={() => setIsAuthOpen(false)} 
+          initialTab={authTab}
+          initialRole={authRole}
         />
       </Suspense>
 

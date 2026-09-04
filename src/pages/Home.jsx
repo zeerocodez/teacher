@@ -68,6 +68,7 @@ export default function Home({
   currentUser,
   handleUnlockBadge,
   setAuthTab,
+  setAuthRole,
   setIsAuthOpen,
   waitlistName,
   setWaitlistName,
@@ -878,6 +879,7 @@ export default function Home({
           onUnlockBadge={handleUnlockBadge}
           onRegisterClick={() => {
             setAuthTab("register");
+            if (setAuthRole) setAuthRole("Teacher");
             setIsAuthOpen(true);
           }}
         />
