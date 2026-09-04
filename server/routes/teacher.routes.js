@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     const { subject, curriculum, rateMax, location, search, page = 1, limit = 12 } = req.query;
     
     let teachers = await db.find('teachers');
-    teachers = teachers.filter(t => !t.status || t.status === 'verified');
+    teachers = teachers.filter(t => !t.status || (t.status !== 'suspended' && t.status !== 'rejected'));
     
     if (subject && subject !== 'All') {
       teachers = teachers.filter(t => t.subjects && t.subjects.some(s => s.toLowerCase() === subject.toLowerCase()));
@@ -210,8 +210,8 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     govIdUrl: govIdUrl ? sanitizeText(govIdUrl) : "",
     degreeUrl: degreeUrl ? sanitizeText(degreeUrl) : "",
     cvUrl: cvUrl ? sanitizeText(cvUrl) : "",
-    status: "pending_approval", // Submitting onboarding triggers review status
-    verified: false
+    status: "active",
+    verified: true
   });
 
   // Notify Admins of the new registration
