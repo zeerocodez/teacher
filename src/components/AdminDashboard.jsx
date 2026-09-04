@@ -65,10 +65,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   
   // Interactive mock lists
   
-  const [level4Graduates, setLevel4Graduates] = useState([
-    { uid: 't_demo_1', name: 'Mr. Adebayo Okafor', email: 'adebayo.tutor@eduvistar.africa', level4CompletedAt: '2026-08-28', isVipTeacher: false },
-    { uid: 't_demo_2', name: 'Mr. Kofi Mensah', email: 'kofi.mensah@eduvistar.africa', level4CompletedAt: '2026-08-30', isVipTeacher: true }
-  ]);
+  const [level4Graduates, setLevel4Graduates] = useState([]);
 
   useEffect(() => {
     fetch('/api/admin/level4-graduates', {
