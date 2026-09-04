@@ -1114,21 +1114,18 @@ export default function App() {
             <BrandLogo light={true} className="h-8 sm:h-9 md:h-9 transition-transform duration-300 hover:scale-105" />
           </div>
           
-          <div className="hidden lg:flex items-center gap-3 xl:gap-5 font-sans font-semibold text-xs uppercase tracking-wider text-white/80 flex-shrink-0 whitespace-nowrap">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/85 flex-shrink-0 whitespace-nowrap">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
             <Link to="/blog" className="hover:text-brand-clay transition-colors hover-lift">Blog</Link>
-            <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift flex items-center gap-1 font-bold text-white">
-              <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+            <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift flex items-center gap-1.5 font-bold text-white">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               Academy
             </Link>
             {currentUser?.role === 'Admin' && (
-              <Link to="/dashboard" className="hover:text-brand-clay transition-colors hover-lift font-bold text-brand-moss">Admin Panel</Link>
+              <Link to="/dashboard" className="hover:text-brand-clay transition-colors hover-lift font-bold text-amber-300">Admin Panel</Link>
             )}
             {currentUser?.role === 'Parent' && (
               <a href="#marketplace" onClick={scrollToSection('marketplace')} className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
-            )}
-            {currentUser?.role === 'Teacher' && (
-              <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</Link>
             )}
           </div>
 
@@ -1176,16 +1173,16 @@ export default function App() {
             </div>
 
             {currentUser ? (
-              <div className="flex items-center gap-2.5 flex-shrink-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
                 {/* Notification Bell Icon */}
                 <div className="relative">
                   <button
                     onClick={() => setShowNotificationsDropdown(!showNotificationsDropdown)}
-                    className="p-2 rounded-full relative transition-colors text-white hover:bg-white/10"
+                    className="p-1.5 sm:p-2 rounded-full relative transition-colors text-white hover:bg-white/10"
                   >
-                    <Bell className="w-4.5 h-4.5" />
+                    <Bell className="w-4 h-4" />
                     {notifications.filter(n => !n.read).length > 0 && (
-                      <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-brand-clay rounded-full border border-white animate-pulse" />
+                      <span className="absolute top-1 right-1 w-2 h-2 bg-brand-clay rounded-full border border-white animate-pulse" />
                     )}
                   </button>
                   
@@ -1233,36 +1230,32 @@ export default function App() {
                   )}
                 </div>
 
-                <div className="hidden lg:flex flex-col text-right">
-                  <span className="text-[10px] font-bold text-white">
-                    {currentUser.displayName}
-                  </span>
-                  <span className="text-[8px] font-mono opacity-70 uppercase tracking-widest text-brand-clay">
-                    {currentUser.role}
-                  </span>
+                {/* User Pill Badge */}
+                <div className="hidden lg:flex items-center gap-2 bg-white/10 border border-white/15 rounded-full py-1 px-3">
+                  <div className="w-5 h-5 rounded-full bg-brand-clay/30 flex items-center justify-center text-[10px] font-bold text-white uppercase">
+                    {(currentUser.displayName || 'U')[0]}
+                  </div>
+                  <div className="flex flex-col text-left leading-tight">
+                    <span className="text-[11px] font-bold text-white max-w-[120px] truncate">
+                      {currentUser.displayName}
+                    </span>
+                    <span className="text-[8px] font-mono uppercase tracking-wider text-amber-300">
+                      {currentUser.role}
+                    </span>
+                  </div>
                 </div>
-
-                {currentUser.role === 'Teacher' && (
-                  <a 
-                    href="#academy" 
-                    className="hidden lg:flex btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full items-center gap-1.5 whitespace-nowrap"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                    Academy Enrollment
-                  </a>
-                )}
 
                 {location.pathname.startsWith('/dashboard') ? (
                   <button
                     onClick={handleBackToHome}
-                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full border border-white text-white hover:bg-white hover:text-brand-charcoal whitespace-nowrap"
+                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full border border-white/40 text-white hover:bg-white hover:text-brand-charcoal whitespace-nowrap"
                   >
                     Back to Home
                   </button>
                 ) : (
                   <button
                     onClick={() => navigate('/dashboard')}
-                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90 whitespace-nowrap"
+                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90 shadow-sm whitespace-nowrap"
                   >
                     Dashboard
                   </button>
@@ -1277,7 +1270,7 @@ export default function App() {
                     logout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3.5 rounded-full border bg-brand-cream border-brand-cream text-brand-moss hover:bg-brand-clay hover:border-brand-clay hover:text-white whitespace-nowrap"
+                  className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-1.5 px-3 rounded-full border border-white/15 bg-white/10 text-white hover:bg-white/20 whitespace-nowrap"
                 >
                   Logout
                 </button>
@@ -1364,10 +1357,10 @@ export default function App() {
               <Link to="/blog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1">Blog</Link>
               <Link to="/academy" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1 flex items-center gap-1.5 font-bold text-amber-300">
                 <Sparkles className="w-3.5 h-3.5" />
-                Elite Academy
+                Academy
               </Link>
               {currentUser?.role === 'Admin' && (
-                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1 font-bold text-brand-moss">Admin Panel</Link>
+                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-clay transition-colors py-1 font-bold text-amber-300">Admin Panel</Link>
               )}
               {currentUser?.role === 'Parent' && (
                 <a 
@@ -1388,25 +1381,19 @@ export default function App() {
             <div className="flex flex-col gap-2.5 border-t border-white/5 pt-3">
               {currentUser ? (
                 <>
-                  <div className="bg-white/5 rounded-2xl p-3 flex flex-col">
-                    <span className="text-xs font-bold text-white">
-                      {currentUser.displayName}
-                    </span>
-                    <span className="text-[9px] font-mono opacity-70 uppercase tracking-widest text-brand-clay mt-0.5">
-                      {currentUser.role}
-                    </span>
+                  <div className="bg-white/5 rounded-2xl p-3 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-brand-clay/30 flex items-center justify-center text-xs font-bold text-white uppercase">
+                      {(currentUser.displayName || 'U')[0]}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-white">
+                        {currentUser.displayName}
+                      </span>
+                      <span className="text-[9px] font-mono opacity-80 uppercase tracking-widest text-amber-300">
+                        {currentUser.role}
+                      </span>
+                    </div>
                   </div>
-
-                  {currentUser.role === 'Teacher' && (
-                    <a 
-                      href="#academy" 
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-1.5 text-center"
-                    >
-                      <Sparkles className="w-4 h-4 animate-pulse" />
-                      Academy Enrollment
-                    </a>
-                  )}
 
                   {location.pathname.startsWith('/dashboard') ? (
                     <button
@@ -1440,7 +1427,7 @@ export default function App() {
                       }
                       logout();
                     }}
-                    className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl bg-white text-brand-moss hover:bg-brand-clay hover:text-white text-center"
+                    className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl bg-white/10 text-white hover:bg-white/20 text-center"
                   >
                     Logout
                   </button>
