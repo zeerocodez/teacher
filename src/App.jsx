@@ -130,13 +130,59 @@ export default function App() {
     navigate('/');
   };
 
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [escrowBalance, setEscrowBalance] = useState(0);
+  const [profileUsername, setProfileUsername] = useState(() => {
+    const path = window.location.pathname;
+    const match = path.match(/\/teacher\/([^/]+)/);
+    return match ? match[1] : '';
+  });
+  const [isTutorOnboarding, setIsTutorOnboarding] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedChatSession, setSelectedChatSession] = useState(null);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+
+  // Waitlist form states
+  const [waitlistName, setWaitlistName] = useState('');
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistRole, setWaitlistRole] = useState('Parent');
+  const [waitlistStatus, setWaitlistStatus] = useState('');
+
+  // Inline Gated Authentication Form States
+  const [authTab, setAuthTab] = useState('login');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authName, setAuthName] = useState('');
+  const [authRole, setAuthRole] = useState('Parent');
+  const [authCountry, setAuthCountry] = useState('Nigeria');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
+  // Dynamic App States for Portals Sync
+  const [selectedCurrency, setSelectedCurrency] = useState('NGN');
+  const [walletBalance, setWalletBalance] = useState(0); // in minor units
+  const [escrowBalance, setEscrowBalance] = useState(0); // in minor units
+  
+  // Booked sessions state
   const [bookedSessions, setBookedSessions] = useState([]);
+
+  // Homework grading portal sync state
   const [gradesLog, setGradesLog] = useState([]);
   const [pendingAssignments, setPendingAssignments] = useState([]);
+
+  // Notifications state
   const [notifications, setNotifications] = useState([]);
-  const [supportMessages, setSupportMessages] = useState([]);
+  const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+  
+  // AI Customer Support Agent States
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [supportMessages, setSupportMessages] = useState([
+    { sender: 'agent', text: "Hello! I am your EduVistar Virtual Assistant. How can I help you navigate our platform today?" }
+  ]);
+  const [supportInput, setSupportInput] = useState('');
+  const [supportLoading, setSupportLoading] = useState(false);
+  const [activeToast, setActiveToast] = useState(null);
+  const prevUnreadCountRef = useRef(0);
 
   const [teachers, setTeachers] = useState([]);
   const [hasMoreTeachers, setHasMoreTeachers] = useState(false);
