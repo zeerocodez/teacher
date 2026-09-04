@@ -120,8 +120,11 @@ export default function TeacherDashboard({
   const [customSubjectInput, setCustomSubjectInput] = useState("");
   const [selectedCurricula, setSelectedCurricula] = useState([]);
   const [customCurriculumInput, setCustomCurriculumInput] = useState("");
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [avatar, setAvatar] = useState("");
+  const [govIdUrl, setGovIdUrl] = useState("");
+  const [degreeUrl, setDegreeUrl] = useState("");
+  const [cvUrl, setCvUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
   const [currency, setCurrency] = useState("NGN");
   const [timezone, setTimezone] = useState("Africa/Lagos");
@@ -229,6 +232,10 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         setSelectedCurricula(data.teacher.curricula || []);
         setSelectedLanguages(data.teacher.languages || []);
         setAvatar(data.teacher.avatar || "");
+        setGovIdUrl(data.teacher.govIdUrl || data.teacher.govId || "");
+        setDegreeUrl(data.teacher.degreeUrl || data.teacher.degree || "");
+        setCvUrl(data.teacher.cvUrl || data.teacher.cv || "");
+        setVideoUrl(data.teacher.videoUrl || "");
         setCurrency(data.teacher.currency || "NGN");
         setTimezone(data.teacher.timezone || "Africa/Lagos");
         setClassroomLink(data.teacher.classroomLink || "");
@@ -319,6 +326,10 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       curricula: selectedCurricula,
       languages: selectedLanguages,
       avatar,
+      govIdUrl,
+      degreeUrl,
+      cvUrl,
+      videoUrl,
       currency,
       timezone,
       classroomLink,
@@ -726,113 +737,47 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto w-full space-y-8 animate-fade-up">
-            {/* Verification Check checklist for unverified teachers */}
+            {/* Verification Status Banner for unverified or pending teachers */}
             {teacherProfile && !teacherProfile.verified && (
-              <div className="bg-white border border-brand-moss/10 rounded-[3rem] p-8 md:p-12 shadow-xl space-y-8 text-center max-w-2xl mx-auto">
-                <div className="w-16 h-16 bg-brand-clay/10 rounded-full flex items-center justify-center mx-auto text-brand-clay">
-                  <Lock className="w-8 h-8 animate-pulse" />
-                </div>
-
-                <div className="space-y-3">
-                  <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block">
-                    Verification & Approval Status:{" "}
-                    {teacherProfile.status === "onboarding"
-                      ? "Onboarding Incomplete"
-                      : "Under Review"}
-                  </span>
-                  <h3 className="font-heading font-bold text-2xl text-brand-moss">
-                    Access Gated: Vetting in Progress
-                  </h3>
-                  <p className="font-sans text-xs text-brand-charcoal/70 leading-relaxed">
-                    Welcome to EduVistar Africa! You have successfully registered
-                    your educator profile. Before you can start taking classes,
-                    tutoring students, or earning payouts, our Admin team must
-                    manually audit your credentials.
-                  </p>
-                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm font-bold">
-                    Your application is pending verification on the platform.
-                    Please check your email for updates regarding your approval
-                    status.
+              <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-white border border-amber-300/80 rounded-[2rem] p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-800 shrink-0">
+                    <ShieldCheck className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono text-[10px] uppercase tracking-wider font-extrabold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full border border-amber-300">
+                        Vetting Status: Pending Approval
+                      </span>
+                      <span className="text-xs text-amber-800 font-medium">
+                        Standard Review: 24–48 Hours
+                      </span>
+                    </div>
+                    <h4 className="font-heading font-bold text-base text-brand-moss">
+                      Welcome to your Teacher Dashboard, {teacherProfile.name || currentUser?.displayName}!
+                    </h4>
+                    <p className="font-sans text-xs text-brand-charcoal/80 max-w-2xl leading-relaxed">
+                      Your account is active. To gain your <strong>Verified Badge</strong>, appear on public parent searches, and start accepting live student bookings, please ensure your subjects, rates, and identity credentials (ID & qualifications) are uploaded.
+                    </p>
                   </div>
                 </div>
-
-                {/* Checklist of what was submitted */}
-                <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-6 text-left space-y-4 max-w-md mx-auto font-sans text-xs">
-                  <h4 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px]">
-                    Your Vetting Checklist
-                  </h4>
-                  <div className="space-y-2.5">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>
-                        Profile biography: <b>Completed</b>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>
-                        Hourly rate configuration:{" "}
-                        <b>₦{(teacherProfile.rate || 0) / 100}/hr</b>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>
-                        Government-issued ID:{" "}
-                        <b>{teacherProfile.govId || "Not uploaded"}</b>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>
-                        Degree & Qualifications:{" "}
-                        <b>{teacherProfile.degree || "Not uploaded"}</b>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {teacherProfile.videoUrl ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      ) : (
-                        <AlertOctagon className="w-4 h-4 text-brand-clay animate-pulse" />
-                      )}
-                      <span>
-                        Introductory Vetting Video:{" "}
-                        <b>
-                          {teacherProfile.videoUrl
-                            ? "Uploaded ✓"
-                            : "Awaiting upload"}
-                        </b>
-                      </span>
-                    </div>
-                    <div className="h-px bg-brand-moss/10 my-3" />
-                    <div className="flex items-center gap-2 text-brand-moss font-bold">
-                      <div className="w-2.5 h-2.5 rounded-full bg-brand-clay animate-ping" />
-                      <span>
-                        Admin Verification Panel: <b>Review Pending Approval</b>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="font-mono text-[9px] text-brand-charcoal/50 leading-normal">
-                  SLA Standard Window: Applications are vetted within 24 to 48
-                  hours. <br />
-                  Once verified, you will be granted full access to your booking
-                  calendars and lessons.
-                </p>
+                <button
+                  onClick={() => setActiveTab("profile")}
+                  className="shrink-0 py-3 px-6 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-md transition-all scale-100 hover:scale-102 flex items-center gap-2"
+                >
+                  <span>Complete Credentials & Profile</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
             )}
 
-            {/* If verified, show dashboard tabs */}
-            {teacherProfile && teacherProfile.verified && (
-              <>
-                {/* TAB 1: OVERVIEW & BOOKINGS */}
-                {activeTab === "overview" && (
-                  <div className="space-y-8">
-                    {/* Header Title */}
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+            {/* TAB 1: OVERVIEW & BOOKINGS */}
+            {activeTab === "overview" && (
+              <div className="space-y-8">
+                {/* Header Title */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
                           <BarChart2 size={24} />
                         </div>
                         <div>
@@ -1754,6 +1699,71 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                             >
                               Add
                             </button>
+                          </div>
+                        </div>
+
+                        {/* Verification & Credentials Section */}
+                        <div className="border-t border-brand-moss/10 pt-6 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-heading font-bold text-sm text-brand-moss uppercase tracking-wider flex items-center gap-2">
+                              <ShieldCheck className="w-4 h-4 text-brand-clay" />
+                              Verification Credentials & Documents
+                            </h4>
+                            <span className="text-[10px] font-mono text-brand-charcoal/50">Required for Live Client Status</span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                                Government-Issued ID (NIN / Passport)
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Link / Ref to Government ID"
+                                value={govIdUrl}
+                                onChange={(e) => setGovIdUrl(e.target.value)}
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                              />
+                            </div>
+                            <div>
+                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                                Degree / Teaching Certificate
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Link to Degree Certificate / Diploma"
+                                value={degreeUrl}
+                                onChange={(e) => setDegreeUrl(e.target.value)}
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                                Curriculum Vitae / Resume
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Link to CV / Resume"
+                                value={cvUrl}
+                                onChange={(e) => setCvUrl(e.target.value)}
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                              />
+                            </div>
+                            <div>
+                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                                Intro Video Link (YouTube / Loom)
+                              </label>
+                              <input
+                                type="url"
+                                placeholder="https://youtube.com/watch?v=... or Loom"
+                                value={videoUrl}
+                                onChange={(e) => setVideoUrl(e.target.value)}
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                              />
+                            </div>
                           </div>
                         </div>
 
@@ -2952,8 +2962,6 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                     </div>
                   </div>
                 )}
-              </>
-            )}
           </div>
 
           {/* INDEPENDENT STUDENT DETAILS ROSTER MODAL */}

@@ -177,31 +177,33 @@ export function sendTransactionalEmail(to, subject, templateName, templateData) 
     const verificationUrl = `${APP_URL}/verify-email?token=${crypto.randomBytes(16).toString('hex')}`;
     
     if (templateData.role === 'Teacher') {
-      body = `Welcome to EduVistar Africa, ${templateData.displayName}!\n\nYour profile as a professional educator is now ready for onboarding.\n\nNext Steps:\n1. Verify Email: ${verificationUrl}\n2. Complete Profile: List subjects, curriculum, and hourly rates.\n3. Set Availability: Choose slots for parent booking.\n\nBest regards,\nEduVistar Africa Support`;
+      const dashboardUrl = `${APP_URL}/dashboard`;
+      body = `Welcome to EduVistar Africa, ${templateData.displayName}!\n\nYour educator account is active. You can now access your Teacher Dashboard.\n\nNext Steps to Complete Your Registration & Start Receiving Students:\n1. Log In to Dashboard: ${dashboardUrl}\n2. Set Your Subjects & Hourly Rates: Choose the curriculum and set your hourly rate in your Profile.\n3. Upload Verification Credentials: Submit your Government ID and Degree/Certification under Profile Settings to unlock verified status.\n4. Admin Vetting: Our academic team audits credentials within 24-48 hours. Once verified, parents can directly book private lessons with you.\n\nBest regards,\nEduVistar Africa Academic Support`;
       htmlBody = getHtmlWrapper(subject, `
         <div style="text-align: center; margin-bottom: 25px;">
-          <span class="badge" style="letter-spacing: 1px; text-transform: uppercase;">Educator Portal</span>
+          <span class="badge" style="letter-spacing: 1px; text-transform: uppercase;">Educator Portal Active</span>
         </div>
-        <h2 style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;">Empower the Next Generation of Minds.</h2>
-        <p>Welcome to EduVistar Africa, <strong>${templateData.displayName}</strong>. Your profile as a professional educator is now ready for onboarding.</p>
+        <h2 style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 24px; color: #2E4036; margin-top: 0; line-height: 1.3; font-weight: bold;">Welcome to the EduVistar Faculty, ${templateData.displayName}!</h2>
+        <p>Congratulations on joining Africa's premier network of verified educators. Your account is active and ready for your teaching journey.</p>
         
-        <div style="background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 20px; margin: 25px 0;">
-          <h3 style="color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold;">Next Steps to Live Status:</h3>
-          <ol style="padding-left: 20px; margin: 0; color: #1A1A1A; line-height: 1.6;">
-            <li style="margin-bottom: 8px;"><strong>Verify Email:</strong> Activate your secure authentication session using the button below.</li>
-            <li style="margin-bottom: 8px;"><strong>Complete Profile:</strong> List your subjects, select the school curriculum you specialize in, and set your hourly rate.</li>
-            <li style="margin-bottom: 0;"><strong>Set Availability:</strong> Block out times on your weekly schedule to allow parents to book sessions.</li>
+        <div style="background-color: #F9F8F6; border: 1px solid rgba(46,64,54,0.08); border-radius: 16px; padding: 22px; margin: 25px 0;">
+          <h3 style="color: #2E4036; font-size: 15px; margin-top: 0; font-weight: bold; margin-bottom: 12px;">Next Steps to Complete Verification & Accept Clients:</h3>
+          <ol style="padding-left: 20px; margin: 0; color: #1A1A1A; line-height: 1.7; font-size: 14px;">
+            <li style="margin-bottom: 10px;"><strong>Access Your Portal:</strong> Log in directly to your <a href="${dashboardUrl}" style="color: #CC5833; font-weight: bold; text-decoration: underline;">Teacher Dashboard</a>.</li>
+            <li style="margin-bottom: 10px;"><strong>Configure Subjects & Hourly Rate:</strong> Select the curriculum levels you teach (WAEC, Cambridge, IGCSE) and set your hourly tutoring fees.</li>
+            <li style="margin-bottom: 10px;"><strong>Upload Verification Documents:</strong> Under Profile Settings, submit your Government ID and Degree/Teaching certificates to gain your verified badge.</li>
+            <li style="margin-bottom: 0;"><strong>Start Receiving Bookings:</strong> Once audited, your profile will go live to thousands of parents. All tutoring sessions are protected by our automated Escrow Engine.</li>
           </ol>
         </div>
 
         <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; font-style: italic; margin-bottom: 30px;">
-          Our automated escrow engine ensures your tutoring sessions are paid instantly and protected from booking disputes. Welcome to the future of elite tutoring.
+          EduVistar guarantees 100% timely payouts into your local bank or mobile wallet upon successful lesson completion.
         </p>
         
         <div style="text-align: center;">
-          <a class="button" href="${verificationUrl}">Verify Account & Log In</a>
+          <a class="button" href="${dashboardUrl}">Go to Teacher Dashboard</a>
         </div>
-        <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVistar Team</p>
+        <p style="margin-top: 30px; font-size: 14px;">Warm regards,<br>The EduVistar Academic Team</p>
       `);
     } else {
       body = `Welcome to EduVistar Africa, ${templateData.displayName}!\n\nYour parental hub has been successfully created.\n\nHere is what you can expect and your next steps:\n\n1. Verify Email: ${verificationUrl}\n2. Top Up Wallet: Add funds to your secure wallet to pay for lessons.\n3. Discover Tutors: Browse vetted educators by subject, rate, and curriculum.\n4. Book Lessons: Schedule 1-on-1 virtual sessions securely.\n\nEvery lesson is backed by the EduVistar Escrow System.\n\nIf a tutor is a no-show, experiences continuous connectivity failures, or files incorrect hours, you can register a dispute within 48 hours of lesson completion. Escrow funds are immediately frozen pending manual administrator reviews.\n\nBest regards,\nEduVistar Africa Support`;

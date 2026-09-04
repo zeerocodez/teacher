@@ -111,22 +111,45 @@ router.post('/optimize-bio', authenticateToken, requireRole(['Teacher']), async 
 
 // POST Update teacher profile (builder)
 router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
-  const { uid, name, location, rate, subjects, curricula, languages, bio, avatar } = req.body;
+  const { uid, name, username: requestedUsername, location, rate, subjects, curricula, languages, bio, avatar, govIdUrl, degreeUrl, cvUrl, videoUrl, currency, timezone, classroomLink, recordingTool } = req.body;
   const teacher = await db.findOne('teachers', t => t.uid === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
 
-  const updated = await db.update('teachers', teacher.id, {
+  let finalUsername = teacher.username;
+  if (requestedUsername && requestedUsername !== teacher.username) {
+    const cleanUsername = requestedUsername.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/(^-|-$)/g, '');
+    if (cleanUsername.length >= 3) {
+      const existing = await db.findOne('teachers', t => t.username === cleanUsername && t.uid !== uid);
+      if (!existing) {
+        finalUsername = cleanUsername;
+      }
+    }
+  }
+
+  const updatedFields = {
     name: name ? sanitizeText(name) : teacher.name,
+    username: finalUsername,
     location: location ? sanitizeText(location) : teacher.location,
     rate: rate ? parseInt(rate, 10) : teacher.rate,
-    subjects: subjects || teacher.subjects,
-    curricula: curricula || teacher.curricula,
-    languages: languages || teacher.languages,
-    bio: bio ? sanitizeText(bio) : teacher.bio,
-    avatar: avatar || teacher.avatar
-  });
+    subjects: subjects !== undefined ? subjects : teacher.subjects,
+    curricula: curricula !== undefined ? curricula : teacher.curricula,
+    languages: languages !== undefined ? languages : teacher.languages,
+    bio: bio !== undefined ? sanitizeText(bio) : teacher.bio,
+    avatar: avatar || teacher.avatar,
+    currency: currency ? sanitizeText(currency) : teacher.currency || "NGN",
+    timezone: timezone ? sanitizeText(timezone) : teacher.timezone || "Africa/Lagos",
+    classroomLink: classroomLink !== undefined ? sanitizeText(classroomLink) : teacher.classroomLink,
+    recordingTool: recordingTool !== undefined ? sanitizeText(recordingTool) : teacher.recordingTool,
+  };
+
+  if (govIdUrl !== undefined) updatedFields.govIdUrl = sanitizeText(govIdUrl);
+  if (degreeUrl !== undefined) updatedFields.degreeUrl = sanitizeText(degreeUrl);
+  if (cvUrl !== undefined) updatedFields.cvUrl = sanitizeText(cvUrl);
+  if (videoUrl !== undefined) updatedFields.videoUrl = sanitizeText(videoUrl);
+
+  const updated = await db.update('teachers', teacher.id, updatedFields);
 
   res.json(updated);
 });

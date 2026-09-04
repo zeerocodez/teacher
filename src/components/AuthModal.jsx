@@ -137,11 +137,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login', initi
   useEffect(() => {
     if (currentUser && isOpen) {
       onClose();
-      if (currentUser.role === 'Teacher') {
-        navigate('/academy');
-      } else if (currentUser.role === 'Parent' || currentUser.role === 'Admin' || currentUser.role === 'Student') {
-        navigate('/dashboard');
-      }
+      navigate('/dashboard');
     }
   }, [currentUser, isOpen, onClose, navigate]);
 
@@ -149,11 +145,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login', initi
     login(user, user.token);
     setPendingOnboarding(false);
     onClose();
-    if (user?.role === 'Teacher') {
-      navigate('/academy');
-    } else {
-      navigate('/dashboard');
-    }
+    navigate('/dashboard');
   };
 
   const handleFileUpload = async (e, type, setter, key) => {
