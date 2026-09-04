@@ -13,11 +13,11 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
   // Step 1: Personal Info
   const [name, setName] = useState(currentUser?.displayName || '');
   const [username, setUsername] = useState('');
-  const [location, setLocation] = useState('Lagos, Nigeria');
+  const [location, setLocation] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [bio, setBio] = useState('');
-  const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop');
+  const [avatar, setAvatar] = useState(currentUser?.photoURL || '');
 
   // Step 2: Subjects & Curriculums
   const [selectedSubjects, setSelectedSubjects] = useState([]);
@@ -30,7 +30,7 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [classroomLink, setClassroomLink] = useState('');
   const [recordingTool, setRecordingTool] = useState('');
-  const [rate, setRate] = useState(4000); // ₦4,000 hourly default
+  const [rate, setRate] = useState(0); // ₦0 initial rate
   const [availability, setAvailability] = useState({
     Monday: [],
     Tuesday: [],

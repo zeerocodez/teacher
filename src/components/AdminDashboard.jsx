@@ -1174,10 +1174,10 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                     <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
                     <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Gross Revenue</span>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">12%</span>
-                      <span className="text-xs font-medium text-gray-400">vs 10%</span>
+                      <span className="text-2xl font-bold text-gray-900">{formatCurrency(grossRevenue || 0, selectedCurrency)}</span>
+                      <span className="text-xs font-medium text-gray-400">vs {formatCurrency(0, selectedCurrency)}</span>
                     </div>
-                    <span className="text-xs font-bold text-emerald-500 mt-1">+2% increase</span>
+                    <span className="text-xs font-bold text-brand-charcoal/40 mt-1">{grossRevenue > 0 ? 'Live platform revenue' : 'No recorded revenue yet'}</span>
                   </div>
 
                   <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
@@ -1187,7 +1187,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                       <span className="text-2xl font-bold text-gray-900">{payouts.filter(p => p.status === 'Failed').length}</span>
                       <span className="text-xs font-medium text-gray-400">vs 0</span>
                     </div>
-                    <span className="text-xs font-bold text-rose-500 mt-1">Requires action</span>
+                    <span className="text-xs font-bold text-brand-charcoal/40 mt-1">{payouts.filter(p => p.status === 'Failed').length > 0 ? 'Requires action' : 'All clear'}</span>
                   </div>
                   
                   <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
@@ -1195,19 +1195,19 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                     <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Active Disputes</span>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold text-gray-900">{disputes.length}</span>
-                      <span className="text-xs font-medium text-gray-400">vs {disputes.length + 1}</span>
+                      <span className="text-xs font-medium text-gray-400">vs 0</span>
                     </div>
-                    <span className="text-xs font-bold text-emerald-500 mt-1">Improving</span>
+                    <span className="text-xs font-bold text-brand-charcoal/40 mt-1">{disputes.length > 0 ? 'Pending resolution' : 'Zero disputes'}</span>
                   </div>
 
                   <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
                     <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
                     <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Verified Teachers</span>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">45</span>
-                      <span className="text-xs font-medium text-gray-400">vs 41</span>
+                      <span className="text-2xl font-bold text-gray-900">{teachers.filter(t => t.verified).length}</span>
+                      <span className="text-xs font-medium text-gray-400">vs 0</span>
                     </div>
-                    <span className="text-xs font-bold text-emerald-500 mt-1">+4 new</span>
+                    <span className="text-xs font-bold text-brand-charcoal/40 mt-1">{teachers.filter(t => t.verified).length > 0 ? `${teachers.filter(t => t.verified).length} verified` : '0 verified'}</span>
                   </div>
                 </div>
               </div>

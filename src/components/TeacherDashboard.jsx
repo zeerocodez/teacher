@@ -51,20 +51,21 @@ export default function TeacherDashboard({
   onBack,
 }) {
   const defaultVerifiedProfile = {
-    uid: currentUser?.uid || "teacher_1",
-    name: currentUser?.displayName || "Mr. Adebayo Okafor",
-    username: "adebayo",
-    email: currentUser?.email || "adebayo@eduvistar.com",
+    uid: currentUser?.uid || "",
+    name: currentUser?.displayName || "",
+    username: "",
+    email: currentUser?.email || "",
     role: "Teacher",
-    location: "Lagos, Nigeria",
-    subjects: ["Mathematics", "Physics"],
-    curricula: ["WAEC", "JAMB", "IGCSE"],
+    location: "",
+    subjects: [],
+    curricula: [],
     languages: ["English"],
-    rate: 400000,
-    rating: 4.9,
-    verified: true,
-    bio: "Certified pedagogy expert specializing in STEM and examination preparation.",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop"
+    rate: 0,
+    rating: 0,
+    reviewsCount: 0,
+    verified: false,
+    bio: "",
+    avatar: currentUser?.photoURL || ""
   };
 
   const [teacherProfile, setTeacherProfile] = useState(defaultVerifiedProfile);
@@ -84,17 +85,17 @@ export default function TeacherDashboard({
   // Tab State
   const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'profile' | 'students' | 'earnings' | 'reputation' | 'academy'
 
-  // Availability Grid states
+  // Availability Grid states (Clean 0 slots initialized)
   const [availabilityGrid, setAvailabilityGrid] = useState({
-    Monday: ["Afternoon", "Evening"],
-    Tuesday: ["Afternoon"],
-    Wednesday: ["Evening"],
-    Thursday: ["Afternoon", "Evening"],
-    Friday: ["Evening"],
-    Saturday: ["Morning", "Afternoon"],
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+    Saturday: [],
     Sunday: [],
   });
-  const [googleCalendarSync, setGoogleCalendarSync] = useState(true);
+  const [googleCalendarSync, setGoogleCalendarSync] = useState(false);
   const [holidayMode, setHolidayMode] = useState(false);
   const [minNotice, setMinNotice] = useState("24 hours");
 
@@ -133,21 +134,19 @@ export default function TeacherDashboard({
   const [recordingTool, setRecordingTool] = useState("recordly.site");
 
   // Homework grading panel states
-  const [gradingScore, setGradingScore] = useState(95);
-  const [gradingFeedback, setGradingFeedback] = useState(
-    "Brilliant solution. Very well aligned to curriculum guidelines.",
-  );
+  const [gradingScore, setGradingScore] = useState(0);
+  const [gradingFeedback, setGradingFeedback] = useState("");
   const [isGraded, setIsGraded] = useState(false);
 
   // Assignment Creator states
   const [assignTitle, setAssignTitle] = useState("");
   const [assignDesc, setAssignDesc] = useState("");
-  const [assignStudent, setAssignStudent] = useState("Tunde");
+  const [assignStudent, setAssignStudent] = useState("");
   const [assignMessage, setAssignMessage] = useState("");
 
   // Group Class States
   const [groupName, setGroupName] = useState("");
-  const [groupFee, setGroupFee] = useState(15000);
+  const [groupFee, setGroupFee] = useState(0);
   // Removed unused group class state
 
   // AI Progress Report States
@@ -157,16 +156,14 @@ export default function TeacherDashboard({
 
   // Payout settings states
   const [payoutMethod, setPayoutMethod] = useState("Paystack Bank Account");
-  const [minPayout, setMinPayout] = useState(50000);
+  const [minPayout, setMinPayout] = useState(10000);
   const [payoutRequestAmount, setPayoutRequestAmount] = useState(0);
   const [payoutMessage, setPayoutMessage] = useState("");
   const [isRequestingPayout, setIsRequestingPayout] = useState(false);
   const [accountNumber, setAccountNumber] = useState("");
   const [accountName, setAccountName] = useState("");
-  const [selectedBankCode, setSelectedBankCode] = useState("058");
-  const [selectedBankName, setSelectedBankName] = useState(
-    "Guaranty Trust Bank (GTBank)",
-  );
+  const [selectedBankCode, setSelectedBankCode] = useState("");
+  const [selectedBankName, setSelectedBankName] = useState("");
 
   const handleGeminiSuggest = () => {
     const suggestions = [
@@ -292,17 +289,16 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       // Local state fallback simulation
       setTeacherProfile({
         uid: currentUser.uid,
-        name: currentUser.displayName,
-        location: "Lagos, Nigeria",
-        subjects: ["Mathematics"],
-        curricula: ["WAEC"],
-        rate: 400000,
-        rating: 4.9,
-        reviewsCount: 1,
-        badges: ["badge-verified"],
-        bio: "Bio description here.",
-        avatar:
-          "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
+        name: currentUser.displayName || "",
+        location: "",
+        subjects: [],
+        curricula: [],
+        rate: 0,
+        rating: 0,
+        reviewsCount: 0,
+        badges: [],
+        bio: "",
+        avatar: currentUser.photoURL || "",
       });
     }
   }, [currentUser, getAuthHeaders]);
@@ -898,14 +894,14 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                           </span>
                           <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-gray-900">
-                              94%
+                              {sessionsCount > 0 ? "100%" : "0%"}
                             </span>
                             <span className="text-xs font-medium text-gray-400">
-                              vs 89%
+                              vs 0%
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-emerald-500 mt-1">
-                            +5% increase
+                          <span className="text-xs font-bold text-brand-charcoal/40 mt-1">
+                            {sessionsCount > 0 ? "Active attendance" : "No sessions recorded"}
                           </span>
                         </div>
 
@@ -918,14 +914,14 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                           </span>
                           <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-gray-900">
-                              4.8/5
+                              {teacherProfile?.rating ? `${teacherProfile.rating}/5` : "0.0/5"}
                             </span>
                             <span className="text-xs font-medium text-gray-400">
-                              vs 4.6/5
+                              vs 0.0/5
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-emerald-500 mt-1">
-                            Improving
+                          <span className="text-xs font-bold text-brand-charcoal/40 mt-1">
+                            {teacherProfile?.rating ? `${teacherProfile.reviewsCount || 0} reviews` : "No ratings yet"}
                           </span>
                         </div>
 
@@ -941,31 +937,31 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                               {sessionsCount * 2} hrs
                             </span>
                             <span className="text-xs font-medium text-gray-400">
-                              vs {Math.max(sessionsCount * 2 - 4, 0)} hrs
+                              vs 0 hrs
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-emerald-500 mt-1">
-                            +4 hrs
+                          <span className="text-xs font-bold text-brand-charcoal/40 mt-1">
+                            {sessionsCount > 0 ? `+${sessionsCount * 2} hrs` : "0 hrs completed"}
                           </span>
                         </div>
 
                         <div className="border border-gray-100 rounded-lg p-5 flex flex-col relative group hover:border-gray-200 transition-colors">
-                          <div className="absolute top-5 right-5 text-rose-500">
-                            <TrendingDown size={16} />
+                          <div className="absolute top-5 right-5 text-emerald-500">
+                            <CheckCircle2 size={16} />
                           </div>
                           <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
                             Pending Grading
                           </span>
                           <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-gray-900">
-                              3
+                              0
                             </span>
                             <span className="text-xs font-medium text-gray-400">
-                              vs 1
+                              vs 0
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-rose-500 mt-1">
-                            Requires action
+                          <span className="text-xs font-bold text-emerald-600 mt-1">
+                            All caught up
                           </span>
                         </div>
                       </div>
@@ -973,6 +969,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
 
                     {/* Teacher Onboarding Checklist */}
                     {(() => {
+                      const isVetted = !!(
+                        teacherProfile?.verified ||
+                        teacherProfile?.isVetted ||
+                        teacherProfile?.vettingStatus === "approved" ||
+                        currentUser?.isVetted
+                      );
                       const hasSubjects =
                         teacherProfile?.subjects &&
                         teacherProfile.subjects.length > 0;
@@ -985,18 +987,20 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                         {
                           step: 1,
                           title: "Teacher Vetting Status",
-                          desc: "Your profile has been vetted and verified by the administration team.",
-                          completed: true,
-                          actionLabel: "Verified",
-                          action: null,
+                          desc: isVetted
+                            ? "Your profile has been vetted and verified by the administration team."
+                            : "Submit your credentials (NIN/TRCN/Degree) for verification by the admin team.",
+                          completed: isVetted,
+                          actionLabel: isVetted ? "Verified" : "Verify Profile",
+                          action: isVetted ? null : () => setActiveTab("profile"),
                         },
                         {
                           step: 2,
                           title: "Set Hourly Rate & Profile Details",
-                          desc: hasSubjects
+                          desc: hasSubjects && (teacherProfile?.rate > 0)
                             ? `Configured. Hourly rate: ${formatCurrency(teacherProfile.rate || 0, selectedCurrency)}.`
                             : "Configure your subjects, biography, profile avatar, and set your hourly rate.",
-                          completed: hasSubjects,
+                          completed: !!(hasSubjects && (teacherProfile?.rate > 0)),
                           actionLabel: "Edit Profile",
                           action: () => setActiveTab("profile"),
                         },
@@ -2182,83 +2186,13 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                             </h4>
                           </div>
                           <span className="font-mono text-2xs text-brand-clay uppercase tracking-widest font-bold">
-                            1 PENDING
+                            0 PENDING
                           </span>
                         </div>
 
-                        <form
-                          onSubmit={handleHomeworkGrade}
-                          className="space-y-4 font-sans text-xs"
-                        >
-                          <div className="bg-brand-moss/10 border border-brand-cream/10 rounded-xl p-3 font-mono text-[10px]">
-                            <div className="flex justify-between items-center text-brand-clay font-bold mb-1">
-                              <span>Tunde Okafor</span>
-                              <span>algebra_hw_4.txt</span>
-                            </div>
-                            <div className="text-brand-cream/70 leading-normal">
-                              x² - 5x + 6 = 0 <br />
-                              (x - 2)(x - 3) = 0 <br />
-                              Therefore, x = 2 or x = 3.
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">
-                                Score (1-100)
-                              </label>
-                              <input
-                                type="number"
-                                min="1"
-                                max="100"
-                                value={gradingScore}
-                                onChange={(e) =>
-                                  setGradingScore(e.target.value)
-                                }
-                                className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay"
-                              />
-                            </div>
-                            <div className="flex flex-col justify-end">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  toast.success(
-                                    "Simulated: Audio feedback recorded. File feedback_audio_dsp.mp3 attached.",
-                                  )
-                                }
-                                className="py-2.5 bg-brand-cream/10 hover:bg-brand-cream/15 text-white border border-brand-cream/20 rounded-xl font-mono text-[9px] uppercase tracking-wider font-bold text-center flex items-center justify-center gap-1 cursor-pointer"
-                              >
-                                🎤 Voice Note Feedback
-                              </button>
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">
-                              Teacher Feedback
-                            </label>
-                            <textarea
-                              value={gradingFeedback}
-                              onChange={(e) =>
-                                setGradingFeedback(e.target.value)
-                              }
-                              className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-3 text-white focus:outline-none focus:border-brand-clay h-16 resize-none"
-                            />
-                          </div>
-
-                          <button
-                            type="submit"
-                            className="btn-magnetic w-full py-2.5 px-4 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-2xs uppercase tracking-wider"
-                          >
-                            Grade Submission
-                          </button>
-
-                          {isGraded && (
-                            <div className="text-center text-emerald-400 font-mono text-[9px] animate-pulse">
-                              ✓ Grade recorded successfully.
-                            </div>
-                          )}
-                        </form>
+                        <div className="py-8 text-center text-brand-cream/40 text-xs font-sans">
+                          No pending homework submissions from students.
+                        </div>
                       </div>
                     </div>
 
@@ -2272,11 +2206,22 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                       </h4>
                       <button
                         type="button"
-                        onClick={() => handleGenerateReport("Tunde")}
-                        className="w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                        disabled={roster.length === 0}
+                        onClick={() => {
+                          const targetStudent = selectedRosterStudent?.name || roster[0]?.name;
+                          if (targetStudent) handleGenerateReport(targetStudent);
+                          else toast("No active students enrolled to generate report for.");
+                        }}
+                        className={`w-full py-3 rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-md ${
+                          roster.length === 0
+                            ? "bg-brand-moss/30 text-brand-charcoal/40 cursor-not-allowed"
+                            : "bg-brand-moss hover:bg-brand-clay text-white cursor-pointer"
+                        }`}
                       >
                         <Sparkles className="w-4 h-4 text-brand-clay animate-pulse" />{" "}
-                        Generate Gemini Report for Tunde
+                        {roster.length > 0
+                          ? `Generate Gemini Report for ${selectedRosterStudent?.name || roster[0]?.name}`
+                          : "No Active Students Enrolled"}
                       </button>
 
                       {aiReportLoading && (
@@ -2557,42 +2502,66 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                             Badge Progress (Tutor level)
                           </h5>
                           <div className="grid grid-cols-2 gap-2">
-                            {[
-                              {
-                                badge: "Verified Tutor",
-                                status: "Earned",
-                                color:
-                                  "bg-emerald-50 text-emerald-800 border-emerald-200",
-                              },
-                              {
-                                badge: "Elite Certified",
-                                status: "Earned",
-                                color:
-                                  "bg-emerald-50 text-emerald-800 border-emerald-200",
-                              },
-                              {
-                                badge: "Top Rated",
-                                status: "Earned",
-                                color:
-                                  "bg-emerald-50 text-emerald-800 border-emerald-200",
-                              },
-                              {
-                                badge: "Elite Educator",
-                                status: "Locked (80%)",
-                                color:
-                                  "bg-amber-50 text-amber-800 border-amber-200",
-                              },
-                            ].map((b, i) => (
-                              <div
-                                key={i}
-                                className={`p-2 border rounded-xl flex justify-between items-center text-[10px] ${b.color}`}
-                              >
-                                <span className="font-bold">{b.badge}</span>
-                                <span className="text-[8px] uppercase">
-                                  {b.status}
-                                </span>
-                              </div>
-                            ))}
+                            {(() => {
+                              const isVetted = !!(
+                                teacherProfile?.verified ||
+                                teacherProfile?.isVetted ||
+                                teacherProfile?.vettingStatus === "approved" ||
+                                currentUser?.isVetted
+                              );
+                              const isElite = !!(
+                                teacherProfile?.badges?.includes("badge-elite") ||
+                                teacherProfile?.badges?.includes("elite")
+                              );
+                              const isTopRated = !!(
+                                (teacherProfile?.rating || 0) >= 4.8 &&
+                                (teacherProfile?.reviewsCount || 0) >= 5
+                              );
+                              const isEliteEducator = sessionsCount >= 50;
+
+                              const badgeList = [
+                                {
+                                  badge: "Verified Tutor",
+                                  status: isVetted ? "Earned" : "Locked (0%)",
+                                  color: isVetted
+                                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 opacity-60",
+                                },
+                                {
+                                  badge: "Elite Certified",
+                                  status: isElite ? "Earned" : "Locked (0%)",
+                                  color: isElite
+                                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 opacity-60",
+                                },
+                                {
+                                  badge: "Top Rated",
+                                  status: isTopRated ? "Earned" : "Locked (0%)",
+                                  color: isTopRated
+                                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 opacity-60",
+                                },
+                                {
+                                  badge: "Elite Educator",
+                                  status: isEliteEducator ? "Earned" : `Locked (${Math.min(Math.round((sessionsCount / 50) * 100), 99)}%)`,
+                                  color: isEliteEducator
+                                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 opacity-60",
+                                },
+                              ];
+
+                              return badgeList.map((b, i) => (
+                                <div
+                                  key={i}
+                                  className={`p-2 border rounded-xl flex justify-between items-center text-[10px] ${b.color}`}
+                                >
+                                  <span className="font-bold">{b.badge}</span>
+                                  <span className="text-[8px] uppercase">
+                                    {b.status}
+                                  </span>
+                                </div>
+                              ));
+                            })()}
                           </div>
                         </div>
 
@@ -2602,36 +2571,14 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                             Ratings Breakdown (5 dimensions)
                           </h5>
                           <div className="space-y-1 text-[11px] font-sans text-brand-charcoal/80">
-                            <div className="flex justify-between">
-                              <span>Punctuality</span>
-                              <span className="font-bold text-brand-moss">
-                                4.9★
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Teaching Quality</span>
-                              <span className="font-bold text-brand-moss">
-                                5.0★
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Communication</span>
-                              <span className="font-bold text-brand-moss">
-                                4.8★
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Preparedness</span>
-                              <span className="font-bold text-brand-moss">
-                                4.9★
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Student Progress</span>
-                              <span className="font-bold text-brand-moss">
-                                4.9★
-                              </span>
-                            </div>
+                            {["Punctuality", "Teaching Quality", "Communication", "Preparedness", "Student Progress"].map((dim) => (
+                              <div key={dim} className="flex justify-between">
+                                <span>{dim}</span>
+                                <span className="font-bold text-brand-moss">
+                                  {teacherProfile?.rating ? `${teacherProfile.rating}★` : "0.0★"}
+                                </span>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -2656,13 +2603,13 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                               CURRENT RANK
                             </span>
                             <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-0.5">
-                              #4 in Lagos
+                              {sessionsCount > 0 ? `#${Math.max(1, 50 - sessionsCount)} in Lagos` : "Unranked"}
                             </span>
-                            <span className="font-mono text-[9px] text-emerald-600 block mt-1 font-bold">
-                              ↑ Moved up 2 spots this week
+                            <span className="font-mono text-[9px] text-brand-charcoal/50 block mt-1 font-bold">
+                              {sessionsCount > 0 ? "Active in weekly rankings" : "Complete first session to rank"}
                             </span>
                           </div>
-                          <Trophy className="w-10 h-10 text-brand-clay animate-pulse" />
+                          <Trophy className="w-10 h-10 text-brand-clay opacity-60" />
                         </div>
 
                         <div className="flex items-center justify-between font-sans text-xs border-t border-brand-moss/5 pt-4">
