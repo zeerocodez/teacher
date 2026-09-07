@@ -139,6 +139,46 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   // Disputes State
   const [disputes, setDisputes] = useState([]);
 
+  // Notifications State
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [adminNotifications, setAdminNotifications] = useState([
+    {
+      id: "admin-notif-1",
+      title: "New Teacher Application",
+      message: "Dr. Chidi Johnson submitted verification credentials & LinkedIn profile for audit.",
+      time: "5 mins ago",
+      type: "application",
+      read: false,
+    },
+    {
+      id: "admin-notif-2",
+      title: "Payout Request Pending",
+      message: "Teacher wallet payout request of ₦45,000 awaiting approval.",
+      time: "1 hour ago",
+      type: "finance",
+      read: false,
+    },
+    {
+      id: "admin-notif-3",
+      title: "Platform Health OK",
+      message: "Real-time socket engine and daily video bridge are operating normally.",
+      time: "4 hours ago",
+      type: "system",
+      read: true,
+    },
+  ]);
+
+  const handleMarkAllAdminNotificationsRead = () => {
+    setAdminNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    toast.success("All admin notifications marked as read.");
+  };
+
+  const handleToggleAdminNotification = (id) => {
+    setAdminNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n)),
+    );
+  };
+
   // B2B school partnerships
   const [b2bSchools, setB2bSchools] = useState([]);
   const [selectedB2bSchool, setSelectedB2bSchool] = useState(null);
@@ -1050,12 +1090,79 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8f9fa]">
         
         {/* Top Header */}
-        <header className="h-20 bg-white/50 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0">
+        <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0 relative z-30">
           <div className="flex items-center gap-4">
-            <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
-              <Bell size={20} />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+            {/* Notification Bell with Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 rounded-xl text-gray-500 hover:text-brand-moss hover:bg-gray-100 transition-all cursor-pointer"
+                title="Notifications"
+              >
+                <Bell size={20} />
+                {adminNotifications.filter((n) => !n.read).length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-brand-clay rounded-full border-2 border-white animate-pulse" />
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-brand-moss/15 rounded-2xl p-4 shadow-2xl z-50 text-brand-charcoal animate-fade-in">
+                  <div className="flex items-center justify-between border-b border-brand-moss/10 pb-3 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Bell size={16} className="text-brand-clay" />
+                      <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                        Admin Alerts
+                      </span>
+                      {adminNotifications.filter((n) => !n.read).length > 0 && (
+                        <span className="bg-brand-clay/15 text-brand-clay font-mono text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          {adminNotifications.filter((n) => !n.read).length} new
+                        </span>
+                      )}
+                    </div>
+                    {adminNotifications.filter((n) => !n.read).length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleMarkAllAdminNotificationsRead}
+                        className="text-[10px] font-mono text-brand-clay font-bold hover:underline uppercase"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
+                    {adminNotifications.length === 0 ? (
+                      <p className="text-center text-xs text-gray-400 py-6">No notifications</p>
+                    ) : (
+                      adminNotifications.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => handleToggleAdminNotification(n.id)}
+                          className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                            n.read
+                              ? "bg-gray-50/70 border-gray-100 text-gray-500"
+                              : "bg-brand-cream/30 border-brand-moss/15 text-brand-charcoal shadow-xs"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <h6 className="font-heading font-bold text-xs text-brand-moss">
+                              {n.title}
+                            </h6>
+                            <span className="font-mono text-[9px] text-gray-400 shrink-0">
+                              {n.time}
+                            </span>
+                          </div>
+                          <p className="text-[11px] mt-1 text-brand-charcoal/80 leading-relaxed">
+                            {n.message}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
                 <User size={16} />

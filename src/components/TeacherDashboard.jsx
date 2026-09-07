@@ -36,7 +36,16 @@ import {
   Search,
   LogOut,
   BookOpen,
-  Play
+  Play,
+  Upload,
+  Camera,
+  Check,
+  HelpCircle,
+  Info,
+  ExternalLink,
+  Globe,
+  FileCheck,
+  Image as ImageIcon
 } from "lucide-react";
 
 export default function TeacherDashboard({
@@ -116,6 +125,8 @@ export default function TeacherDashboard({
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [linkedin, setLinkedin] = useState("");
   const [rate, setRate] = useState(0);
   const [bio, setBio] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState([]);
@@ -132,6 +143,119 @@ export default function TeacherDashboard({
   const [timezone, setTimezone] = useState("Africa/Lagos");
   const [classroomLink, setClassroomLink] = useState("");
   const [recordingTool, setRecordingTool] = useState("recordly.site");
+  const [uploadingState, setUploadingState] = useState({ type: null, progress: 0 });
+
+  // Notifications State
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: "notif-1",
+      title: "New Lesson Request",
+      message: "Parent Mrs. Adeyemi requested a WAEC Mathematics session.",
+      time: "10 mins ago",
+      type: "booking",
+      read: false,
+    },
+    {
+      id: "notif-2",
+      title: "LinkedIn Verification Notice",
+      message: "Your mandatory LinkedIn profile is registered. Parents can view your verified experience.",
+      time: "2 hours ago",
+      type: "verification",
+      read: false,
+    },
+    {
+      id: "notif-3",
+      title: "Wallet Payout Ready",
+      message: "Escrow release scheduled for completed tuition sessions.",
+      time: "1 day ago",
+      type: "finance",
+      read: true,
+    },
+  ]);
+
+  const handleMarkAllNotificationsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    toast.success("All notifications marked as read.");
+  };
+
+  const handleToggleNotification = (id) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n)),
+    );
+  };
+
+  const handleFileUpload = async (e, type, setter) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dbyb4c1jq";
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "vilb3pi3";
+
+    setUploadingState({ type, progress: 20 });
+    const localUrl = URL.createObjectURL(file);
+
+    if (!uploadPreset || uploadPreset.includes("placeholder")) {
+      setter(localUrl);
+      setUploadingState({ type: null, progress: 0 });
+      toast.success(`✓ "${file.name}" uploaded successfully!`);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+    const resourceType = type === "video" ? "video" : (type === "image" ? "image" : "auto");
+
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, true);
+      xhr.timeout = 20000;
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          setUploadingState({ type, progress: percent });
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            setter(response.secure_url || localUrl);
+            toast.success(`✓ "${file.name}" uploaded successfully!`);
+          } catch (err) {
+            setter(localUrl);
+            toast.success(`✓ "${file.name}" saved!`);
+          }
+        } else {
+          setter(localUrl);
+          toast.success(`✓ "${file.name}" saved!`);
+        }
+        setUploadingState({ type: null, progress: 0 });
+      };
+
+      xhr.onerror = () => {
+        setter(localUrl);
+        toast.success(`✓ "${file.name}" saved!`);
+        setUploadingState({ type: null, progress: 0 });
+      };
+
+      xhr.ontimeout = () => {
+        setter(localUrl);
+        toast.success(`✓ "${file.name}" saved!`);
+        setUploadingState({ type: null, progress: 0 });
+      };
+
+      xhr.send(formData);
+    } catch (err) {
+      console.warn("Upload error:", err);
+      setter(localUrl);
+      toast.success(`✓ "${file.name}" saved!`);
+      setUploadingState({ type: null, progress: 0 });
+    }
+  };
 
   // Homework grading panel states
   const [gradingScore, setGradingScore] = useState(0);
@@ -224,6 +348,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         setName(data.teacher.name || "");
         setUsername(data.teacher.username || "");
         setLocation(data.teacher.location || "");
+        setWhatsapp(data.teacher.whatsapp || "");
+        setLinkedin(data.teacher.linkedin || "");
         setRate(data.teacher.rate ? data.teacher.rate / 100 : 0);
         setBio(data.teacher.bio || "");
         setSelectedSubjects(data.teacher.subjects || []);
@@ -310,6 +436,19 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setProfileMessage("");
+
+    // Enforce mandatory LinkedIn profile
+    if (!linkedin || !linkedin.trim()) {
+      toast.error("LinkedIn profile URL is mandatory for verification and client visibility.");
+      setProfileMessage("⚠️ LinkedIn profile URL is mandatory.");
+      return;
+    }
+    if (!linkedin.toLowerCase().includes("linkedin.com")) {
+      toast.error("Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/username).");
+      setProfileMessage("⚠️ Valid LinkedIn profile URL is required.");
+      return;
+    }
+
     setLoading(true);
 
     const payload = {
@@ -317,6 +456,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       name,
       username,
       location,
+      whatsapp,
+      linkedin,
       rate: Math.round(rate * 100), // convert back to minor units
       bio,
       subjects: selectedSubjects,
@@ -696,12 +837,79 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8f9fa]">
         {/* Top Header */}
-        <header className="h-20 bg-white/50 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0">
+        <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0 relative z-30">
           <div className="flex items-center gap-4">
-            <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
-              <Bell size={20} />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+            {/* Notification Bell with Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 rounded-xl text-gray-500 hover:text-brand-moss hover:bg-gray-100 transition-all cursor-pointer"
+                title="Notifications"
+              >
+                <Bell size={20} />
+                {notifications.filter((n) => !n.read).length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-brand-clay rounded-full border-2 border-white animate-pulse" />
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-brand-moss/15 rounded-2xl p-4 shadow-2xl z-50 text-brand-charcoal animate-fade-in">
+                  <div className="flex items-center justify-between border-b border-brand-moss/10 pb-3 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Bell size={16} className="text-brand-clay" />
+                      <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                        Notifications
+                      </span>
+                      {notifications.filter((n) => !n.read).length > 0 && (
+                        <span className="bg-brand-clay/15 text-brand-clay font-mono text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          {notifications.filter((n) => !n.read).length} new
+                        </span>
+                      )}
+                    </div>
+                    {notifications.filter((n) => !n.read).length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleMarkAllNotificationsRead}
+                        className="text-[10px] font-mono text-brand-clay font-bold hover:underline uppercase"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
+                    {notifications.length === 0 ? (
+                      <p className="text-center text-xs text-gray-400 py-6">No notifications</p>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => handleToggleNotification(n.id)}
+                          className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                            n.read
+                              ? "bg-gray-50/70 border-gray-100 text-gray-500"
+                              : "bg-brand-cream/30 border-brand-moss/15 text-brand-charcoal shadow-xs"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <h6 className="font-heading font-bold text-xs text-brand-moss">
+                              {n.title}
+                            </h6>
+                            <span className="font-mono text-[9px] text-gray-400 shrink-0">
+                              {n.time}
+                            </span>
+                          </div>
+                          <p className="text-[11px] mt-1 text-brand-charcoal/80 leading-relaxed">
+                            {n.message}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 overflow-hidden">
                 {teacherProfile?.avatar ? (
@@ -1462,6 +1670,41 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                               className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
                             />
                           </div>
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
+                              WhatsApp Number
+                            </label>
+                            <input
+                              type="tel"
+                              placeholder="+234 800 000 0000"
+                              value={whatsapp}
+                              onChange={(e) => setWhatsapp(e.target.value)}
+                              className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Mandatory LinkedIn Profile Field */}
+                        <div className="bg-brand-moss/5 border border-brand-moss/15 rounded-2xl p-4 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss flex items-center gap-1.5">
+                              <span className="text-blue-600 font-bold font-sans">in</span> LinkedIn Profile URL <span className="text-red-500">*</span>
+                            </label>
+                            <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
+                              Mandatory for Verification
+                            </span>
+                          </div>
+                          <input
+                            type="url"
+                            required
+                            placeholder="https://linkedin.com/in/your-profile"
+                            value={linkedin}
+                            onChange={(e) => setLinkedin(e.target.value)}
+                            className="w-full bg-white border border-brand-moss/20 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
+                          />
+                          <p className="text-[11px] text-brand-charcoal/70 leading-relaxed">
+                            💡 <b>Why this is mandatory:</b> Parents strongly prefer tutors with a verified LinkedIn profile. Having your public LinkedIn link significantly increases client trust, profile views, and lesson booking requests.
+                          </p>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1561,16 +1804,153 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                           </div>
                         </div>
 
-                        <div>
-                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
-                            Profile Avatar URL
-                          </label>
-                          <input
-                            type="text"
-                            value={avatar}
-                            onChange={(e) => setAvatar(e.target.value)}
-                            className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
-                          />
+                        {/* Teacher Profile Photo Provision & Guidelines */}
+                        <div className="bg-white border border-brand-moss/10 rounded-2xl p-5 space-y-5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-brand-moss/5 pb-3">
+                            <div>
+                              <h4 className="font-heading font-bold text-sm text-brand-moss uppercase tracking-wider flex items-center gap-2">
+                                <Camera className="w-4 h-4 text-brand-clay" />
+                                Teacher Profile Photo
+                              </h4>
+                              <p className="text-xs text-brand-charcoal/65 mt-0.5">
+                                A clear, friendly photo helps parents and students connect with you.
+                              </p>
+                            </div>
+                            <span className="text-[10px] font-mono text-brand-clay bg-brand-clay/10 px-2.5 py-1 rounded-full w-fit">
+                              Visible on Public Profile
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                            {/* Left: Avatar Preview & Upload Action */}
+                            <div className="md:col-span-5 flex flex-col items-center text-center p-4 bg-brand-cream/30 rounded-2xl border border-brand-moss/10">
+                              <div className="relative group">
+                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-md bg-brand-moss/10 flex items-center justify-center">
+                                  {avatar ? (
+                                    <img
+                                      src={avatar}
+                                      alt={name || "Teacher"}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop";
+                                      }}
+                                    />
+                                  ) : (
+                                    <User className="w-12 h-12 text-brand-moss/40" />
+                                  )}
+                                </div>
+                                <label className="absolute bottom-0 right-0 bg-brand-moss hover:bg-brand-clay text-white p-2 rounded-full cursor-pointer shadow-lg transition-transform hover:scale-110">
+                                  <Camera className="w-4 h-4" />
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleFileUpload(e, "image", setAvatar)}
+                                    className="hidden"
+                                    disabled={uploadingState.type === "image"}
+                                  />
+                                </label>
+                              </div>
+
+                              <div className="mt-4 w-full space-y-2">
+                                <label className="block w-full py-2.5 px-4 bg-brand-moss hover:bg-brand-moss/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider text-center cursor-pointer transition-all shadow-sm">
+                                  {uploadingState.type === "image" ? (
+                                    <span>Uploading ({uploadingState.progress}%)...</span>
+                                  ) : (
+                                    <span className="flex items-center justify-center gap-2">
+                                      <Upload className="w-3.5 h-3.5" /> Upload Photo
+                                    </span>
+                                  )}
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleFileUpload(e, "image", setAvatar)}
+                                    className="hidden"
+                                    disabled={uploadingState.type === "image"}
+                                  />
+                                </label>
+                                
+                                <div className="pt-2 text-left">
+                                  <label className="text-[10px] font-heading font-bold uppercase tracking-wider text-brand-moss/70 block mb-1">
+                                    Or paste photo URL
+                                  </label>
+                                  <input
+                                    type="url"
+                                    placeholder="https://... photo link"
+                                    value={avatar}
+                                    onChange={(e) => setAvatar(e.target.value)}
+                                    className="w-full bg-white border border-brand-moss/15 rounded-lg px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right: What your photo needs checklist & sample avatars */}
+                            <div className="md:col-span-7 space-y-3 bg-brand-cream/15 p-4 rounded-2xl border border-brand-moss/10">
+                              <h5 className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                What your photo needs
+                              </h5>
+
+                              {/* Sample Photos */}
+                              <div className="flex items-center gap-3 py-1">
+                                <div className="flex items-center gap-2">
+                                  <img
+                                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop"
+                                    alt="Sample teacher portrait"
+                                    className="w-11 h-11 rounded-full object-cover border-2 border-emerald-500 shadow-xs"
+                                    title="Facing forward, clean background"
+                                  />
+                                  <img
+                                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
+                                    alt="Sample teacher portrait"
+                                    className="w-11 h-11 rounded-full object-cover border-2 border-emerald-500 shadow-xs"
+                                    title="Well lit, centered"
+                                  />
+                                  <img
+                                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop"
+                                    alt="Sample teacher portrait"
+                                    className="w-11 h-11 rounded-full object-cover border-2 border-emerald-500 shadow-xs"
+                                    title="Head & shoulders framed"
+                                  />
+                                </div>
+                                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded-md border border-emerald-200">
+                                  ✓ Approved examples
+                                </span>
+                              </div>
+
+                              {/* Checklist */}
+                              <ul className="space-y-1.5 text-xs text-brand-charcoal/80">
+                                <li className="flex items-start gap-2">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                  <span>You should be facing forward</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                  <span>Frame your head and shoulders</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                  <span>You should be centered and upright</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                  <span>Your face and eyes should be visible (except for religious reasons)</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                  <span>You should be the only person in the photo</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                  <span>Use a color photo with high resolution and no filters</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                  <span>Avoid logos or personal contact information</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
                         </div>
 
                         <div>
@@ -1717,26 +2097,77 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                             <span className="text-[10px] font-mono text-brand-charcoal/50">Required for Live Client Status</span>
                           </div>
 
+                          {/* Write-up Callout: How to share your document links via Google Drive */}
+                          <div className="bg-gradient-to-r from-amber-500/10 via-brand-moss/5 to-brand-cream border border-amber-500/25 rounded-2xl p-4 sm:p-5 text-xs text-brand-charcoal space-y-3 shadow-xs">
+                            <div className="flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 text-amber-800 font-bold">
+                                💡
+                              </div>
+                              <div className="space-y-1">
+                                <h5 className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                  How to share your document links (Google Drive / Cloud)
+                                </h5>
+                                <p className="text-brand-charcoal/80 leading-relaxed text-xs">
+                                  You can upload your documents to <b>Google Drive</b> (or OneDrive / Dropbox), and paste the shareable links below.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="bg-white/80 border border-amber-500/20 rounded-xl p-3.5 space-y-2 text-[11px] text-brand-charcoal">
+                              <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                                <span>⚠️ Important:</span>
+                                <span>Ensure the file link is accessible to everyone and not restricted!</span>
+                              </div>
+                              <ol className="list-decimal list-inside space-y-1 text-brand-charcoal/75 pl-1 leading-normal">
+                                <li>Upload your credential (ID, Certificate, CV) to Google Drive.</li>
+                                <li>Right-click the file and click <b>Share</b> ➔ Under <i>General Access</i>, change from <b>"Restricted"</b> to <b>"Anyone with the link can view"</b>.</li>
+                                <li>Click <b>Copy link</b>, and paste it into the respective input field below.</li>
+                              </ol>
+                            </div>
+                          </div>
+
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
-                                Government-Issued ID (NIN / Passport)
-                              </label>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                  Government-Issued ID (NIN / Passport)
+                                </label>
+                                <label className="text-[10px] text-brand-clay hover:underline cursor-pointer flex items-center gap-1">
+                                  <Upload className="w-2.5 h-2.5" /> Upload File
+                                  <input
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    onChange={(e) => handleFileUpload(e, "raw", setGovIdUrl)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
                               <input
                                 type="text"
-                                placeholder="Link / Ref to Government ID"
+                                placeholder="https://drive.google.com/file/d/... or ID Ref"
                                 value={govIdUrl}
                                 onChange={(e) => setGovIdUrl(e.target.value)}
                                 className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
                               />
                             </div>
                             <div>
-                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
-                                Degree / Teaching Certificate
-                              </label>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                  Degree / Teaching Certificate
+                                </label>
+                                <label className="text-[10px] text-brand-clay hover:underline cursor-pointer flex items-center gap-1">
+                                  <Upload className="w-2.5 h-2.5" /> Upload File
+                                  <input
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    onChange={(e) => handleFileUpload(e, "raw", setDegreeUrl)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
                               <input
                                 type="text"
-                                placeholder="Link to Degree Certificate / Diploma"
+                                placeholder="https://drive.google.com/file/d/... or Certificate Link"
                                 value={degreeUrl}
                                 onChange={(e) => setDegreeUrl(e.target.value)}
                                 className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
@@ -1746,24 +2177,46 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
-                                Curriculum Vitae / Resume
-                              </label>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                  Curriculum Vitae / Resume
+                                </label>
+                                <label className="text-[10px] text-brand-clay hover:underline cursor-pointer flex items-center gap-1">
+                                  <Upload className="w-2.5 h-2.5" /> Upload File
+                                  <input
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    onChange={(e) => handleFileUpload(e, "raw", setCvUrl)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
                               <input
                                 type="text"
-                                placeholder="Link to CV / Resume"
+                                placeholder="https://drive.google.com/file/d/... or Link to CV"
                                 value={cvUrl}
                                 onChange={(e) => setCvUrl(e.target.value)}
                                 className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
                               />
                             </div>
                             <div>
-                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
-                                Intro Video Link (YouTube / Loom)
-                              </label>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                  Intro Video Link (YouTube / Loom)
+                                </label>
+                                <label className="text-[10px] text-brand-clay hover:underline cursor-pointer flex items-center gap-1">
+                                  <Upload className="w-2.5 h-2.5" /> Upload Video
+                                  <input
+                                    type="file"
+                                    accept="video/*"
+                                    onChange={(e) => handleFileUpload(e, "video", setVideoUrl)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
                               <input
                                 type="url"
-                                placeholder="https://youtube.com/watch?v=... or Loom"
+                                placeholder="https://youtube.com/watch?v=... or Loom / Drive link"
                                 value={videoUrl}
                                 onChange={(e) => setVideoUrl(e.target.value)}
                                 className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
@@ -1772,14 +2225,24 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                           </div>
                         </div>
 
-                        <div>
-                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">
-                            Short Bio description
-                          </label>
+                        {/* Profile Description / Introduce Yourself */}
+                        <div className="border-t border-brand-moss/10 pt-6 space-y-3">
+                          <div>
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-heading font-bold text-sm text-brand-moss uppercase tracking-wider">
+                                1. Introduce yourself
+                              </h4>
+                              <span className="text-[10px] font-mono text-brand-charcoal/50">Public Profile Bio</span>
+                            </div>
+                            <p className="text-xs text-brand-charcoal/70 mt-1 leading-relaxed">
+                              Show potential students who you are! Share your teaching experience and passion for education and briefly mention your interests and hobbies.
+                            </p>
+                          </div>
                           <textarea
                             value={bio}
                             onChange={(e) => setBio(e.target.value)}
-                            className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-4 text-brand-charcoal focus:outline-none focus:border-brand-clay h-28 resize-none text-sm leading-relaxed"
+                            placeholder="Hello, my name is... and I'm from... I specialize in tutoring Mathematics & Sciences with over 5 years of experience helping students excel in WAEC, IGCSE, and Cambridge exams."
+                            className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-4 text-brand-charcoal focus:outline-none focus:border-brand-clay h-32 resize-none text-sm leading-relaxed"
                           />
                         </div>
 

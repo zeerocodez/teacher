@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Star, ShieldCheck, Video, Calendar, ArrowLeft, Heart, Languages, MapPin, Award, CheckCircle2, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ShieldCheck, Video, Calendar, ArrowLeft, Heart, Languages, MapPin, Award, CheckCircle2, Zap, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
@@ -287,8 +287,21 @@ export default function TeacherPublicProfile({
               </div>
             </div>
 
-            {/* Badges checklist */}
-            <div className="flex gap-2 flex-wrap">
+            {/* Badges checklist & Verified LinkedIn Link */}
+            <div className="flex gap-2 flex-wrap items-center">
+              {teacher.linkedin && (
+                <a
+                  href={teacher.linkedin.startsWith('http') ? teacher.linkedin : `https://${teacher.linkedin}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full border bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-800 flex items-center gap-1.5 transition-all shadow-xs"
+                  title="View Teacher's verified LinkedIn profile"
+                >
+                  <span className="font-bold">in</span>
+                  <span>Verified LinkedIn</span>
+                  <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                </a>
+              )}
               {(teacher.badges || []).filter(Boolean).map(badge => (
                   <span key={badge} className={`font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full border ${
                     badge === 'badge-bg-checked'

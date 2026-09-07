@@ -80,6 +80,46 @@ export default function ParentDashboard({
   const [submissionText, setSubmissionText] = useState({});
   const [submissionMessage, setSubmissionMessage] = useState('');
 
+  // Notifications State
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: "parent-notif-1",
+      title: "Lesson Confirmed",
+      message: "Dr. Chidi Johnson approved the upcoming Mathematics session.",
+      time: "15 mins ago",
+      type: "booking",
+      read: false,
+    },
+    {
+      id: "parent-notif-2",
+      title: "Homework Graded (92%)",
+      message: "Zara's Wave Mechanics physics homework has been graded.",
+      time: "3 hours ago",
+      type: "academic",
+      read: false,
+    },
+    {
+      id: "parent-notif-3",
+      title: "Monthly Tuition Receipt",
+      message: "Your monthly tuition invoice has been processed securely.",
+      time: "2 days ago",
+      type: "billing",
+      read: true,
+    },
+  ]);
+
+  const handleMarkAllNotificationsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    toast.success("All notifications marked as read.");
+  };
+
+  const handleToggleNotification = (id) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n)),
+    );
+  };
+
   const [isAddChildOpen, setIsAddChildOpen] = useState(false);
   const [newChildName, setNewChildName] = useState('');
   const [newChildSubjects, setNewChildSubjects] = useState('');
@@ -569,10 +609,77 @@ export default function ParentDashboard({
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
-              <Bell size={20} />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+            {/* Notification Bell with Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 rounded-xl text-gray-500 hover:text-brand-moss hover:bg-gray-100 transition-all cursor-pointer"
+                title="Notifications"
+              >
+                <Bell size={20} />
+                {notifications.filter((n) => !n.read).length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-brand-clay rounded-full border-2 border-white animate-pulse" />
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-brand-moss/15 rounded-2xl p-4 shadow-2xl z-50 text-brand-charcoal animate-fade-in">
+                  <div className="flex items-center justify-between border-b border-brand-moss/10 pb-3 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Bell size={16} className="text-brand-clay" />
+                      <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                        Notifications
+                      </span>
+                      {notifications.filter((n) => !n.read).length > 0 && (
+                        <span className="bg-brand-clay/15 text-brand-clay font-mono text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          {notifications.filter((n) => !n.read).length} new
+                        </span>
+                      )}
+                    </div>
+                    {notifications.filter((n) => !n.read).length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleMarkAllNotificationsRead}
+                        className="text-[10px] font-mono text-brand-clay font-bold hover:underline uppercase"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
+                    {notifications.length === 0 ? (
+                      <p className="text-center text-xs text-gray-400 py-6">No notifications</p>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => handleToggleNotification(n.id)}
+                          className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                            n.read
+                              ? "bg-gray-50/70 border-gray-100 text-gray-500"
+                              : "bg-brand-cream/30 border-brand-moss/15 text-brand-charcoal shadow-xs"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <h6 className="font-heading font-bold text-xs text-brand-moss">
+                              {n.title}
+                            </h6>
+                            <span className="font-mono text-[9px] text-gray-400 shrink-0">
+                              {n.time}
+                            </span>
+                          </div>
+                          <p className="text-[11px] mt-1 text-brand-charcoal/80 leading-relaxed">
+                            {n.message}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
                 <User size={16} />

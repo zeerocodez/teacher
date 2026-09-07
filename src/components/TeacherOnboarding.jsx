@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Sparkles, ArrowRight, ArrowLeft, CheckCircle, ShieldCheck, Video, Calendar, BookOpen, User } from 'lucide-react';
+import { Sparkles, ArrowRight, ArrowLeft, CheckCircle, ShieldCheck, Video, Calendar, BookOpen, User, Camera, Upload, Check } from 'lucide-react';
 import TutorAgreementModal from './TutorAgreementModal';
 
 export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
@@ -161,7 +161,11 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
         return;
       }
       if (!whatsapp || !linkedin) {
-        setError('Please provide your WhatsApp number and LinkedIn profile URL.');
+        setError('Please provide your WhatsApp number and mandatory LinkedIn profile URL.');
+        return;
+      }
+      if (!linkedin.toLowerCase().includes('linkedin.com')) {
+        setError('Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/username).');
         return;
       }
       if (!username) {
@@ -355,7 +359,14 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
                   />
                 </div>
                 <div>
-                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">LinkedIn Profile URL</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                      LinkedIn Profile URL <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100 font-bold px-2 py-0.5 rounded-full">
+                      Mandatory
+                    </span>
+                  </div>
                   <input
                     type="url"
                     required
@@ -364,35 +375,110 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
                     className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm"
                     placeholder="https://linkedin.com/in/username"
                   />
+                  <span className="text-[10px] text-brand-charcoal/60 mt-1 block px-1">
+                    Mandatory for verification: Boosts parent trust and booking rates.
+                  </span>
                 </div>
               </div>
 
-              <div>
-                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Profile Avatar</label>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-brand-moss/20 shrink-0">
-                    <img src={avatar} alt="Avatar Preview" className="w-full h-full object-cover" />
+              {/* Teacher Profile Photo with Guidelines */}
+              <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-brand-clay" /> Profile Photo
+                  </label>
+                  <span className="text-[10px] text-brand-clay font-mono bg-brand-clay/10 px-2 py-0.5 rounded-full">
+                    Required for Approval
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md bg-brand-moss/10 shrink-0 flex items-center justify-center">
+                    {avatar ? (
+                      <img src={avatar} alt="Avatar Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-10 h-10 text-brand-moss/40" />
+                    )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 w-full space-y-2">
+                    <label className="block w-full py-2.5 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider text-center cursor-pointer transition-all shadow-sm">
+                      {uploadingState.type === 'image' ? (
+                        <span>Uploading... {uploadingState.progress}%</span>
+                      ) : (
+                        <span className="flex items-center justify-center gap-2">
+                          <Upload className="w-3.5 h-3.5" /> Upload Headshot Photo
+                        </span>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(e, 'image', setAvatar)}
+                        disabled={uploadingState.type === 'image'}
+                        className="hidden"
+                      />
+                    </label>
                     <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e, 'image', setAvatar)}
-                      disabled={uploadingState.type === 'image'}
-                      className="text-xs text-brand-charcoal/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-moss/5 file:text-brand-moss hover:file:bg-brand-moss/10"
+                      type="url"
+                      placeholder="Or paste photo link (https://...)"
+                      value={avatar}
+                      onChange={(e) => setAvatar(e.target.value)}
+                      className="w-full bg-white border border-brand-moss/10 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
                     />
-                    {uploadingState.type === 'image' && <span className="text-xs text-brand-clay ml-2">Uploading... {uploadingState.progress}%</span>}
+                  </div>
+                </div>
+
+                {/* Photo Guidelines Card */}
+                <div className="bg-white/80 border border-brand-moss/10 rounded-xl p-3.5 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-heading font-bold text-[11px] uppercase tracking-wider text-brand-moss">
+                      What your photo needs
+                    </span>
+                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      ✓ Approved Examples
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 py-0.5">
+                    <img
+                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop"
+                      alt="Sample"
+                      className="w-8 h-8 rounded-full object-cover border border-emerald-500"
+                    />
+                    <img
+                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
+                      alt="Sample"
+                      className="w-8 h-8 rounded-full object-cover border border-emerald-500"
+                    />
+                    <img
+                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop"
+                      alt="Sample"
+                      className="w-8 h-8 rounded-full object-cover border border-emerald-500"
+                    />
+                    <span className="text-[10px] text-brand-charcoal/60 ml-1">Facing forward • Well lit • Neutral background</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-brand-charcoal/80">
+                    <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-emerald-600 shrink-0" /> Facing forward</div>
+                    <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-emerald-600 shrink-0" /> Frame head & shoulders</div>
+                    <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-emerald-600 shrink-0" /> Centered & upright</div>
+                    <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-emerald-600 shrink-0" /> Only person in photo</div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Tutor Biography (Bio)</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">1. Introduce yourself (Bio)</label>
+                  <span className="text-[10px] font-mono text-brand-charcoal/40">Public Profile</span>
+                </div>
+                <p className="text-[11px] text-brand-charcoal/65 mb-2">
+                  Show potential students who you are! Share your teaching experience and passion for education, and briefly mention your interests and hobbies.
+                </p>
                 <textarea
                   required
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder="Describe your qualifications, teaching methodology, and tutoring experiences..."
+                  placeholder="Hello, my name is... and I'm from... I specialize in tutoring Mathematics & Sciences with over 5 years of experience helping students excel in WAEC, IGCSE, and Cambridge exams."
                   className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-4 text-brand-charcoal focus:outline-none focus:border-brand-clay h-28 resize-none text-sm leading-relaxed"
                 />
               </div>
@@ -645,51 +731,110 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
               <p className="font-sans text-xs text-brand-charcoal/70 mt-1">Provide a brief 1-2 minute video introduction link and vetting credentials to complete your application.</p>
             </div>
 
+            {/* Google Drive Document Sharing Guide Callout */}
+            <div className="bg-gradient-to-r from-amber-500/10 via-brand-moss/5 to-brand-cream border border-amber-500/25 rounded-2xl p-4 text-xs text-brand-charcoal space-y-3 shadow-xs">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 text-amber-800 font-bold">
+                  💡
+                </div>
+                <div className="space-y-1">
+                  <h5 className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                    How to share your document links (Google Drive / Cloud)
+                  </h5>
+                  <p className="text-brand-charcoal/80 leading-relaxed text-xs">
+                    You can upload your documents to <b>Google Drive</b> (or OneDrive / Dropbox), and paste the links below.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white/80 border border-amber-500/20 rounded-xl p-3 space-y-2 text-[11px] text-brand-charcoal">
+                <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                  <span>⚠️ Important:</span>
+                  <span>Make sure the file link is accessible to everyone and not restricted!</span>
+                </div>
+                <ol className="list-decimal list-inside space-y-1 text-brand-charcoal/75 pl-1">
+                  <li>Upload your documents to Google Drive.</li>
+                  <li>Right-click ➔ <b>Share</b> ➔ Change access from <i>"Restricted"</i> to <b>"Anyone with the link can view"</b>.</li>
+                  <li>Click <b>Copy link</b> and paste it below, or upload the file directly.</li>
+                </ol>
+              </div>
+            </div>
+
             <div className="space-y-4 font-sans text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Government ID (NIN/Passport)</label>
-                  <div className="relative border border-dashed border-brand-moss/30 rounded-xl p-3 text-center bg-brand-cream/10">
-                    <input
-                      type="file"
-                      accept=".pdf,image/*"
-                      onChange={(e) => handleFileUpload(e, 'raw', setGovIdUrl)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    <div className="text-xs text-brand-moss font-bold">
-                      {govIdUrl ? 'ID Uploaded ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload ID Document')}
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">Government ID (NIN / Passport)</label>
+                  <div className="space-y-1.5">
+                    <div className="relative border border-dashed border-brand-moss/30 hover:border-brand-clay/50 rounded-xl p-2.5 text-center bg-brand-cream/10 cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={(e) => handleFileUpload(e, 'raw', setGovIdUrl)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="text-xs text-brand-moss font-bold flex items-center justify-center gap-1.5">
+                        <Upload className="w-3 h-3" />
+                        {govIdUrl ? 'ID Selected ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload ID File')}
+                      </div>
                     </div>
+                    <input
+                      type="text"
+                      placeholder="Or paste Google Drive link"
+                      value={govIdUrl}
+                      onChange={(e) => setGovIdUrl(e.target.value)}
+                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                    />
                   </div>
                 </div>
 
                 <div>
-                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">CV / Resume</label>
-                  <div className="relative border border-dashed border-brand-moss/30 rounded-xl p-3 text-center bg-brand-cream/10">
-                    <input
-                      type="file"
-                      accept=".pdf,image/*"
-                      onChange={(e) => handleFileUpload(e, 'raw', setCvUrl)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    <div className="text-xs text-brand-moss font-bold">
-                      {cvUrl ? 'CV Uploaded ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload Resume')}
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">CV / Resume</label>
+                  <div className="space-y-1.5">
+                    <div className="relative border border-dashed border-brand-moss/30 hover:border-brand-clay/50 rounded-xl p-2.5 text-center bg-brand-cream/10 cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={(e) => handleFileUpload(e, 'raw', setCvUrl)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="text-xs text-brand-moss font-bold flex items-center justify-center gap-1.5">
+                        <Upload className="w-3 h-3" />
+                        {cvUrl ? 'CV Selected ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload Resume File')}
+                      </div>
                     </div>
+                    <input
+                      type="text"
+                      placeholder="Or paste Google Drive link"
+                      value={cvUrl}
+                      onChange={(e) => setCvUrl(e.target.value)}
+                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                    />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">University Degree / Qualifications</label>
-                <div className="relative border border-dashed border-brand-moss/30 rounded-xl p-3 text-center bg-brand-cream/10">
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    onChange={(e) => handleFileUpload(e, 'raw', setDegreeUrl)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="text-xs text-brand-moss font-bold">
-                    {degreeUrl ? 'Qualifications Uploaded ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload Credentials')}
+                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">University Degree / Qualifications</label>
+                <div className="space-y-1.5">
+                  <div className="relative border border-dashed border-brand-moss/30 hover:border-brand-clay/50 rounded-xl p-2.5 text-center bg-brand-cream/10 cursor-pointer">
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(e) => handleFileUpload(e, 'raw', setDegreeUrl)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                    <div className="text-xs text-brand-moss font-bold flex items-center justify-center gap-1.5">
+                      <Upload className="w-3 h-3" />
+                      {degreeUrl ? 'Credentials Selected ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload Credentials File')}
+                    </div>
                   </div>
+                  <input
+                    type="text"
+                    placeholder="Or paste Google Drive certificate link"
+                    value={degreeUrl}
+                    onChange={(e) => setDegreeUrl(e.target.value)}
+                    className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                  />
                 </div>
               </div>
 
