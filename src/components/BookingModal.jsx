@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { X, Calendar, CreditCard, Shield, Clock, Lock } from 'lucide-react';
+import { X, Calendar, CreditCard, Shield, Clock, Lock, Crown, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function BookingModal({ 
   isOpen, 
@@ -74,11 +74,25 @@ export default function BookingModal({
   };
   const validSessions = (bookedSessions || []).filter(s => s.status !== 'Cancelled' && s.status !== 'Rejected' && s.status !== 'Declined');
   const isFirstTrial = validSessions.length === 0;
+
+  // 3-Tier Educator Classification
+  const isGradeA = teacher?.tier === 'Grade A' || teacher?.isEliteVip || teacher?.isVipTeacher || (teacher?.badges || []).includes('badge-ai-cert');
+  const isGradeB = !isGradeA && (teacher?.tier === 'Grade B' || teacher?.verified === true || teacher?.status === 'verified' || (teacher?.badges || []).includes('badge-verified'));
+  const tierName = isGradeA ? 'Grade A Elite VVIP' : isGradeB ? 'Grade B Verified' : 'Standard Educator';
+
+  // Booking mode: 'sessions' | 'monthly'
+  const [bookingMode, setBookingMode] = useState('sessions'); // 'sessions' or 'monthly'
+  const [monthlySessionsCount, setMonthlySessionsCount] = useState(8); // 8 sessions per month (2 per week)
+
   const teacherRateMinor = teacher ? (teacher.rate || 0) : 350000;
   const activeRateMinor = isFirstTrial ? 0 : teacherRateMinor;
-  // We use teacherRateMinor for convertedRateMinor so we can show the original price if they buy more than 1
+
+  // Grade A Rate Floor: minimum ₦100,000 (10,000,000 kobo) for monthly contract
+  const GRADE_A_MONTHLY_FLOOR_MIN = 10000000; // ₦100,000 in kobo
+
+  // Converted rate
   const convertedRateMinor = convertMinor(teacherRateMinor, selectedCurrency);
-  const formattedRate = isFirstTrial ? "Free (First Trial Class)" : formatCurrency(convertedRateMinor, selectedCurrency);
+  const formattedRate = isFirstTrial && bookingMode === 'sessions' ? "Free (First Trial Class)" : formatCurrency(convertedRateMinor, selectedCurrency);
 
   // Generate upcoming slots based on teacher availability mapped to actual calendar dates
   const generateUpcomingSlots = (availability) => {
@@ -181,8 +195,15 @@ export default function BookingModal({
 
   const numSelected = selectedSlots.length > 0 ? selectedSlots.length : 1;
   
-  // If it's their first trial, only the FIRST slot is free. Subsequent slots in the same booking are paid.
-  const totalRateMinor = isFirstTrial ? Math.max(0, (numSelected - 1) * teacherRateMinor) : numSelected * teacherRateMinor;
+  // Calculate total price based on booking mode
+  const rawMonthlyCostMinor = monthlySessionsCount * teacherRateMinor;
+  // If Grade A teacher, monthly contract CANNOT be less than ₦100,000 (10,000,000 kobo)
+  const isGradeAFloorActive = isGradeA && bookingMode === 'monthly' && rawMonthlyCostMinor < GRADE_A_MONTHLY_FLOOR_MIN;
+  const monthlyCostMinor = isGradeA ? Math.max(rawMonthlyCostMinor, GRADE_A_MONTHLY_FLOOR_MIN) : rawMonthlyCostMinor;
+
+  const totalRateMinor = bookingMode === 'monthly'
+    ? monthlyCostMinor
+    : (isFirstTrial ? Math.max(0, (numSelected - 1) * teacherRateMinor) : numSelected * teacherRateMinor);
   
   const formattedTotalRate = formatCurrency(convertMinor(totalRateMinor, selectedCurrency), selectedCurrency);
 
@@ -228,9 +249,18 @@ export default function BookingModal({
     setIsProcessing(true);
     const slotsData = selectedSlots.map(id => slots.find(s => s.id === id));
     
+    const bookingPayload = {
+      subject: selectedSubject,
+      curriculum: selectedCurriculum,
+      bookingMode,
+      monthlySessionsCount: bookingMode === 'monthly' ? monthlySessionsCount : undefined,
+      tier: isGradeA ? 'Grade A' : isGradeB ? 'Grade B' : 'Freemium',
+      isGradeAFloorApplied: isGradeAFloorActive
+    };
+
     if (paymentMethod === 'paystack') {
       // Direct integration triggered via App.jsx
-      Promise.resolve(onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum }))
+      Promise.resolve(onBook(totalRateMinor, slotsData, paymentMethod, bookingPayload))
         .finally(() => {
           setIsProcessing(false);
         });
@@ -238,7 +268,7 @@ export default function BookingModal({
     } else if (paymentMethod === 'bank') {
       // Bank Transfer - let App.jsx handle the pending booking via /sessions/book
       setTimeout(() => {
-        onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
+        onBook(totalRateMinor, slotsData, paymentMethod, bookingPayload);
         setIsProcessing(false);
         resetStates();
         onClose();
@@ -246,7 +276,7 @@ export default function BookingModal({
     } else {
       // Wallet payment
       setTimeout(() => {
-        onBook(totalRateMinor, slotsData, paymentMethod, { subject: selectedSubject, curriculum: selectedCurriculum });
+        onBook(totalRateMinor, slotsData, paymentMethod, bookingPayload);
         setIsProcessing(false);
         resetStates();
         onClose();
@@ -442,14 +472,113 @@ export default function BookingModal({
         ) : (
           /* SCREEN 3: Standard Lesson Booking & Method Selection Screen */
           <>
-            {/* Header */}
+            {/* Header with Tier Badge */}
             <div className="mb-6">
-              <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block mb-1">Secure Check-out</span>
-              <h3 className="font-heading font-bold text-2xl text-brand-moss">Book a Trial Class</h3>
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block">Secure Check-out</span>
+                {isGradeA ? (
+                  <span className="bg-gradient-to-r from-amber-100 to-amber-200 text-amber-900 border border-amber-300 font-mono text-[9px] uppercase tracking-wider font-bold py-0.5 px-2.5 rounded-full flex items-center gap-1 shadow-xs">
+                    <Crown className="w-3 h-3 text-amber-700" /> Grade A Elite VVIP
+                  </span>
+                ) : isGradeB ? (
+                  <span className="bg-blue-50 text-blue-800 border border-blue-200 font-mono text-[9px] uppercase tracking-wider font-bold py-0.5 px-2.5 rounded-full flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-blue-600" /> Grade B Verified
+                  </span>
+                ) : (
+                  <span className="bg-brand-moss/10 text-brand-moss font-mono text-[9px] uppercase tracking-wider font-bold py-0.5 px-2.5 rounded-full">
+                    Standard Educator
+                  </span>
+                )}
+              </div>
+              <h3 className="font-heading font-bold text-2xl text-brand-moss">
+                {bookingMode === 'monthly' ? 'Book Monthly Contract' : 'Book Lesson Sessions'}
+              </h3>
               <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
-                with <span className="font-semibold">{teacher.name}</span>
+                with <span className="font-semibold text-brand-moss">{teacher.name}</span>
               </p>
             </div>
+
+            {/* Booking Mode Selector (Sessions vs Monthly Contract) */}
+            <div className="mb-5 bg-brand-cream/80 p-1.5 rounded-2xl border border-brand-moss/10 flex gap-1.5">
+              <button
+                type="button"
+                onClick={() => setBookingMode('sessions')}
+                className={`flex-1 py-2 px-3 rounded-xl font-sans text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                  bookingMode === 'sessions'
+                    ? 'bg-brand-moss text-white shadow-sm'
+                    : 'text-brand-charcoal/70 hover:text-brand-moss hover:bg-white/60'
+                }`}
+              >
+                <span>🎯 Single / Trial Session</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setBookingMode('monthly')}
+                className={`flex-1 py-2 px-3 rounded-xl font-sans text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                  bookingMode === 'monthly'
+                    ? 'bg-brand-clay text-white shadow-sm'
+                    : 'text-brand-charcoal/70 hover:text-brand-clay hover:bg-white/60'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>📅 Monthly Contract</span>
+              </button>
+            </div>
+
+            {/* Monthly Contract Options & Floor Guarantee Notice */}
+            {bookingMode === 'monthly' && (
+              <div className="mb-5 bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-heading font-bold text-xs uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-amber-700" /> Monthly Commitment Plan
+                  </span>
+                  {isGradeA && (
+                    <span className="font-mono text-[9px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+                      ₦100,000 / Mo Min Floor
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { sessions: 8, label: '8 Classes', sub: '2x / week' },
+                    { sessions: 12, label: '12 Classes', sub: '3x / week' },
+                    { sessions: 16, label: '16 Classes', sub: '4x / week' },
+                    { sessions: 20, label: '20 Classes', sub: '5x / week' },
+                  ].map(opt => (
+                    <button
+                      key={opt.sessions}
+                      type="button"
+                      onClick={() => setMonthlySessionsCount(opt.sessions)}
+                      className={`py-2 px-2 rounded-xl text-center font-sans border transition-all ${
+                        monthlySessionsCount === opt.sessions
+                          ? 'border-brand-clay bg-brand-clay text-white shadow-xs'
+                          : 'border-amber-200 bg-white/80 hover:border-brand-clay/40 text-brand-charcoal'
+                      }`}
+                    >
+                      <span className="text-xs font-bold block">{opt.label}</span>
+                      <span className="text-[9px] opacity-75 block">{opt.sub}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {isGradeA ? (
+                  <div className="bg-white/90 border border-amber-200 rounded-xl p-2.5 text-[11px] font-sans text-amber-950 flex items-start gap-2">
+                    <Crown className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Grade A VVIP Rate Guarantee:</strong> Full Elite Academy Certified tutors have a verified monthly rate floor of <strong>₦100,000 / month</strong>.
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white/90 border border-blue-100 rounded-xl p-2.5 text-[11px] font-sans text-blue-950 flex items-start gap-2">
+                    <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Verified Educator Rate:</strong> Flexible monthly contract billed at standard tutor hourly rate.
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Lesson Info */}
             <div className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 mb-6 flex justify-between items-center">
@@ -458,12 +587,16 @@ export default function BookingModal({
                   <img src={teacher.avatar} alt={teacher.name} className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <span className="font-heading font-bold text-sm text-brand-moss">{selectedSubject || '1-on-1'} Trial Class</span>
-                  <span className="font-sans text-xs text-brand-charcoal/60 block">60 minutes · {selectedCurriculum || 'WAEC/Cambridge'}</span>
+                  <span className="font-heading font-bold text-sm text-brand-moss">
+                    {bookingMode === 'monthly' ? `Monthly Contract (${monthlySessionsCount} Sessions)` : `${selectedSubject || '1-on-1'} Session`}
+                  </span>
+                  <span className="font-sans text-xs text-brand-charcoal/60 block">
+                    {bookingMode === 'monthly' ? '4-Week Retainer with Dedicated Tutor' : `60 minutes · ${selectedCurriculum || 'WAEC/Cambridge'}`}
+                  </span>
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-heading font-bold text-base text-brand-moss block">{formattedRate}</span>
+                <span className="font-heading font-bold text-base text-brand-moss block">{formattedTotalRate}</span>
                 <span className="font-mono text-[9px] uppercase tracking-widest text-brand-clay block font-bold">100% Refundable</span>
               </div>
             </div>
@@ -510,7 +643,10 @@ export default function BookingModal({
             {/* Select Slots */}
             <div className="mb-6">
               <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-brand-clay" /> 1. Select Availability Slot</span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-brand-clay" /> 
+                  {bookingMode === 'monthly' ? '1. Select Preferred Weekly Schedule Slot' : '1. Select Availability Slot'}
+                </span>
                 <span className="font-mono text-[9px] bg-brand-moss/10 px-2 py-0.5 rounded-full text-brand-charcoal/70">
                   {teacher?.timezone || 'WAT (GMT+1)'}
                 </span>
@@ -519,8 +655,10 @@ export default function BookingModal({
               {/* Informational Banner */}
               <div className="bg-brand-clay/10 border border-brand-clay/20 p-3 rounded-xl mb-4 font-sans text-xs text-brand-charcoal/80 shadow-sm leading-relaxed">
                 <p>
-                  <strong>Note:</strong> Payment is strictly for the sessions booked. Each session lasts for <strong>1 hour</strong>. 
-                  You may select <strong>multiple slots</strong> per day based on the teacher's availability.
+                  <strong>Note:</strong> {bookingMode === 'monthly' 
+                    ? `Monthly contracts lock in ${monthlySessionsCount} one-hour sessions with ${teacher.name} for 4 weeks. Unused hours roll over.`
+                    : "Payment is strictly for the sessions booked. Each session lasts for 1 hour. You may select multiple slots."
+                  }
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">

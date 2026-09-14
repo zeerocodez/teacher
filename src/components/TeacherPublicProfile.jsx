@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Star, ShieldCheck, Video, Calendar, ArrowLeft, Heart, Languages, MapPin, Award, CheckCircle2, Zap, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { Star, ShieldCheck, Video, Calendar, ArrowLeft, Heart, Languages, MapPin, Award, CheckCircle2, Zap, ChevronLeft, ChevronRight, ExternalLink, Crown, Sparkles } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
@@ -225,6 +225,9 @@ export default function TeacherPublicProfile({
     );
   }
 
+  const isGradeA = teacher?.tier === 'Grade A' || teacher?.isEliteVip || teacher?.isVipTeacher || (teacher?.badges || []).includes('badge-ai-cert');
+  const isGradeB = !isGradeA && (teacher?.tier === 'Grade B' || teacher?.verified === true || teacher?.status === 'verified' || (teacher?.badges || []).includes('badge-verified'));
+
   return (
     <>
       <Helmet>
@@ -269,7 +272,11 @@ export default function TeacherPublicProfile({
                   <h1 className="font-heading font-bold text-xl sm:text-3xl text-brand-moss leading-tight tracking-tight">
                     {teacher.name}
                   </h1>
-                  <Award className="w-5 h-5 text-brand-clay" title="Verified Tutor Profile" />
+                  {isGradeA ? (
+                    <Crown className="w-6 h-6 text-amber-600" title="Grade A Elite VVIP Tutor" />
+                  ) : (
+                    <Award className="w-5 h-5 text-brand-clay" title="Verified Tutor Profile" />
+                  )}
                 </div>
                 <p className="font-drama italic text-sm text-brand-clay font-medium">
                   Professional Instructor in {Array.isArray(teacher.subjects) ? teacher.subjects.join(' & ') : ''}
@@ -287,8 +294,22 @@ export default function TeacherPublicProfile({
               </div>
             </div>
 
-            {/* Badges checklist & Verified LinkedIn Link */}
+            {/* Badges checklist & Tier status */}
             <div className="flex gap-2 flex-wrap items-center">
+              {isGradeA ? (
+                <span className="bg-gradient-to-r from-amber-100 to-amber-200 text-amber-900 font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full border border-amber-300 shadow-xs flex items-center gap-1">
+                  <Crown className="w-3 h-3 text-amber-700" /> Grade A Elite VVIP
+                </span>
+              ) : isGradeB ? (
+                <span className="bg-blue-50 text-blue-800 font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full border border-blue-200 flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-blue-600" /> Grade B Verified
+                </span>
+              ) : (
+                <span className="bg-brand-moss/10 text-brand-moss font-mono text-[9px] uppercase tracking-wider font-bold py-1 px-3 rounded-full">
+                  Standard Educator
+                </span>
+              )}
+
               {teacher.linkedin && (
                 <a
                   href={teacher.linkedin.startsWith('http') ? teacher.linkedin : `https://${teacher.linkedin}`}
@@ -444,16 +465,46 @@ export default function TeacherPublicProfile({
         <div className="lg:col-span-4 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-lg space-y-6 lg:sticky lg:top-28">
           
           {/* Rate Header Card */}
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/50 block mb-1">STANDARD RATE</span>
-              <div className="flex items-baseline gap-0.5">
-                <span className="font-heading text-xl sm:text-2xl font-extrabold text-brand-moss">
-                  {formatCurrency(convertMinor(teacher.rate || 400000, selectedCurrency), selectedCurrency)}
-                </span>
-                <span className="font-mono text-[10px] text-brand-charcoal/50">/ hr</span>
+          <div className="space-y-4">
+            <div className="flex justify-between items-baseline">
+              <div>
+                <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/50 block mb-0.5">HOURLY RATE</span>
+                <div className="flex items-baseline gap-0.5">
+                  <span className="font-heading text-xl sm:text-2xl font-extrabold text-brand-moss">
+                    {formatCurrency(convertMinor(teacher.rate || 400000, selectedCurrency), selectedCurrency)}
+                  </span>
+                  <span className="font-mono text-[10px] text-brand-charcoal/50">/ hr</span>
+                </div>
               </div>
+
+              {isGradeA ? (
+                <div className="text-right">
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-amber-800 font-bold block mb-0.5 flex items-center justify-end gap-1">
+                    <Crown className="w-3 h-3 text-amber-700 inline" /> MONTHLY FLOOR
+                  </span>
+                  <span className="font-heading text-base font-extrabold text-amber-900">
+                    ₦100,000 / mo
+                  </span>
+                </div>
+              ) : (
+                <div className="text-right">
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/50 block mb-0.5">MONTHLY CONTRACT</span>
+                  <span className="font-heading text-xs font-bold text-brand-moss">Flexible rates</span>
+                </div>
+              )}
             </div>
+
+            {isGradeA && (
+              <div className="bg-amber-50 border border-amber-200/80 rounded-2xl p-3 text-[11px] font-sans text-amber-950 space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                  <Crown className="w-3.5 h-3.5 text-amber-700" />
+                  <span>Grade A Elite VVIP Guarantee</span>
+                </div>
+                <p className="text-[10px] opacity-85 leading-relaxed">
+                  Certified via Elite Teachers Academy (Module 4+). Monthly client contracts are protected at a minimum of ₦100,000/month.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="h-px bg-brand-moss/5" />

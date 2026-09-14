@@ -58,6 +58,8 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
   const [videoUrl, setVideoUrl] = useState('');
   const [govIdUrl, setGovIdUrl] = useState('');
   const [degreeUrl, setDegreeUrl] = useState('');
+  const [trcnUrl, setTrcnUrl] = useState('');
+  const [schoolIdUrl, setSchoolIdUrl] = useState('');
   const [cvUrl, setCvUrl] = useState('');
   
   const [uploadingState, setUploadingState] = useState({ type: null, progress: 0 });
@@ -226,7 +228,11 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
       avatar,
       govIdUrl,
       degreeUrl,
-      cvUrl
+      trcnUrl,
+      schoolIdUrl,
+      cvUrl,
+      tier: 'Freemium', // Base Freemium application; upgraded to Grade B upon document review, or Grade A via Academy
+      isEliteApplicant: false
     };
 
     try {
@@ -813,8 +819,60 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">TRCN / Teaching Certificate <span className="text-gray-400 font-normal font-sans">(Optional)</span></label>
+                  <div className="space-y-1.5">
+                    <div className="relative border border-dashed border-brand-moss/30 hover:border-brand-clay/50 rounded-xl p-2.5 text-center bg-brand-cream/10 cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={(e) => handleFileUpload(e, 'raw', setTrcnUrl)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="text-xs text-brand-moss font-bold flex items-center justify-center gap-1.5">
+                        <Upload className="w-3 h-3" />
+                        {trcnUrl ? 'TRCN Selected ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload TRCN File')}
+                      </div>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Or paste TRCN certificate link"
+                      value={trcnUrl}
+                      onChange={(e) => setTrcnUrl(e.target.value)}
+                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">School ID / Institutional ID <span className="text-gray-400 font-normal font-sans">(Optional)</span></label>
+                  <div className="space-y-1.5">
+                    <div className="relative border border-dashed border-brand-moss/30 hover:border-brand-clay/50 rounded-xl p-2.5 text-center bg-brand-cream/10 cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={(e) => handleFileUpload(e, 'raw', setSchoolIdUrl)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="text-xs text-brand-moss font-bold flex items-center justify-center gap-1.5">
+                        <Upload className="w-3 h-3" />
+                        {schoolIdUrl ? 'School ID Selected ✓' : (uploadingState.type === 'raw' ? `Uploading ${uploadingState.progress}%` : 'Upload School ID File')}
+                      </div>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Or paste School ID file link"
+                      value={schoolIdUrl}
+                      onChange={(e) => setSchoolIdUrl(e.target.value)}
+                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div>
-                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">University Degree / Qualifications</label>
+                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">University Degree / Qualifications <span className="text-brand-clay">*</span></label>
                 <div className="space-y-1.5">
                   <div className="relative border border-dashed border-brand-moss/30 hover:border-brand-clay/50 rounded-xl p-2.5 text-center bg-brand-cream/10 cursor-pointer">
                     <input
@@ -835,6 +893,28 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
                     onChange={(e) => setDegreeUrl(e.target.value)}
                     className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
                   />
+                </div>
+              </div>
+
+              {/* 3-Tier Educator Badge Guide */}
+              <div className="bg-gradient-to-r from-amber-50 via-emerald-50/50 to-blue-50 border border-amber-200/80 rounded-2xl p-4 space-y-2.5">
+                <div className="flex items-center gap-2 font-heading font-bold text-xs text-brand-moss uppercase tracking-wider">
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <span>EduVistar Educator Tiers & Progression</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-sans">
+                  <div className="bg-white/80 border border-gray-200 rounded-xl p-2.5">
+                    <span className="font-mono text-[9px] uppercase font-bold text-gray-700 block">1. FREEMIUM</span>
+                    <p className="text-gray-600 mt-0.5">Free application. Start teaching immediately with standard profile listing.</p>
+                  </div>
+                  <div className="bg-white/80 border border-blue-200 rounded-xl p-2.5">
+                    <span className="font-mono text-[9px] uppercase font-bold text-blue-700 block">2. GRADE B (VERIFIED)</span>
+                    <p className="text-gray-600 mt-0.5">Verified via NIN, Degree/TRCN, School ID & LinkedIn. Blue verified badge.</p>
+                  </div>
+                  <div className="bg-white/80 border border-amber-200 rounded-xl p-2.5 bg-amber-50/50">
+                    <span className="font-mono text-[9px] uppercase font-bold text-amber-800 block">3. GRADE A (ELITE VVIP)</span>
+                    <p className="text-gray-600 mt-0.5">Completed Academy Module 4. <strong>₦100k+ monthly contract rate floor</strong>.</p>
+                  </div>
                 </div>
               </div>
 

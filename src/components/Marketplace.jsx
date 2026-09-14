@@ -18,14 +18,19 @@ export default function Marketplace({
 }) {
   const [subjectFilter, setSubjectFilter] = useState('All');
   const [curriculumFilter, setCurriculumFilter] = useState('All');
+  const [tierFilter, setTierFilter] = useState('All'); // 'All' | 'Grade A' | 'Grade B' | 'Freemium'
   const [searchQuery, setSearchQuery] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
+
+  // Tier helpers
+  const isTeacherGradeA = (t) => t?.tier === 'Grade A' || t?.isEliteVip || t?.isVipTeacher || (t?.badges || []).includes('badge-ai-cert');
+  const isTeacherGradeB = (t) => !isTeacherGradeA(t) && (t?.tier === 'Grade B' || t?.verified === true || t?.status === 'verified' || (t?.badges || []).includes('badge-verified'));
 
   const displayTeachers = React.useMemo(() => {
     let list = teachers || [];
     
-    // Only verified teachers
-    list = list.filter(t => (t.verified === true || t.status === 'verified') && t.status !== 'suspended' && t.status !== 'rejected');
+    // Only verified or active teachers
+    list = list.filter(t => t.status !== 'suspended' && t.status !== 'rejected');
 
     if (searchQuery && searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -36,6 +41,16 @@ export default function Marketplace({
         (t.subjects && Array.isArray(t.subjects) && t.subjects.some(s => s && String(s).toLowerCase().includes(q))) ||
         (t.curricula && Array.isArray(t.curricula) && t.curricula.some(c => c && String(c).toLowerCase().includes(q)))
       );
+    }
+
+    if (tierFilter && tierFilter !== 'All') {
+      if (tierFilter === 'Grade A') {
+        list = list.filter(isTeacherGradeA);
+      } else if (tierFilter === 'Grade B') {
+        list = list.filter(isTeacherGradeB);
+      } else if (tierFilter === 'Freemium') {
+        list = list.filter(t => !isTeacherGradeA(t) && !isTeacherGradeB(t));
+      }
     }
 
     if (subjectFilter && subjectFilter !== 'All') {
@@ -61,7 +76,7 @@ export default function Marketplace({
     }
 
     return list;
-  }, [teachers, searchQuery, subjectFilter, curriculumFilter]);
+  }, [teachers, searchQuery, tierFilter, subjectFilter, curriculumFilter]);
 
   React.useEffect(() => {
     fetch('/api/leaderboard')
@@ -166,77 +181,106 @@ export default function Marketplace({
         </div>
 
         {/* Filter categories */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-brand-moss/5">
-          {/* Subject Filter */}
+        <div className="space-y-6 pt-4 border-t border-brand-moss/5">
+          {/* Educator Tier / Certification Filter */}
           <div>
-            <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">Subjects</span>
-            <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap pb-2 md:pb-0 gap-2 scrollbar-none">
+            <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3 flex items-center gap-1.5">
+              <Crown className="w-3.5 h-3.5 text-brand-clay" /> Educator Classification & Verification Tier
+            </span>
+            <div className="flex overflow-x-auto whitespace-nowrap pb-2 gap-2 scrollbar-none">
               {[
-                'All', 
-                'Mathematics', 
-                'Further Mathematics',
-                'Physics', 
-                'Chemistry', 
-                'English', 
-                'Literature', 
-                'Diction',
-                'Spelling',
-                'Nigerian Languages',
-                'French', 
-                'Spanish', 
-                'Coding & Robotics', 
-                'Data Science',
-                'Others'
-              ].map(subj => (
+                { id: 'All', label: 'All Educators' },
+                { id: 'Grade A', label: '👑 Grade A Elite VVIP (₦100k/mo Min Floor)' },
+                { id: 'Grade B', label: '🛡️ Grade B (Basic Verified)' },
+                { id: 'Freemium', label: '🆓 Freemium (Standard)' }
+              ].map(t => (
                 <button
-                  key={subj}
-                  onClick={() => setSubjectFilter(subj)}
+                  key={t.id}
+                  onClick={() => setTierFilter(t.id)}
                   className={`py-1.5 px-4 rounded-full border font-sans text-xs font-semibold shrink-0 transition-all duration-300 ${
-                    subjectFilter === subj
-                      ? 'bg-brand-moss border-brand-moss text-white shadow-sm'
-                      : 'bg-brand-cream/20 border-brand-moss/10 hover:border-brand-moss/30 text-brand-moss/80'
+                    tierFilter === t.id
+                      ? 'bg-brand-clay border-brand-clay text-white shadow-sm'
+                      : 'bg-brand-cream/30 border-brand-moss/10 hover:border-brand-clay/40 text-brand-moss'
                   }`}
                 >
-                  {subj}
+                  {t.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Curriculum Filter */}
-          <div>
-            <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">Curriculum Standard</span>
-            <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap pb-2 md:pb-0 gap-2 scrollbar-none">
-              {[
-                'All', 
-                'Nursery (Ages 2-5)', 
-                'Primary (Ages 6-11)', 
-                'Middle School (Ages 12-14)', 
-                'High School (Ages 15-18)', 
-                'University Prep', 
-                'Adult Education',
-                'WAEC', 
-                'JAMB', 
-                'IGCSE', 
-                'Cambridge', 
-                'IB Diploma', 
-                'SAT',
-                'Professional Certs',
-                'Vocational & Technical',
-                'Others (Professional)'
-              ].map(curr => (
-                <button
-                  key={curr}
-                  onClick={() => setCurriculumFilter(curr)}
-                  className={`py-1.5 px-4 rounded-full border font-sans text-xs font-semibold shrink-0 transition-all duration-300 ${
-                    curriculumFilter === curr
-                      ? 'bg-brand-moss border-brand-moss text-white shadow-sm'
-                      : 'bg-brand-cream/20 border-brand-moss/10 hover:border-brand-moss/30 text-brand-moss/80'
-                  }`}
-                >
-                  {curr}
-                </button>
-              ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Subject Filter */}
+            <div>
+              <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">Subjects</span>
+              <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap pb-2 md:pb-0 gap-2 scrollbar-none">
+                {[
+                  'All', 
+                  'Mathematics', 
+                  'Further Mathematics',
+                  'Physics', 
+                  'Chemistry', 
+                  'English', 
+                  'Literature', 
+                  'Diction',
+                  'Spelling',
+                  'Nigerian Languages',
+                  'French', 
+                  'Spanish', 
+                  'Coding & Robotics', 
+                  'Data Science',
+                  'Others'
+                ].map(subj => (
+                  <button
+                    key={subj}
+                    onClick={() => setSubjectFilter(subj)}
+                    className={`py-1.5 px-4 rounded-full border font-sans text-xs font-semibold shrink-0 transition-all duration-300 ${
+                      subjectFilter === subj
+                        ? 'bg-brand-moss border-brand-moss text-white shadow-sm'
+                        : 'bg-brand-cream/20 border-brand-moss/10 hover:border-brand-moss/30 text-brand-moss/80'
+                    }`}
+                  >
+                    {subj}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Curriculum Filter */}
+            <div>
+              <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">Curriculum Standard</span>
+              <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap pb-2 md:pb-0 gap-2 scrollbar-none">
+                {[
+                  'All', 
+                  'Nursery (Ages 2-5)', 
+                  'Primary (Ages 6-11)', 
+                  'Middle School (Ages 12-14)', 
+                  'High School (Ages 15-18)', 
+                  'University Prep', 
+                  'Adult Education',
+                  'WAEC', 
+                  'JAMB', 
+                  'IGCSE', 
+                  'Cambridge', 
+                  'IB Diploma', 
+                  'SAT',
+                  'Professional Certs',
+                  'Vocational & Technical',
+                  'Others (Professional)'
+                ].map(curr => (
+                  <button
+                    key={curr}
+                    onClick={() => setCurriculumFilter(curr)}
+                    className={`py-1.5 px-4 rounded-full border font-sans text-xs font-semibold shrink-0 transition-all duration-300 ${
+                      curriculumFilter === curr
+                        ? 'bg-brand-moss border-brand-moss text-white shadow-sm'
+                        : 'bg-brand-cream/20 border-brand-moss/10 hover:border-brand-moss/30 text-brand-moss/80'
+                    }`}
+                  >
+                    {curr}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -248,9 +292,9 @@ export default function Marketplace({
           <div className="w-16 h-16 bg-brand-cream/50 rounded-full flex items-center justify-center mx-auto border border-brand-moss/5">
             <Search className="w-8 h-8 text-brand-clay animate-pulse" />
           </div>
-          <h3 className="font-heading font-bold text-xl text-brand-moss">No Vetted Tutors Available</h3>
+          <h3 className="font-heading font-bold text-xl text-brand-moss">No Educators Found</h3>
           <p className="font-sans text-xs text-brand-charcoal/70 leading-relaxed">
-            We are preparing for our launch. All instructors are currently undergoing vetting and credentials verification. Please check back shortly or register on the waitlist below!
+            Try adjusting your search query, subject, or tier filters to find available instructors.
           </p>
         </div>
       ) : (
@@ -261,12 +305,18 @@ export default function Marketplace({
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {[...displayTeachers].sort((a, b) => {
-          const aHasElite = (a.badges || []).includes('badge-ai-cert');
-          const bHasElite = (b.badges || []).includes('badge-ai-cert');
-          if (aHasElite && !bHasElite) return -1;
-          if (!aHasElite && bHasElite) return 1;
+          const aGradeA = isTeacherGradeA(a);
+          const bGradeA = isTeacherGradeA(b);
+          if (aGradeA && !bGradeA) return -1;
+          if (!aGradeA && bGradeA) return 1;
+          const aGradeB = isTeacherGradeB(a);
+          const bGradeB = isTeacherGradeB(b);
+          if (aGradeB && !bGradeB) return -1;
+          if (!aGradeB && bGradeB) return 1;
           return 0;
         }).map(teacher => {
+          const isGradeA = isTeacherGradeA(teacher);
+          const isGradeB = isTeacherGradeB(teacher);
           const rateValue = 350000; // ₦3,500 across board for trial class
           const convertedRate = convertMinor(rateValue, selectedCurrency);
           const formattedRate = formatCurrency(convertedRate, selectedCurrency);
@@ -278,7 +328,11 @@ export default function Marketplace({
           return (
             <div 
               key={teacher.id || teacher.uid} 
-              className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 flex flex-col justify-between custom-card-shadow hover-lift relative overflow-hidden"
+              className={`bg-white border rounded-[2.5rem] p-6 flex flex-col justify-between custom-card-shadow hover-lift relative overflow-hidden transition-all ${
+                isGradeA 
+                  ? 'border-amber-300 ring-1 ring-amber-200/60 shadow-amber-500/5' 
+                  : 'border-brand-moss/10'
+              }`}
             >
               <div>
                 {/* Intro video simulated screen */}
@@ -318,11 +372,18 @@ export default function Marketplace({
                   {/* Vetting standard display */}
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
                     <div className="flex gap-1.5 flex-wrap">
-                      
-                      {(teacher.isVipTeacher || teacher.vipVerified || (teacher.badges || []).includes('badge-vip')) && (
-                        <span key="badge-vip" className="bg-amber-100 text-amber-900 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full border border-amber-300 shadow-sm flex items-center gap-1 whitespace-nowrap">
-                          <Crown className="w-2.5 h-2.5 text-amber-600 inline" />
-                          <span>VIP Educator</span>
+                      {isGradeA ? (
+                        <span key="badge-grade-a" className="bg-gradient-to-r from-amber-100 to-amber-200 text-amber-900 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full border border-amber-300 shadow-sm flex items-center gap-1 whitespace-nowrap">
+                          <Crown className="w-2.5 h-2.5 text-amber-700 inline" />
+                          <span>Grade A Elite VVIP</span>
+                        </span>
+                      ) : isGradeB ? (
+                        <span key="badge-grade-b" className="bg-blue-50 text-blue-800 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full border border-blue-200 shadow-sm flex items-center gap-1 whitespace-nowrap">
+                          <ShieldCheck className="w-2.5 h-2.5" /> Grade B Verified
+                        </span>
+                      ) : (
+                        <span key="badge-freemium" className="bg-brand-cream/80 text-brand-charcoal/80 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full border border-brand-moss/10 whitespace-nowrap">
+                          Standard Educator
                         </span>
                       )}
 
@@ -334,24 +395,10 @@ export default function Marketplace({
                             </span>
                           );
                         }
-                        if (badge === 'badge-ai-cert') {
-                          return (
-                            <span key={badge} className="bg-emerald-50 text-emerald-800 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full border border-emerald-200 shadow-sm whitespace-nowrap">
-                              ELITE CERTIFIED
-                            </span>
-                          );
-                        }
-                        if (badge === 'badge-verified') {
-                          return (
-                            <span key={badge} className="bg-blue-50 text-blue-800 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full border border-blue-200 shadow-sm flex items-center gap-1 whitespace-nowrap">
-                              <ShieldCheck className="w-2.5 h-2.5" /> VERIFIED
-                            </span>
-                          );
-                        }
                         if (badge === 'badge-bg-checked') {
                           return (
                             <span key={badge} className="bg-amber-50/80 border border-brand-clay/30 text-brand-clay font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full shadow-sm flex items-center gap-1 whitespace-nowrap">
-                              <ShieldCheck className="w-2.5 h-2.5 text-brand-clay fill-brand-clay/10" /> BACKGROUND CHECKED
+                              <ShieldCheck className="w-2.5 h-2.5 text-brand-clay fill-brand-clay/10" /> BG CHECKED
                             </span>
                           );
                         }
@@ -375,7 +422,11 @@ export default function Marketplace({
                       className="font-heading font-bold text-lg text-brand-moss flex items-center gap-1.5 cursor-pointer hover:underline"
                     >
                       {teacher.name || 'Verified Educator'}
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-50" />
+                      {isGradeA ? (
+                        <Crown className="w-4 h-4 text-amber-600" title="Grade A Elite VVIP Teacher" />
+                      ) : (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-50" />
+                      )}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="flex items-center text-brand-clay">
@@ -410,13 +461,26 @@ export default function Marketplace({
                 </p>
               </div>
 
-              {/* Hourly Rate & CTA buttons */}
+              {/* Hourly Rate & Monthly Contract indicator & CTA buttons */}
               <div>
                 <div className="flex flex-col gap-1.5 mb-4 border-t border-brand-moss/5 pt-3">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-brand-charcoal/50 font-mono text-[10px] uppercase tracking-wider">Standard Rate:</span>
+                    <span className="text-brand-charcoal/50 font-mono text-[10px] uppercase tracking-wider">Hourly Rate:</span>
                     <span className="font-heading font-bold text-brand-moss">{formattedStandardRate}/hr</span>
                   </div>
+                  {isGradeA ? (
+                    <div className="flex justify-between items-center text-[11px] bg-amber-50 border border-amber-200/60 px-2.5 py-1 rounded-xl">
+                      <span className="font-mono text-[9px] uppercase tracking-wider text-amber-900 font-bold flex items-center gap-1">
+                        <Crown className="w-3 h-3 text-amber-700" /> Monthly Floor:
+                      </span>
+                      <span className="font-heading font-extrabold text-amber-900">₦100,000 / mo</span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center text-[10px] text-brand-charcoal/60 px-1">
+                      <span className="font-mono uppercase tracking-wider">Monthly Retainer:</span>
+                      <span className="font-medium text-brand-moss">Flexible rates</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -424,13 +488,13 @@ export default function Marketplace({
                     onClick={() => onBookClick(teacher)}
                     className="btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center"
                   >
-                    Book Trial
+                    Book Class
                   </button>
                   <button
                     onClick={() => onTeacherSelect && onTeacherSelect(teacherId)}
                     className="btn-magnetic border border-brand-moss/20 text-brand-moss font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center hover:bg-brand-moss/5"
                   >
-                    Message
+                    View Profile
                   </button>
                 </div>
               </div>

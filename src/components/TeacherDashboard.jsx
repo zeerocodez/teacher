@@ -139,6 +139,8 @@ export default function TeacherDashboard({
   const [avatar, setAvatar] = useState("");
   const [govIdUrl, setGovIdUrl] = useState("");
   const [degreeUrl, setDegreeUrl] = useState("");
+  const [trcnUrl, setTrcnUrl] = useState("");
+  const [schoolIdUrl, setSchoolIdUrl] = useState("");
   const [cvUrl, setCvUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
@@ -361,6 +363,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         setAvatar(data.teacher.avatar || "");
         setGovIdUrl(data.teacher.govIdUrl || data.teacher.govId || "");
         setDegreeUrl(data.teacher.degreeUrl || data.teacher.degree || "");
+        setTrcnUrl(data.teacher.trcnUrl || data.teacher.trcn || "");
+        setSchoolIdUrl(data.teacher.schoolIdUrl || data.teacher.schoolId || "");
         setCvUrl(data.teacher.cvUrl || data.teacher.cv || "");
         setVideoUrl(data.teacher.videoUrl || "");
         setCurrency(data.teacher.currency || "NGN");
@@ -1113,38 +1117,99 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8">
           <div className="max-w-7xl mx-auto w-full space-y-6 sm:space-y-8 animate-fade-up">
             {/* Verification Status Banner for unverified or pending teachers */}
-            {teacherProfile && !teacherProfile.verified && (
-              <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-white border border-amber-300/80 rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-800 shrink-0">
-                    <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
-                  </div>
-                  <div className="space-y-1 sm:space-y-1.5">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider font-extrabold bg-amber-100 text-amber-900 px-2 sm:px-2.5 py-0.5 rounded-full border border-amber-300">
-                        Vetting Status: Pending Approval
-                      </span>
-                      <span className="text-[11px] sm:text-xs text-amber-800 font-medium">
-                        Standard Review: 24–48 Hours
-                      </span>
+            {/* 3-Tier Educator Badge & Rate Floor Status Card */}
+            {(() => {
+              const isGradeATeacher = Boolean(
+                currentUser?.isEliteVip || 
+                teacherProfile?.tier === 'Grade A' || 
+                (academyProgress?.enrolled && (academyProgress?.completedModules || []).length >= 4)
+              );
+              const isGradeBTeacher = !isGradeATeacher && Boolean(
+                govIdUrl || teacherProfile?.verified || teacherProfile?.govId
+              );
+
+              return (
+                <div className="bg-gradient-to-r from-brand-moss via-brand-charcoal to-brand-moss text-white border border-brand-cream/15 rounded-2xl sm:rounded-[2rem] p-5 sm:p-7 shadow-xl overflow-hidden relative">
+                  <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-brand-clay/20 rounded-full blur-2xl pointer-events-none" />
+                  
+                  <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                    <div className="flex items-start gap-4">
+                      <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${
+                        isGradeATeacher
+                          ? "bg-amber-400/20 border border-amber-300/40 text-amber-300"
+                          : isGradeBTeacher
+                          ? "bg-blue-400/20 border border-blue-300/40 text-blue-300"
+                          : "bg-white/10 border border-white/20 text-brand-cream"
+                      }`}>
+                        {isGradeATeacher ? <Crown className="w-7 h-7 animate-pulse" /> : isGradeBTeacher ? <ShieldCheck className="w-7 h-7" /> : <Sparkles className="w-7 h-7" />}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full border ${
+                            isGradeATeacher
+                              ? "bg-amber-400/20 text-amber-300 border-amber-400/40"
+                              : isGradeBTeacher
+                              ? "bg-blue-500/20 text-blue-300 border-blue-400/40"
+                              : "bg-white/15 text-white border-white/20"
+                          }`}>
+                            {isGradeATeacher
+                              ? "👑 Tier: Elite (Grade A - VVIP Certified)"
+                              : isGradeBTeacher
+                              ? "🛡️ Tier: Basic (Grade B - Verified Educator)"
+                              : "🆓 Tier: Freemium Plan (Standard Entry)"}
+                          </span>
+
+                          {isGradeATeacher && (
+                            <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                              ₦100,000/mo Contract Floor Protected
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 className="font-heading font-extrabold text-base sm:text-xl text-white">
+                          {isGradeATeacher
+                            ? "VVIP Elite Status Active — Protected Rate Floor"
+                            : isGradeBTeacher
+                            ? "Basic Grade B Status — Flexible Rates"
+                            : "Freemium Educator — Standard Profile"}
+                        </h3>
+
+                        <p className="font-sans text-xs text-brand-cream/80 max-w-2xl leading-relaxed">
+                          {isGradeATeacher
+                            ? "You have completed Academy Level 4. Clients cannot book you for less than ₦100,000 monthly contracts. You receive top placement in parent search rankings and private VIP community access."
+                            : isGradeBTeacher
+                            ? "Your identity and credentials are submitted. Upgrade to Grade A (Elite VVIP) via the Academy to unlock the guaranteed ₦100,000+ monthly rate floor and VIP WhatsApp group."
+                            : "You are on the free application plan. Upload your NIN, TRCN/Degree, School ID, and LinkedIn in profile settings to earn Grade B, or enroll in the Elite Academy for Grade A VVIP perks."}
+                        </p>
+                      </div>
                     </div>
-                    <h4 className="font-heading font-bold text-sm sm:text-base text-brand-moss">
-                      Welcome to your Teacher Dashboard, {teacherProfile.name || currentUser?.displayName}!
-                    </h4>
-                    <p className="font-sans text-[11px] sm:text-xs text-brand-charcoal/80 max-w-2xl leading-relaxed">
-                      Your account is active. To gain your <strong>Verified Badge</strong>, appear on public parent searches, and start accepting live student bookings, please ensure your subjects, rates, and identity credentials (ID & qualifications) are uploaded.
-                    </p>
+
+                    <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto shrink-0">
+                      {!isGradeATeacher && (
+                        <Link
+                          to="/academy"
+                          className="py-2.5 px-5 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20 transition-all flex items-center justify-center gap-2 text-center"
+                        >
+                          <Crown className="w-4 h-4 text-amber-300" />
+                          <span>Upgrade to Grade A Elite</span>
+                        </Link>
+                      )}
+                      
+                      {!isGradeBTeacher && !isGradeATeacher && (
+                        <button
+                          onClick={() => setActiveTab("profile")}
+                          className="py-2.5 px-5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                        >
+                          <ShieldCheck className="w-4 h-4" />
+                          <span>Submit Credentials (Grade B)</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setActiveTab("profile")}
-                  className="w-full md:w-auto shrink-0 py-2.5 sm:py-3 px-4 sm:px-6 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Complete Credentials</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+              );
+            })()}
 
             {/* TAB 1: OVERVIEW & BOOKINGS */}
             {activeTab === "overview" && (
@@ -2340,6 +2405,55 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                                 placeholder="https://drive.google.com/file/d/... or Certificate Link"
                                 value={degreeUrl}
                                 onChange={(e) => setDegreeUrl(e.target.value)}
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                  TRCN / Teaching Certificate <span className="text-gray-400 font-normal font-sans">(Optional)</span>
+                                </label>
+                                <label className="text-[10px] text-brand-clay hover:underline cursor-pointer flex items-center gap-1">
+                                  <Upload className="w-2.5 h-2.5" /> Upload File
+                                  <input
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    onChange={(e) => handleFileUpload(e, "raw", setTrcnUrl)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                              <input
+                                type="text"
+                                placeholder="https://drive.google.com/... or TRCN Certificate Link"
+                                value={trcnUrl}
+                                onChange={(e) => setTrcnUrl(e.target.value)}
+                                className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
+                              />
+                            </div>
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">
+                                  School ID / Institutional ID <span className="text-gray-400 font-normal font-sans">(Optional)</span>
+                                </label>
+                                <label className="text-[10px] text-brand-clay hover:underline cursor-pointer flex items-center gap-1">
+                                  <Upload className="w-2.5 h-2.5" /> Upload File
+                                  <input
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    onChange={(e) => handleFileUpload(e, "raw", setSchoolIdUrl)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                              <input
+                                type="text"
+                                placeholder="https://drive.google.com/... or School ID Link"
+                                value={schoolIdUrl}
+                                onChange={(e) => setSchoolIdUrl(e.target.value)}
                                 className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-xs"
                               />
                             </div>
