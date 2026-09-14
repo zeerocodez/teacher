@@ -313,6 +313,10 @@ app.use('/api/lms', lmsRoutes);
 import retainerRoutes from './routes/retainer.routes.js';
 app.use('/api/retainers', retainerRoutes);
 
+import reminderRoutes from './routes/reminder.routes.js';
+app.use('/api/reminders', reminderRoutes);
+
+
 
 // --- 6. REPUTATION ENGINE ENDPOINTS ---
 

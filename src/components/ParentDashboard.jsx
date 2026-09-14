@@ -13,6 +13,7 @@ import {
   RefreshCw, 
   Star, 
   MessageSquare, 
+  MessageCircle,
   AlertOctagon, 
   Trophy, 
   Wallet,
@@ -287,6 +288,28 @@ export default function ParentDashboard({
       setRetainersLoading(false);
     }
   };
+
+  // Connect via WhatsApp to Tutor
+  const handleParentWhatsAppConnect = async (session) => {
+    try {
+      const res = await fetch(`${API_BASE}/reminders/session/${session.id}/whatsapp-link`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.teacherWhatsAppUrl) {
+          window.open(data.teacherWhatsAppUrl, '_blank');
+          toast.success("Opening WhatsApp chat with educator...");
+          return;
+        }
+      }
+      const msg = encodeURIComponent(`👋 Hello ${session.teacherName || 'Tutor'}, this is ${currentUser?.displayName || 'Parent'} regarding ${session.studentName}'s tutoring class on EduVistar.`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    } catch (e) {
+      toast.error("Failed to connect to WhatsApp.");
+    }
+  };
+
 
   // Fetch Parent Dashboard details
   const fetchDashboard = async () => {
@@ -1604,7 +1627,17 @@ export default function ParentDashboard({
                         )}
   
                         {(session.status === 'Scheduled' || session.status === 'Pending Confirmation') && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <button
+                              type="button"
+                              onClick={() => handleParentWhatsAppConnect(session)}
+                              className="py-1.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl font-heading font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center gap-1"
+                              title="Chat directly with child's tutor on WhatsApp"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                              WhatsApp Tutor
+                            </button>
+
                             {session.classLink ? (
                               <a
                                 href={session.classLink}

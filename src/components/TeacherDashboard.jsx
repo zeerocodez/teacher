@@ -481,6 +481,58 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
     }
   };
 
+  const [sendingReminderId, setSendingReminderId] = useState(null);
+
+  const handleSendWhatsAppReminder = async (session) => {
+    try {
+      const res = await fetch(`${API_BASE}/reminders/session/${session.id}/whatsapp-link`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.parentWhatsAppUrl) {
+          window.open(data.parentWhatsAppUrl, '_blank');
+          toast.success("WhatsApp opened with class reminder & classroom link!");
+        } else {
+          const msg = encodeURIComponent(`👋 EduVistar Class Reminder: Hello! Upcoming live lesson for ${session.studentName} is scheduled on ${session.slot?.day || 'today'} at ${session.slot?.time || 'upcoming'}. Classroom link: https://www.eduvistar.com/classroom?session=${session.id}`);
+          window.open(`https://wa.me/?text=${msg}`, '_blank');
+          toast("Opened WhatsApp share dialog.");
+        }
+      } else {
+        const msg = encodeURIComponent(`👋 EduVistar Class Reminder: Hello! Upcoming live lesson for ${session.studentName} is scheduled on ${session.slot?.day || 'today'} at ${session.slot?.time || 'upcoming'}. Classroom link: https://www.eduvistar.com/classroom?session=${session.id}`);
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
+        toast("Opened WhatsApp share dialog.");
+      }
+    } catch (e) {
+      toast.error("Failed to connect to reminder service.");
+    }
+  };
+
+  const handleSendEmailReminder = async (session) => {
+    setSendingReminderId(session.id);
+    try {
+      const res = await fetch(`${API_BASE}/reminders/session/${session.id}/send`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ type: 'instant' })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(data.message || "Reminder notifications sent to student & parent!");
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Failed to send reminder email.");
+      }
+    } catch (e) {
+      toast.error("Network error sending reminder.");
+    } finally {
+      setSendingReminderId(null);
+    }
+  };
+
   useEffect(() => {
     fetchData();
     fetchRetainers();
@@ -1990,14 +2042,39 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                                   ) : null}
                                 </div>
                               </div>
-                              <div className="flex gap-2 self-start md:self-center flex-wrap">
+                              <div className="flex gap-2 self-start md:self-center flex-wrap items-center">
+                                {session.status !== "Completed" && session.status !== "Disputed" && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSendWhatsAppReminder(session)}
+                                      className="py-2 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-2xs"
+                                      title="Open WhatsApp with direct classroom reminder link"
+                                    >
+                                      <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                                      📲 WhatsApp Parent
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSendEmailReminder(session)}
+                                      disabled={sendingReminderId === session.id}
+                                      className="py-2 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+                                      title="Send automated email and in-app reminder"
+                                    >
+                                      <Bell className={`w-3.5 h-3.5 text-amber-700 ${sendingReminderId === session.id ? 'animate-spin' : ''}`} />
+                                      {sendingReminderId === session.id ? 'Sending...' : '🔔 Send Reminder'}
+                                    </button>
+                                  </>
+                                )}
+
                                 {session.status !== "Completed" &&
                                   session.status !== "Disputed" && (
                                     <button
                                       onClick={() =>
                                         handleCompleteSession(session.id)
                                       }
-                                      className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
+                                      className="py-2 px-3.5 bg-brand-moss hover:bg-brand-moss/90 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
                                     >
                                       <CheckCircle2 className="w-3.5 h-3.5" />{" "}
                                       Complete & Claim Escrow
@@ -2018,6 +2095,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                                 <button
                                   onClick={() => onOpenChat(session)}
                                   className="btn-magnetic w-9 h-9 rounded-full bg-brand-moss/5 border border-brand-moss/10 flex items-center justify-center text-brand-moss hover:bg-brand-clay hover:text-white transition-colors"
+                                  title="Open Chat"
                                 >
                                   <MessageSquare className="w-4.5 h-4.5" />
                                 </button>
