@@ -695,6 +695,28 @@ export default function App() {
           setEscrowBalance(data.escrowBalance);
           appendTelemetryLog(`Escrow Locked: ${formatCurrency(convertMinor(costNgnMinor, selectedCurrency), selectedCurrency)} secured for ${selectedTeacherForBooking.name}`);
         }
+
+        // If booking mode was monthly, record the monthly retainer contract
+        if (options.bookingMode === 'monthly') {
+          try {
+            await fetch(`${API_BASE}/retainers/create`, {
+              method: 'POST',
+              headers: getAuthHeaders(),
+              body: JSON.stringify({
+                teacherId: selectedTeacherForBooking.id || selectedTeacherForBooking.uid,
+                studentId: activeStudentId,
+                studentName: activeStudentName,
+                subject: options.subject || (selectedTeacherForBooking.subjects && selectedTeacherForBooking.subjects[0]) || 'General',
+                curriculum: options.curriculum || (selectedTeacherForBooking.curricula && selectedTeacherForBooking.curricula[0]) || 'Standard',
+                sessionsCount: options.monthlySessionsCount || slots.length || 8,
+                paymentMethod
+              })
+            });
+          } catch (e) {
+            console.warn("Retainer creation warning:", e);
+          }
+        }
+
         await fetchInitialData();
         
         // Redirect to dashboard

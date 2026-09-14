@@ -310,6 +310,9 @@ app.use('/api/video', videoRoutes);
 import lmsRoutes, { seedLmsCoursesIfEmpty } from './routes/lms.routes.js';
 app.use('/api/lms', lmsRoutes);
 
+import retainerRoutes from './routes/retainer.routes.js';
+app.use('/api/retainers', retainerRoutes);
+
 
 // --- 6. REPUTATION ENGINE ENDPOINTS ---
 

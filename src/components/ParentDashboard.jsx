@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { 
   Sparkles, 
+  Crown,
   BarChart2, 
   ShieldCheck, 
   CheckCircle2, 
@@ -266,6 +267,27 @@ export default function ParentDashboard({
     };
   };
 
+  const [retainers, setRetainers] = useState([]);
+  const [retainersLoading, setRetainersLoading] = useState(false);
+
+  // Fetch Monthly Retainers for the Parent
+  const fetchRetainers = async () => {
+    try {
+      setRetainersLoading(true);
+      const res = await fetch(`${API_BASE}/retainers`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setRetainers(data);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch retainers:", err);
+    } finally {
+      setRetainersLoading(false);
+    }
+  };
+
   // Fetch Parent Dashboard details
   const fetchDashboard = async () => {
     try {
@@ -285,6 +307,7 @@ export default function ParentDashboard({
           setReferralStats(data.referralStats);
         }
       }
+      await fetchRetainers();
     } catch (err) {
       console.warn("Failed to fetch live parent dashboard:", err);
     }
@@ -966,6 +989,179 @@ export default function ParentDashboard({
                 <span className="text-xs font-bold text-rose-500 mt-1">Requires action</span>
               </div>
             </div>
+          </div>
+          
+          {/* ACTIVE MONTHLY RETAINERS & 4-WEEK MILESTONE TRACKER */}
+          <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-brand-moss/5 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block">
+                    MONTHLY COMMITMENTS
+                  </span>
+                  <span className="bg-amber-100 text-amber-900 border border-amber-300 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full flex items-center gap-1">
+                    <Crown className="w-2.5 h-2.5 text-amber-700" /> Grade A Rate Floor Protected
+                  </span>
+                </div>
+                <h3 className="font-heading font-bold text-xl text-brand-moss mt-0.5">
+                  Active Monthly Retainers & Milestone Tracker
+                </h3>
+                <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
+                  Track 4-week structured evaluations, curriculum mastery milestones, and escrow releases for your enrolled children.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={fetchRetainers}
+                className="px-3.5 py-1.5 bg-brand-cream/50 hover:bg-brand-cream border border-brand-moss/10 rounded-xl font-mono text-[10px] font-bold text-brand-moss flex items-center gap-1.5 transition-colors self-start sm:self-auto"
+              >
+                <RefreshCw className={`w-3 h-3 ${retainersLoading ? 'animate-spin' : ''}`} />
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            {retainers.length === 0 ? (
+              <div className="py-8 px-6 bg-brand-cream/15 rounded-2xl border border-dashed border-brand-moss/20 text-center space-y-2 font-sans">
+                <Calendar className="w-8 h-8 text-brand-moss/30 mx-auto" />
+                <h4 className="font-heading font-bold text-sm text-brand-moss">No Active Monthly Retainers</h4>
+                <p className="text-xs text-brand-charcoal/60 max-w-md mx-auto">
+                  Book a verified Grade A Elite or Grade B educator under a 30-day monthly contract to unlock structured weekly evaluations, consistency, and ₦100,000 rate floor guarantees.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('marketplace')}
+                  className="mt-2 py-2 px-5 bg-brand-moss hover:bg-brand-moss/90 text-white font-sans text-xs font-bold rounded-full transition-colors"
+                >
+                  Explore Vetted Tutors
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {retainers.map((ret) => {
+                  const isGradeA = ret.isGradeA || ret.teacherTier === 'Grade A';
+                  const completedPercent = ret.overallProgress || Math.round(((ret.sessionsCompleted || 0) / ret.sessionsTotal) * 100);
+
+                  return (
+                    <div 
+                      key={ret.id} 
+                      className="border border-brand-moss/15 rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-white via-brand-cream/10 to-brand-cream/20 space-y-5 shadow-xs"
+                    >
+                      {/* Retainer Header */}
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3.5">
+                          <img 
+                            src={ret.teacherAvatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200"} 
+                            alt={ret.teacherName} 
+                            className="w-14 h-14 rounded-2xl object-cover border border-brand-moss/15 shadow-xs"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-heading font-bold text-base text-brand-moss">{ret.teacherName}</h4>
+                              {isGradeA ? (
+                                <span className="bg-amber-100 border border-amber-300 text-amber-900 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full flex items-center gap-1">
+                                  <Crown className="w-2.5 h-2.5 text-amber-700" /> Grade A VVIP
+                                </span>
+                              ) : (
+                                <span className="bg-blue-50 border border-blue-200 text-blue-800 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full flex items-center gap-1">
+                                  <ShieldCheck className="w-2.5 h-2.5" /> Grade B
+                                </span>
+                              )}
+                            </div>
+                            <span className="font-mono text-[10px] text-brand-charcoal/70 block mt-0.5">
+                              Student: <b>{ret.studentName}</b> · Subject: <b>{ret.subject}</b> ({ret.curriculum || 'Standard'})
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Amount & Status Pill */}
+                        <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-1 border-t md:border-t-0 pt-2 md:pt-0 border-brand-moss/5">
+                          <span className="font-heading font-extrabold text-lg text-brand-moss">
+                            {ret.formattedAmountNgn || `₦${(ret.totalAmountMinor / 100).toLocaleString()}`}
+                          </span>
+                          <span className={`font-mono text-[8px] uppercase tracking-wider px-2.5 py-0.5 rounded-full font-bold border ${
+                            ret.status === 'completed'
+                              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                              : 'bg-amber-50 border-amber-200 text-amber-800'
+                          }`}>
+                            {ret.status === 'completed' ? '✓ Contract Completed' : '🔒 Active Escrow Retainer'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Overall Retainer Progress Bar */}
+                      <div className="space-y-1.5 bg-white p-3 rounded-2xl border border-brand-moss/10">
+                        <div className="flex justify-between text-xs font-sans">
+                          <span className="font-bold text-brand-moss">
+                            Monthly Sessions: {ret.sessionsCompleted || 0} / {ret.sessionsTotal} Delivered
+                          </span>
+                          <span className="font-mono font-bold text-brand-clay text-[11px]">
+                            {completedPercent}% Overall Completion
+                          </span>
+                        </div>
+                        <div className="w-full h-2.5 bg-brand-moss/10 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-brand-moss to-brand-clay transition-all duration-500 rounded-full"
+                            style={{ width: `${completedPercent}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 4 Weekly Milestones Breakdown Grid */}
+                      <div>
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block mb-2">
+                          4-Week Evaluative Milestones
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                          {(ret.milestones || []).map((m) => {
+                            const isMet = m.status === 'completed';
+                            const isInProgress = m.status === 'in_progress';
+
+                            return (
+                              <div 
+                                key={m.week} 
+                                className={`p-3.5 rounded-2xl border flex flex-col justify-between space-y-2 text-xs font-sans transition-all ${
+                                  isMet
+                                    ? 'bg-emerald-50/40 border-emerald-300'
+                                    : isInProgress
+                                    ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-300'
+                                    : 'bg-white border-brand-moss/10 opacity-75'
+                                }`}
+                              >
+                                <div>
+                                  <div className="flex justify-between items-center mb-1">
+                                    <span className="font-mono text-[9px] uppercase font-bold text-brand-charcoal/60">
+                                      Week {m.week} ({m.progressPercent}%)
+                                    </span>
+                                    {isMet ? (
+                                      <span className="text-emerald-700 font-bold text-[9px] bg-emerald-100 px-1.5 py-0.2 rounded">✓ Met</span>
+                                    ) : isInProgress ? (
+                                      <span className="text-amber-800 font-bold text-[9px] bg-amber-100 px-1.5 py-0.2 rounded animate-pulse">In Progress</span>
+                                    ) : (
+                                      <span className="text-gray-400 font-mono text-[8px]">Pending</span>
+                                    )}
+                                  </div>
+                                  <h5 className="font-heading font-bold text-xs text-brand-moss line-clamp-2">
+                                    {m.title}
+                                  </h5>
+                                  <p className="text-[10px] text-brand-charcoal/70 mt-1 line-clamp-3 leading-relaxed">
+                                    {m.description}
+                                  </p>
+                                </div>
+
+                                <div className="pt-2 border-t border-brand-moss/5 flex justify-between items-center text-[10px] font-mono text-brand-charcoal/60">
+                                  <span>Target: {m.targetSessions} sessions</span>
+                                  <span>{Math.min(ret.sessionsCompleted || 0, m.targetSessions)}/{m.targetSessions}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
           
           {/* Parent Onboarding Protocol Checklist */}
