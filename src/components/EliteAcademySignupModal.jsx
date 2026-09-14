@@ -161,24 +161,28 @@ export default function EliteAcademySignupModal({ isOpen, onClose, onOpenLogin }
                 Join the Elite Teachers Academy
               </h2>
               <p className="font-sans text-xs text-brand-cream/80 mt-1 max-w-lg leading-relaxed">
-                Sign up below to begin your accreditation. Complete your credentials verification in your dashboard to unlock full coursework and earn <strong>VVIP Access</strong>.
+                Sign up below to begin your accreditation. After uploading credentials in your dashboard (Exercise 1), completing the <strong>₦40,000</strong> registration fee delivers the <strong>Private VIP WhatsApp Group invite to your email</strong> and unlocks full coursework.
               </p>
             </div>
           </div>
 
-          {/* 3-Step Pathway Tracker */}
-          <div className="grid grid-cols-3 gap-2 mt-6 pt-5 border-t border-white/10 text-center">
-            <div className="bg-white/10 rounded-xl p-2.5 border border-amber-400/40">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-amber-300 font-extrabold block">STEP 1</span>
-              <span className="text-[11px] font-heading font-bold text-white block mt-0.5">Sign Up</span>
+          {/* 4-Step Pathway Tracker */}
+          <div className="grid grid-cols-4 gap-2 mt-6 pt-5 border-t border-white/10 text-center">
+            <div className="bg-white/10 rounded-xl p-2 border border-amber-400/40">
+              <span className="font-mono text-[8px] uppercase tracking-wider text-amber-300 font-extrabold block">STEP 1</span>
+              <span className="text-[10px] font-heading font-bold text-white block mt-0.5">Sign Up</span>
             </div>
-            <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-cream/60 font-bold block">STEP 2</span>
-              <span className="text-[11px] font-heading font-bold text-brand-cream/90 block mt-0.5">Fill Credentials</span>
+            <div className="bg-white/5 rounded-xl p-2 border border-white/10">
+              <span className="font-mono text-[8px] uppercase tracking-wider text-brand-cream/60 font-bold block">STEP 2</span>
+              <span className="text-[10px] font-heading font-bold text-brand-cream/90 block mt-0.5">Credentials</span>
             </div>
-            <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-300 font-bold block">STEP 3</span>
-              <span className="text-[11px] font-heading font-bold text-emerald-300 block mt-0.5">VVIP Access</span>
+            <div className="bg-white/5 rounded-xl p-2 border border-white/10">
+              <span className="font-mono text-[8px] uppercase tracking-wider text-amber-300 font-bold block">STEP 3</span>
+              <span className="text-[10px] font-heading font-bold text-amber-300 block mt-0.5">₦40k Fee</span>
+            </div>
+            <div className="bg-white/5 rounded-xl p-2 border border-white/10">
+              <span className="font-mono text-[8px] uppercase tracking-wider text-emerald-300 font-bold block">STEP 4</span>
+              <span className="text-[10px] font-heading font-bold text-emerald-300 block mt-0.5">VVIP Access</span>
             </div>
           </div>
         </div>
@@ -341,7 +345,7 @@ export default function EliteAcademySignupModal({ isOpen, onClose, onOpenLogin }
           <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-3.5 flex items-start gap-2.5">
             <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <p className="text-[11px] text-amber-900/90 leading-relaxed font-sans">
-              <strong>Seamless Verification Pathway:</strong> Submitting this application creates your teacher portal account. You will then upload your Government ID and degree credentials in your dashboard (Exercise 1) to unlock all live coursework and gain <strong>VVIP status</strong>.
+              <strong>Seamless Verification Pathway:</strong> Submitting this application creates your teacher portal account. You will then upload your Government ID and degree credentials in your dashboard (Exercise 1), followed by the <strong>₦40,000</strong> registration fee. Once verified, the link to join the <strong>Private VIP WhatsApp Group</strong> is emailed directly to your inbox and full coursework unlocks for your <strong>Gold VVIP status</strong>.
             </p>
           </div>
 

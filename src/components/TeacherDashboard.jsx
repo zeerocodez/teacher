@@ -3425,7 +3425,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                           EduVistar Elite Teachers Academy
                         </h3>
                         <p className="font-sans text-xs text-brand-charcoal/60 mt-1">
-                          Master international curricula (Cambridge/WAEC), AI-powered pedagogy, differentiated instruction, and earn verifiable accreditation.
+                          Master international curricula (Cambridge/WAEC), AI-powered pedagogy, and join the private VIP educator circle. (₦40,000 registration fee verified after credential submission).
                         </p>
                       </div>
 

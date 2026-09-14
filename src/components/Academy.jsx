@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import { MessageCircle, Crown, Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, Users, PlusCircle, CreditCard, Clock, Globe, ArrowRight, ShieldCheck, UserCheck, AlertCircle } from 'lucide-react';
+import { MessageCircle, Crown, Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, Users, PlusCircle, CreditCard, Clock, Globe, ArrowRight, ShieldCheck, UserCheck, AlertCircle, X, Copy, Check } from 'lucide-react';
 import EliteAcademySignupModal from './EliteAcademySignupModal';
+
+const VIP_WHATSAPP_URL = 'https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4';
 
 export default function Academy({ 
   currentUser, 
@@ -16,18 +18,19 @@ export default function Academy({
   const [activeTab, setActiveTab] = useState('modules'); // 'modules', 'roleplay', 'forum', 'certificate'
   const [enrolled, setEnrolled] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('card'); // 'card' or 'transfer'
   const [level4Completed, setLevel4Completed] = useState(false);
   const [isVipTeacher, setIsVipTeacher] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submittingPayment, setSubmittingPayment] = useState(false);
   
   // Paywall states
-  const [billingPlan, setBillingPlan] = useState('onboarding'); // 'onboarding'
   const [cardName, setCardName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvv, setCardCvv] = useState('');
-  const [paymentStep, setPaymentStep] = useState('idle'); // 'idle', 'processing', 'otp', 'success'
   const [paymentError, setPaymentError] = useState('');
 
   // Onboarding Form States
@@ -314,29 +317,13 @@ export default function Academy({
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roleplayMessages]);
 
-  // Handle proof of payment upload
-  const handleProofUpload = async (e) => {
-    e.preventDefault();
+  // Process ₦40,000 Academy Registration Fee Payment
+  const handleProcessPayment = async (e) => {
+    if (e) e.preventDefault();
     setPaymentError("");
-    setPaymentStep('processing');
+    setSubmittingPayment(true);
     
-    // Simulate upload delay and verification
-    setTimeout(() => {
-      setEnrolled(true);
-      setPaymentStep('success');
-      toast.success("Proof of payment uploaded successfully!");
-      
-      const localCache = localStorage.getItem(`academy_progress_${currentUser.uid}`) || '{}';
-      const updated = { ...JSON.parse(localCache), enrolled: true, completedModules: [], xp: 0 };
-      localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
-      
-      // Redirect to the Elite Teachers Academy LMS
-      navigate('/academy');
-    }, 1500);
-  };
-
-  const handleVerifyOtp = () => {
-    setPaymentStep('processing');
+    // Simulate payment processing & verification
     setTimeout(async () => {
       try {
         const res = await fetch(`${API_BASE}/academy/enroll`, {
@@ -344,31 +331,47 @@ export default function Academy({
           headers: getAuthHeaders(),
           body: JSON.stringify({
             userId: currentUser.uid,
-            plan: billingPlan,
-            cardDetails: { name: cardName, number: cardNumber.slice(-4) }
+            fee: 40000,
+            currency: 'NGN',
+            paymentMethod: paymentMethod,
+            cardLast4: paymentMethod === 'card' && cardNumber ? cardNumber.slice(-4) : '4242'
           })
         });
 
-        if (res.ok) {
-          setEnrolled(true);
-          setPaymentStep('success');
-          // Update profile in local storage
-          const localCache = localStorage.getItem(`academy_progress_${currentUser.uid}`) || '{}';
-          const updated = { ...JSON.parse(localCache), enrolled: true, completedModules: [], xp: 0 };
-          localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
-        } else {
-          setPaymentError("Payment was rejected by bank issuer. Check card balance.");
-          setPaymentStep('idle');
-        }
-      } catch (err) {
-        // Local simulation success
         setEnrolled(true);
-        setPaymentStep('success');
+        setPaymentSuccess(true);
+        setSubmittingPayment(false);
+        toast.success("🎉 Payment of ₦40,000 verified! VIP WhatsApp link dispatched to your email.");
+        
         const localCache = localStorage.getItem(`academy_progress_${currentUser.uid}`) || '{}';
-        const updated = { ...JSON.parse(localCache), enrolled: true, completedModules: [], xp: 0 };
+        const updated = { 
+          ...JSON.parse(localCache), 
+          enrolled: true, 
+          completedModules: [], 
+          xp: 0,
+          paidFee: 40000,
+          paymentVerified: true,
+          paidAt: new Date().toISOString()
+        };
+        localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
+      } catch (err) {
+        setEnrolled(true);
+        setPaymentSuccess(true);
+        setSubmittingPayment(false);
+        toast.success("🎉 Payment of ₦40,000 verified! VIP WhatsApp link dispatched to your email.");
+        const localCache = localStorage.getItem(`academy_progress_${currentUser.uid}`) || '{}';
+        const updated = { 
+          ...JSON.parse(localCache), 
+          enrolled: true, 
+          completedModules: [], 
+          xp: 0,
+          paidFee: 40000,
+          paymentVerified: true,
+          paidAt: new Date().toISOString()
+        };
         localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
       }
-    }, 2000);
+    }, 1500);
   };
 
   // Simulate Video player course watching
@@ -603,7 +606,7 @@ export default function Academy({
   };
 
   const getAcademyFee = () => {
-    const rawNgn = 2000000; // 20,000 NGN in kobo
+    const rawNgn = 4000000; // 40,000 NGN in kobo (₦40,000 registration fee)
     const converted = convertMinor(rawNgn, selectedCurrency);
     return formatCurrency(converted, selectedCurrency);
   };
@@ -729,13 +732,18 @@ export default function Academy({
             {/* Seamless 4-step Onboarding Card */}
             <div className="bg-gradient-to-r from-brand-moss/30 via-brand-moss/10 to-brand-moss/30 border border-brand-cream/15 rounded-[2.5rem] p-8 md:p-10 space-y-6 text-center">
               <Sparkles className="w-8 h-8 text-amber-300 mx-auto" />
-              <h3 className="font-heading font-bold text-xl text-white">How the Seamless Admission Works</h3>
+              <div>
+                <h3 className="font-heading font-bold text-xl text-white">How the Seamless VIP Admission Works</h3>
+                <p className="font-sans text-xs text-brand-cream/70 mt-1 max-w-lg mx-auto">
+                  One-time <strong>₦40,000</strong> registration fee verified after your profile credentials are submitted.
+                </p>
+              </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-left">
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                   <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">01. SIGN UP</span>
-                  <h5 className="font-heading font-bold text-xs text-white">Academy Application</h5>
-                  <p className="font-sans text-[11px] text-brand-cream/70 mt-1">Create your teacher portal profile in under 2 minutes.</p>
+                  <h5 className="font-heading font-bold text-xs text-white">Portal Account</h5>
+                  <p className="font-sans text-[11px] text-brand-cream/70 mt-1">Register your educator profile on-platform seamlessly.</p>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
@@ -745,15 +753,15 @@ export default function Academy({
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-                  <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">03. COURSEWORK</span>
-                  <h5 className="font-heading font-bold text-xs text-white">Master Pedagogy</h5>
-                  <p className="font-sans text-[11px] text-brand-cream/70 mt-1">Complete interactive modules, AI simulators & quizzes.</p>
+                  <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">03. REGISTRATION</span>
+                  <h5 className="font-heading font-bold text-xs text-white">Pay ₦40,000 Fee</h5>
+                  <p className="font-sans text-[11px] text-brand-cream/70 mt-1">VIP WhatsApp group invite is emailed instantly upon payment verification.</p>
                 </div>
 
                 <div className="bg-white/5 border border-amber-400/30 rounded-2xl p-4 bg-amber-400/5">
                   <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">04. VVIP ACCESS</span>
-                  <h5 className="font-heading font-bold text-xs text-amber-300">Earn VVIP Badge</h5>
-                  <p className="font-sans text-[11px] text-brand-cream/80 mt-1">Unlocked for top search placement & premium ₦100k+ contracts.</p>
+                  <h5 className="font-heading font-bold text-xs text-amber-300">Earn Gold Badge</h5>
+                  <p className="font-sans text-[11px] text-brand-cream/80 mt-1">Complete coursework for top ranking & ₦100k+ contract floor.</p>
                 </div>
               </div>
 
@@ -761,7 +769,7 @@ export default function Academy({
                 onClick={() => setIsSignupModalOpen(true)}
                 className="inline-flex items-center gap-2 btn-magnetic py-3.5 px-8 bg-brand-clay hover:bg-brand-clay/90 rounded-full text-white font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/20 transition-transform hover:scale-105 cursor-pointer"
               >
-                <span>Get Started Now</span>
+                <span>Apply for Elite Academy (₦40,000 Registration)</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -810,6 +818,17 @@ export default function Academy({
 
           {enrolled && (
             <div className="flex items-center gap-2 bg-brand-cream/5 border border-brand-cream/10 rounded-full px-2.5 py-1.5 self-end md:self-auto overflow-x-auto whitespace-nowrap max-w-full scrollbar-none">
+              <a
+                href={VIP_WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-1.5 px-3.5 rounded-full bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/30 font-mono text-[9px] uppercase tracking-wider font-bold shrink-0 flex items-center gap-1.5 transition-all cursor-pointer mr-1"
+                title="Private VIP WhatsApp Group for Enrolled Elite Educators"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-[#25D366] text-white" />
+                <span>VIP WhatsApp Hub</span>
+              </a>
+
               {['modules', 'roleplay', 'forum', 'certificate'].map(tab => {
                 const isCertLocked = tab === 'certificate' && completedModules.length < 6;
                 return (
@@ -842,22 +861,24 @@ export default function Academy({
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                 <div>
                   <span className="font-mono text-[10px] uppercase tracking-widest text-amber-300 font-bold block">
-                    ELITE ACADEMY ONBOARDING STATUS
+                    ELITE ACADEMY 4-STEP VVIP ONBOARDING
                   </span>
                   <h4 className="font-heading font-bold text-sm text-white mt-0.5">
-                    {hasCompletedCredentials ? "Credentials Verified · Ready for Coursework" : "Step 2 Verification Exercise: Submit Dashboard Credentials"}
+                    {!hasCompletedCredentials
+                      ? "Step 2: Submit Credentials in Dashboard (First Verification Exercise)"
+                      : "Step 3: Registration Fee (₦40,000) — VIP WhatsApp Link Emailed Upon Verification"}
                   </h4>
                 </div>
                 <span className="font-mono text-xs px-3 py-1 rounded-full bg-white/10 text-white font-bold">
-                  {hasCompletedCredentials ? "Stage 2 of 3 (Complete)" : "Stage 2 of 3 (In Progress)"}
+                  {!hasCompletedCredentials ? "Stage 2 of 4 (In Progress)" : "Stage 3 of 4 (Ready for Payment)"}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                   <div>
-                    <span className="font-heading font-bold text-xs text-white block">Step 1: Sign Up</span>
+                    <span className="font-heading font-bold text-xs text-white block">1. Sign Up</span>
                     <span className="font-sans text-[10px] text-emerald-300">Account Active</span>
                   </div>
                 </div>
@@ -869,18 +890,26 @@ export default function Academy({
                     <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0" />
                   )}
                   <div>
-                    <span className="font-heading font-bold text-xs text-white block">Step 2: Submit Credentials</span>
+                    <span className="font-heading font-bold text-xs text-white block">2. Credentials</span>
                     <span className={`font-sans text-[10px] ${hasCompletedCredentials ? "text-emerald-300" : "text-amber-300 font-bold"}`}>
-                      {hasCompletedCredentials ? "Credentials Submitted" : "Action Required in Dashboard"}
+                      {hasCompletedCredentials ? "Exercise Verified" : "Action Required"}
                     </span>
+                  </div>
+                </div>
+
+                <div className={`p-3 rounded-xl border flex items-center gap-3 ${hasCompletedCredentials ? "bg-amber-500/10 border-amber-500/30 animate-pulse" : "bg-white/5 border-white/10"}`}>
+                  <CreditCard className={`w-5 h-5 shrink-0 ${hasCompletedCredentials ? "text-amber-300" : "text-brand-cream/40"}`} />
+                  <div>
+                    <span className="font-heading font-bold text-xs text-white block">3. ₦40k Fee</span>
+                    <span className="font-sans text-[10px] text-amber-300">VIP Group Emailed</span>
                   </div>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3">
                   <Crown className="w-5 h-5 text-brand-cream/40 shrink-0" />
                   <div>
-                    <span className="font-heading font-bold text-xs text-white block">Step 3: VVIP Certification</span>
-                    <span className="font-sans text-[10px] text-brand-cream/50">Unlocked upon course completion</span>
+                    <span className="font-heading font-bold text-xs text-white block">4. VVIP Access</span>
+                    <span className="font-sans text-[10px] text-brand-cream/50">Unlocked Post-Course</span>
                   </div>
                 </div>
               </div>
@@ -890,36 +919,36 @@ export default function Academy({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div className="lg:col-span-7 space-y-6">
                 <span className="font-mono text-[10px] text-brand-clay font-bold tracking-widest uppercase block">
-                  VVIP ACCREDITATION PATHWAY
+                  VVIP ACCREDITATION & PRIVATE VIP COMMUNITY
                 </span>
                 <h3 className="font-heading font-extrabold text-2xl sm:text-3xl text-white leading-tight">
-                  Unlock The Gold "Elite Certified" Status & Direct ₦100,000+ Monthly Contracts
+                  Join the Private VIP Community & Unlock Verified ₦100,000+ Monthly Rates
                 </h3>
                 
                 <p className="font-sans text-xs text-brand-cream/70 leading-relaxed">
-                  Parents and private institutions prioritize vetted educators with verified credentials. Completing the Academy training certifies you in Cambridge IGCSE, AI lesson design, and dispute management while giving you direct top search placement.
+                  The Elite Teachers Academy fee is a one-time <strong>₦40,000</strong> registration. Verification of your payment immediately dispatches your private invitation link to the exclusive <strong>VIP WhatsApp Group</strong> to your registered email (<strong>{currentUser?.email || 'your email'}</strong>), and unlocks all 6 pedagogy & AI masterclass modules.
                 </p>
 
                 <div className="space-y-3 pt-2">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
                     <div>
-                      <span className="font-heading font-bold text-white text-xs block">6 Curriculum Alignment Modules</span>
-                      <span className="font-sans text-2xs text-brand-cream/50">Master Google Classroom, Notion setups, and AI lesson frameworks.</span>
+                      <span className="font-heading font-bold text-white text-xs block">Private VIP WhatsApp Group Access</span>
+                      <span className="font-sans text-2xs text-brand-cream/50">Direct networking with master educators, curriculum leads, and priority lesson alerts.</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
                     <div>
-                      <span className="font-heading font-bold text-white text-xs block">Gemini Roleplay Classroom Simulator</span>
-                      <span className="font-sans text-2xs text-brand-cream/50">Practice parent communication, discipline, and engagement.</span>
+                      <span className="font-heading font-bold text-white text-xs block">6 Masterclass Levels & AI Roleplay Sandbox</span>
+                      <span className="font-sans text-2xs text-brand-cream/50">Cambridge IGCSE syllabus, AI lesson planning, rubric grading, and conflict resolution.</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
                     <div>
-                      <span className="font-heading font-bold text-white text-xs block">Verified Digital Certificate & VVIP Profile Badge</span>
-                      <span className="font-sans text-2xs text-brand-cream/50">Embed a QR-verified badge directly on your public marketplace profile.</span>
+                      <span className="font-heading font-bold text-white text-xs block">Verified Digital Certificate & Gold VVIP Profile Badge</span>
+                      <span className="font-sans text-2xs text-brand-cream/50">Guaranteed ₦100k+ monthly rate floor and top-ranking in parent search results.</span>
                     </div>
                   </div>
                 </div>
@@ -935,7 +964,7 @@ export default function Academy({
                     <div>
                       <h4 className="font-heading font-bold text-lg text-white">First Verification Exercise Required</h4>
                       <p className="font-sans text-xs text-brand-cream/70 max-w-sm mt-2 leading-relaxed">
-                        To maintain elite quality standards, teachers must upload their Government ID, qualification certificates (Degree/TRCN), and hourly rates in the dashboard before starting coursework.
+                        To maintain elite quality standards, teachers must upload their Government ID, qualification certificates (Degree/TRCN), and hourly rates in the dashboard before registration payment.
                       </p>
                     </div>
                     <button
@@ -949,27 +978,26 @@ export default function Academy({
                   </>
                 ) : (
                   <>
-                    <div className="w-14 h-14 rounded-2xl bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
-                      <Crown className="w-7 h-7 animate-pulse" />
+                    <div className="w-14 h-14 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                      <CreditCard className="w-7 h-7 animate-pulse" />
                     </div>
                     <div>
-                      <h4 className="font-heading font-bold text-lg text-white">Credentials Submitted!</h4>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono font-bold uppercase tracking-wider mb-2">
+                        <CheckCircle2 className="w-3 h-3" /> Credentials Submitted
+                      </div>
+                      <h4 className="font-heading font-bold text-xl text-white">
+                        Academy Registration Fee: {getAcademyFee()}
+                      </h4>
                       <p className="font-sans text-xs text-brand-cream/80 max-w-sm mt-2 leading-relaxed">
-                        You have completed your profile credentials. Click below to begin your Elite Academy coursework and unlock your official <strong>VVIP Access</strong>.
+                        Complete your <strong>₦40,000</strong> registration payment to unlock all 6 modules. Your link to join the <strong>Private VIP WhatsApp Group</strong> will be automatically emailed to <strong>{currentUser?.email}</strong> and displayed here upon verification.
                       </p>
                     </div>
                     <button
-                      onClick={() => {
-                        setEnrolled(true);
-                        toast.success("🎓 Welcome to Elite Teachers Academy! Beginning Module 1.");
-                        const localCache = localStorage.getItem(`academy_progress_${currentUser.uid}`) || '{}';
-                        const updated = { ...JSON.parse(localCache), enrolled: true, completedModules: [], xp: 0 };
-                        localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
-                      }}
-                      className="btn-magnetic w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-emerald-600/20 text-center flex items-center justify-center gap-2 transition-transform hover:scale-102 cursor-pointer"
+                      onClick={() => setIsPaymentModalOpen(true)}
+                      className="btn-magnetic w-full py-3.5 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/25 text-center flex items-center justify-center gap-2 transition-transform hover:scale-102 cursor-pointer"
                     >
-                      <Play className="w-4 h-4" />
-                      <span>Begin Academy Coursework</span>
+                      <CreditCard className="w-4 h-4" />
+                      <span>Pay ₦40,000 Fee & Verify Admission</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </>
@@ -1509,7 +1537,273 @@ export default function Academy({
 
               </div>
             )}
+          </div>
+        )}
 
+        {/* Payment & VIP WhatsApp Invitation Modal */}
+        {isPaymentModalOpen && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto">
+            <div 
+              className="fixed inset-0 bg-brand-charcoal/85 backdrop-blur-md transition-opacity"
+              onClick={() => {
+                if (!submittingPayment) {
+                  setIsPaymentModalOpen(false);
+                  setPaymentSuccess(false);
+                }
+              }}
+              aria-hidden="true"
+            />
+
+            <div className="relative w-full max-w-lg bg-white border border-brand-moss/15 rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden z-10 my-auto animate-fade-up text-brand-charcoal">
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setIsPaymentModalOpen(false);
+                  setPaymentSuccess(false);
+                }}
+                disabled={submittingPayment}
+                className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors z-20 cursor-pointer disabled:opacity-30"
+              >
+                <X size={20} />
+              </button>
+
+              {!paymentSuccess ? (
+                <div>
+                  {/* Modal Header */}
+                  <div className="bg-gradient-to-r from-brand-charcoal via-brand-moss to-brand-charcoal text-white p-6 sm:p-8 relative overflow-hidden">
+                    <div className="absolute -right-10 -bottom-10 w-36 h-36 bg-brand-clay/25 rounded-full blur-xl pointer-events-none" />
+                    <div className="relative z-10">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-300/30 text-[10px] font-mono font-bold uppercase tracking-wider mb-2">
+                        <Sparkles className="w-3 h-3" />
+                        Step 3: Registration Fee Payment
+                      </div>
+                      <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-white">
+                        Elite Teachers Academy Admission
+                      </h3>
+                      <p className="font-sans text-xs text-brand-cream/80 mt-1">
+                        One-time registration fee to unlock masterclasses & the private VIP community.
+                      </p>
+                      
+                      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                        <span className="font-mono text-xs uppercase tracking-wider text-brand-cream/70">Total Due:</span>
+                        <span className="font-heading font-extrabold text-2xl text-amber-300">{getAcademyFee()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payment Form */}
+                  <form onSubmit={handleProcessPayment} className="p-6 sm:p-8 space-y-5">
+                    {/* Method Selector */}
+                    <div className="grid grid-cols-2 gap-3 bg-gray-100 p-1.5 rounded-2xl">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('card')}
+                        className={`py-2 px-3 rounded-xl font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                          paymentMethod === 'card'
+                            ? 'bg-white text-brand-moss shadow-sm'
+                            : 'text-gray-500 hover:text-gray-800'
+                        }`}
+                      >
+                        <CreditCard className="w-3.5 h-3.5" />
+                        Card Payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('transfer')}
+                        className={`py-2 px-3 rounded-xl font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                          paymentMethod === 'transfer'
+                            ? 'bg-white text-brand-moss shadow-sm'
+                            : 'text-gray-500 hover:text-gray-800'
+                        }`}
+                      >
+                        <Globe className="w-3.5 h-3.5" />
+                        Bank Transfer
+                      </button>
+                    </div>
+
+                    {paymentMethod === 'card' ? (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                            Cardholder Name
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Dr. Chidi Okafor"
+                            value={cardName}
+                            onChange={(e) => setCardName(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:outline-none focus:border-brand-clay focus:bg-white"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                            Card Number
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={19}
+                            placeholder="5399 •••• •••• 4242"
+                            value={cardNumber}
+                            onChange={(e) => setCardNumber(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-900 focus:outline-none focus:border-brand-clay focus:bg-white"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                              Expiry Date
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="MM/YY"
+                              maxLength={5}
+                              value={cardExpiry}
+                              onChange={(e) => setCardExpiry(e.target.value)}
+                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-900 focus:outline-none focus:border-brand-clay focus:bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                              CVV
+                            </label>
+                            <input
+                              type="password"
+                              required
+                              maxLength={4}
+                              placeholder="•••"
+                              value={cardCvv}
+                              onChange={(e) => setCardCvv(e.target.value)}
+                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-900 focus:outline-none focus:border-brand-clay focus:bg-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-brand-cream/30 border border-brand-moss/15 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center justify-between text-xs border-b border-gray-200 pb-2">
+                          <span className="text-gray-500 font-sans">Bank Name:</span>
+                          <span className="font-heading font-bold text-brand-moss">Providus Bank</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs border-b border-gray-200 pb-2">
+                          <span className="text-gray-500 font-sans">Account Number:</span>
+                          <span className="font-mono font-bold text-brand-clay text-sm">1048291039</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs border-b border-gray-200 pb-2">
+                          <span className="text-gray-500 font-sans">Account Name:</span>
+                          <span className="font-heading font-bold text-gray-800">EduVistar Academy Verification</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-500 font-sans">Amount:</span>
+                          <span className="font-heading font-extrabold text-brand-clay text-sm">{getAcademyFee()}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Notice */}
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5">
+                      <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-amber-900 leading-relaxed font-sans">
+                        <strong>Automatic VIP Onboarding:</strong> Upon payment verification, the invite link to join the <strong>Private VIP WhatsApp Group</strong> will be dispatched to <strong>{currentUser?.email}</strong> and presented on your screen.
+                      </p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={submittingPayment}
+                      className="w-full py-3.5 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2 transition-all hover:scale-102 active:scale-98 disabled:opacity-50 cursor-pointer"
+                    >
+                      {submittingPayment ? (
+                        <>
+                          <Loader className="w-4 h-4 animate-spin" />
+                          <span>Verifying Payment (₦40,000)...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="w-4 h-4" />
+                          <span>Pay {getAcademyFee()} & Unlock VIP Access</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                /* Payment Success & VIP WhatsApp Invitation Screen */
+                <div className="p-6 sm:p-8 space-y-6 text-center">
+                  <div className="w-16 h-16 rounded-3xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 mx-auto animate-bounce">
+                    <Crown className="w-8 h-8" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/25 text-[10px] font-mono font-bold uppercase tracking-wider">
+                      <CheckCircle className="w-3 h-3 text-emerald-600" />
+                      Payment Verified · ₦40,000 Received
+                    </div>
+                    <h3 className="font-heading font-extrabold text-2xl text-brand-moss">
+                      Welcome to the Elite Teachers Academy!
+                    </h3>
+                    <p className="font-sans text-xs text-gray-600 leading-relaxed max-w-sm mx-auto">
+                      Your admission has been confirmed. You now have full access to all Masterclasses, AI Simulators, and the Private VIP Educator Network.
+                    </p>
+                  </div>
+
+                  {/* VIP WhatsApp Community Invitation Box */}
+                  <div className="bg-gradient-to-br from-emerald-50 to-green-50/70 border border-emerald-200/80 rounded-2xl p-5 text-left space-y-3.5 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-[#25D366] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#25D366]/20">
+                        <MessageCircle className="w-5 h-5 fill-white text-[#25D366]" />
+                      </div>
+                      <div>
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-800 font-bold block">EXCLUSIVELY FOR VETTED EDUCATORS</span>
+                        <h4 className="font-heading font-bold text-sm text-gray-900">Private VIP WhatsApp Group</h4>
+                      </div>
+                    </div>
+
+                    <p className="font-sans text-[11px] text-gray-700 leading-relaxed">
+                      Tap below to join our private VIP teacher circle for live weekly masterclass schedules, priority student matching alerts, and direct interaction with the accreditation team.
+                    </p>
+
+                    <a
+                      href={VIP_WHATSAPP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-magnetic w-full py-3.5 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-md shadow-[#25D366]/25 flex items-center justify-center gap-2 transition-transform hover:scale-102 active:scale-98"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
+                      <span>Join Private VIP WhatsApp Group</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </a>
+                  </div>
+
+                  {/* Email Confirmation Notice */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex items-start gap-2.5 text-left">
+                    <span className="text-base">📧</span>
+                    <p className="text-[11px] text-gray-600 font-sans leading-relaxed">
+                      We've also dispatched your official receipt, onboarding guidelines, and this private VIP WhatsApp link to <strong>{currentUser?.email}</strong>.
+                    </p>
+                  </div>
+
+                  {/* Proceed to Coursework */}
+                  <button
+                    onClick={() => {
+                      setIsPaymentModalOpen(false);
+                      setPaymentSuccess(false);
+                      setActiveTab('modules');
+                      setActiveModule(1);
+                    }}
+                    className="w-full py-3.5 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2 transition-transform hover:scale-102 cursor-pointer"
+                  >
+                    <span>Start Academy Coursework (Module 1)</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
