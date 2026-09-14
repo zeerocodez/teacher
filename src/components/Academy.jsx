@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import { MessageCircle, Crown, Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, Users, PlusCircle, CreditCard, Clock, Globe, ArrowRight, ShieldCheck, UserCheck, AlertCircle, X, Copy, Check } from 'lucide-react';
+import { MessageCircle, Crown, Cpu, Award, BookOpen, Star, CheckCircle, CheckCircle2, ChevronRight, HelpCircle, Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, Users, PlusCircle, CreditCard, Clock, Globe, ArrowRight, ShieldCheck, UserCheck, AlertCircle, X, Copy, Check } from 'lucide-react';
 import EliteAcademySignupModal from './EliteAcademySignupModal';
 
 const VIP_WHATSAPP_URL = 'https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4';
