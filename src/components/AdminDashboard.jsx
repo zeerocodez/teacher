@@ -42,7 +42,9 @@ import { Crown, MessageCircle,
   ArrowRight,
   User,
   LogOut,
-  TrendingUp
+  TrendingUp,
+  Menu,
+  X
 } from 'lucide-react';
 
 import AdminBlogManager from './AdminBlogManager';
@@ -61,6 +63,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
 
   // Active sub-section view
   const [activeSubSection, setActiveSubSection] = useState('financials'); // 'financials' | 'vetting' | 'disputes' | 'groups' | 'compliance' | 'b2b' | 'config' | 'moderation'
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [b2bSubTab, setB2bSubTab] = useState('accounts'); // 'accounts' | 'api_manager'
   
   // Interactive mock lists
@@ -1010,13 +1013,119 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         </div>
       )}
 
-      {/* LEFT SIDEBAR */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
+      {/* MOBILE DRAWER BACKDROP */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-gray-900/60 backdrop-blur-xs z-50 md:hidden transition-opacity"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* MOBILE DRAWER SIDEBAR */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-white shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-in-out md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="overflow-y-auto flex-1">
+          {/* Mobile Drawer Header */}
+          <div className="h-16 flex items-center justify-between px-5 border-b border-gray-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+                <FileText size={18} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="font-bold text-gray-900 text-sm leading-tight">EduVistar</h1>
+                <span className="text-[10px] text-gray-500 block">Admin Portal</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 -mr-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Close menu"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Drawer Nav Links */}
+          <nav className="p-3 flex flex-col gap-1">
+            {[
+              { id: 'financials', label: 'Dashboard', icon: LayoutDashboard },
+              { id: 'lms', label: 'LMS & Training', icon: Sparkles },
+              { id: 'vetting', label: 'Teachers', icon: Users },
+              { id: 'groups', label: 'Lesson Plans', icon: BookOpen },
+              { id: 'config', label: 'AI Recommendations', icon: ShieldCheck },
+              { id: 'compliance', label: 'Reports', icon: BarChart2 },
+              { id: 'blog', label: 'Blog Manager', icon: FileText },
+              { id: 'disputes', label: 'Disputes', icon: AlertTriangle },
+              { id: 'b2b', label: 'B2B Partners', icon: Building },
+              { id: 'emails', label: 'Emails', icon: Mail }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveSubSection(tab.id);
+                  setMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                  activeSubSection === tab.id 
+                    ? 'bg-blue-50 text-blue-600 font-bold' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <tab.icon size={18} className={activeSubSection === tab.id ? 'text-blue-600' : 'text-gray-400'} />
+                <span className="flex-1 text-left">{tab.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="p-4 border-t border-gray-100 space-y-1">
+          <button 
+            onClick={() => {
+              setActiveSubSection('config');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          >
+            <Settings size={18} className="text-gray-400" />
+            Settings
+          </button>
+          <button 
+            onClick={() => {
+              setMobileMenuOpen(false);
+              if (onLogout) onLogout();
+              else if (onBack) onBack();
+            }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition-all"
+          >
+            <LogOut size={18} className="text-red-500" />
+            Log Out
+          </button>
+          {onBack && (
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onBack();
+              }}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+            >
+              <ArrowRight size={18} className="text-gray-400 rotate-180" />
+              Exit to App
+            </button>
+          )}
+        </div>
+      </aside>
+
+      {/* DESKTOP LEFT SIDEBAR */}
+      <aside className="hidden md:flex md:w-64 bg-white border-r border-gray-200 flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
           {/* Logo Area */}
           <div className="h-20 flex items-center px-6 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm">
                 <FileText size={18} strokeWidth={2.5} />
               </div>
               <div>
@@ -1045,7 +1154,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                 onClick={() => setActiveSubSection(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all ${
                   activeSubSection === tab.id 
-                    ? 'bg-blue-50 text-blue-600' 
+                    ? 'bg-blue-50 text-blue-600 font-bold' 
                     : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
@@ -1090,8 +1199,36 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8f9fa]">
         
         {/* Top Header */}
-        <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0 relative z-30">
-          <div className="flex items-center gap-4">
+        <header className="h-16 md:h-20 bg-white/90 backdrop-blur-md border-b border-gray-200/70 flex items-center justify-between px-3 sm:px-6 md:px-8 shrink-0 relative z-30">
+          {/* Left: Hamburger & Brand */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden p-2 -ml-1 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
+
+            <div className="flex items-center gap-2 md:hidden">
+              <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-xs">
+                <FileText size={15} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="font-bold text-gray-900 text-xs leading-tight">EduVistar</h1>
+                <span className="text-[9px] text-gray-500 block">Admin Portal</span>
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center gap-2 text-xs font-medium text-gray-400">
+              <span>Admin</span>
+              <span>/</span>
+              <span className="text-gray-900 font-bold capitalize">{activeSubSection}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Notification Bell with Dropdown */}
             <div className="relative">
               <button
@@ -1107,7 +1244,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-brand-moss/15 rounded-2xl p-4 shadow-2xl z-50 text-brand-charcoal animate-fade-in">
+                <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-3 w-[calc(100vw-24px)] sm:w-96 max-w-sm bg-white border border-brand-moss/15 rounded-2xl p-4 shadow-2xl z-50 text-brand-charcoal animate-fade-in">
                   <div className="flex items-center justify-between border-b border-brand-moss/10 pb-3 mb-3">
                     <div className="flex items-center gap-2">
                       <Bell size={16} className="text-brand-clay" />
@@ -1163,32 +1300,33 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
+            <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 shrink-0">
                 <User size={16} />
               </div>
-              <span className="text-sm font-bold text-gray-700">Admin</span>
+              <span className="text-xs sm:text-sm font-bold text-gray-700">Admin</span>
             </div>
             <button
               onClick={() => {
                 if (onLogout) onLogout();
                 else if (onBack) onBack();
               }}
-              className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold px-3 py-2 rounded-xl transition-all"
+              className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all shrink-0"
+              title="Log Out"
             >
               <LogOut size={15} />
-              <span>Log Out</span>
+              <span className="hidden sm:inline">Log Out</span>
             </button>
           </div>
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8">
           <div className="max-w-7xl mx-auto w-full">
 
           {/* SECTION 1: DASHBOARD (Financials) */}
           {activeSubSection === 'financials' && (
-            <div className="space-y-8 animate-fade-up">
+            <div className="space-y-6 sm:space-y-8 animate-fade-up">
               
               {/* Header Title */}
               <div className="flex items-center justify-between mb-2">
@@ -4036,6 +4174,33 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         </div>
       </div>
     </main>
+
+    {/* MOBILE BOTTOM NAVIGATION BAR */}
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-gray-200 px-1.5 py-1.5 flex items-center justify-around md:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+      {[
+        { id: 'financials', label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'vetting', label: 'Teachers', icon: Users },
+        { id: 'compliance', label: 'Reports', icon: BarChart2 },
+        { id: 'disputes', label: 'Disputes', icon: AlertTriangle },
+        { id: 'config', label: 'Settings', icon: Settings },
+      ].map((tab) => {
+        const isActive = activeSubSection === tab.id;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActiveSubSection(tab.id)}
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+              isActive
+                ? "text-blue-600 font-bold"
+                : "text-gray-400 hover:text-gray-700"
+            }`}
+          >
+            <tab.icon size={19} className={isActive ? "text-blue-600" : "text-gray-400"} />
+            <span className="text-[10px] mt-0.5 leading-tight">{tab.label}</span>
+          </button>
+        );
+      })}
+    </nav>
   </div>
   );
 }

@@ -45,7 +45,9 @@ import {
   ExternalLink,
   Globe,
   FileCheck,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Menu,
+  X
 } from "lucide-react";
 
 export default function TeacherDashboard({
@@ -91,8 +93,9 @@ export default function TeacherDashboard({
   const [submittingClassLink, setSubmittingClassLink] = useState(null);
   const [editingClassLink, setEditingClassLink] = useState(null);
 
-  // Tab State
+  // Tab & Mobile Menu State
   const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'profile' | 'students' | 'earnings' | 'reputation' | 'academy'
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Availability Grid states (Clean 0 slots initialized)
   const [availabilityGrid, setAvailabilityGrid] = useState({
@@ -751,15 +754,151 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
     "Swahili",
   ];
 
+  const navTabs = [
+    { id: "overview", label: "Dashboard", icon: LayoutDashboard },
+    { id: "students", label: "Students", icon: Users },
+    { id: "reputation", label: "Reputation", icon: Star },
+    { id: "academy", label: "AI Recommendations", icon: Sparkles },
+    { id: "earnings", label: "Reports & Earnings", icon: Wallet },
+    { id: "profile", label: "Profile Settings", icon: User },
+  ];
+
   return (
     <div className="fixed inset-0 z-[60] bg-[#f8f9fa] flex font-sans overflow-hidden">
-      {/* LEFT SIDEBAR */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
+      {/* MOBILE DRAWER BACKDROP */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-gray-900/60 backdrop-blur-xs z-50 md:hidden transition-opacity"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* MOBILE DRAWER SIDEBAR */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-white shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-in-out md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div>
+          {/* Mobile Drawer Header */}
+          <div className="h-16 flex items-center justify-between px-5 border-b border-gray-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+                <FileText size={18} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="font-bold text-gray-900 text-sm leading-tight">
+                  EduVistar
+                </h1>
+                <span className="text-[10px] text-gray-500 block">
+                  Teacher Portal
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 -mr-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Close menu"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Teacher Mini Profile in Mobile Drawer */}
+          <div className="p-3.5 mx-3 my-3 bg-gray-50 border border-gray-100 rounded-2xl flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center overflow-hidden shrink-0 font-bold text-sm">
+              {teacherProfile?.avatar ? (
+                <img
+                  src={teacherProfile.avatar}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                (currentUser?.displayName || "T").charAt(0).toUpperCase()
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="font-bold text-xs text-gray-900 truncate">
+                {currentUser?.displayName || teacherProfile?.name || "Teacher"}
+              </h4>
+              <span className="text-[10px] text-emerald-600 font-semibold block">
+                {teacherProfile?.verified ? "✓ Verified Tutor" : "● Status: Pending"}
+              </span>
+            </div>
+          </div>
+
+          {/* Drawer Nav Links */}
+          <nav className="p-3 flex flex-col gap-1">
+            {navTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                  activeTab === tab.id
+                    ? "bg-blue-50 text-blue-600 font-bold"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                }`}
+              >
+                <tab.icon
+                  size={18}
+                  className={
+                    activeTab === tab.id ? "text-blue-600" : "text-gray-400"
+                  }
+                />
+                <span className="flex-1 text-left">{tab.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="p-4 border-t border-gray-100 space-y-1">
+          <button
+            onClick={() => {
+              setActiveTab("profile");
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          >
+            <Settings size={18} className="text-gray-400" />
+            Settings
+          </button>
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              if (onLogout) onLogout();
+              else if (onBack) onBack();
+            }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition-all"
+          >
+            <LogOut size={18} className="text-red-500" />
+            Log Out
+          </button>
+          {onBack && (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onBack();
+              }}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all"
+            >
+              <ArrowRight size={18} className="text-gray-400 rotate-180" />
+              Exit to App
+            </button>
+          )}
+        </div>
+      </aside>
+
+      {/* DESKTOP LEFT SIDEBAR */}
+      <aside className="hidden md:flex md:w-64 bg-white border-r border-gray-200 flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
           {/* Logo Area */}
           <div className="h-20 flex items-center px-6 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm">
                 <FileText size={18} strokeWidth={2.5} />
               </div>
               <div>
@@ -775,14 +914,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
 
           {/* Nav Links */}
           <nav className="p-4 flex flex-col gap-1 mt-2">
-            {[
-              { id: "overview", label: "Dashboard", icon: LayoutDashboard },
-              { id: "students", label: "Students", icon: Users },
-              { id: "reputation", label: "Reputation", icon: Star },
-              { id: "academy", label: "AI Recommendations", icon: Sparkles },
-              { id: "earnings", label: "Reports & Earnings", icon: Wallet },
-              { id: "profile", label: "Profile Settings", icon: User },
-            ].map((tab) => (
+            {navTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
@@ -837,8 +969,43 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8f9fa]">
         {/* Top Header */}
-        <header className="h-20 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-end px-8 shrink-0 relative z-30">
-          <div className="flex items-center gap-4">
+        <header className="h-16 md:h-20 bg-white/90 backdrop-blur-md border-b border-gray-200/70 flex items-center justify-between px-3 sm:px-6 md:px-8 shrink-0 relative z-30">
+          {/* Left: Mobile hamburger & branding or Desktop breadcrumb */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden p-2 -ml-1 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
+
+            <div className="flex items-center gap-2 md:hidden">
+              <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-xs">
+                <FileText size={15} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="font-bold text-gray-900 text-xs leading-tight">
+                  EduVistar
+                </h1>
+                <span className="text-[9px] text-gray-500 block">
+                  Teacher Portal
+                </span>
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center gap-2 text-xs font-medium text-gray-400">
+              <span>Portal</span>
+              <span>/</span>
+              <span className="text-gray-900 font-bold capitalize">
+                {navTabs.find((t) => t.id === activeTab)?.label || activeTab}
+              </span>
+            </div>
+          </div>
+
+          {/* Right: Notifications, Avatar, Logout */}
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Notification Bell with Dropdown */}
             <div className="relative">
               <button
@@ -854,7 +1021,7 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-brand-moss/15 rounded-2xl p-4 shadow-2xl z-50 text-brand-charcoal animate-fade-in">
+                <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-3 w-[calc(100vw-24px)] sm:w-96 max-w-sm bg-white border border-brand-moss/15 rounded-2xl p-4 shadow-2xl z-50 text-brand-charcoal animate-fade-in">
                   <div className="flex items-center justify-between border-b border-brand-moss/10 pb-3 mb-3">
                     <div className="flex items-center gap-2">
                       <Bell size={16} className="text-brand-clay" />
@@ -910,8 +1077,9 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 overflow-hidden">
+
+            <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 overflow-hidden shrink-0">
                 {teacherProfile?.avatar ? (
                   <img
                     src={teacherProfile.avatar}
@@ -922,55 +1090,57 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                   <User size={16} />
                 )}
               </div>
-              <span className="text-sm font-bold text-gray-700">
+              <span className="text-xs sm:text-sm font-bold text-gray-700 max-w-[85px] sm:max-w-[150px] truncate">
                 {currentUser?.displayName || "Teacher"}
               </span>
             </div>
+
             <button
               onClick={() => {
                 if (onLogout) onLogout();
                 else if (onBack) onBack();
               }}
-              className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold px-3 py-2 rounded-xl transition-all"
+              className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all shrink-0"
+              title="Log Out"
             >
               <LogOut size={15} />
-              <span>Log Out</span>
+              <span className="hidden sm:inline">Log Out</span>
             </button>
           </div>
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-7xl mx-auto w-full space-y-8 animate-fade-up">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8">
+          <div className="max-w-7xl mx-auto w-full space-y-6 sm:space-y-8 animate-fade-up">
             {/* Verification Status Banner for unverified or pending teachers */}
             {teacherProfile && !teacherProfile.verified && (
-              <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-white border border-amber-300/80 rounded-[2rem] p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-800 shrink-0">
-                    <ShieldCheck className="w-6 h-6 animate-pulse" />
+              <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-white border border-amber-300/80 rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-800 shrink-0">
+                    <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1 sm:space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-[10px] uppercase tracking-wider font-extrabold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full border border-amber-300">
+                      <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider font-extrabold bg-amber-100 text-amber-900 px-2 sm:px-2.5 py-0.5 rounded-full border border-amber-300">
                         Vetting Status: Pending Approval
                       </span>
-                      <span className="text-xs text-amber-800 font-medium">
+                      <span className="text-[11px] sm:text-xs text-amber-800 font-medium">
                         Standard Review: 24–48 Hours
                       </span>
                     </div>
-                    <h4 className="font-heading font-bold text-base text-brand-moss">
+                    <h4 className="font-heading font-bold text-sm sm:text-base text-brand-moss">
                       Welcome to your Teacher Dashboard, {teacherProfile.name || currentUser?.displayName}!
                     </h4>
-                    <p className="font-sans text-xs text-brand-charcoal/80 max-w-2xl leading-relaxed">
+                    <p className="font-sans text-[11px] sm:text-xs text-brand-charcoal/80 max-w-2xl leading-relaxed">
                       Your account is active. To gain your <strong>Verified Badge</strong>, appear on public parent searches, and start accepting live student bookings, please ensure your subjects, rates, and identity credentials (ID & qualifications) are uploaded.
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setActiveTab("profile")}
-                  className="shrink-0 py-3 px-6 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-md transition-all scale-100 hover:scale-102 flex items-center gap-2"
+                  className="w-full md:w-auto shrink-0 py-2.5 sm:py-3 px-4 sm:px-6 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2"
                 >
-                  <span>Complete Credentials & Profile</span>
+                  <span>Complete Credentials</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -978,36 +1148,36 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
 
             {/* TAB 1: OVERVIEW & BOOKINGS */}
             {activeTab === "overview" && (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 {/* Header Title */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-                          <BarChart2 size={24} />
-                        </div>
-                        <div>
-                          <h2 className="text-2xl font-bold text-gray-900 leading-tight">
-                            Weekly Reports
-                          </h2>
-                          <p className="text-sm text-gray-500">
-                            Track performance trends and generate insights
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <select className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none shadow-sm cursor-pointer hover:border-gray-300">
-                          <option>8 Weeks</option>
-                          <option>4 Weeks</option>
-                          <option>This Year</option>
-                        </select>
-                        <button className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm flex items-center gap-2 transition-colors">
-                          <Download size={16} /> Export All
-                        </button>
-                      </div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 sm:mb-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0">
+                      <BarChart2 size={22} />
                     </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+                        Weekly Reports
+                      </h2>
+                      <p className="text-xs sm:text-sm text-gray-500">
+                        Track performance trends and generate insights
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <select className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 focus:outline-none shadow-sm cursor-pointer hover:border-gray-300">
+                      <option>8 Weeks</option>
+                      <option>4 Weeks</option>
+                      <option>This Year</option>
+                    </select>
+                    <button className="bg-white border border-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-50 shadow-sm flex items-center gap-2 transition-colors">
+                      <Download size={15} /> Export All
+                    </button>
+                  </div>
+                </div>
 
-                    {/* Colorful Stats Strip */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Colorful Stats Strip */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                       {/* Blue Card */}
                       <div className="bg-[#3b82f6] rounded-xl p-6 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden group">
                         <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
@@ -3561,6 +3731,33 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
           )}
         </div>
       </main>
+
+      {/* MOBILE BOTTOM NAVIGATION BAR */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-gray-200 px-1.5 py-1.5 flex items-center justify-around md:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+        {[
+          { id: "overview", label: "Home", icon: LayoutDashboard },
+          { id: "students", label: "Students", icon: Users },
+          { id: "earnings", label: "Earnings", icon: Wallet },
+          { id: "reputation", label: "Reputation", icon: Star },
+          { id: "profile", label: "Profile", icon: User },
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+                isActive
+                  ? "text-blue-600 font-bold"
+                  : "text-gray-400 hover:text-gray-700"
+              }`}
+            >
+              <tab.icon size={19} className={isActive ? "text-blue-600" : "text-gray-400"} />
+              <span className="text-[10px] mt-0.5 leading-tight">{tab.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 }
