@@ -8,8 +8,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CourseCheckoutModal from './CourseCheckoutModal';
-
-const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4';
+import EliteAcademySignupModal from '../EliteAcademySignupModal';
 
 export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCurrency, convertMinor }) {
   const navigate = useNavigate();
@@ -20,6 +19,7 @@ export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCu
   const [liveClasses, setLiveClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourseForCheckout, setSelectedCourseForCheckout] = useState(null);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -147,16 +147,40 @@ export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCu
               Elevate your teaching career with accredited masterclasses in Cambridge IGCSE, AI-powered lesson design, rubric evaluation, and high-yield educator branding.
             </p>
 
-            <div className="pt-2">
-              <a
-                href={WHATSAPP_COMMUNITY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#25D366]/20 transition-all hover:scale-105 active:scale-95"
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              {!currentUser ? (
+                <button
+                  onClick={() => setIsSignupModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  Apply for Elite Academy (Sign Up)
+                </button>
+              ) : currentUser.role === 'Teacher' ? (
+                <Link
+                  to="/teacher"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/25 transition-all hover:scale-105 active:scale-95"
+                >
+                  <ShieldCheck className="w-4 h-4 text-emerald-200" />
+                  My Teacher Dashboard & Credentials
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setIsSignupModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  Join the Elite Teachers Academy
+                </button>
+              )}
+              
+              <Link
+                to="/academy"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
               >
-                <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
-                Join Official Academy WhatsApp Group
-              </a>
+                <BookOpen className="w-4 h-4 text-amber-300" />
+                Curriculum & Modules
+              </Link>
             </div>
 
             {/* Quick Metrics Strip */}
@@ -639,6 +663,15 @@ export default function LMSHub({ currentUser, selectedCurrency = 'NGN', formatCu
           }}
         />
       )}
+
+      {/* Elite Academy Signup Modal */}
+      <EliteAcademySignupModal
+        isOpen={isSignupModalOpen}
+        onClose={() => setIsSignupModalOpen(false)}
+        onOpenLogin={() => {
+          setIsSignupModalOpen(false);
+        }}
+      />
     </div>
   );
 }

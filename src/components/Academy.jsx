@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import { MessageCircle, Crown, Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, Users, PlusCircle, CreditCard, Clock, Globe } from 'lucide-react';
-
-
-const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4';
+import { MessageCircle, Crown, Cpu, Award, BookOpen, Star, CheckCircle, ChevronRight, HelpCircle, Lock, Play, ShieldAlert, Sparkles, Send, MessageSquare, Loader, Download, Users, PlusCircle, CreditCard, Clock, Globe, ArrowRight, ShieldCheck, UserCheck, AlertCircle } from 'lucide-react';
+import EliteAcademySignupModal from './EliteAcademySignupModal';
 
 export default function Academy({ 
   currentUser, 
@@ -17,6 +15,7 @@ export default function Academy({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('modules'); // 'modules', 'roleplay', 'forum', 'certificate'
   const [enrolled, setEnrolled] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [level4Completed, setLevel4Completed] = useState(false);
   const [isVipTeacher, setIsVipTeacher] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -609,6 +608,15 @@ export default function Academy({
     return formatCurrency(converted, selectedCurrency);
   };
 
+  const hasCompletedCredentials = Boolean(
+    currentUser?.verified ||
+    currentUser?.isVetted ||
+    currentUser?.vettingStatus === 'approved' ||
+    currentUser?.govIdUrl ||
+    currentUser?.degreeUrl ||
+    (currentUser?.subjects && currentUser.subjects.length > 0 && currentUser?.rate > 0)
+  );
+
   // General guest page showing program syllabus and subscription info
   if (!currentUser || currentUser.role !== 'Teacher') {
     return (
@@ -617,12 +625,16 @@ export default function Academy({
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-16 relative">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider mb-4">
+              <Crown className="w-4 h-4 text-amber-300" />
+              Elite Teachers Academy · VVIP Pathway
+            </div>
             <h2 className="font-heading font-bold text-3xl sm:text-5xl tracking-tight text-white uppercase">
               The Transformation Pathway
             </h2>
             <div className="h-[2px] w-24 bg-brand-clay mx-auto my-6" />
             <p className="font-sans text-brand-cream/70 max-w-xl mx-auto text-sm leading-relaxed">
-              Progress through six distinct levels of mastery. Each program is meticulously crafted to elevate your teaching, leadership, and global influence.
+              Progress through distinct levels of mastery. Complete the on-platform verification exercise and curriculum modules to unlock official <strong>VVIP Elite Educator Access</strong>.
             </p>
           </div>
 
@@ -650,12 +662,12 @@ export default function Academy({
 
                 <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-3 py-2 mt-auto flex justify-between items-center">
                   <span className="font-sans text-xs text-white font-medium">{mod.modulesCount}</span>
-                  <Link 
-                    to="/academy" 
-                    className="font-mono text-[9px] text-brand-clay uppercase cursor-pointer hover:underline"
+                  <button 
+                    onClick={() => setIsSignupModalOpen(true)}
+                    className="font-mono text-[9px] text-brand-clay uppercase cursor-pointer hover:underline font-bold"
                   >
-                    Explore →
-                  </Link>
+                    Apply Now →
+                  </button>
                 </div>
               </div>
             ))}
@@ -663,55 +675,105 @@ export default function Academy({
 
           {/* Registration CTA underneath grid */}
           <div className="text-center mb-16">
-            <a 
-              href={WHATSAPP_COMMUNITY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 btn-magnetic py-4 px-10 bg-[#25D366] hover:bg-[#20bd5a] rounded-full text-white font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#25D366]/20 transition-transform hover:scale-105"
+            <button 
+              onClick={() => setIsSignupModalOpen(true)}
+              className="inline-flex items-center gap-2.5 btn-magnetic py-4 px-10 bg-brand-clay hover:bg-brand-clay/90 rounded-full text-white font-bold uppercase tracking-widest text-xs shadow-lg shadow-brand-clay/20 transition-transform hover:scale-105 cursor-pointer"
             >
-              <MessageCircle className="w-5 h-5 fill-white text-[#25D366]" />
-              Join Elite Teachers Academy on WhatsApp
-            </a>
+              <Crown className="w-5 h-5 text-amber-300" />
+              Apply for Elite Teachers Academy (VVIP Access)
+            </button>
           </div>
 
           {/* Why become an elite teacher */}
           <div className="mb-16 max-w-4xl mx-auto">
-            <h3 className="font-heading font-bold text-2xl text-white text-center mb-8">Why become an elite teacher?</h3>
-            <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-[2.5rem] p-8 md:p-10 mb-8">
-              <h4 className="font-heading font-bold text-lg text-brand-clay mb-4">Elite (Grade A) Teachers</h4>
-              <p className="font-sans text-sm text-brand-cream/80 leading-relaxed mb-4">
-                Paid full academy money, completed up to module 4 of the academy. <strong>Client cannot pay them less than ₦100,000 for monthly contact.</strong>
-              </p>
-              <h4 className="font-heading font-bold text-lg text-brand-clay mb-4 mt-8">Basic (Grade B) Teachers</h4>
-              <p className="font-sans text-sm text-brand-cream/80 leading-relaxed mb-4">
-                Basic verification which is similar to that of elite too: NIN, TRCN, School ID, LinkedIn profile link or any social media page.
-              </p>
-            </div>
-            <div className="bg-brand-clay/10 border border-brand-clay/20 rounded-2xl p-6">
-              <span className="font-mono text-[10px] text-brand-clay font-bold uppercase tracking-widest block mb-2">SUGGESTED PERKS</span>
-              <p className="font-sans text-xs text-brand-cream/90 leading-relaxed">
-                Enjoy perks, VIP trainings, be seen on top of the search, get a verified elite teachers badge showing your competencies, get priority access to premium classes and resources, private community, etc.
-              </p>
-            </div>
-          </div>
+            <h3 className="font-heading font-bold text-2xl text-white text-center mb-8">Why Become an Elite VVIP Educator?</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-brand-cream/5 border border-amber-400/20 rounded-[2.5rem] p-8 relative overflow-hidden">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 text-amber-300 border border-amber-300/30 text-[10px] font-mono font-bold uppercase tracking-wider mb-4">
+                  <Crown className="w-3.5 h-3.5 text-amber-300" />
+                  Elite (Grade A) · VVIP Teachers
+                </div>
+                <p className="font-sans text-xs text-brand-cream/80 leading-relaxed mb-4">
+                  Verified credentials + completed Elite Academy masterclasses. <strong>Guaranteed rate floor of ₦100,000+ monthly tuition contracts per client.</strong>
+                </p>
+                <ul className="space-y-2 text-xs font-sans text-brand-cream/90">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Top-ranked placement on parent searches</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Official Elite Certified Accreditation badge</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Priority booking requests & VIP student matching</span>
+                  </li>
+                </ul>
+              </div>
 
-          <div className="bg-brand-moss/10 border border-brand-cream/10 rounded-[2.5rem] p-8 max-w-3xl mx-auto text-center space-y-6">
-            <ShieldAlert className="w-8 h-8 text-brand-clay mx-auto" />
-            <h3 className="font-heading font-bold text-xl text-white">Join the Live WhatsApp Cohort</h3>
-            <p className="font-sans text-xs text-brand-cream/70 max-w-md mx-auto">
-              The Elite Teachers Academy is hosted directly on WhatsApp. Connect with master educators, receive live masterclass notifications, and earn verified accreditations.
-            </p>
-            <a
-              href={WHATSAPP_COMMUNITY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 btn-magnetic py-3 px-8 bg-[#25D366] hover:bg-[#20bd5a] rounded-full text-white font-bold uppercase tracking-wider text-xs shadow-lg shadow-[#25D366]/20 transition-transform hover:scale-105"
-            >
-              <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
-              Join WhatsApp Academy Group
-            </a>
+              <div className="bg-brand-cream/5 border border-brand-cream/10 rounded-[2.5rem] p-8">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cream/70 border border-white/10 text-[10px] font-mono font-bold uppercase tracking-wider mb-4">
+                  <UserCheck className="w-3.5 h-3.5" />
+                  Standard (Grade B) Teachers
+                </div>
+                <p className="font-sans text-xs text-brand-cream/70 leading-relaxed mb-4">
+                  Standard document verification (NIN, School ID, LinkedIn profile). Standard marketplace listing with baseline rates.
+                </p>
+                <p className="font-sans text-xs text-brand-cream/50 leading-relaxed">
+                  Teachers can upgrade to Grade A (VVIP) at any time by completing the Elite Teachers Academy modules and accreditation exercise.
+                </p>
+              </div>
+            </div>
+
+            {/* Seamless 4-step Onboarding Card */}
+            <div className="bg-gradient-to-r from-brand-moss/30 via-brand-moss/10 to-brand-moss/30 border border-brand-cream/15 rounded-[2.5rem] p-8 md:p-10 space-y-6 text-center">
+              <Sparkles className="w-8 h-8 text-amber-300 mx-auto" />
+              <h3 className="font-heading font-bold text-xl text-white">How the Seamless Admission Works</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-left">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">01. SIGN UP</span>
+                  <h5 className="font-heading font-bold text-xs text-white">Academy Application</h5>
+                  <p className="font-sans text-[11px] text-brand-cream/70 mt-1">Create your teacher portal profile in under 2 minutes.</p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">02. VERIFY ID</span>
+                  <h5 className="font-heading font-bold text-xs text-white">Submit Credentials</h5>
+                  <p className="font-sans text-[11px] text-brand-cream/70 mt-1">Upload ID & qualifications in your dashboard (Exercise 1).</p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">03. COURSEWORK</span>
+                  <h5 className="font-heading font-bold text-xs text-white">Master Pedagogy</h5>
+                  <p className="font-sans text-[11px] text-brand-cream/70 mt-1">Complete interactive modules, AI simulators & quizzes.</p>
+                </div>
+
+                <div className="bg-white/5 border border-amber-400/30 rounded-2xl p-4 bg-amber-400/5">
+                  <span className="font-mono text-[9px] text-amber-300 font-extrabold uppercase block mb-1">04. VVIP ACCESS</span>
+                  <h5 className="font-heading font-bold text-xs text-amber-300">Earn VVIP Badge</h5>
+                  <p className="font-sans text-[11px] text-brand-cream/80 mt-1">Unlocked for top search placement & premium ₦100k+ contracts.</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsSignupModalOpen(true)}
+                className="inline-flex items-center gap-2 btn-magnetic py-3.5 px-8 bg-brand-clay hover:bg-brand-clay/90 rounded-full text-white font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/20 transition-transform hover:scale-105 cursor-pointer"
+              >
+                <span>Get Started Now</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Modal */}
+        <EliteAcademySignupModal
+          isOpen={isSignupModalOpen}
+          onClose={() => setIsSignupModalOpen(false)}
+          onOpenLogin={onRegisterClick}
+        />
       </section>
     );
   }
@@ -736,10 +798,13 @@ export default function Academy({
         {/* Tab Header / Navigation */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-16 border-b border-brand-cream/10 pb-8">
           <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-1">Professional Upskilling</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider mb-2">
+              <Crown className="w-3.5 h-3.5" />
+              VVIP Professional Pathway
+            </div>
             <h2 className="font-heading font-bold text-3xl sm:text-4xl text-white tracking-tight uppercase">ELITE TEACHERS ACADEMY</h2>
             <p className="font-sans text-2xs text-brand-cream/60 mt-1">
-              Become certified in modern pedagogy, globally aligned rates, and interactive tools.
+              Accredited pedagogy, AI lesson frameworks, international curricula, and verified VVIP certification.
             </p>
           </div>
 
@@ -752,7 +817,7 @@ export default function Academy({
                     key={tab}
                     disabled={isCertLocked}
                     onClick={() => setActiveTab(tab)}
-                    className={`py-1.5 px-4 rounded-full font-mono text-[9px] uppercase tracking-wider font-bold shrink-0 transition-all duration-300 flex items-center gap-1 ${
+                    className={`py-1.5 px-4 rounded-full font-mono text-[9px] uppercase tracking-wider font-bold shrink-0 transition-all duration-300 flex items-center gap-1 cursor-pointer ${
                       isCertLocked 
                         ? 'opacity-40 cursor-not-allowed text-brand-cream/30' 
                         : activeTab === tab
@@ -769,66 +834,147 @@ export default function Academy({
           )}
         </div>
 
-        {/* --- STATE 1: PAYWALL ENROLLMENT --- */}
+        {/* --- STATE 1: CREDENTIALS VERIFICATION GATEWAY & ENROLLMENT --- */}
         {!enrolled ? (
-          <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            
-            {/* Paywall Info column */}
-            <div className="lg:col-span-7 space-y-6">
-              <span className="font-mono text-[10px] text-brand-clay font-bold tracking-widest uppercase block">ENROLL IN PROFESSIONAL PATHWAY</span>
-              <h3 className="font-heading font-extrabold text-2xl sm:text-4xl text-white leading-tight">
-                Unlock The Gold "Elite Certified" Status & Boost Placement clicks by 15%
-              </h3>
-              
-              <p className="font-sans text-xs text-brand-cream/70 leading-relaxed">
-                Platform stats show that parents prioritize vetted educators. Tutors who complete our Elite training modules see higher booking conversions, command 35% higher average billing rates, and obtain direct placement opportunities inside partnered schools.
-              </p>
+          <div className="max-w-5xl mx-auto space-y-8">
+            {/* Step Progression Bar */}
+            <div className="bg-brand-moss/20 border border-brand-cream/10 rounded-2xl p-5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                <div>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-amber-300 font-bold block">
+                    ELITE ACADEMY ONBOARDING STATUS
+                  </span>
+                  <h4 className="font-heading font-bold text-sm text-white mt-0.5">
+                    {hasCompletedCredentials ? "Credentials Verified · Ready for Coursework" : "Step 2 Verification Exercise: Submit Dashboard Credentials"}
+                  </h4>
+                </div>
+                <span className="font-mono text-xs px-3 py-1 rounded-full bg-white/10 text-white font-bold">
+                  {hasCompletedCredentials ? "Stage 2 of 3 (Complete)" : "Stage 2 of 3 (In Progress)"}
+                </span>
+              </div>
 
-              <div className="space-y-3.5 pt-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                   <div>
-                    <span className="font-heading font-bold text-white text-xs block">6 Curriculum Alignment Modules</span>
-                    <span className="font-sans text-2xs text-brand-cream/50 leading-relaxed">Master Google Classroom, Notion setups, and Lesson Prompt frameworks.</span>
+                    <span className="font-heading font-bold text-xs text-white block">Step 1: Sign Up</span>
+                    <span className="font-sans text-[10px] text-emerald-300">Account Active</span>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5" />
+
+                <div className={`p-3 rounded-xl border flex items-center gap-3 ${hasCompletedCredentials ? "bg-emerald-500/10 border-emerald-500/30" : "bg-amber-500/10 border-amber-500/30 animate-pulse"}`}>
+                  {hasCompletedCredentials ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                  ) : (
+                    <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0" />
+                  )}
                   <div>
-                    <span className="font-heading font-bold text-white text-xs block">Gemini Roleplay Classroom Simulator</span>
-                    <span className="font-sans text-2xs text-brand-cream/50 leading-relaxed">Practice parent dispute resolution and student distraction alignment.</span>
+                    <span className="font-heading font-bold text-xs text-white block">Step 2: Submit Credentials</span>
+                    <span className={`font-sans text-[10px] ${hasCompletedCredentials ? "text-emerald-300" : "text-amber-300 font-bold"}`}>
+                      {hasCompletedCredentials ? "Credentials Submitted" : "Action Required in Dashboard"}
+                    </span>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5" />
+
+                <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3">
+                  <Crown className="w-5 h-5 text-brand-cream/40 shrink-0" />
                   <div>
-                    <span className="font-heading font-bold text-white text-xs block">Verified Digital Certificate & Profile Badge</span>
-                    <span className="font-sans text-2xs text-brand-cream/50 leading-relaxed">Embed a QR-verified badge directly inside your marketplace card profile.</span>
+                    <span className="font-heading font-bold text-xs text-white block">Step 3: VVIP Certification</span>
+                    <span className="font-sans text-[10px] text-brand-cream/50">Unlocked upon course completion</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Redirect Form Column */}
-            <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-8 shadow-2xl flex flex-col justify-center items-center text-center space-y-6">
-              <div className="w-16 h-16 rounded-full bg-[#25D366]/10 border border-[#25D366]/30 flex items-center justify-center">
-                <MessageCircle className="w-8 h-8 text-[#25D366]" />
-              </div>
-              <div>
-                <h3 className="font-heading font-bold text-2xl text-white">Join the Elite Academy</h3>
-                <p className="font-sans text-xs text-brand-cream/80 max-w-sm mt-2">
-                  The Elite Teachers Academy is hosted directly on WhatsApp. Join the official group to participate in masterclasses, connect with peers, and get certified.
+            {/* Content card */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="lg:col-span-7 space-y-6">
+                <span className="font-mono text-[10px] text-brand-clay font-bold tracking-widest uppercase block">
+                  VVIP ACCREDITATION PATHWAY
+                </span>
+                <h3 className="font-heading font-extrabold text-2xl sm:text-3xl text-white leading-tight">
+                  Unlock The Gold "Elite Certified" Status & Direct ₦100,000+ Monthly Contracts
+                </h3>
+                
+                <p className="font-sans text-xs text-brand-cream/70 leading-relaxed">
+                  Parents and private institutions prioritize vetted educators with verified credentials. Completing the Academy training certifies you in Cambridge IGCSE, AI lesson design, and dispute management while giving you direct top search placement.
                 </p>
+
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="font-heading font-bold text-white text-xs block">6 Curriculum Alignment Modules</span>
+                      <span className="font-sans text-2xs text-brand-cream/50">Master Google Classroom, Notion setups, and AI lesson frameworks.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="font-heading font-bold text-white text-xs block">Gemini Roleplay Classroom Simulator</span>
+                      <span className="font-sans text-2xs text-brand-cream/50">Practice parent communication, discipline, and engagement.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="font-heading font-bold text-white text-xs block">Verified Digital Certificate & VVIP Profile Badge</span>
+                      <span className="font-sans text-2xs text-brand-cream/50">Embed a QR-verified badge directly on your public marketplace profile.</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <a
-                href={WHATSAPP_COMMUNITY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-magnetic w-full max-w-xs py-4 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-[#25D366]/20 text-center flex items-center justify-center gap-2 transition-transform hover:scale-105"
-              >
-                <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
-                Join WhatsApp Academy Group
-              </a>
+
+              {/* Action Column */}
+              <div className="lg:col-span-5 bg-brand-charcoal border border-brand-cream/10 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl flex flex-col justify-center items-center text-center space-y-5">
+                {!hasCompletedCredentials ? (
+                  <>
+                    <div className="w-14 h-14 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                      <ShieldAlert className="w-7 h-7 animate-pulse" />
+                    </div>
+                    <div>
+                      <h4 className="font-heading font-bold text-lg text-white">First Verification Exercise Required</h4>
+                      <p className="font-sans text-xs text-brand-cream/70 max-w-sm mt-2 leading-relaxed">
+                        To maintain elite quality standards, teachers must upload their Government ID, qualification certificates (Degree/TRCN), and hourly rates in the dashboard before starting coursework.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => navigate('/teacher')}
+                      className="btn-magnetic w-full py-3.5 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-brand-clay/20 text-center flex items-center justify-center gap-2 transition-transform hover:scale-102 cursor-pointer"
+                    >
+                      <UserCheck className="w-4 h-4" />
+                      <span>Go to Dashboard Credentials</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                      <Crown className="w-7 h-7 animate-pulse" />
+                    </div>
+                    <div>
+                      <h4 className="font-heading font-bold text-lg text-white">Credentials Submitted!</h4>
+                      <p className="font-sans text-xs text-brand-cream/80 max-w-sm mt-2 leading-relaxed">
+                        You have completed your profile credentials. Click below to begin your Elite Academy coursework and unlock your official <strong>VVIP Access</strong>.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setEnrolled(true);
+                        toast.success("🎓 Welcome to Elite Teachers Academy! Beginning Module 1.");
+                        const localCache = localStorage.getItem(`academy_progress_${currentUser.uid}`) || '{}';
+                        const updated = { ...JSON.parse(localCache), enrolled: true, completedModules: [], xp: 0 };
+                        localStorage.setItem(`academy_progress_${currentUser.uid}`, JSON.stringify(updated));
+                      }}
+                      className="btn-magnetic w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-lg shadow-emerald-600/20 text-center flex items-center justify-center gap-2 transition-transform hover:scale-102 cursor-pointer"
+                    >
+                      <Play className="w-4 h-4" />
+                      <span>Begin Academy Coursework</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ) : (

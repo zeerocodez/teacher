@@ -3430,22 +3430,20 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3 shrink-0">
-                        <a
-                          href="https://chat.whatsapp.com/Lo4d2D3rPeLB1DORXBTWRe?s=cl&p=a&mlu=4"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="py-3 px-5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2 transition-transform scale-100 hover:scale-103"
-                        >
-                          <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
-                          Join WhatsApp Academy Group
-                        </a>
                         <Link
                           to="/academy"
-                          className="py-3 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2 transition-transform scale-100 hover:scale-103"
+                          className="py-3 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2 transition-transform scale-100 hover:scale-103 cursor-pointer"
                         >
-                          <BookOpen className="w-4 h-4" />
-                          Explore Catalog
+                          <Sparkles className="w-4 h-4 text-amber-300" />
+                          Elite Academy Classroom & Modules
                         </Link>
+                        <button
+                          onClick={() => setActiveTab('profile')}
+                          className="py-3 px-5 rounded-full bg-white border border-brand-moss/20 hover:bg-brand-cream/40 text-brand-moss font-heading font-bold text-xs uppercase tracking-wider shadow-sm flex items-center justify-center gap-2 transition-transform scale-100 hover:scale-103 cursor-pointer"
+                        >
+                          <ShieldCheck className="w-4 h-4 text-brand-clay" />
+                          Credentials & Vetting
+                        </button>
                       </div>
                     </div>
 
