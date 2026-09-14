@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { db } from '../db.js';
-import { createNotification } from '../utils.js';
+import { createNotification, sanitizeText } from '../utils.js';
+import { publicActionRateLimiter } from '../middleware/limiters.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,7 +49,7 @@ const GRADE_BANDS = [
 /**
  * GET /api/diagnostic/curricula-subjects
  */
-router.get('/curricula-subjects', (req, res) => {
+router.get('/curricula-subjects', publicActionRateLimiter, (req, res) => {
   res.json({
     curricula: CURRICULA_OPTIONS,
     subjects: SUBJECTS_OPTIONS,
@@ -60,7 +61,7 @@ router.get('/curricula-subjects', (req, res) => {
  * GET /api/diagnostic/quiz
  * Retrieve randomized/curated diagnostic questions (excluding answers)
  */
-router.get('/quiz', (req, res) => {
+router.get('/quiz', publicActionRateLimiter, (req, res) => {
   try {
     const { curriculum, subject, gradeBand, limit = 8 } = req.query;
     const bank = loadDiagnosticBank();
@@ -119,7 +120,7 @@ router.get('/quiz', (req, res) => {
  * POST /api/diagnostic/evaluate
  * Grade quiz submission, evaluate sub-skill mastery, generate placement and roadmap
  */
-router.post('/evaluate', async (req, res) => {
+router.post('/evaluate', publicActionRateLimiter, async (req, res) => {
   try {
     const {
       studentId = 'guest_student',
@@ -131,6 +132,11 @@ router.post('/evaluate', async (req, res) => {
       gradeBand = 'Grade 7-9 (KS3/Lower IGCSE)',
       answers = [] // [{ questionId, selectedIndex, timeSpentSeconds }]
     } = req.body;
+
+    const safeStudentName = sanitizeText(studentName || 'Student');
+    const safeCurriculum = sanitizeText(curriculum || 'Cambridge IGCSE');
+    const safeSubject = sanitizeText(subject || 'Mathematics');
+    const safeGradeBand = sanitizeText(gradeBand || 'Standard');
 
     const bank = loadDiagnosticBank();
     const bankMap = new Map(bank.map(q => [q.id, q]));
@@ -275,13 +281,13 @@ router.post('/evaluate', async (req, res) => {
     const reportId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
     const reportData = {
       id: reportId,
-      studentId,
-      studentName,
-      parentId,
-      parentEmail,
-      curriculum,
-      subject,
-      gradeBand,
+      studentId: sanitizeText(studentId || 'guest_student'),
+      studentName: safeStudentName,
+      parentId: parentId ? sanitizeText(parentId) : null,
+      parentEmail: parentEmail ? sanitizeText(parentEmail) : null,
+      curriculum: safeCurriculum,
+      subject: safeSubject,
+      gradeBand: safeGradeBand,
       totalQuestions,
       correctCount,
       scorePercent,
@@ -333,7 +339,7 @@ router.post('/evaluate', async (req, res) => {
  * GET /api/diagnostic/reports/:studentId
  * Fetch diagnostic reports for a student or parent
  */
-router.get('/reports/:studentId', async (req, res) => {
+router.get('/reports/:studentId', publicActionRateLimiter, async (req, res) => {
   try {
     const { studentId } = req.params;
     const reports = await db.find('diagnostic_reports', r => r.studentId === studentId || r.parentId === studentId);
@@ -350,7 +356,7 @@ router.get('/reports/:studentId', async (req, res) => {
 /**
  * GET /api/diagnostic/report/:reportId
  */
-router.get('/report/:reportId', async (req, res) => {
+router.get('/report/:reportId', publicActionRateLimiter, async (req, res) => {
   try {
     const { reportId } = req.params;
     const report = await db.findOne('diagnostic_reports', r => r.id === reportId);
@@ -364,3 +370,4 @@ router.get('/report/:reportId', async (req, res) => {
 });
 
 export default router;
+
