@@ -60,9 +60,9 @@ router.post('/b2b-schools/revoke', authenticateToken, requireRole(['Admin']), as
   res.json(updated);
 });
 
-// POST Approve or Reject teacher application (Admin trigger)
+// POST Approve, Promote Tier, Request Revision, or Reject teacher application (Admin trigger)
 router.post('/applications/respond', authenticateToken, requireRole(['Admin']), async (req, res) => {
-  const { teacherUid, action } = req.body;
+  const { teacherUid, action, tier, reason, feedback } = req.body;
   if (!teacherUid || !action) {
     return res.status(400).json({ error: "Teacher UID and action are required." });
   }
@@ -72,19 +72,83 @@ router.post('/applications/respond', authenticateToken, requireRole(['Admin']), 
     return res.status(404).json({ error: "Teacher profile not found." });
   }
 
-  const status = action === "Approve" ? "verified" : "rejected";
-  const verifiedStatus = action === "Approve";
+  let status = "verified";
+  let verifiedStatus = true;
+  let assignedTier = tier || teacher.tier || 'Grade B';
+  let isEliteVip = teacher.isEliteVip || false;
+  let isVipTeacher = teacher.isVipTeacher || false;
+  let existingBadges = Array.isArray(teacher.badges) ? [...teacher.badges] : [];
+  let userStatus = "active";
+  let notifTitle = "Application Approved!";
+  let notifMessage = "Welcome to EduVistar! Your teacher onboarding profile is approved and live.";
+  let emailSubject = "Teacher Application Approved!";
+  let emailMessage = `Hello ${teacher.name},\n\nCongratulations! Your teacher onboarding application has been approved. You are now live on the EduVistar platform and can start accepting students.`;
 
-  const updated = await db.update('teachers', teacher.id, {
+  if (action === "ApproveGradeA" || (action === "Approve" && assignedTier === "Grade A")) {
+    assignedTier = "Grade A";
+    status = "verified";
+    verifiedStatus = true;
+    isEliteVip = true;
+    isVipTeacher = true;
+    if (!existingBadges.includes('badge-ai-cert')) existingBadges.push('badge-ai-cert');
+    if (!existingBadges.includes('badge-vip')) existingBadges.push('badge-vip');
+    if (!existingBadges.includes('badge-verified')) existingBadges.push('badge-verified');
+
+    notifTitle = "👑 Grade A Elite VVIP Status Approved!";
+    notifMessage = "Congratulations! You have been certified as a Grade A Elite VVIP Educator with ₦100,000 monthly rate floor protection and VIP WhatsApp community access.";
+    emailSubject = "👑 Welcome to EduVistar Elite Teachers Academy (Grade A VVIP)";
+    emailMessage = `Hello ${teacher.name},\n\nCongratulations! Your credentials have been thoroughly audited and approved as a Grade A Elite VVIP Educator on EduVistar.\n\nKey Benefits Active:\n- ₦100,000 Monthly Contract Rate Floor Guarantee\n- Gold Crown Verified Badge on your public profile\n- Top search placement in EduVistar Marketplace\n- Private VIP WhatsApp Community Access`;
+  } else if (action === "ApproveGradeB" || action === "Approve") {
+    assignedTier = "Grade B";
+    status = "verified";
+    verifiedStatus = true;
+    if (!existingBadges.includes('badge-verified')) existingBadges.push('badge-verified');
+
+    notifTitle = "🛡️ Grade B Verified Status Approved!";
+    notifMessage = "Congratulations! Your credentials (NIN, Degree/TRCN, School ID, LinkedIn) have been verified. You are now live on the EduVistar Marketplace.";
+    emailSubject = "🛡️ Your EduVistar Teacher Profile is Verified!";
+    emailMessage = `Hello ${teacher.name},\n\nCongratulations! Your credentials have been audited and verified. You have been awarded the Grade B Verified Educator badge on EduVistar and are now accepting students.`;
+  } else if (action === "RequestRevision") {
+    status = "needs_revision";
+    verifiedStatus = false;
+    userStatus = "active";
+    const revisionNotes = reason || feedback || "Please re-upload clearer copies of your credentials.";
+
+    notifTitle = "🔄 Credential Revision Requested";
+    notifMessage = `Your application requires credential updates: ${revisionNotes}`;
+    emailSubject = "EduVistar Verification: Credential Updates Required";
+    emailMessage = `Hello ${teacher.name},\n\nOur verification team reviewed your application and requires updates before finalizing verification:\n\nNotes: ${revisionNotes}\n\nPlease sign in to your dashboard to re-upload the requested documents.`;
+  } else if (action === "Reject") {
+    status = "rejected";
+    verifiedStatus = false;
+    userStatus = "suspended";
+    const rejectFeedback = reason || feedback || "Credentials failed verification standards.";
+
+    notifTitle = "Application Not Approved";
+    notifMessage = `Your onboarding application was declined: ${rejectFeedback}`;
+    emailSubject = "EduVistar Teacher Application Status Update";
+    emailMessage = `Hello ${teacher.name},\n\nThank you for applying to EduVistar. Unfortunately, we were unable to approve your application at this time.\n\nReason: ${rejectFeedback}`;
+  }
+
+  const updateData = {
     status,
-    verified: verifiedStatus
-  });
+    verified: verifiedStatus,
+    tier: assignedTier,
+    isEliteVip,
+    isVipTeacher,
+    badges: existingBadges,
+    ...(action === "RequestRevision" ? { revisionNotes: reason || feedback } : {}),
+    ...(action === "Reject" ? { rejectReason: reason || feedback } : {})
+  };
+
+  const updated = await db.update('teachers', teacher.id, updateData);
 
   // Also update user verification state in users database collection
   const user = await db.findOne('users', u => u.uid === teacherUid);
   if (user) {
     await db.update('users', user.id, {
-      status: action === "Approve" ? "active" : "suspended"
+      status: userStatus,
+      tier: assignedTier
     });
   }
 
@@ -92,20 +156,13 @@ router.post('/applications/respond', authenticateToken, requireRole(['Admin']), 
   await createNotification(
     teacherUid,
     "application_response",
-    action === "Approve" ? "Application Approved!" : "Application Rejected",
-    action === "Approve"
-      ? "Welcome to EduVistar! Your teacher onboarding profile is approved and live."
-      : "Your onboarding application was declined. Please verify your credentials and submit again."
+    notifTitle,
+    notifMessage
   );
 
   // Send email to teacher
   if (user && user.email) {
-    const subject = action === "Approve" ? "Teacher Application Approved!" : "Teacher Application Update";
-    const message = action === "Approve"
-      ? `Hello ${teacher.name},\n\nCongratulations! Your teacher onboarding application has been approved. You are now live on the EduVistar platform and can start accepting students.`
-      : `Hello ${teacher.name},\n\nUnfortunately, your teacher application was declined at this time. Please verify your credentials and submit again or contact support for more details.`;
-      
-    sendTransactionalEmail(user.email, subject, "alert", { message });
+    sendTransactionalEmail(user.email, emailSubject, "alert", { message: emailMessage });
   }
 
   res.json(updated);

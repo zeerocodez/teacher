@@ -104,15 +104,26 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   const [selectedApp, setSelectedApp] = useState(null);
   const [rejectReason, setRejectReason] = useState('Blurry ID document');
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showRevisionModal, setShowRevisionModal] = useState(false);
+  const [revisionNotes, setRevisionNotes] = useState('');
+  const [selectedRevisionIssues, setSelectedRevisionIssues] = useState([]);
+  const [vettingFilter, setVettingFilter] = useState('all'); // 'all' | 'pending_approval' | 'verified_b' | 'verified_a' | 'needs_revision'
   const [loading, setLoading] = useState(false);
 
-  const [vetId, setVetId] = useState(false);
+  // 5-Point Vetting Checklist states
+  const [vetGovId, setVetGovId] = useState(false);
+  const [vetTrcn, setVetTrcn] = useState(false);
   const [vetDegree, setVetDegree] = useState(false);
+  const [vetSchoolId, setVetSchoolId] = useState(false);
+  const [vetLinkedIn, setVetLinkedIn] = useState(false);
   const [vetVideo, setVetVideo] = useState(false);
 
   useEffect(() => {
-    setVetId(false);
+    setVetGovId(false);
+    setVetTrcn(false);
     setVetDegree(false);
+    setVetSchoolId(false);
+    setVetLinkedIn(false);
     setVetVideo(false);
   }, [selectedApp]);
 
@@ -362,16 +373,26 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
             return {
               uid: app.uid,
               name: app.name,
+              username: app.username || '',
               location: app.location || 'N/A',
+              whatsapp: app.whatsapp || '',
+              linkedin: app.linkedin || '',
               subjects: app.subjects || [],
               curricula: app.curricula || [],
               rate: app.rate || 0,
               status: app.status || 'pending_approval',
-              videoUrl: app.videoUrl || "https://www.youtube.com/embed/dQw4w9WgXcQ",
+              tier: app.tier || (app.isEliteVip ? 'Grade A' : app.verified ? 'Grade B' : 'Freemium'),
+              isEliteApplicant: Boolean(app.isEliteApplicant || app.isEliteVip),
+              videoUrl: app.videoUrl || '',
               bio: app.bio || "No biography provided yet.",
               avatar: app.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
-              govId: app.govId || "NGA-ID-9182049",
-              degree: app.degree || "B.Ed. Education (Verified)",
+              govIdUrl: app.govIdUrl || app.govId || '',
+              degreeUrl: app.degreeUrl || app.degree || '',
+              trcnUrl: app.trcnUrl || '',
+              schoolIdUrl: app.schoolIdUrl || '',
+              cvUrl: app.cvUrl || '',
+              revisionNotes: app.revisionNotes || '',
+              rejectReason: app.rejectReason || '',
               geminiBioScore: app.bio ? Math.min(100, 60 + app.bio.length % 35) : 75,
               idMatch: "Passed",
               duplicateCheck: "Clear",
@@ -584,23 +605,29 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
     setTimeout(() => setToastMessage(''), 4000);
   };
 
-  // Vetting Flow logic
-  const handleRespond = async (teacherUid, action) => {
-    if (action === 'Reject') {
-      setShowRejectModal(true);
-      return;
-    }
-    
+  // 3-Tier Vetting Flow logic
+  const handleApproveTier = async (teacherUid, targetTier) => {
     setLoading(true);
+    const action = targetTier === 'Grade A' ? 'ApproveGradeA' : 'ApproveGradeB';
     try {
       const response = await fetch(`${API_BASE}/admin/applications/respond`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ teacherUid, action: 'Approve' })
+        body: JSON.stringify({ teacherUid, action, tier: targetTier })
       });
       if (response.ok) {
-        setApplications(prev => prev.map(a => a.uid === teacherUid ? { ...a, status: 'verified', verified: true } : a));
-        triggerToast(`Application for ${selectedApp?.name || 'teacher'} successfully approved!`);
+        setApplications(prev => prev.map(a => a.uid === teacherUid ? { 
+          ...a, 
+          status: 'verified', 
+          verified: true, 
+          tier: targetTier,
+          isEliteVip: targetTier === 'Grade A',
+          isVipTeacher: targetTier === 'Grade A'
+        } : a));
+        triggerToast(targetTier === 'Grade A' 
+          ? `👑 ${selectedApp?.name || 'Teacher'} promoted to Grade A Elite VVIP with ₦100k floor!`
+          : `🛡️ ${selectedApp?.name || 'Teacher'} approved as Grade B Verified Educator!`
+        );
       } else {
         const err = await response.json();
         triggerToast(`Error: ${err.error || 'Failed to approve application'}`);
@@ -614,10 +641,49 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
     }
   };
 
-  const handleRequestMoreInfo = (teacherUid) => {
-    setApplications(prev => prev.map(a => a.uid === teacherUid ? { ...a, status: 'info_requested' } : a));
-    triggerToast(`Application status updated: Requested more information from ${selectedApp?.name}.`);
-    setSelectedApp(null);
+  const handleOpenRevisionModal = () => {
+    setRevisionNotes('');
+    setSelectedRevisionIssues([]);
+    setShowRevisionModal(true);
+  };
+
+  const handleConfirmRevision = async () => {
+    if (!selectedApp) return;
+    setLoading(true);
+    const combinedNotes = [
+      ...selectedRevisionIssues,
+      revisionNotes.trim()
+    ].filter(Boolean).join('. ');
+
+    try {
+      const response = await fetch(`${API_BASE}/admin/applications/respond`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ 
+          teacherUid: selectedApp.uid, 
+          action: 'RequestRevision', 
+          reason: combinedNotes || 'Please upload clearer copies of your credentials.' 
+        })
+      });
+      if (response.ok) {
+        setApplications(prev => prev.map(a => a.uid === selectedApp.uid ? { 
+          ...a, 
+          status: 'needs_revision', 
+          revisionNotes: combinedNotes 
+        } : a));
+        triggerToast(`Revision request sent to ${selectedApp?.name}.`);
+      } else {
+        const err = await response.json();
+        triggerToast(`Error: ${err.error || 'Failed to send revision request'}`);
+      }
+    } catch (err) {
+      console.warn("Failed to send revision request:", err);
+      triggerToast("Network error during revision request.");
+    } finally {
+      setSelectedApp(null);
+      setShowRevisionModal(false);
+      setLoading(false);
+    }
   };
 
   const handleConfirmReject = async () => {
@@ -627,7 +693,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
       const response = await fetch(`${API_BASE}/admin/applications/respond`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ teacherUid: selectedApp.uid, action: 'Reject' })
+        body: JSON.stringify({ teacherUid: selectedApp.uid, action: 'Reject', reason: rejectReason })
       });
       if (response.ok) {
         setApplications(prev => prev.map(a => a.uid === selectedApp.uid ? { ...a, status: 'rejected', rejectReason } : a));
@@ -1986,267 +2052,518 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Left column application cards */}
-            <div className="lg:col-span-7 space-y-4">
+            <div className="lg:col-span-6 space-y-4">
               <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm">
-                <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-4">
-                  PENDING VETTING PIPELINE (OLDEST FIRST)
-                </span>
-
-                {pendingApps.length === 0 ? (
-                  <div className="py-12 text-center font-sans text-brand-charcoal/50 text-xs">
-                    All onboarding applications fully processed.
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                  <div>
+                    <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
+                      EDUCATOR VETTING PIPELINE
+                    </span>
+                    <h4 className="font-heading font-bold text-base text-brand-moss">Teacher Applications</h4>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    {pendingApps.map(app => (
-                      <div 
-                        key={app.uid}
-                        onClick={() => setSelectedApp(app)}
-                        className={`border rounded-2xl p-4 flex justify-between items-center gap-4 cursor-pointer transition-all duration-300 hover-lift ${
-                          selectedApp?.uid === app.uid 
-                            ? 'border-brand-clay bg-brand-clay/5'
-                            : 'border-brand-moss/10 bg-brand-cream/10 hover:border-brand-moss/20'
+                  {/* Tier filter pill buttons */}
+                  <div className="flex flex-wrap gap-1 bg-brand-cream/40 p-1 rounded-xl border border-brand-moss/5 text-[10px] font-mono font-bold">
+                    {[
+                      { id: 'all', label: 'All' },
+                      { id: 'pending_approval', label: 'Pending' },
+                      { id: 'verified_a', label: '👑 Grade A' },
+                      { id: 'verified_b', label: '🛡️ Grade B' },
+                      { id: 'needs_revision', label: '🔄 Revisions' },
+                    ].map(f => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setVettingFilter(f.id)}
+                        className={`py-1 px-2.5 rounded-lg transition-all ${
+                          vettingFilter === f.id
+                            ? 'bg-brand-moss text-white shadow-xs'
+                            : 'text-brand-charcoal/60 hover:text-brand-moss hover:bg-white/60'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={app.avatar} 
-                            alt={app.name} 
-                            className="w-11 h-11 rounded-full object-cover border border-brand-moss/10"
-                          />
-                          <div>
-                            <h4 className="font-heading font-bold text-sm text-brand-moss">{app.name}</h4>
-                            <span className="font-mono text-[9px] text-brand-charcoal/50 block mt-0.5 uppercase">
-                              {app.location} · {formatCurrency(convertMinor(app.rate, selectedCurrency), selectedCurrency)}/hr
-                            </span>
-                            <span className="font-mono text-[8px] uppercase tracking-wider font-bold block mt-1 text-brand-clay">
-                              SLA: {app.slaHoursElapsed}h elapsed
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-1.5">
-                          <span className="font-mono text-[9px] font-bold py-1 px-3 rounded-full border uppercase tracking-wider bg-amber-50 border-amber-200 text-amber-800">
-                            Pending Vow
-                          </span>
-                          <span className={`font-mono text-[8px] font-bold py-0.5 px-2 rounded border uppercase ${
-                            app.slaHoursElapsed > 48
-                              ? 'bg-rose-600 text-white animate-bounce'
-                              : app.slaHoursElapsed > 36
-                              ? 'bg-rose-50 border-rose-200 text-rose-700 animate-pulse'
-                              : app.slaHoursElapsed > 24
-                              ? 'bg-amber-50 border-amber-200 text-amber-700'
-                              : 'bg-brand-moss/5 border-brand-moss/10 text-brand-moss'
-                          }`}>
-                            {app.slaHoursElapsed > 48 
-                              ? 'SLA OVERDUE (NITDA ESCALATION)' 
-                              : app.slaHoursElapsed > 36 
-                              ? '36h CRITICAL ALERT' 
-                              : app.slaHoursElapsed > 24 
-                              ? '24h ESCALATION ACTIVE' 
-                              : 'SLA Target'}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Info Requested Sub-list */}
-              {infoRequestedApps.length > 0 && (
-                <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-3">
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">INFORMATION REQUESTED SUB-QUEUE</span>
-                  <div className="space-y-2">
-                    {infoRequestedApps.map(app => (
-                      <div key={app.uid} className="border border-brand-moss/5 bg-brand-cream/5 p-4 rounded-xl flex justify-between items-center text-xs">
-                        <div>
-                          <span className="font-bold text-brand-moss block">{app.name}</span>
-                          <span className="font-sans text-[10px] text-brand-charcoal/60 mt-0.5 block">Waiting for CV updates.</span>
-                        </div>
-                        <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-mono text-[9px] uppercase tracking-wider">Info Requested</span>
-                      </div>
+                        {f.label}
+                      </button>
                     ))}
                   </div>
                 </div>
-              )}
+
+                {(() => {
+                  const filteredList = applications.filter(app => {
+                    if (vettingFilter === 'pending_approval') return app.status === 'pending_approval';
+                    if (vettingFilter === 'verified_a') return app.tier === 'Grade A' || app.isEliteVip;
+                    if (vettingFilter === 'verified_b') return app.tier === 'Grade B' || (app.status === 'verified' && !app.isEliteVip && app.tier !== 'Grade A');
+                    if (vettingFilter === 'needs_revision') return app.status === 'needs_revision' || app.status === 'info_requested';
+                    return true;
+                  });
+
+                  if (filteredList.length === 0) {
+                    return (
+                      <div className="py-12 text-center font-sans text-brand-charcoal/50 text-xs">
+                        No applications found in this filter queue.
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-3 max-h-[650px] overflow-y-auto pr-1">
+                      {filteredList.map(app => {
+                        const isSelected = selectedApp?.uid === app.uid;
+                        const isGradeA = app.tier === 'Grade A' || app.isEliteVip;
+                        const isGradeB = !isGradeA && (app.tier === 'Grade B' || app.status === 'verified');
+                        const isRevision = app.status === 'needs_revision' || app.status === 'info_requested';
+                        const isPending = app.status === 'pending_approval';
+
+                        return (
+                          <div 
+                            key={app.uid}
+                            onClick={() => setSelectedApp(app)}
+                            className={`border rounded-2xl p-4 flex justify-between items-center gap-4 cursor-pointer transition-all duration-300 hover-lift ${
+                              isSelected 
+                                ? 'border-brand-clay bg-brand-clay/5 ring-1 ring-brand-clay'
+                                : 'border-brand-moss/10 bg-brand-cream/10 hover:border-brand-moss/30'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <img 
+                                src={app.avatar} 
+                                alt={app.name} 
+                                className="w-12 h-12 rounded-xl object-cover border border-brand-moss/10"
+                              />
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <h4 className="font-heading font-bold text-sm text-brand-moss">{app.name}</h4>
+                                  {isGradeA ? (
+                                    <Crown className="w-3.5 h-3.5 text-amber-600 inline" title="Grade A Elite VVIP" />
+                                  ) : isGradeB ? (
+                                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600 inline" title="Grade B Verified" />
+                                  ) : null}
+                                </div>
+                                <span className="font-mono text-[9px] text-brand-charcoal/60 block mt-0.5 uppercase">
+                                  {app.location} · {formatCurrency(convertMinor(app.rate, selectedCurrency), selectedCurrency)}/hr
+                                </span>
+                                <div className="flex gap-1.5 items-center mt-1">
+                                  <span className="font-mono text-[8px] uppercase tracking-wider font-bold text-brand-clay">
+                                    SLA: {app.slaHoursElapsed}h
+                                  </span>
+                                  {app.linkedin && (
+                                    <span className="text-[8px] font-mono text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded">
+                                      in Verified
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-end gap-1.5">
+                              {isGradeA ? (
+                                <span className="bg-amber-100 border border-amber-300 text-amber-900 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full flex items-center gap-1">
+                                  <Crown className="w-2.5 h-2.5 text-amber-700" /> Grade A VVIP
+                                </span>
+                              ) : isGradeB ? (
+                                <span className="bg-blue-50 border border-blue-200 text-blue-800 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full flex items-center gap-1">
+                                  <ShieldCheck className="w-2.5 h-2.5" /> Grade B
+                                </span>
+                              ) : isRevision ? (
+                                <span className="bg-amber-50 border border-amber-200 text-amber-800 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full">
+                                  Needs Revision
+                                </span>
+                              ) : (
+                                <span className="bg-gray-100 border border-gray-200 text-gray-700 font-mono text-[8px] uppercase tracking-wider font-bold py-0.5 px-2 rounded-full">
+                                  Freemium / Pending
+                                </span>
+                              )}
+
+                              {isPending && (
+                                <span className={`font-mono text-[8px] font-bold py-0.5 px-2 rounded border uppercase ${
+                                  app.slaHoursElapsed > 48
+                                    ? 'bg-rose-600 text-white animate-bounce'
+                                    : app.slaHoursElapsed > 24
+                                    ? 'bg-amber-50 border-amber-200 text-amber-700'
+                                    : 'bg-brand-moss/5 border-brand-moss/10 text-brand-moss'
+                                }`}>
+                                  {app.slaHoursElapsed > 48 ? 'SLA OVERDUE' : `${app.slaHoursElapsed}h Elapsed`}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
 
-            {/* Right column Application detail expansion */}
-            <div className="lg:col-span-5">
+            {/* Right column Application detail expansion & Document Reviewer */}
+            <div className="lg:col-span-6">
               {selectedApp ? (
                 <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6 animate-fade-up">
+                  {/* Header Profile Info */}
                   <div>
                     <div className="flex justify-between items-start mb-2">
-                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">APPLICANT DOSSIER DETAILS</span>
-                      <span className="font-mono text-[8px] font-bold text-rose-500 uppercase tracking-widest animate-pulse">SLA Elapsed: {selectedApp.slaHoursElapsed} hours</span>
+                      <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">APPLICANT CREDENTIAL DOSSIER</span>
+                      <span className="font-mono text-[8px] font-bold text-rose-500 uppercase tracking-widest">SLA: {selectedApp.slaHoursElapsed}h</span>
                     </div>
+
                     <div className="flex items-start gap-4 pb-4 border-b border-brand-moss/5">
                       <img 
                         src={selectedApp.avatar} 
                         alt={selectedApp.name} 
-                        className="w-16 h-16 rounded-[1.25rem] object-cover border border-brand-moss/10"
+                        className="w-16 h-16 rounded-[1.25rem] object-cover border border-brand-moss/10 shadow-sm"
                       />
-                      <div>
-                        <h3 className="font-heading font-bold text-lg text-brand-moss">{selectedApp.name}</h3>
-                        <p className="font-mono text-[10px] text-brand-clay block mt-0.5">{selectedApp.location}</p>
-                        <span className="font-sans font-bold text-xs text-brand-charcoal/70 block mt-1">
-                          Rate: {formatCurrency(convertMinor(selectedApp.rate, selectedCurrency), selectedCurrency)}/hr
-                        </span>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-heading font-bold text-lg text-brand-moss flex items-center gap-1.5">
+                              {selectedApp.name}
+                            </h3>
+                            <p className="font-mono text-[10px] text-brand-clay block mt-0.5">📍 {selectedApp.location}</p>
+                          </div>
+                          {selectedApp.tier === 'Grade A' || selectedApp.isEliteVip ? (
+                            <span className="bg-amber-100 text-amber-900 border border-amber-300 font-mono text-[9px] uppercase font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                              <Crown className="w-3 h-3 text-amber-700" /> Grade A Elite VVIP
+                            </span>
+                          ) : selectedApp.tier === 'Grade B' || selectedApp.status === 'verified' ? (
+                            <span className="bg-blue-50 text-blue-800 border border-blue-200 font-mono text-[9px] uppercase font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                              <ShieldCheck className="w-3 h-3 text-blue-600" /> Grade B Verified
+                            </span>
+                          ) : (
+                            <span className="bg-brand-moss/10 text-brand-moss font-mono text-[9px] uppercase font-bold px-2.5 py-0.5 rounded-full">
+                              Freemium Applicant
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 text-xs font-sans mt-2">
+                          <span className="bg-brand-moss/5 text-brand-moss font-bold px-2 py-0.5 rounded">
+                            Rate: {formatCurrency(convertMinor(selectedApp.rate, selectedCurrency), selectedCurrency)}/hr
+                          </span>
+                          {selectedApp.whatsapp && (
+                            <span className="bg-emerald-50 text-emerald-800 font-mono text-[10px] px-2 py-0.5 rounded border border-emerald-200">
+                              💬 {selectedApp.whatsapp}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Vetting System AI and compliance check indicators */}
-                  <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-4 space-y-3 font-sans text-xs">
+                  {/* Automated Security Pre-checks */}
+                  <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-4 space-y-2 font-sans text-xs">
                     <h5 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                       <Shield className="w-4 h-4 text-brand-clay" /> Automated Security Pre-checks
                     </h5>
                     <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
-                      <div className="bg-white border border-brand-moss/5 rounded-xl p-2.5">
-                        <span className="text-[8px] font-mono text-brand-charcoal/50 uppercase block">Gemini bio Quality</span>
-                        <span className={`font-mono font-bold block mt-1 text-sm ${
-                          selectedApp.geminiBioScore >= 80 ? 'text-emerald-600' : 'text-brand-clay'
-                        }`}>{selectedApp.geminiBioScore} / 100</span>
+                      <div className="bg-white border border-brand-moss/5 rounded-xl p-2">
+                        <span className="text-[8px] font-mono text-brand-charcoal/50 uppercase block">Bio Quality</span>
+                        <span className="font-mono font-bold block mt-0.5 text-xs text-emerald-600">{selectedApp.geminiBioScore}/100</span>
                       </div>
-                      <div className="bg-white border border-brand-moss/5 rounded-xl p-2.5">
+                      <div className="bg-white border border-brand-moss/5 rounded-xl p-2">
                         <span className="text-[8px] font-mono text-brand-charcoal/50 uppercase block">ID Match Check</span>
-                        <span className="font-mono font-bold block mt-1 text-xs text-emerald-600">{selectedApp.idMatch}</span>
+                        <span className="font-mono font-bold block mt-0.5 text-xs text-emerald-600">{selectedApp.idMatch}</span>
                       </div>
-                      <div className="bg-white border border-brand-moss/5 rounded-xl p-2.5">
-                        <span className="text-[8px] font-mono text-brand-charcoal/50 uppercase block">Duplicate Acc.</span>
-                        <span className="font-mono font-bold block mt-1 text-xs text-emerald-600">{selectedApp.duplicateCheck}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bio & Details */}
-                  <div className="space-y-4 font-sans text-xs">
-                    <div>
-                      <h5 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px] mb-1">Tutor Biography</h5>
-                      <p className="text-brand-charcoal/80 leading-relaxed italic bg-brand-cream/20 p-3 rounded-xl border border-brand-moss/5">
-                        "{selectedApp.bio || 'No bio entered.'}"
-                      </p>
-                    </div>
-
-                    <div className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 space-y-3">
-                      <h5 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px] flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-brand-clay" /> University Degree Credentials
-                      </h5>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
-                        <div>
-                          <span className="text-[9px] uppercase font-bold text-brand-charcoal/50 block mb-0.5">Government ID (Click to View)</span>
-                          <span 
-                            onClick={() => setViewingCredential({ type: 'Government ID Card', name: selectedApp.name, idNumber: selectedApp.govId, image: 'https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?q=80&w=400' })}
-                            className="font-mono text-brand-moss font-bold break-all bg-white border border-brand-moss/10 rounded-lg px-2.5 py-1.5 block cursor-pointer hover:border-brand-clay hover:text-brand-clay transition-all"
-                          >
-                            {selectedApp.govId || 'Pending upload'} 🔍
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[9px] uppercase font-bold text-brand-charcoal/50 block mb-0.5">University Degree (Click to View)</span>
-                          <span 
-                            onClick={() => setViewingCredential({ type: 'University Degree Certificate', name: selectedApp.name, degreeName: selectedApp.degree, image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=500' })}
-                            className="font-sans text-brand-moss font-bold break-words bg-white border border-brand-moss/10 rounded-lg px-2.5 py-1.5 block cursor-pointer hover:border-brand-clay hover:text-brand-clay transition-all"
-                          >
-                            {selectedApp.degree || 'Pending upload'} 🔍
-                          </span>
-                        </div>
+                      <div className="bg-white border border-brand-moss/5 rounded-xl p-2">
+                        <span className="text-[8px] font-mono text-brand-charcoal/50 uppercase block">Duplicate Check</span>
+                        <span className="font-mono font-bold block mt-0.5 text-xs text-emerald-600">{selectedApp.duplicateCheck}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Video introduction widget */}
+                  {/* 6-Card Interactive Credential Document Viewer */}
+                  <div className="space-y-3">
+                    <h5 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-brand-clay" /> Uploaded Verification Documents & Links
+                    </h5>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-sans text-xs">
+                      {/* Document 1: Government ID / NIN */}
+                      <div className="border border-brand-moss/10 bg-brand-cream/15 rounded-xl p-3 flex flex-col justify-between space-y-2">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold block flex items-center gap-1">
+                            🪪 1. Government ID / NIN
+                          </span>
+                          <span className="text-[11px] font-bold text-brand-moss block mt-1 truncate">
+                            {selectedApp.govIdUrl ? 'ID Scan Attached' : selectedApp.govId || 'Pending upload'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setViewingCredential({
+                            type: 'Government ID / NIN Card',
+                            name: selectedApp.name,
+                            idNumber: selectedApp.govId || 'Verified Gov ID',
+                            image: selectedApp.govIdUrl || 'https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?q=80&w=600'
+                          })}
+                          className="w-full py-1.5 bg-white border border-brand-moss/20 hover:border-brand-clay text-brand-moss hover:text-brand-clay rounded-lg font-mono text-[9px] uppercase tracking-wider font-bold transition-colors text-center"
+                        >
+                          🔍 View ID Scan
+                        </button>
+                      </div>
+
+                      {/* Document 2: TRCN Certificate */}
+                      <div className="border border-brand-moss/10 bg-brand-cream/15 rounded-xl p-3 flex flex-col justify-between space-y-2">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold block flex items-center gap-1">
+                            📜 2. TRCN Certificate
+                          </span>
+                          <span className="text-[11px] font-bold text-brand-moss block mt-1 truncate">
+                            {selectedApp.trcnUrl ? 'TRCN License Attached' : 'Not yet uploaded'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setViewingCredential({
+                            type: 'TRCN Teaching Certificate',
+                            name: selectedApp.name,
+                            idNumber: 'TRCN Registered Credential',
+                            image: selectedApp.trcnUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=600'
+                          })}
+                          className="w-full py-1.5 bg-white border border-brand-moss/20 hover:border-brand-clay text-brand-moss hover:text-brand-clay rounded-lg font-mono text-[9px] uppercase tracking-wider font-bold transition-colors text-center"
+                        >
+                          🔍 View TRCN Scan
+                        </button>
+                      </div>
+
+                      {/* Document 3: University Degree Certificate */}
+                      <div className="border border-brand-moss/10 bg-brand-cream/15 rounded-xl p-3 flex flex-col justify-between space-y-2">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold block flex items-center gap-1">
+                            🎓 3. University Degree
+                          </span>
+                          <span className="text-[11px] font-bold text-brand-moss block mt-1 truncate">
+                            {selectedApp.degreeUrl ? 'Degree Certificate Attached' : selectedApp.degree || 'Pending upload'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setViewingCredential({
+                            type: 'University Degree Qualification',
+                            name: selectedApp.name,
+                            degreeName: selectedApp.degree || 'Bachelor of Education / Science',
+                            image: selectedApp.degreeUrl || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600'
+                          })}
+                          className="w-full py-1.5 bg-white border border-brand-moss/20 hover:border-brand-clay text-brand-moss hover:text-brand-clay rounded-lg font-mono text-[9px] uppercase tracking-wider font-bold transition-colors text-center"
+                        >
+                          🔍 View Degree
+                        </button>
+                      </div>
+
+                      {/* Document 4: School / Institutional ID */}
+                      <div className="border border-brand-moss/10 bg-brand-cream/15 rounded-xl p-3 flex flex-col justify-between space-y-2">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold block flex items-center gap-1">
+                            🏫 4. School / Teacher ID
+                          </span>
+                          <span className="text-[11px] font-bold text-brand-moss block mt-1 truncate">
+                            {selectedApp.schoolIdUrl ? 'School ID Attached' : 'Not yet uploaded'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setViewingCredential({
+                            type: 'School / Institutional ID Card',
+                            name: selectedApp.name,
+                            idNumber: 'Staff / Institutional Credential',
+                            image: selectedApp.schoolIdUrl || 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=600'
+                          })}
+                          className="w-full py-1.5 bg-white border border-brand-moss/20 hover:border-brand-clay text-brand-moss hover:text-brand-clay rounded-lg font-mono text-[9px] uppercase tracking-wider font-bold transition-colors text-center"
+                        >
+                          🔍 View School ID
+                        </button>
+                      </div>
+
+                      {/* Document 5: LinkedIn Profile Link */}
+                      <div className="border border-brand-moss/10 bg-blue-50/50 rounded-xl p-3 flex flex-col justify-between space-y-2">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase tracking-wider text-blue-800 font-bold block flex items-center gap-1">
+                            💼 5. LinkedIn Profile
+                          </span>
+                          <span className="text-[11px] font-bold text-blue-900 block mt-1 truncate">
+                            {selectedApp.linkedin || 'No LinkedIn URL added'}
+                          </span>
+                        </div>
+                        {selectedApp.linkedin ? (
+                          <a
+                            href={selectedApp.linkedin.startsWith('http') ? selectedApp.linkedin : `https://${selectedApp.linkedin}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-mono text-[9px] uppercase tracking-wider font-bold transition-colors text-center block"
+                          >
+                            Open LinkedIn ↗
+                          </a>
+                        ) : (
+                          <span className="text-[10px] text-gray-400 italic text-center py-1">Not provided</span>
+                        )}
+                      </div>
+
+                      {/* Document 6: CV / Resume */}
+                      <div className="border border-brand-moss/10 bg-brand-cream/15 rounded-xl p-3 flex flex-col justify-between space-y-2">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold block flex items-center gap-1">
+                            📄 6. Teacher CV / Resume
+                          </span>
+                          <span className="text-[11px] font-bold text-brand-moss block mt-1 truncate">
+                            {selectedApp.cvUrl ? 'Full CV Document' : 'Standard profile bio'}
+                          </span>
+                        </div>
+                        {selectedApp.cvUrl ? (
+                          <button
+                            type="button"
+                            onClick={() => setViewingCredential({
+                              type: 'Teacher Curriculum Vitae (CV)',
+                              name: selectedApp.name,
+                              idNumber: 'Professional CV',
+                              image: selectedApp.cvUrl
+                            })}
+                            className="w-full py-1.5 bg-white border border-brand-moss/20 hover:border-brand-clay text-brand-moss hover:text-brand-clay rounded-lg font-mono text-[9px] uppercase tracking-wider font-bold transition-colors text-center"
+                          >
+                            🔍 View CV Document
+                          </button>
+                        ) : (
+                          <span className="text-[10px] text-gray-400 italic text-center py-1">Using online bio</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Video Introduction Material */}
                   <div>
                     <h5 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px] mb-2 flex items-center gap-1">
-                      <Video className="w-4 h-4 text-brand-clay" /> Video Introduction Material
+                      <Video className="w-4 h-4 text-brand-clay" /> Video Introduction Presentation
                     </h5>
                     {selectedApp.videoUrl ? (
                       <div className="aspect-video w-full rounded-2xl overflow-hidden bg-brand-charcoal relative border border-brand-moss/10 shadow-inner">
-                        <iframe 
-                          className="w-full h-full"
-                          src={selectedApp.videoUrl} 
-                          title="Tutor Video Intro"
-                          frameBorder="0" 
-                          allowFullScreen
-                        />
+                        {selectedApp.videoUrl.includes('youtube.com') || selectedApp.videoUrl.includes('youtu.be') ? (
+                          <iframe 
+                            className="w-full h-full"
+                            src={selectedApp.videoUrl.replace('watch?v=', 'embed/')} 
+                            title="Tutor Video Intro"
+                            frameBorder="0" 
+                            allowFullScreen
+                          />
+                        ) : (
+                          <video controls className="w-full h-full object-cover">
+                            <source src={selectedApp.videoUrl} type="video/mp4" />
+                            Video preview unavailable.
+                          </video>
+                        )}
                       </div>
                     ) : (
                       <div className="py-6 text-center font-sans text-brand-charcoal/40 text-[10px] border border-dashed border-brand-moss/20 rounded-2xl">
-                        No video introduction uploaded.
+                        No video introduction material uploaded.
                       </div>
                     )}
                   </div>
 
-                  {/* Vetting Criteria Checklists */}
-                  {selectedApp.status === 'pending_approval' && (
-                    <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-4 space-y-3 font-sans text-xs">
-                      <h5 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px] flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-brand-clay" /> Required Vetting Verification
-                      </h5>
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={vetId}
-                            onChange={(e) => setVetId(e.target.checked)}
-                            className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
-                          />
-                          <span>Verify government ID matches candidate identity</span>
-                        </label>
-                        <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={vetDegree}
-                            onChange={(e) => setVetDegree(e.target.checked)}
-                            className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
-                          />
-                          <span>Verify university degree credentials and qualifications</span>
-                        </label>
-                        <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={vetVideo}
-                            onChange={(e) => setVetVideo(e.target.checked)}
-                            className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
-                          />
-                          <span>Verify and approve introductory video quality</span>
-                        </label>
-                      </div>
+                  {/* 5-Point Vetting Checklist */}
+                  <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-4 space-y-2.5 font-sans text-xs">
+                    <h5 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-brand-clay" /> 5-Point Verification Audit Checklist
+                    </h5>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={vetGovId}
+                          onChange={(e) => setVetGovId(e.target.checked)}
+                          className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
+                        />
+                        <span>1. Verified Government ID / NIN matches candidate identity</span>
+                      </label>
+                      <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={vetTrcn}
+                          onChange={(e) => setVetTrcn(e.target.checked)}
+                          className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
+                        />
+                        <span>2. Verified TRCN certificate or accredited teaching license</span>
+                      </label>
+                      <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={vetDegree}
+                          onChange={(e) => setVetDegree(e.target.checked)}
+                          className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
+                        />
+                        <span>3. Verified University Degree qualification</span>
+                      </label>
+                      <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={vetSchoolId}
+                          onChange={(e) => setVetSchoolId(e.target.checked)}
+                          className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
+                        />
+                        <span>4. Verified Institutional / School ID Card</span>
+                      </label>
+                      <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={vetLinkedIn}
+                          onChange={(e) => setVetLinkedIn(e.target.checked)}
+                          className="rounded border-brand-moss/20 text-brand-moss focus:ring-brand-moss w-4 h-4"
+                        />
+                        <span>5. Verified LinkedIn profile and teaching intro video presentation</span>
+                      </label>
                     </div>
-                  )}
+                  </div>
 
-                  {/* Approve/Reject Controls */}
-                  {selectedApp.status === 'pending_approval' && (
-                    <div className="flex flex-col gap-2.5 pt-4 border-t border-brand-moss/5">
-                      <div className="flex gap-2.5">
-                        <button
-                          onClick={() => handleRespond(selectedApp.uid, 'Approve')}
-                          disabled={loading || !(vetId && vetDegree && vetVideo)}
-                          className="flex-1 btn-magnetic py-3 px-5 bg-brand-moss hover:bg-brand-moss/95 text-white rounded-full font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                          <UserCheck className="w-4 h-4" /> Approve
-                        </button>
-                        <button
-                          onClick={() => handleRespond(selectedApp.uid, 'Reject')}
-                          disabled={loading}
-                          className="flex-1 btn-magnetic py-3 px-5 border border-brand-clay hover:bg-brand-clay hover:text-white text-brand-clay rounded-full font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
-                        >
-                          <UserX className="w-4 h-4" /> Reject
-                        </button>
-                      </div>
+                  {/* 1-Click 3-Tier Decision Action Bar */}
+                  <div className="space-y-3 pt-4 border-t border-brand-moss/5">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block">
+                      1-CLICK DECISION CONTROLS
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {/* Button 1: Approve as Grade A Elite VVIP */}
                       <button
-                        onClick={() => handleRequestMoreInfo(selectedApp.uid)}
-                        className="w-full py-2.5 bg-brand-cream border border-brand-moss/10 text-brand-moss rounded-full font-sans font-semibold text-xs uppercase tracking-wider"
+                        type="button"
+                        onClick={() => handleApproveTier(selectedApp.uid, 'Grade A')}
+                        disabled={loading}
+                        className="py-3 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-amber-600/20 transition-all disabled:opacity-50"
                       >
-                        Request More Info
+                        <Crown className="w-4 h-4" /> Approve Grade A VVIP
+                      </button>
+
+                      {/* Button 2: Approve as Grade B Basic Verified */}
+                      <button
+                        type="button"
+                        onClick={() => handleApproveTier(selectedApp.uid, 'Grade B')}
+                        disabled={loading}
+                        className="py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/20 transition-all disabled:opacity-50"
+                      >
+                        <ShieldCheck className="w-4 h-4" /> Approve Grade B Verified
                       </button>
                     </div>
-                  )}
+
+                    <div className="grid grid-cols-2 gap-2.5 pt-1">
+                      {/* Button 3: Request Revision */}
+                      <button
+                        type="button"
+                        onClick={handleOpenRevisionModal}
+                        disabled={loading}
+                        className="py-2.5 px-4 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-sans font-bold text-xs uppercase tracking-wider transition-colors text-center"
+                      >
+                        🔄 Request Revision
+                      </button>
+
+                      {/* Button 4: Reject Application */}
+                      <button
+                        type="button"
+                        onClick={() => setShowRejectModal(true)}
+                        disabled={loading}
+                        className="py-2.5 px-4 border border-rose-300 text-rose-700 hover:bg-rose-50 rounded-xl font-sans font-bold text-xs uppercase tracking-wider transition-colors text-center"
+                      >
+                        ❌ Reject
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div className="bg-brand-moss/5 border border-dashed border-brand-moss/20 rounded-[2.5rem] p-12 text-center font-sans text-brand-charcoal/40 text-xs flex flex-col items-center justify-center h-80">
-                  <ShieldCheck className="w-8 h-8 text-brand-moss/20 mb-3" />
-                  <span>Select a teacher application from the list to view credentials, play video introduction, and process onboarding.</span>
+                <div className="bg-brand-moss/5 border border-dashed border-brand-moss/20 rounded-[2.5rem] p-12 text-center font-sans text-brand-charcoal/40 text-xs flex flex-col items-center justify-center h-96">
+                  <ShieldCheck className="w-10 h-10 text-brand-moss/20 mb-3" />
+                  <span className="font-heading font-bold text-brand-moss text-sm mb-1">Select an Application</span>
+                  <span>Choose any educator from the pipeline to audit their 6 verification documents and make 1-click tier decisions.</span>
                 </div>
               )}
             </div>
@@ -2281,12 +2598,110 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                   <div className="flex gap-3 pt-4">
                     <button
                       onClick={handleConfirmReject}
-                      className="flex-1 py-3 bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider rounded-full"
+                      disabled={loading}
+                      className="flex-1 py-3 bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider rounded-full disabled:opacity-50"
                     >
-                      Confirm Rejection
+                      {loading ? "Rejecting..." : "Confirm Rejection"}
                     </button>
                     <button
                       onClick={() => setShowRejectModal(false)}
+                      className="flex-1 py-3 border border-brand-moss/20 hover:bg-brand-moss/5 text-brand-moss font-bold text-xs uppercase tracking-wider rounded-full"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* REVISION REQUEST MODAL WITH STRUCTURED CHECKBOXES */}
+          {showRevisionModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => setShowRevisionModal(false)} />
+              <div className="relative bg-white border border-brand-moss/20 rounded-[2.5rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl z-10 font-sans text-xs max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-start mb-4 pb-2 border-b border-brand-moss/10">
+                  <div>
+                    <span className="font-mono text-[8px] uppercase tracking-wider text-amber-700 block font-bold">
+                      FEEDBACK & RE-SUBMISSION
+                    </span>
+                    <h3 className="font-heading font-bold text-base text-brand-moss mt-0.5">
+                      Request Document Revision
+                    </h3>
+                  </div>
+                  <button 
+                    onClick={() => setShowRevisionModal(false)} 
+                    className="text-brand-clay hover:underline font-mono text-[10px] font-bold"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                <p className="text-brand-charcoal/70 mb-4 leading-relaxed">
+                  Select the specific document issues for <b>{selectedApp?.name}</b>. An automated notification and email will instruct them to re-upload clear credentials.
+                </p>
+
+                <div className="space-y-4">
+                  {/* Quick issue toggles */}
+                  <div>
+                    <label className="font-heading font-bold uppercase tracking-wider text-brand-charcoal/60 text-[9px] block mb-2">
+                      Document Issues Checklist
+                    </label>
+                    <div className="space-y-2 bg-brand-cream/20 p-3 rounded-2xl border border-brand-moss/10">
+                      {[
+                        { id: 'govId', label: '🪪 Blurry or Expired Government ID / NIN scan' },
+                        { id: 'trcn', label: '📜 TRCN License / Teaching Accreditation missing or unclear' },
+                        { id: 'degree', label: '🎓 University Degree requires higher resolution or official seal' },
+                        { id: 'schoolId', label: '🏫 School / Institutional ID card missing or illegible' },
+                        { id: 'linkedin', label: '💼 Invalid or broken LinkedIn profile URL' },
+                        { id: 'video', label: '📹 Video Introduction requires re-recording (lighting / audio)' },
+                      ].map(issue => {
+                        const isChecked = selectedRevisionIssues.includes(issue.label);
+                        return (
+                          <label key={issue.id} className="flex items-center gap-2.5 cursor-pointer text-[11px] select-none hover:text-brand-moss">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedRevisionIssues(prev => [...prev, issue.label]);
+                                } else {
+                                  setSelectedRevisionIssues(prev => prev.filter(item => item !== issue.label));
+                                }
+                              }}
+                              className="rounded border-brand-moss/20 text-brand-clay focus:ring-brand-clay w-4 h-4"
+                            />
+                            <span>{issue.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Custom admin feedback notes */}
+                  <div>
+                    <label className="font-heading font-bold uppercase tracking-wider text-brand-charcoal/60 text-[9px] block mb-1">
+                      Additional Administrator Instructions (Optional)
+                    </label>
+                    <textarea
+                      rows="3"
+                      value={revisionNotes}
+                      onChange={(e) => setRevisionNotes(e.target.value)}
+                      placeholder="e.g. Please ensure your NIN slip clearly shows your full legal name and date of birth..."
+                      className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl p-3 text-xs focus:outline-none focus:border-brand-clay resize-none font-sans"
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      onClick={handleConfirmRevision}
+                      disabled={loading || (selectedRevisionIssues.length === 0 && !revisionNotes.trim())}
+                      className="flex-1 py-3 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md shadow-amber-600/20 transition-all"
+                    >
+                      {loading ? "Sending..." : "Send Revision Request"}
+                    </button>
+                    <button
+                      onClick={() => setShowRevisionModal(false)}
                       className="flex-1 py-3 border border-brand-moss/20 hover:bg-brand-moss/5 text-brand-moss font-bold text-xs uppercase tracking-wider rounded-full"
                     >
                       Cancel
@@ -4112,55 +4527,72 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
       {/* CREDENTIAL DOCUMENT VIEWER MODAL */}
       {viewingCredential && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => setViewingCredential(null)} />
-          <div className="relative bg-white border border-brand-moss/20 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl z-10 font-sans text-xs">
-            <div className="flex justify-between items-start mb-6 pb-2 border-b border-brand-moss/10">
+          <div className="absolute inset-0 bg-brand-charcoal/70 backdrop-blur-sm" onClick={() => setViewingCredential(null)} />
+          <div className="relative bg-white border border-brand-moss/20 rounded-[2.5rem] w-full max-w-2xl p-6 sm:p-8 shadow-2xl z-10 font-sans text-xs max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start mb-4 pb-2 border-b border-brand-moss/10">
               <div>
                 <span className="font-mono text-[8px] uppercase tracking-wider text-brand-clay block font-bold">{viewingCredential.type}</span>
                 <h3 className="font-heading font-bold text-base text-brand-moss mt-0.5">Verification Dossier Preview</h3>
               </div>
-              <button 
-                onClick={() => setViewingCredential(null)} 
-                className="text-brand-clay hover:underline font-mono text-[10px] font-bold"
-              >
-                Close (Esc)
-              </button>
+              <div className="flex items-center gap-3">
+                {viewingCredential.image && (
+                  <a
+                    href={viewingCredential.image}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-moss hover:text-brand-clay font-mono text-[10px] font-bold underline"
+                  >
+                    Open Full Image ↗
+                  </a>
+                )}
+                <button 
+                  onClick={() => setViewingCredential(null)} 
+                  className="text-brand-clay hover:underline font-mono text-[10px] font-bold"
+                >
+                  Close (Esc)
+                </button>
+              </div>
             </div>
 
-            {/* Document body mockup */}
-            <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-6 shadow-inner text-center space-y-4 relative overflow-hidden">
+            {/* Document body */}
+            <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-4 sm:p-6 shadow-inner text-center space-y-4 relative overflow-hidden">
               {/* Security Watermark */}
               <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03] font-mono text-3xl font-extrabold rotate-12">
                 EDUVISTAR SECURE DOCK
               </div>
               
-              <div className="w-16 h-16 bg-brand-moss/5 rounded-full flex items-center justify-center mx-auto border border-brand-moss/15">
-                <ShieldCheck className="w-8 h-8 text-brand-clay" />
-              </div>
-
-              <div className="space-y-1">
-                <h4 className="font-heading font-bold text-sm text-brand-moss">{viewingCredential.name}</h4>
-                <p className="font-sans text-[10px] text-brand-charcoal/65">Document Verified by Gemini AI Pedagogy Check Core</p>
-              </div>
-
-              <div className="bg-white border border-brand-moss/5 rounded-xl p-4 text-[11px] font-mono inline-block text-left mx-auto space-y-1">
-                <div><span className="text-brand-charcoal/40">DOC:</span> <b className="text-brand-moss">{viewingCredential.type.toUpperCase()}</b></div>
+              <div className="flex items-center justify-between flex-wrap gap-2 text-left bg-white border border-brand-moss/10 rounded-xl p-3">
+                <div>
+                  <h4 className="font-heading font-bold text-sm text-brand-moss">{viewingCredential.name}</h4>
+                  <p className="font-sans text-[10px] text-brand-charcoal/65">Document Audit: {viewingCredential.type}</p>
+                </div>
                 {viewingCredential.idNumber && (
-                  <div><span className="text-brand-charcoal/40">REG NO:</span> <b className="text-brand-moss">{viewingCredential.idNumber}</b></div>
+                  <span className="font-mono text-[10px] bg-brand-moss/5 text-brand-moss px-2.5 py-1 rounded-lg border border-brand-moss/10 font-bold">
+                    {viewingCredential.idNumber}
+                  </span>
                 )}
-                {viewingCredential.degreeName && (
-                  <div><span className="text-brand-charcoal/40">CREDENTIAL:</span> <b className="text-brand-moss">{viewingCredential.degreeName}</b></div>
-                )}
-                <div><span className="text-brand-charcoal/40">TIMESTAMP:</span> <b className="text-brand-moss">2026-06-10 Verified</b></div>
               </div>
 
-              {/* Decorative document mockup image */}
-              <div className="w-full h-32 rounded-xl overflow-hidden border border-brand-moss/10 bg-brand-charcoal">
-                <img src={viewingCredential.image} alt="Verification document scan" className="w-full h-full object-cover opacity-90" />
+              {/* High-Resolution Document Scan Image Display */}
+              <div className="w-full min-h-[260px] max-h-[440px] rounded-xl overflow-hidden border border-brand-moss/15 bg-brand-charcoal/5 flex items-center justify-center relative">
+                {viewingCredential.image ? (
+                  <img 
+                    src={viewingCredential.image} 
+                    alt="Verification document scan" 
+                    className="w-full h-full object-contain max-h-[440px] rounded-xl"
+                  />
+                ) : (
+                  <div className="py-12 text-brand-charcoal/40 font-mono text-[10px]">
+                    No image scan available for this credential.
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-between items-center gap-3 mt-6">
+              <span className="font-mono text-[9px] text-brand-charcoal/50">
+                🔒 Verified with 256-bit encryption audit trail
+              </span>
               <button 
                 onClick={() => setViewingCredential(null)}
                 className="py-2.5 px-6 bg-brand-moss hover:bg-brand-moss/95 text-white font-mono text-[9px] uppercase tracking-wider font-bold rounded-full shadow-md"
