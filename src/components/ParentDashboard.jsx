@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { 
   Sparkles, 
   Crown,
+  Brain,
   BarChart2, 
   ShieldCheck, 
   CheckCircle2, 
@@ -65,6 +67,7 @@ export default function ParentDashboard({
   onLogout,
   onBack
 }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('progress'); // 'progress' | 'marketplace' | 'billing' | 'disputes' | 'affiliate'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const localT = t || ((key) => translations[lang]?.[key] || translations['en']?.[key] || key);
@@ -1464,6 +1467,15 @@ export default function ParentDashboard({
                     ))}
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => navigate('/diagnostic')}
+                  className="w-full mt-3 py-2.5 px-4 bg-brand-moss hover:bg-brand-moss/90 text-white font-heading font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-2xs hover-lift"
+                >
+                  <Brain className="w-3.5 h-3.5 text-brand-clay" />
+                  <span>Launch Diagnostic Test for {activeStudent.name}</span>
+                </button>
               </div>
             </div>
 

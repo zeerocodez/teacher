@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Sparkles, Trophy, Flame, Award, BarChart3, Calendar, FileText, CheckCircle2, Clock, PlayCircle, FolderOpen, ArrowRight, User, Download } from 'lucide-react';
+import { Sparkles, Trophy, Flame, Award, BarChart3, Calendar, FileText, CheckCircle2, Clock, PlayCircle, FolderOpen, ArrowRight, User, Download, Brain } from 'lucide-react';
 
 export default function StudentPortal({ currentUser, selectedCurrency, formatCurrency, convertMinor, onBack }) {
+  const navigate = useNavigate();
   const [studentData, setStudentData] = useState(null);
   const [xp, setXp] = useState(1450);
   const [streak, setStreak] = useState(7);
@@ -94,6 +96,7 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
 
   const xpRules = [
     { label: "Complete a session (attend full duration)", reward: "+100 XP", icon: "🎥" },
+    { label: "Take Diagnostic Assessment & Placement Test", reward: "+150 XP", icon: "🧠" },
     { label: "Submit assignment before due date", reward: "+50 XP", icon: "📝" },
     { label: "Score 90%+ on assignment", reward: "+200 XP", icon: "⭐" },
     { label: "Perfect attendance week (all sessions)", reward: "+150 XP", icon: "🗓️" },
@@ -284,6 +287,14 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
                   completed: hasSubmitted,
                   actionLabel: "Go to Assignments",
                   action: () => setActiveTab('assignments')
+                },
+                {
+                  step: 4,
+                  title: "Diagnostic Placement Test",
+                  desc: "Take an 8-question placement challenge to discover your syllabus strengths and earn +150 XP.",
+                  completed: false,
+                  actionLabel: "Take Diagnostic",
+                  action: () => navigate('/diagnostic')
                 }
               ];
 

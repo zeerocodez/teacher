@@ -316,6 +316,10 @@ app.use('/api/retainers', retainerRoutes);
 import reminderRoutes from './routes/reminder.routes.js';
 app.use('/api/reminders', reminderRoutes);
 
+import diagnosticRoutes from './routes/diagnostic.routes.js';
+app.use('/api/diagnostic', diagnosticRoutes);
+
+
 
 
 // --- 6. REPUTATION ENGINE ENDPOINTS ---

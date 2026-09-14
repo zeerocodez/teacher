@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   ShieldCheck,
@@ -27,6 +28,7 @@ import {
   Play,
   BarChart2,
   Download,
+  Brain
 } from "lucide-react";
 import { Helmet } from 'react-helmet-async';
 import heroImage from "../assets/hero.jpg";
@@ -110,7 +112,14 @@ export default function Home({
             {t("heroSubText")}
           </p>
 
-          <div className="hero-fade flex flex-col sm:flex-row gap-4 justify-start md:justify-end w-full">
+          <div className="hero-fade flex flex-col sm:flex-row gap-3.5 justify-start md:justify-end w-full flex-wrap">
+            <Link
+              to="/diagnostic"
+              className="btn-magnetic group font-sans font-bold text-xs uppercase tracking-wider bg-white/15 backdrop-blur-md text-white border border-white/30 hover:bg-white hover:text-brand-moss px-7 py-4 rounded-full shadow-lg flex items-center justify-center gap-2 transition-all"
+            >
+              <Brain className="w-4 h-4 text-amber-300 group-hover:text-brand-moss" />
+              <span>Free Diagnostic Placement</span>
+            </Link>
             <a
               href="#marketplace"
               onClick={scrollToSection("marketplace")}
