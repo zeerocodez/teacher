@@ -25,7 +25,6 @@ import {
   HelpCircle,
   Mail,
   User,
-  Brain,
   Play
 } from 'lucide-react';
 
@@ -1019,10 +1018,6 @@ export default function App() {
           <div className="hidden lg:flex items-center gap-4 xl:gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/85 flex-shrink-0 whitespace-nowrap">
             <Link to="/about" className="hover:text-brand-clay transition-colors hover-lift">About Us</Link>
             <Link to="/blog" className="hover:text-brand-clay transition-colors hover-lift">Blog</Link>
-            <Link to="/diagnostic" className="hover:text-brand-clay transition-colors hover-lift flex items-center gap-1 font-bold text-white">
-              <Brain className="w-3.5 h-3.5 text-brand-clay" />
-              Diagnostic Test
-            </Link>
             <Link to="/academy" className="hover:text-brand-clay transition-colors hover-lift flex items-center gap-1.5 font-bold text-white">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               Academy
