@@ -1526,6 +1526,7 @@ export default function App() {
                         selectedCurrency={selectedCurrency}
                         formatCurrency={formatCurrency}
                         convertMinor={convertMinor}
+                        teachers={teachers}
                         onLogout={handleLogout}
                         onBack={() => navigate('/')}
                       />

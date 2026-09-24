@@ -51,7 +51,7 @@ import { Crown, MessageCircle,
 import AdminBlogManager from './AdminBlogManager';
 import AdminLMSManager from './lms/AdminLMSManager';
 
-export default function AdminDashboard({ currentUser, selectedCurrency, formatCurrency, convertMinor, onLogout, onBack }) {
+export default function AdminDashboard({ currentUser, selectedCurrency, formatCurrency, convertMinor, onLogout, onBack, teachers = [] }) {
   const API_BASE = '/api';
 
   const getAuthHeaders = () => {
@@ -94,7 +94,9 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
       if (res.ok) {
         toast.success("Teacher successfully promoted to Verified VIP Educator!");
       }
-    } catch (err) {}
+    } catch (err) {
+      console.warn("VIP promotion error:", err);
+    }
 
     setLevel4Graduates(prev => prev.map(t => (t.uid === teacherUid || t.id === teacherUid) ? { ...t, isVipTeacher: true, vipStatus: 'Verified VIP Educator' } : t));
   };
@@ -1068,6 +1070,12 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
 
   const pendingApps = applications.filter(a => a.status === 'pending_approval');
   const infoRequestedApps = applications.filter(a => a.status === 'info_requested');
+  const grossRevenue = configCommission > 0
+    ? convertMinor(Math.round(adminWalletBalance / (configCommission / 100)), selectedCurrency)
+    : 0;
+  const verifiedTeachersCount = (teachers && teachers.length > 0)
+    ? teachers.filter(t => t.verified).length
+    : applications.filter(a => a.tier === 'Grade A' || a.tier === 'Grade B' || a.status === 'verified_a' || a.status === 'verified_b').length;
 
   return (
     <div className="fixed inset-0 z-[60] bg-[#f8f9fa] flex font-sans overflow-hidden">
@@ -1513,10 +1521,10 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                     <div className="absolute top-5 right-5 text-emerald-500"><TrendingUp size={16} /></div>
                     <span className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Verified Teachers</span>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">{teachers.filter(t => t.verified).length}</span>
+                      <span className="text-2xl font-bold text-gray-900">{verifiedTeachersCount}</span>
                       <span className="text-xs font-medium text-gray-400">vs 0</span>
                     </div>
-                    <span className="text-xs font-bold text-brand-charcoal/40 mt-1">{teachers.filter(t => t.verified).length > 0 ? `${teachers.filter(t => t.verified).length} verified` : '0 verified'}</span>
+                    <span className="text-xs font-bold text-brand-charcoal/40 mt-1">{verifiedTeachersCount > 0 ? `${verifiedTeachersCount} verified` : '0 verified'}</span>
                   </div>
                 </div>
               </div>
