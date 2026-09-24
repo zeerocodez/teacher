@@ -1944,70 +1944,70 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               </div>
             </div>
             </div>
+          </div>
             
-            {/* Pending Bank Transfers */}
-            <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6 mt-8">
-              <div className="flex justify-between items-center border-b border-brand-moss/5 pb-3">
-                <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">MANUAL VERIFICATION</span>
-                  <h3 className="font-heading font-bold text-lg text-brand-moss flex items-center gap-2">
-                    Pending Bank Transfers
-                    {pendingTransfers.length > 0 && (
-                      <span className="bg-amber-100 text-amber-800 text-[10px] py-0.5 px-2 rounded-full font-bold">
-                        {pendingTransfers.length} Action Needed
-                      </span>
-                    )}
-                  </h3>
-                </div>
+          {/* Pending Bank Transfers */}
+          <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6 mt-8 w-full">
+            <div className="flex justify-between items-center border-b border-brand-moss/5 pb-3">
+              <div>
+                <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">MANUAL VERIFICATION</span>
+                <h3 className="font-heading font-bold text-lg text-brand-moss flex items-center gap-2">
+                  Pending Bank Transfers
+                  {pendingTransfers.length > 0 && (
+                    <span className="bg-amber-100 text-amber-800 text-[10px] py-0.5 px-2 rounded-full font-bold">
+                      {pendingTransfers.length} Action Needed
+                    </span>
+                  )}
+                </h3>
               </div>
+            </div>
 
-              {pendingTransfers.length === 0 ? (
-                <div className="text-center py-12 text-brand-charcoal/40 font-sans text-xs">
-                  <span className="text-4xl block mb-3 opacity-20">✅</span>
-                  No pending bank transfers require verification.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {pendingTransfers.map((transfer) => (
-                    <div key={transfer.id} className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-mono text-[10px] uppercase font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
-                            Pending Verification
-                          </span>
-                          <span className="font-mono text-[10px] text-brand-charcoal/50">
-                            {new Date(transfer.date).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="font-sans text-sm font-bold text-brand-charcoal">
-                          Amount: <span className="text-brand-moss">{formatCurrency(transfer.amount, 'NGN')}</span>
-                        </div>
-                        <div className="font-sans text-xs text-brand-charcoal/70">
-                          Parent UID: <span className="font-mono text-[10px]">{transfer.fromUserId === 'system' ? transfer.toUserId : transfer.fromUserId}</span>
-                        </div>
-                        <div className="font-sans text-xs text-brand-charcoal/70">
-                          Type: <span className="font-bold">{transfer.type === 'wallet_topup' ? 'Wallet Top-up' : 'Session Booking'}</span>
-                        </div>
+            {pendingTransfers.length === 0 ? (
+              <div className="text-center py-12 text-brand-charcoal/40 font-sans text-xs">
+                <span className="text-4xl block mb-3 opacity-20">✅</span>
+                No pending bank transfers require verification.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {pendingTransfers.map((transfer) => (
+                  <div key={transfer.id} className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-mono text-[10px] uppercase font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+                          Pending Verification
+                        </span>
+                        <span className="font-mono text-[10px] text-brand-charcoal/50">
+                          {new Date(transfer.date).toLocaleString()}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleRejectTransfer(transfer.id)}
-                          className="bg-white border border-rose-200 text-rose-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-50 transition-colors"
-                        >
-                          Reject
-                        </button>
-                        <button
-                          onClick={() => handleApproveTransfer(transfer.id)}
-                          className="bg-brand-moss text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-brand-moss/90 transition-colors shadow-sm"
-                        >
-                          Verify & Approve
-                        </button>
+                      <div className="font-sans text-sm font-bold text-brand-charcoal">
+                        Amount: <span className="text-brand-moss">{formatCurrency(transfer.amount, 'NGN')}</span>
+                      </div>
+                      <div className="font-sans text-xs text-brand-charcoal/70">
+                        Parent UID: <span className="font-mono text-[10px]">{transfer.fromUserId === 'system' ? transfer.toUserId : transfer.fromUserId}</span>
+                      </div>
+                      <div className="font-sans text-xs text-brand-charcoal/70">
+                        Type: <span className="font-bold">{transfer.type === 'wallet_topup' ? 'Wallet Top-up' : 'Session Booking'}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleRejectTransfer(transfer.id)}
+                        className="bg-white border border-rose-200 text-rose-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-50 transition-colors"
+                      >
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => handleApproveTransfer(transfer.id)}
+                        className="bg-brand-moss text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-brand-moss/90 transition-colors shadow-sm"
+                      >
+                        Verify & Approve
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
