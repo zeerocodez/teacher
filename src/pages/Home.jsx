@@ -27,14 +27,12 @@ import {
   User,
   Play,
   BarChart2,
-  Download,
-  Brain
+  Download
 } from "lucide-react";
 import { Helmet } from 'react-helmet-async';
 import heroImage from "../assets/hero.jpg";
 
 const Marketplace = React.lazy(() => import("../components/Marketplace"));
-const SessionEngine = React.lazy(() => import("../components/SessionEngine"));
 const Academy = React.lazy(() => import("../components/Academy"));
 
 function LoadingFallback() {
@@ -113,13 +111,6 @@ export default function Home({
           </p>
 
           <div className="hero-fade flex flex-col sm:flex-row gap-3.5 justify-start md:justify-end w-full flex-wrap">
-            <Link
-              to="/diagnostic"
-              className="btn-magnetic group font-sans font-bold text-xs uppercase tracking-wider bg-white/15 backdrop-blur-md text-white border border-white/30 hover:bg-white hover:text-brand-moss px-7 py-4 rounded-full shadow-lg flex items-center justify-center gap-2 transition-all"
-            >
-              <Brain className="w-4 h-4 text-amber-300 group-hover:text-brand-moss" />
-              <span>Free Diagnostic Placement</span>
-            </Link>
             <a
               href="#marketplace"
               onClick={scrollToSection("marketplace")}
@@ -167,13 +158,6 @@ export default function Home({
               className="btn-magnetic group font-sans font-bold text-xs uppercase tracking-wider bg-brand-clay text-white px-8 py-4 rounded-full shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2 hover:bg-brand-clay/90"
             >
               <span>Find a Private Tutor Now →</span>
-            </a>
-            <a
-              href="#protocol"
-              onClick={scrollToSection("protocol")}
-              className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-white text-brand-moss hover:bg-brand-cream/90 px-8 py-4 rounded-full transition-colors"
-            >
-              How Online Tutoring Works
             </a>
           </div>
 
@@ -866,17 +850,7 @@ export default function Home({
         />
       </Suspense>
 
-      {/* Live Session Classroom Sandbox */}
-      <Suspense fallback={<LoadingFallback />}>
-        <SessionEngine
-          bookedSessions={bookedSessions}
-          onEndSession={handleEndSession}
-          escrowBalance={escrowBalance}
-          formatCurrency={formatCurrency}
-          selectedCurrency={selectedCurrency}
-          convertMinor={convertMinor}
-        />
-      </Suspense>
+
 
       {/* AI Academy */}
       <Suspense fallback={<LoadingFallback />}>
@@ -919,150 +893,7 @@ export default function Home({
         </div>
       </section>
 
-      {/* Stacking protocol cards */}
-      <section
-        id="protocol"
-        className="relative bg-brand-moss text-brand-cream min-h-screen flex flex-col justify-between py-16 overflow-hidden"
-      >
-        <div className="max-w-7xl mx-auto px-6 w-full mb-8">
-          <h2 className="font-heading font-bold text-3xl sm:text-5xl tracking-tight text-white mb-2">
-            Vetting Protocol for Home Tutoring & Lessons
-          </h2>
-        </div>
 
-        <div className="relative flex-1 w-full max-w-6xl mx-auto px-6 min-h-[70vh]">
-          {/* Card 1 */}
-          <div className="protocol-stack absolute inset-0 flex items-center justify-center">
-            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] w-full p-8 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
-              <div className="space-y-6">
-                <span className="font-mono text-xs text-brand-clay tracking-widest block">
-                  01 // VERIFICATION
-                </span>
-                <h3 className="font-heading font-bold text-3xl sm:text-5xl text-white">
-                  Background Vetting & ID Verification
-                </h3>
-                <p className="font-sans text-brand-cream/70 text-base leading-relaxed">
-                  Every private tutor undergoes strict ID validation, degree
-                  credential checks, and background vetting to ensure maximum
-                  safety for child home tutoring.
-                </p>
-              </div>
-              <div className="flex items-center justify-center h-full min-h-[300px]">
-                <div className="relative w-64 h-64 flex items-center justify-center">
-                  <div className="absolute inset-0 border-2 border-dashed border-brand-clay/30 rounded-full animate-[spin_20s_linear_infinite]" />
-                  <div className="absolute w-48 h-48 border border-brand-cream/20 rounded-full flex items-center justify-center animate-[spin_12s_linear_infinite_reverse]">
-                    <div className="w-full h-1 border-t border-brand-clay/40" />
-                  </div>
-                  <div className="absolute w-32 h-32 border border-brand-clay/35 rounded-full flex items-center justify-center animate-pulse-slow">
-                    <div className="w-16 h-16 rounded-full bg-brand-clay/10 flex items-center justify-center">
-                      <BookOpen className="w-6 h-6 text-brand-clay" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="protocol-stack absolute inset-0 flex items-center justify-center">
-            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] w-full p-8 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
-              <div className="space-y-6">
-                <span className="font-mono text-xs text-brand-clay tracking-widest block">
-                  02 // INSTRUCTION
-                </span>
-                <h3 className="font-heading font-bold text-3xl sm:text-5xl text-white">
-                  Pedagogical & AI Instruction Training
-                </h3>
-                <p className="font-sans text-brand-cream/70 text-base leading-relaxed">
-                  Our educators undergo continuous training in digital class
-                  instruction, curriculum alignment, and leveraging AI tools for
-                  adaptive private lessons.
-                </p>
-              </div>
-              <div className="flex items-center justify-center h-full min-h-[300px] w-full">
-                <div className="relative w-64 h-48 bg-brand-moss/10 border border-brand-cream/10 rounded-2xl overflow-hidden flex flex-col justify-between p-4">
-                  <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 gap-2 p-4 opacity-20 pointer-events-none">
-                    {Array.from({ length: 24 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-1.5 h-1.5 rounded-full bg-brand-cream mx-auto my-auto"
-                      />
-                    ))}
-                  </div>
-                  <div
-                    className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-brand-clay to-transparent shadow-lg shadow-brand-clay animate-[scan_4s_ease-in-out_infinite]"
-                    style={{
-                      boxShadow: "0 0 10px #CC5833, 0 0 20px #CC5833",
-                      animation: "scan 4s ease-in-out infinite",
-                    }}
-                  />
-                  <div className="relative z-10 flex justify-between items-start font-mono text-[9px] text-brand-cream/40">
-                    <span>VETTING: RUNNING</span>
-                    <span>1.5 PRO READY</span>
-                  </div>
-                  <style
-                    dangerouslySetInnerHTML={{
-                      __html: `
-                    @keyframes scan {
-                      0%, 100% { top: 5%; }
-                      50% { top: 95%; }
-                    }
-                  `,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="protocol-stack absolute inset-0 flex items-center justify-center">
-            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] w-full p-8 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
-              <div className="space-y-6">
-                <span className="font-mono text-xs text-brand-clay tracking-widest block">
-                  03 // SETTLEMENT
-                </span>
-                <h3 className="font-heading font-bold text-3xl sm:text-5xl text-white">
-                  Secure Payment & Escrow Settlement
-                </h3>
-                <p className="font-sans text-brand-cream/70 text-base leading-relaxed">
-                  Escrowed funds are released safely to the tutor's account only
-                  after successful lesson delivery, ensuring absolute trust and
-                  financial safety.
-                </p>
-              </div>
-              <div className="flex items-center justify-center h-full min-h-[300px] w-full">
-                <div className="relative w-64 h-48 flex items-center justify-center bg-brand-moss/10 border border-brand-cream/10 rounded-2xl p-4 overflow-hidden">
-                  <svg viewBox="0 0 200 100" className="w-full h-full">
-                    <path
-                      d="M0 50 L40 50 L50 30 L60 70 L70 50 L100 50 L110 20 L120 80 L130 50 L150 50"
-                      fill="none"
-                      stroke="#CC5833"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      className="ekg-path"
-                    />
-                  </svg>
-                  <style
-                    dangerouslySetInnerHTML={{
-                      __html: `
-                    .ekg-path {
-                      stroke-dasharray: 400;
-                      stroke-dashoffset: 400;
-                      animation: ekg-draw 3s linear infinite;
-                    }
-                    @keyframes ekg-draw {
-                      to { stroke-dashoffset: 0; }
-                    }
-                  `,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* FAQ Section */}
       <section className="py-24 px-6 md:px-16 lg:px-24 bg-white border-b border-brand-moss/10">
@@ -1219,53 +1050,7 @@ export default function Home({
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
-            {/* Trial */}
-            <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-8 flex flex-col justify-between h-[500px] custom-card-shadow hover-lift">
-              <div className="space-y-6">
-                <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
-                    Single session
-                  </span>
-                  <h3 className="font-heading font-bold text-2xl text-brand-moss mt-1">
-                    Trial Pack
-                  </h3>
-                </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="font-heading text-4xl font-bold text-brand-moss">
-                    FREE
-                  </span>
-                  <span className="font-mono text-xs text-brand-charcoal/50 block mt-1">
-                    / one-time
-                  </span>
-                </div>
-                <ul className="space-y-3 font-sans text-xs text-brand-charcoal/80">
-                  <li className="flex items-center gap-2">
-                    ✓ 1-on-1 Trial Lesson
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✓ Local Escrow Protection
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✓ 100% Refundable Guarantee
-                  </li>
-                </ul>
-              </div>
-              <a
-                href="#marketplace"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection("marketplace")(e);
-                  toast.success(
-                    "Select a verified teacher below to book your Trial Class.",
-                    { duration: 4000 },
-                  );
-                }}
-                className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center"
-              >
-                Book Trial Class
-              </a>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
 
             {/* Performance */}
             <div className="bg-brand-moss border border-brand-moss rounded-[2.5rem] p-8 flex flex-col justify-between h-[540px] text-brand-cream relative shadow-2xl scale-105 z-10 border-2 border-brand-clay">

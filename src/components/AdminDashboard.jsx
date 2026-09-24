@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Crown, MessageCircle, 
+  Sparkles,
   ShieldCheck, 
   UserCheck, 
   UserX, 
