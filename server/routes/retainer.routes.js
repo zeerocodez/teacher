@@ -134,7 +134,7 @@ router.post('/create', authenticateToken, requireRole(['Parent', 'Admin']), asyn
 
     // Determine educator tier and enforce Rate Floor Protection
     const isGradeA = teacher.tier === 'Grade A' || teacher.isEliteVip || teacher.isVipTeacher || (teacher.badges || []).includes('badge-ai-cert');
-    const teacherRateMinor = teacher.rate || 350000;
+    const teacherRateMinor = (teacher.rate && Number(teacher.rate) > 0) ? Number(teacher.rate) : 350000;
     const rawCalculatedCostMinor = sessionsCount * teacherRateMinor;
 
     // Enforce ₦100,000 rate floor for Grade A Elite teachers
@@ -142,6 +142,11 @@ router.post('/create', authenticateToken, requireRole(['Parent', 'Admin']), asyn
     if (isGradeA && contractAmountMinor < GRADE_A_MIN_FLOOR_MINOR) {
       contractAmountMinor = GRADE_A_MIN_FLOOR_MINOR;
     }
+
+    const PLATFORM_FEE_PERCENT = 15;
+    const platformFeeMinor = Math.round(contractAmountMinor * (PLATFORM_FEE_PERCENT / 100));
+    const tutorPayoutMinor = contractAmountMinor - platformFeeMinor;
+    const isPayoutReady = !!(teacher.payoutAccountReady || (teacher.bankDetails && teacher.bankDetails.accountNumber));
 
     // Wallet balance check if paying via wallet
     if (paymentMethod === 'wallet') {
@@ -180,6 +185,11 @@ router.post('/create', authenticateToken, requireRole(['Parent', 'Admin']), asyn
       subject: subject || (teacher.subjects?.[0] || "General"),
       curriculum: curriculum || (teacher.curricula?.[0] || "Standard"),
       totalAmountMinor: contractAmountMinor,
+      platformFeeMinor,
+      tutorPayoutMinor,
+      platformFeePercent: PLATFORM_FEE_PERCENT,
+      payoutAccountReady: isPayoutReady,
+      bankDetails: teacher.bankDetails || null,
       formattedAmountNgn: `₦${(contractAmountMinor / 100).toLocaleString()}`,
       sessionsTotal: parseInt(sessionsCount, 10),
       sessionsCompleted: 0,
@@ -203,11 +213,14 @@ router.post('/create', authenticateToken, requireRole(['Parent', 'Admin']), asyn
       fromUserId: req.user.uid,
       toUserId: teacher.uid || teacher.id,
       amount: contractAmountMinor,
+      platformFee: platformFeeMinor,
+      tutorPayout: tutorPayoutMinor,
+      platformFeePercent: PLATFORM_FEE_PERCENT,
       currency: "NGN",
       type: "monthly_retainer_escrow",
       retainerId,
       status: "escrow_locked",
-      description: `Monthly Retainer Contract (${sessionsCount} sessions) secured for ${teacher.name} with ${studentName}`,
+      description: `Monthly Retainer Contract (${sessionsCount} sessions) secured for ${teacher.name} with ${studentName}. 15% platform fee deductible upon completion.`,
       createdAt: new Date().toISOString()
     });
 
@@ -290,9 +303,10 @@ router.post('/:id/complete-session', authenticateToken, async (req, res) => {
       const teacher = await db.findOne('teachers', t => t.uid === retainer.teacherId || t.id === retainer.teacherId);
       const teacherUser = await db.findOne('users', u => u.uid === retainer.teacherId);
       
-      // Calculate 83% teacher payout (17% platform commission)
-      const commissionRate = 0.17;
-      const teacherEarningsMinor = Math.round(retainer.totalAmountMinor * (1 - commissionRate));
+      // Standard EduVistar Platform Fee is 15% (85% net tutor payout)
+      const commissionRate = 0.15;
+      const commissionMinor = Math.round(retainer.totalAmountMinor * commissionRate);
+      const teacherEarningsMinor = retainer.totalAmountMinor - commissionMinor;
 
       if (teacherUser) {
         await db.update('users', teacherUser.uid, {
@@ -300,10 +314,39 @@ router.post('/:id/complete-session', authenticateToken, async (req, res) => {
         });
       }
 
+      // Credit admin wallet with platform fee
+      const adminUser = await db.findOne('users', u => u.role === 'Admin') || { uid: 'admin_1' };
+      let adminWallet = await db.findOne('wallets', w => w.uid === adminUser.uid);
+      if (!adminWallet) {
+        await db.insert('wallets', {
+          uid: adminUser.uid,
+          balance: commissionMinor,
+          escrow: 0
+        });
+      } else {
+        await db.update('wallets', adminWallet.id, {
+          balance: Number(adminWallet.balance) + commissionMinor
+        });
+      }
+
+      // Record platform commission transaction
+      await db.insert('transactions', {
+        id: `tx_comm_${Date.now()}`,
+        fromUserId: retainer.teacherId,
+        toUserId: adminUser.uid,
+        amount: commissionMinor,
+        currency: "NGN",
+        type: "commission",
+        retainerId: retainer.id,
+        status: "settled",
+        description: `15% platform fee deduction for completed Monthly Retainer (${retainer.studentName})`,
+        createdAt: new Date().toISOString()
+      });
+
       await createNotification(
         retainer.teacherId,
         "💰 Monthly Retainer Escrow Released!",
-        `Congratulations! All ${retainer.sessionsTotal} sessions for ${retainer.studentName} have been completed. ₦${(teacherEarningsMinor / 100).toLocaleString()} credited to your wallet.`,
+        `Congratulations! All ${retainer.sessionsTotal} sessions for ${retainer.studentName} have been completed. ₦${(teacherEarningsMinor / 100).toLocaleString()} credited to your wallet (15% platform fee deducted: ₦${(commissionMinor / 100).toLocaleString()}).`,
         "payment"
       );
 

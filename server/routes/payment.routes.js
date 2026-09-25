@@ -593,11 +593,16 @@ router.post('/payout/request', authenticateToken, requireRole(['Teacher', 'Admin
   const newBal = Number(wallet.balance) - Number(amount);
   await db.update('wallets', wallet.id, { balance: newBal });
 
+  const teacher = await db.findOne('teachers', t => t.uid === req.user.uid || t.id === req.user.uid);
+  const resolvedBankDetails = bankDetails || teacher?.bankDetails || null;
+  const isCollectionsReady = !!(resolvedBankDetails && resolvedBankDetails.accountNumber);
+
   const payoutReq = await db.insert('payout_requests', {
     teacherId: req.user.uid,
     amount: Number(amount),
     payoutMethod: payoutMethod || 'Wise Bank Direct',
-    bankDetails: bankDetails || null,
+    bankDetails: resolvedBankDetails,
+    payoutAccountReady: isCollectionsReady,
     status: 'pending',
     requestedAt: new Date().toISOString()
   });

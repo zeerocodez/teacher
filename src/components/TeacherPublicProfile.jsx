@@ -616,7 +616,7 @@ export default function TeacherPublicProfile({
                     <Crown className="w-3 h-3 text-amber-700 inline" /> MONTHLY FLOOR
                   </span>
                   <span className="font-heading text-base font-extrabold text-amber-900">
-                    ₦100,000 / mo
+                    {formatCurrency(convertMinor(10000000, selectedCurrency), selectedCurrency)} / mo
                   </span>
                 </div>
               ) : (
@@ -627,6 +627,20 @@ export default function TeacherPublicProfile({
               )}
             </div>
 
+            {/* Verified Collections Account & Escrow Assurance */}
+            <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3 text-[11px] font-sans text-emerald-950 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div>
+                  <span className="font-bold text-emerald-900 block leading-tight">Verified Collections Account</span>
+                  <span className="text-[10px] text-emerald-800/80 block">Escrow protected · 15% platform fee deductible upon sign-off</span>
+                </div>
+              </div>
+              <span className="text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full shrink-0">
+                Ready
+              </span>
+            </div>
+
             {isGradeA && (
               <div className="bg-amber-50 border border-amber-200/80 rounded-2xl p-3 text-[11px] font-sans text-amber-950 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-amber-900">
@@ -634,7 +648,7 @@ export default function TeacherPublicProfile({
                   <span>Grade A Elite VVIP Guarantee</span>
                 </div>
                 <p className="text-[10px] opacity-85 leading-relaxed">
-                  Certified via Elite Teachers Academy (Module 4+). Monthly client contracts are protected at a minimum of ₦100,000/month.
+                  Certified via Elite Teachers Academy (Module 4+). Monthly client contracts are protected at a minimum of {formatCurrency(convertMinor(10000000, selectedCurrency), selectedCurrency)}/month.
                 </p>
               </div>
             )}
