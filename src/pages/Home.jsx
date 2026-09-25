@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -27,7 +27,8 @@ import {
   User,
   Play,
   BarChart2,
-  Download
+  Download,
+  Sliders
 } from "lucide-react";
 import { Helmet } from 'react-helmet-async';
 import heroImage from "../assets/hero.jpg";
@@ -81,6 +82,10 @@ export default function Home({
   openFaqIdx,
   setOpenFaqIdx,
 }) {
+  const [customPlanSessions, setCustomPlanSessions] = useState(8);
+  const [customPlanAvailability, setCustomPlanAvailability] = useState("Flexible");
+  const [customPlanFrequency, setCustomPlanFrequency] = useState("2x / week");
+
   return (
     <>
       <Helmet>
@@ -1041,19 +1046,19 @@ export default function Home({
       {/* Pricing / Packages */}
       <section
         id="pricing"
-        className="py-24 px-6 md:px-16 lg:px-24 bg-brand-cream text-brand-charcoal"
+        className="py-16 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-24 bg-brand-cream text-brand-charcoal"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
             <h2 className="font-heading font-bold text-3xl sm:text-5xl text-brand-moss tracking-tight">
               Begin Academic Acceleration
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch max-w-7xl mx-auto">
 
             {/* Performance */}
-            <div className="bg-brand-moss border border-brand-moss rounded-[2.5rem] p-8 flex flex-col justify-between h-[540px] text-brand-cream relative shadow-2xl scale-105 z-10 border-2 border-brand-clay">
+            <div className="bg-brand-moss border border-brand-moss rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 flex flex-col justify-between min-h-[500px] sm:min-h-[540px] text-brand-cream relative shadow-2xl z-10 border-2 border-brand-clay">
               <div className="absolute top-0 right-8 -translate-y-1/2 bg-brand-clay text-white font-mono text-[10px] tracking-widest uppercase font-bold py-1 px-4 rounded-full">
                 RECOMMENDED
               </div>
@@ -1062,7 +1067,7 @@ export default function Home({
                   <span className="font-mono text-2xs text-brand-cream/50 block uppercase">
                     8 Session Pack (2 TIMES A WEEK)
                   </span>
-                  <h3 className="font-heading font-bold text-2xl text-white mt-1 font-bold">
+                  <h3 className="font-heading font-bold text-2xl text-white mt-1">
                     Performance Bundle
                   </h3>
                 </div>
@@ -1096,14 +1101,14 @@ export default function Home({
                     { duration: 4000 },
                   );
                 }}
-                className="btn-magnetic w-full py-4 px-6 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-xs uppercase tracking-wider text-center"
+                className="btn-magnetic w-full py-4 px-6 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-xs uppercase tracking-wider text-center mt-6"
               >
                 Book Bundle
               </a>
             </div>
 
             {/* Academic Prep */}
-            <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-8 flex flex-col justify-between h-[500px] custom-card-shadow hover-lift">
+            <div className="bg-white border border-brand-moss/10 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 flex flex-col justify-between min-h-[500px] sm:min-h-[540px] custom-card-shadow hover-lift">
               <div className="space-y-6">
                 <div>
                   <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">
@@ -1128,6 +1133,9 @@ export default function Home({
                   <li className="flex items-center gap-2">
                     ✓ Mock WAEC/IGCSE Practice Tests
                   </li>
+                  <li className="flex items-center gap-2">
+                    ✓ Dedicated Diagnostic Roadmap
+                  </li>
                 </ul>
               </div>
               <a
@@ -1140,11 +1148,137 @@ export default function Home({
                     { duration: 4000 },
                   );
                 }}
-                className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center"
+                className="btn-magnetic w-full py-3.5 px-6 rounded-full border border-brand-moss text-brand-moss font-bold hover:bg-brand-clay hover:border-brand-clay hover:text-white transition-colors text-xs uppercase tracking-wider text-center mt-6"
               >
                 Book Prep
               </a>
             </div>
+
+            {/* Custom Pricing Plan (Parent Custom Availability & Sessions) */}
+            <div className="bg-white border-2 border-brand-moss/15 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 flex flex-col justify-between min-h-[500px] sm:min-h-[540px] custom-card-shadow hover-lift relative overflow-hidden">
+              <div className="space-y-5">
+                <div>
+                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block">
+                    CUSTOM AVAILABILITY & SESSIONS
+                  </span>
+                  <h3 className="font-heading font-bold text-2xl text-brand-moss mt-1 flex items-center gap-2">
+                    <Sliders className="w-5 h-5 text-brand-clay" /> Custom Plan
+                  </h3>
+                </div>
+
+                {/* Sessions Stepper */}
+                <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/60 font-bold">
+                      Number of Sessions:
+                    </span>
+                    <span className="font-heading font-extrabold text-base text-brand-moss">
+                      {customPlanSessions} Sessions
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {[4, 8, 12, 16, 20].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => setCustomPlanSessions(num)}
+                        className={`flex-1 py-1 rounded-lg font-mono text-[10px] font-bold border transition-all ${
+                          customPlanSessions === num
+                            ? "bg-brand-clay text-white border-brand-clay shadow-2xs"
+                            : "bg-white text-brand-charcoal/70 border-brand-moss/10 hover:border-brand-moss/30"
+                        }`}
+                      >
+                        {num}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Availability Preference Selector */}
+                <div className="space-y-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/60 font-bold block">
+                    Your Availability:
+                  </span>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      { id: "Flexible", label: "Flexible" },
+                      { id: "Weekdays", label: "Weekdays" },
+                      { id: "Weekends", label: "Weekends" },
+                      { id: "Evenings", label: "Evenings" },
+                    ].map((av) => (
+                      <button
+                        key={av.id}
+                        type="button"
+                        onClick={() => setCustomPlanAvailability(av.id)}
+                        className={`py-1.5 px-2 rounded-xl text-center text-xs font-sans font-medium border transition-all ${
+                          customPlanAvailability === av.id
+                            ? "bg-brand-moss text-white font-bold border-brand-moss shadow-2xs"
+                            : "bg-brand-cream/20 text-brand-charcoal/70 border-brand-moss/10 hover:border-brand-moss/30"
+                        }`}
+                      >
+                        {av.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Frequency Selector */}
+                <div className="space-y-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/60 font-bold block">
+                    Weekly Frequency:
+                  </span>
+                  <div className="flex gap-1.5">
+                    {["1x/wk", "2x/wk", "3x/wk", "4x/wk"].map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => setCustomPlanFrequency(f)}
+                        className={`flex-1 py-1 rounded-lg font-mono text-[10px] font-bold border transition-all ${
+                          customPlanFrequency === f
+                            ? "bg-brand-clay text-white border-brand-clay shadow-2xs"
+                            : "bg-white text-brand-charcoal/70 border-brand-moss/10 hover:border-brand-moss/30"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="border-t border-brand-moss/5 pt-3">
+                  <div className="flex justify-between items-baseline text-xs mb-1">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/50">
+                      Estimated Investment:
+                    </span>
+                    <span className="font-heading font-extrabold text-lg text-brand-moss">
+                      {formatCurrency(
+                        convertMinor(customPlanSessions * 350000, selectedCurrency),
+                        selectedCurrency,
+                      )}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-brand-charcoal/50 block">
+                    Calculated at baseline ₦3,500/hr (subject to instructor rates)
+                  </span>
+                </div>
+              </div>
+
+              <a
+                href="#marketplace"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection("marketplace")(e);
+                  toast.success(
+                    `Custom Plan (${customPlanSessions} Sessions, ${customPlanAvailability}): Select an educator below to book!`,
+                    { duration: 5000 },
+                  );
+                }}
+                className="btn-magnetic w-full py-3.5 px-6 rounded-full bg-brand-moss text-white font-bold hover:bg-brand-moss/90 transition-colors shadow-lg text-xs uppercase tracking-wider text-center mt-6"
+              >
+                Build & Book Custom Plan
+              </a>
+            </div>
+
           </div>
 
           {/* Waitlist Banner Form */}

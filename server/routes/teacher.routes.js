@@ -129,7 +129,7 @@ router.post('/optimize-bio', authenticateToken, requireRole(['Teacher']), async 
 
 // POST Update teacher profile (builder)
 router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
-  const { uid, name, username: requestedUsername, location, rate, subjects, curricula, languages, bio, avatar, govIdUrl, degreeUrl, cvUrl, videoUrl, currency, timezone, classroomLink, recordingTool } = req.body;
+  const { uid, name, username: requestedUsername, location, rate, subjects, curricula, languages, bio, avatar, coverImage, govIdUrl, degreeUrl, cvUrl, videoUrl, currency, timezone, classroomLink, recordingTool, subjectProficiencies, whatsapp, linkedin } = req.body;
   const teacher = await db.findOne('teachers', t => t.uid === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
@@ -156,10 +156,14 @@ router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwne
     languages: languages !== undefined ? languages : teacher.languages,
     bio: bio !== undefined ? sanitizeText(bio) : teacher.bio,
     avatar: avatar || teacher.avatar,
+    coverImage: coverImage !== undefined ? sanitizeText(coverImage) : teacher.coverImage,
     currency: currency ? sanitizeText(currency) : teacher.currency || "NGN",
     timezone: timezone ? sanitizeText(timezone) : teacher.timezone || "Africa/Lagos",
     classroomLink: classroomLink !== undefined ? sanitizeText(classroomLink) : teacher.classroomLink,
     recordingTool: recordingTool !== undefined ? sanitizeText(recordingTool) : teacher.recordingTool,
+    subjectProficiencies: subjectProficiencies !== undefined ? subjectProficiencies : teacher.subjectProficiencies,
+    whatsapp: whatsapp !== undefined ? sanitizeText(whatsapp) : teacher.whatsapp,
+    linkedin: linkedin !== undefined ? sanitizeText(linkedin) : teacher.linkedin,
   };
 
   if (govIdUrl !== undefined) updatedFields.govIdUrl = sanitizeText(govIdUrl);
@@ -174,7 +178,7 @@ router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwne
 
 // POST onboarding submissions (Teacher Onboarding)
 router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
-  const { uid, name, username: requestedUsername, location, whatsapp, linkedin, currency, rate, timezone, classroomLink, recordingTool, bio, subjects, curricula, languages, availability, videoUrl, avatar, govIdUrl, degreeUrl, cvUrl } = req.body;
+  const { uid, name, username: requestedUsername, location, whatsapp, linkedin, currency, rate, timezone, classroomLink, recordingTool, bio, subjects, curricula, languages, availability, videoUrl, avatar, coverImage, govIdUrl, degreeUrl, cvUrl, subjectProficiencies } = req.body;
   if (!uid || !name) {
     return res.status(400).json({ error: "Teacher UID and Display Name are required." });
   }
@@ -225,6 +229,8 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     availability: availability || {},
     videoUrl: videoUrl || "",
     avatar: avatar || teacher.avatar,
+    coverImage: coverImage ? sanitizeText(coverImage) : (teacher.coverImage || ""),
+    subjectProficiencies: subjectProficiencies || teacher.subjectProficiencies || {},
     govIdUrl: govIdUrl ? sanitizeText(govIdUrl) : "",
     degreeUrl: degreeUrl ? sanitizeText(degreeUrl) : "",
     cvUrl: cvUrl ? sanitizeText(cvUrl) : "",

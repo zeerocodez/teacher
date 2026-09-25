@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { X, Calendar, CreditCard, Shield, Clock, Lock, Crown, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, Calendar, CreditCard, Shield, Clock, Lock, Crown, ShieldCheck, Sparkles, CheckCircle2, Sliders } from 'lucide-react';
 
 export default function BookingModal({ 
   isOpen, 
@@ -80,9 +80,12 @@ export default function BookingModal({
   const isGradeB = !isGradeA && (teacher?.tier === 'Grade B' || teacher?.verified === true || teacher?.status === 'verified' || (teacher?.badges || []).includes('badge-verified'));
   const tierName = isGradeA ? 'Grade A Elite VVIP' : isGradeB ? 'Grade B Verified' : 'Standard Educator';
 
-  // Booking mode: 'sessions' | 'monthly'
-  const [bookingMode, setBookingMode] = useState('sessions'); // 'sessions' or 'monthly'
-  const [monthlySessionsCount, setMonthlySessionsCount] = useState(8); // 8 sessions per month (2 per week)
+  // Booking mode: 'sessions' | 'monthly' | 'custom'
+  const [bookingMode, setBookingMode] = useState('sessions');
+  const [monthlySessionsCount, setMonthlySessionsCount] = useState(8);
+  const [customSessionsCount, setCustomSessionsCount] = useState(8);
+  const [customAvailabilityPref, setCustomAvailabilityPref] = useState('Weekdays (Afternoons)');
+  const [customFrequency, setCustomFrequency] = useState('2x / week');
 
   const teacherRateMinor = teacher ? (teacher.rate || 0) : 350000;
   const activeRateMinor = isFirstTrial ? 0 : teacherRateMinor;
@@ -201,8 +204,13 @@ export default function BookingModal({
   const isGradeAFloorActive = isGradeA && bookingMode === 'monthly' && rawMonthlyCostMinor < GRADE_A_MONTHLY_FLOOR_MIN;
   const monthlyCostMinor = isGradeA ? Math.max(rawMonthlyCostMinor, GRADE_A_MONTHLY_FLOOR_MIN) : rawMonthlyCostMinor;
 
+  const rawCustomCostMinor = customSessionsCount * teacherRateMinor;
+  const customCostMinor = (isGradeA && customSessionsCount >= 8) ? Math.max(rawCustomCostMinor, GRADE_A_MONTHLY_FLOOR_MIN) : rawCustomCostMinor;
+
   const totalRateMinor = bookingMode === 'monthly'
     ? monthlyCostMinor
+    : bookingMode === 'custom'
+    ? customCostMinor
     : (isFirstTrial ? Math.max(0, (numSelected - 1) * teacherRateMinor) : numSelected * teacherRateMinor);
   
   const formattedTotalRate = formatCurrency(convertMinor(totalRateMinor, selectedCurrency), selectedCurrency);
@@ -254,6 +262,9 @@ export default function BookingModal({
       curriculum: selectedCurriculum,
       bookingMode,
       monthlySessionsCount: bookingMode === 'monthly' ? monthlySessionsCount : undefined,
+      customSessionsCount: bookingMode === 'custom' ? customSessionsCount : undefined,
+      customAvailability: bookingMode === 'custom' ? customAvailabilityPref : undefined,
+      customFrequency: bookingMode === 'custom' ? customFrequency : undefined,
       tier: isGradeA ? 'Grade A' : isGradeB ? 'Grade B' : 'Freemium',
       isGradeAFloorApplied: isGradeAFloorActive
     };
@@ -295,7 +306,7 @@ export default function BookingModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
         >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => { resetStates(); onClose(); }} />
@@ -306,11 +317,11 @@ export default function BookingModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-brand-cream border border-brand-moss/20 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
+          className="relative bg-brand-cream border border-brand-moss/20 rounded-3xl sm:rounded-[2.5rem] w-full max-w-lg p-4 sm:p-7 shadow-2xl z-10 max-h-[94vh] sm:max-h-[90vh] overflow-y-auto"
         >
       
         {/* Close Button */}
-        <button onClick={() => { resetStates(); onClose(); }} className="absolute top-6 right-6 text-brand-moss/60 hover:text-brand-moss">
+        <button onClick={() => { resetStates(); onClose(); }} className="absolute top-4 right-4 sm:top-6 sm:right-6 text-brand-moss/60 hover:text-brand-moss p-2 z-20">
           <X className="w-5 h-5" />
         </button>
 
@@ -491,37 +502,49 @@ export default function BookingModal({
                 )}
               </div>
               <h3 className="font-heading font-bold text-2xl text-brand-moss">
-                {bookingMode === 'monthly' ? 'Book Monthly Contract' : 'Book Lesson Sessions'}
+                {bookingMode === 'monthly' ? 'Book Monthly Contract' : bookingMode === 'custom' ? 'Book Custom Tutoring Plan' : 'Book Lesson Sessions'}
               </h3>
               <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
                 with <span className="font-semibold text-brand-moss">{teacher.name}</span>
               </p>
             </div>
 
-            {/* Booking Mode Selector (Sessions vs Monthly Contract) */}
-            <div className="mb-5 bg-brand-cream/80 p-1.5 rounded-2xl border border-brand-moss/10 flex gap-1.5">
+            {/* Booking Mode Selector (Sessions vs Monthly vs Custom) */}
+            <div className="mb-5 bg-brand-cream/80 p-1 rounded-2xl border border-brand-moss/10 flex gap-1">
               <button
                 type="button"
                 onClick={() => setBookingMode('sessions')}
-                className={`flex-1 py-2 px-3 rounded-xl font-sans text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 px-1 sm:px-2 rounded-xl font-sans text-[11px] sm:text-xs font-bold transition-all text-center flex items-center justify-center gap-1 ${
                   bookingMode === 'sessions'
                     ? 'bg-brand-moss text-white shadow-sm'
                     : 'text-brand-charcoal/70 hover:text-brand-moss hover:bg-white/60'
                 }`}
               >
-                <span>🎯 Single / Trial Session</span>
+                <span>🎯 Single</span>
               </button>
               <button
                 type="button"
                 onClick={() => setBookingMode('monthly')}
-                className={`flex-1 py-2 px-3 rounded-xl font-sans text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 px-1 sm:px-2 rounded-xl font-sans text-[11px] sm:text-xs font-bold transition-all text-center flex items-center justify-center gap-1 ${
                   bookingMode === 'monthly'
                     ? 'bg-brand-clay text-white shadow-sm'
                     : 'text-brand-charcoal/70 hover:text-brand-clay hover:bg-white/60'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>📅 Monthly Contract</span>
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span>📅 Monthly</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setBookingMode('custom')}
+                className={`flex-1 py-2 px-1 sm:px-2 rounded-xl font-sans text-[11px] sm:text-xs font-bold transition-all text-center flex items-center justify-center gap-1 ${
+                  bookingMode === 'custom'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'text-brand-charcoal/70 hover:text-amber-700 hover:bg-white/60'
+                }`}
+              >
+                <Sliders className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span>✨ Custom</span>
               </button>
             </div>
 
@@ -580,6 +603,114 @@ export default function BookingModal({
               </div>
             )}
 
+            {/* Custom Plan Customization Panel */}
+            {bookingMode === 'custom' && (
+              <div className="mb-5 bg-gradient-to-br from-amber-500/10 via-amber-100/30 to-brand-cream/60 border border-amber-300/80 rounded-2xl p-4 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-heading font-bold text-xs uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
+                    <Sliders className="w-3.5 h-3.5 text-amber-700" /> Tailor Your Learning Plan
+                  </span>
+                  <span className="font-mono text-[9px] bg-amber-200/80 text-amber-900 px-2.5 py-0.5 rounded-full font-bold">
+                    Parent Custom Choice
+                  </span>
+                </div>
+
+                {/* Session Stepper & Quick Presets */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="font-sans text-xs font-semibold text-brand-charcoal">
+                      Number of Sessions: <span className="font-bold text-amber-700">{customSessionsCount} Classes</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCustomSessionsCount(prev => Math.max(2, prev - 1))}
+                        className="w-7 h-7 rounded-lg bg-white border border-amber-300 font-bold text-amber-900 flex items-center justify-center hover:bg-amber-100 transition-colors"
+                      >
+                        -
+                      </button>
+                      <span className="w-8 text-center font-mono font-bold text-sm text-brand-charcoal">{customSessionsCount}</span>
+                      <button
+                        type="button"
+                        onClick={() => setCustomSessionsCount(prev => Math.min(48, prev + 1))}
+                        className="w-7 h-7 rounded-lg bg-white border border-amber-300 font-bold text-amber-900 flex items-center justify-center hover:bg-amber-100 transition-colors"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1.5">
+                    {[4, 8, 12, 16, 24].map(sCount => (
+                      <button
+                        key={sCount}
+                        type="button"
+                        onClick={() => setCustomSessionsCount(sCount)}
+                        className={`flex-1 py-1 px-1 rounded-lg text-[10px] font-bold font-sans border transition-all ${
+                          customSessionsCount === sCount
+                            ? 'bg-amber-700 text-white border-amber-700 shadow-xs'
+                            : 'bg-white/80 border-amber-200 text-brand-charcoal hover:bg-amber-100/50'
+                        }`}
+                      >
+                        {sCount} ses
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Parent Availability Preference */}
+                <div>
+                  <label className="font-sans text-[11px] font-bold uppercase tracking-wider text-amber-950 block mb-1.5">
+                    Your Child's Availability Window
+                  </label>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      'Weekdays (Afternoons)',
+                      'Weekdays (Evenings)',
+                      'Weekends (Morning)',
+                      'Flexible / Mixed'
+                    ].map(pref => (
+                      <button
+                        key={pref}
+                        type="button"
+                        onClick={() => setCustomAvailabilityPref(pref)}
+                        className={`py-1.5 px-2 rounded-xl text-left text-[11px] font-sans border transition-all ${
+                          customAvailabilityPref === pref
+                            ? 'bg-white border-amber-600 text-amber-900 font-bold shadow-xs'
+                            : 'bg-white/60 border-amber-200 text-brand-charcoal hover:bg-white'
+                        }`}
+                      >
+                        • {pref}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Weekly Frequency */}
+                <div>
+                  <label className="font-sans text-[11px] font-bold uppercase tracking-wider text-amber-950 block mb-1.5">
+                    Target Cadence
+                  </label>
+                  <div className="flex gap-1.5">
+                    {['1x / week', '2x / week', '3x / week', '4x / week', 'Daily'].map(freq => (
+                      <button
+                        key={freq}
+                        type="button"
+                        onClick={() => setCustomFrequency(freq)}
+                        className={`flex-1 py-1 rounded-lg text-[10px] font-bold font-sans border transition-all text-center ${
+                          customFrequency === freq
+                            ? 'bg-amber-700 text-white border-amber-700'
+                            : 'bg-white/70 border-amber-200 text-brand-charcoal hover:bg-white'
+                        }`}
+                      >
+                        {freq}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Lesson Info */}
             <div className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 mb-6 flex justify-between items-center">
               <div className="flex items-center gap-3">
@@ -588,10 +719,18 @@ export default function BookingModal({
                 </div>
                 <div>
                   <span className="font-heading font-bold text-sm text-brand-moss">
-                    {bookingMode === 'monthly' ? `Monthly Contract (${monthlySessionsCount} Sessions)` : `${selectedSubject || '1-on-1'} Session`}
+                    {bookingMode === 'monthly'
+                      ? `Monthly Contract (${monthlySessionsCount} Sessions)`
+                      : bookingMode === 'custom'
+                      ? `Custom Plan (${customSessionsCount} Sessions · ${customFrequency})`
+                      : `${selectedSubject || '1-on-1'} Session`}
                   </span>
                   <span className="font-sans text-xs text-brand-charcoal/60 block">
-                    {bookingMode === 'monthly' ? '4-Week Retainer with Dedicated Tutor' : `60 minutes · ${selectedCurriculum || 'WAEC/Cambridge'}`}
+                    {bookingMode === 'monthly'
+                      ? '4-Week Retainer with Dedicated Tutor'
+                      : bookingMode === 'custom'
+                      ? `Availability: ${customAvailabilityPref} · 60m / session`
+                      : `60 minutes · ${selectedCurriculum || 'WAEC/Cambridge'}`}
                   </span>
                 </div>
               </div>
@@ -645,7 +784,7 @@ export default function BookingModal({
               <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-brand-clay" /> 
-                  {bookingMode === 'monthly' ? '1. Select Preferred Weekly Schedule Slot' : '1. Select Availability Slot'}
+                  {bookingMode === 'monthly' ? '1. Select Preferred Weekly Schedule Slot' : bookingMode === 'custom' ? '1. Select Initial Kickoff Slot' : '1. Select Availability Slot'}
                 </span>
                 <span className="font-mono text-[9px] bg-brand-moss/10 px-2 py-0.5 rounded-full text-brand-charcoal/70">
                   {teacher?.timezone || 'WAT (GMT+1)'}
@@ -657,11 +796,13 @@ export default function BookingModal({
                 <p>
                   <strong>Note:</strong> {bookingMode === 'monthly' 
                     ? `Monthly contracts lock in ${monthlySessionsCount} one-hour sessions with ${teacher.name} for 4 weeks. Unused hours roll over.`
+                    : bookingMode === 'custom'
+                    ? `Custom plan locks in ${customSessionsCount} personalized sessions aligned with your preferred availability (${customAvailabilityPref}). Your educator coordinates recurrent times from this kickoff slot.`
                     : "Payment is strictly for the sessions booked. Each session lasts for 1 hour. You may select multiple slots."
                   }
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 max-h-64 overflow-y-auto pr-1">
                 {slots.map(slot => {
                   const isSelected = selectedSlots.includes(slot.id);
                   const booked = isSlotBooked(slot);

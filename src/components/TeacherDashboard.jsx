@@ -138,6 +138,8 @@ export default function TeacherDashboard({
   const [selectedCurricula, setSelectedCurricula] = useState([]);
   const [customCurriculumInput, setCustomCurriculumInput] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [coverImage, setCoverImage] = useState("");
+  const [subjectProficiencies, setSubjectProficiencies] = useState({});
   const [govIdUrl, setGovIdUrl] = useState("");
   const [degreeUrl, setDegreeUrl] = useState("");
   const [trcnUrl, setTrcnUrl] = useState("");
@@ -362,6 +364,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         setSelectedCurricula(data.teacher.curricula || []);
         setSelectedLanguages(data.teacher.languages || []);
         setAvatar(data.teacher.avatar || "");
+        setCoverImage(data.teacher.coverImage || "");
+        setSubjectProficiencies(data.teacher.subjectProficiencies || {});
         setGovIdUrl(data.teacher.govIdUrl || data.teacher.govId || "");
         setDegreeUrl(data.teacher.degreeUrl || data.teacher.degree || "");
         setTrcnUrl(data.teacher.trcnUrl || data.teacher.trcn || "");
@@ -569,6 +573,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       curricula: selectedCurricula,
       languages: selectedLanguages,
       avatar,
+      coverImage,
+      subjectProficiencies,
       govIdUrl,
       degreeUrl,
       cvUrl,
@@ -2483,73 +2489,149 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                               </ul>
                             </div>
                           </div>
+
+                          {/* Cover / Header Banner Image */}
+                          <div className="border-t border-brand-moss/10 pt-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss flex items-center gap-1.5">
+                                <Camera className="w-3.5 h-3.5 text-brand-clay" /> Cover Banner Image (Profile Background)
+                              </label>
+                              <label className="text-[10px] text-brand-clay hover:underline cursor-pointer flex items-center gap-1">
+                                <Upload className="w-2.5 h-2.5" /> Upload Cover Photo
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleFileUpload(e, "cover", setCoverImage)}
+                                  className="hidden"
+                                />
+                              </label>
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <input
+                                type="url"
+                                placeholder="https://... cover banner image link (optional)"
+                                value={coverImage}
+                                onChange={(e) => setCoverImage(e.target.value)}
+                                className="flex-1 bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                              />
+                              {coverImage && (
+                                <div className="w-16 h-9 rounded-lg overflow-hidden border border-brand-moss/20 shrink-0">
+                                  <img src={coverImage} alt="Cover Preview" className="w-full h-full object-cover" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
 
-                        <div>
-                          <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3">
-                            Taught Subjects
-                          </label>
-                          <div className="flex flex-wrap gap-2">
-                            {availableSubjects.map((s) => {
-                              const active = selectedSubjects.includes(s);
-                              return (
-                                <button
-                                  key={s}
-                                  type="button"
-                                  onClick={() => toggleSubject(s)}
-                                  className={`py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 ${
-                                    active
-                                      ? "border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
-                                      : "border-brand-moss/10 bg-white text-brand-charcoal/70"
-                                  }`}
-                                >
-                                  {active ? "✓ " : ""}
-                                  {s}
-                                </button>
-                              );
-                            })}
-                            {selectedSubjects
-                              .filter((s) => !availableSubjects.includes(s))
-                              .map((s) => (
-                                <button
-                                  key={s}
-                                  type="button"
-                                  onClick={() => toggleSubject(s)}
-                                  className="py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 border-brand-clay bg-brand-clay/5 text-brand-charcoal font-bold"
-                                >
-                                  ✓ {s}
-                                </button>
-                              ))}
-                          </div>
-                          <div className="mt-3 flex gap-2 max-w-sm">
-                            <input
-                              type="text"
-                              placeholder="Other subject (e.g. Tech Skills)"
-                              value={customSubjectInput}
-                              onChange={(e) =>
-                                setCustomSubjectInput(e.target.value)
-                              }
-                              className="flex-1 bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const val = customSubjectInput.trim();
-                                if (val) {
-                                  if (!selectedSubjects.includes(val)) {
-                                    setSelectedSubjects((prev) => [
-                                      ...prev,
-                                      val,
-                                    ]);
-                                  }
-                                  setCustomSubjectInput("");
+                        {/* Taught Subjects & Dynamic Subject Proficiencies */}
+                        <div className="space-y-4">
+                          <div>
+                            <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-1">
+                              Taught Subjects & Proficiency Levels
+                            </label>
+                            <p className="text-xs text-brand-charcoal/65 mb-3">
+                              Select your subjects and designate your pedagogical proficiency level. This displays dynamically on your public profile.
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {availableSubjects.map((s) => {
+                                const active = selectedSubjects.includes(s);
+                                return (
+                                  <button
+                                    key={s}
+                                    type="button"
+                                    onClick={() => toggleSubject(s)}
+                                    className={`py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 ${
+                                      active
+                                        ? "border-brand-clay bg-brand-clay/10 text-brand-moss font-bold shadow-xs"
+                                        : "border-brand-moss/10 bg-white text-brand-charcoal/70 hover:border-brand-moss/30"
+                                    }`}
+                                  >
+                                    {active ? "✓ " : ""}{s}
+                                  </button>
+                                );
+                              })}
+                              {selectedSubjects
+                                .filter((s) => !availableSubjects.includes(s))
+                                .map((s) => (
+                                  <button
+                                    key={s}
+                                    type="button"
+                                    onClick={() => toggleSubject(s)}
+                                    className="py-2 px-4 rounded-xl border font-sans text-xs transition-all duration-300 border-brand-clay bg-brand-clay/10 text-brand-moss font-bold"
+                                  >
+                                    ✓ {s}
+                                  </button>
+                                ))}
+                            </div>
+                            <div className="mt-3 flex gap-2 max-w-sm">
+                              <input
+                                type="text"
+                                placeholder="Other subject (e.g. Tech Skills)"
+                                value={customSubjectInput}
+                                onChange={(e) =>
+                                  setCustomSubjectInput(e.target.value)
                                 }
-                              }}
-                              className="py-2 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all"
-                            >
-                              Add
-                            </button>
+                                className="flex-1 bg-brand-cream/30 border border-brand-moss/10 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const val = customSubjectInput.trim();
+                                  if (val) {
+                                    if (!selectedSubjects.includes(val)) {
+                                      setSelectedSubjects((prev) => [
+                                        ...prev,
+                                        val,
+                                      ]);
+                                    }
+                                    setCustomSubjectInput("");
+                                  }
+                                }}
+                                className="py-2 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all"
+                              >
+                                Add
+                              </button>
+                            </div>
                           </div>
+
+                          {/* Selected Subject Proficiencies Configurator */}
+                          {selectedSubjects.length > 0 && (
+                            <div className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 space-y-3">
+                              <h5 className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-brand-clay" /> State Your Proficiency for Selected Subjects
+                              </h5>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {selectedSubjects.map((sub) => {
+                                  const currentProficiency = subjectProficiencies[sub] || "Mastery (WAEC & IGCSE Specialist)";
+                                  return (
+                                    <div key={sub} className="bg-white border border-brand-moss/10 rounded-xl p-3 shadow-xs space-y-1.5">
+                                      <div className="flex justify-between items-center">
+                                        <span className="font-heading font-bold text-xs text-brand-moss">{sub}</span>
+                                        <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold">Proficiency</span>
+                                      </div>
+                                      <select
+                                        value={currentProficiency}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          setSubjectProficiencies(prev => ({
+                                            ...prev,
+                                            [sub]: val
+                                          }));
+                                        }}
+                                        className="w-full bg-brand-cream/20 border border-brand-moss/15 rounded-lg px-2.5 py-1.5 text-xs text-brand-charcoal font-medium focus:outline-none focus:border-brand-clay"
+                                      >
+                                        <option value="Mastery (WAEC & IGCSE Specialist)">Mastery (WAEC & IGCSE Specialist) - Top 5%</option>
+                                        <option value="Advanced (Senior Secondary Expert)">Advanced (Senior Secondary Expert)</option>
+                                        <option value="Specialist (Exam Prep & Remedial Focus)">Specialist (Exam Prep & Remedial Focus)</option>
+                                        <option value="Foundational (Primary & Middle School)">Foundational (Primary & Middle School)</option>
+                                        <option value="University Prep / Cambridge A-Levels">University Prep / Cambridge A-Levels</option>
+                                      </select>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         <div>

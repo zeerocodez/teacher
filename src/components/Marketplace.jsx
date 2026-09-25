@@ -101,7 +101,7 @@ export default function Marketplace({
   }, [subjectFilter, curriculumFilter, searchQuery]);
 
   return (
-    <section id="marketplace" className={`${isNested ? 'pt-6 pb-24' : 'py-24'} px-6 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto`}>
+    <section id="marketplace" className={`${isNested ? 'pt-6 pb-20' : 'py-16 sm:py-24'} px-4 sm:px-8 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto`}>
       <div className="text-center max-w-3xl mx-auto mb-12">
         <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-3">EduVistar Marketplace</span>
         <h2 className="font-heading font-bold text-3xl sm:text-5xl text-brand-moss tracking-tight">
@@ -328,7 +328,7 @@ export default function Marketplace({
           return (
             <div 
               key={teacher.id || teacher.uid} 
-              className={`bg-white border rounded-[2.5rem] p-6 flex flex-col justify-between custom-card-shadow hover-lift relative overflow-hidden transition-all ${
+              className={`bg-white border rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-6 flex flex-col justify-between custom-card-shadow hover-lift relative overflow-hidden transition-all ${
                 isGradeA 
                   ? 'border-amber-300 ring-1 ring-amber-200/60 shadow-amber-500/5' 
                   : 'border-brand-moss/10'
@@ -340,34 +340,59 @@ export default function Marketplace({
                   onClick={() => onTeacherSelect && onTeacherSelect(teacherId)}
                   className="relative h-44 bg-brand-charcoal rounded-2xl overflow-hidden mb-6 group cursor-pointer border border-brand-moss/10"
                 >
-                  <img 
-                    src={teacher.coverImage || 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop'} 
-                    alt={teacher.name} 
-                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal via-transparent to-transparent opacity-60" />
+                  {(() => {
+                    const fallbackCovers = [
+                      'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=600&auto=format&fit=crop', // Classroom / educator
+                      'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop', // Math / teaching board
+                      'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&auto=format&fit=crop', // Lecture / learning
+                      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop', // Books & notes
+                    ];
+                    const seed = String(teacher.id || teacher.uid || teacher.name || '0').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                    const coverSrc = teacher.coverImage || fallbackCovers[seed % fallbackCovers.length];
+                    return (
+                      <img 
+                        src={coverSrc} 
+                        alt={teacher.name} 
+                        className="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-700" 
+                      />
+                    );
+                  })()}
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal via-brand-charcoal/20 to-transparent opacity-80" />
                   
-                  {/* Glassmorphic Play Button Overlay */}
+                  {/* Glassmorphic Play Button Overlay / Link to Intro Video */}
                   {teacher.videoUrl && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         if (onWatchVideo) onWatchVideo(teacher);
                       }}
-                      className="absolute inset-0 m-auto w-12 h-12 rounded-full bg-white/25 hover:bg-white/40 backdrop-blur-md border border-white/30 flex items-center justify-center text-white scale-100 hover:scale-110 active:scale-95 transition-all duration-300 shadow-xl z-20"
-                      title="Watch Intro Video"
+                      className="absolute inset-0 m-auto w-12 h-12 rounded-full bg-brand-clay/90 hover:bg-brand-clay backdrop-blur-md border border-white/40 flex items-center justify-center text-white scale-100 hover:scale-110 active:scale-95 transition-all duration-300 shadow-2xl z-20"
+                      title="Watch Teacher's Intro Video"
                     >
                       <Play className="w-5 h-5 fill-current translate-x-0.5" />
                     </button>
                   )}
                   
                   {/* Status Indicator */}
-                  <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-brand-charcoal/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
+                  <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-brand-charcoal/70 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
                     <span className={`w-1.5 h-1.5 rounded-full ${teacher.online ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`} />
                     <span className="font-mono text-[8px] tracking-wider text-white uppercase">
                       {teacher.online ? 'LIVE // ONLINE' : 'OFFLINE'}
                     </span>
                   </div>
+
+                  {/* Intro video pill tag */}
+                  {teacher.videoUrl && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onWatchVideo) onWatchVideo(teacher);
+                      }}
+                      className="absolute top-4 right-4 bg-brand-clay/90 hover:bg-brand-clay text-white px-2.5 py-1 rounded-full font-mono text-[8px] uppercase tracking-wider font-bold flex items-center gap-1 shadow-sm backdrop-blur-xs transition-all z-20"
+                    >
+                      <Play className="w-2.5 h-2.5 fill-current" /> Watch Intro
+                    </button>
+                  )}
 
                   {/* Vetting standard display */}
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
@@ -412,9 +437,17 @@ export default function Marketplace({
                 <div className="flex gap-4 items-start mb-4">
                   <div 
                     onClick={() => onTeacherSelect && onTeacherSelect(teacherId)}
-                    className="w-14 h-14 rounded-full overflow-hidden border border-brand-moss/10 bg-brand-moss/5 cursor-pointer"
+                    className="w-14 h-14 rounded-full overflow-hidden border-2 border-brand-moss/10 bg-brand-moss/5 cursor-pointer shrink-0 shadow-sm"
                   >
-                    <img src={teacher.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'} alt={teacher.name} className="w-full h-full object-cover" />
+                    <img 
+                      src={teacher.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'} 
+                      alt={teacher.name} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop';
+                      }}
+                    />
                   </div>
                   <div>
                     <h3 
@@ -438,15 +471,29 @@ export default function Marketplace({
                   </div>
                 </div>
 
-                {/* Location and Subject tags */}
+                {/* Location and Subject tags with Proficiencies */}
                 <div className="font-sans text-xs text-brand-charcoal/70 mb-4 space-y-1.5 border-b border-brand-moss/5 pb-4">
                   <div>📍 {teacher.location || 'Africa'} · <span className="font-medium text-brand-moss">Teaches Globally</span></div>
                   <div className="flex flex-wrap gap-1.5 pt-2">
-                    {(teacher.subjects || []).map(s => (
-                      <span key={s} className="bg-brand-moss/5 text-brand-moss font-medium text-[10px] px-2.5 py-0.5 rounded-full">
-                        {s}
-                      </span>
-                    ))}
+                    {(teacher.subjects || []).map(s => {
+                      const proficiency = teacher.subjectProficiencies?.[s];
+                      const shortProficiency = proficiency ? (
+                        proficiency.includes('Mastery') ? 'Mastery' :
+                        proficiency.includes('Advanced') ? 'Advanced' :
+                        proficiency.includes('Specialist') ? 'Specialist' :
+                        proficiency.includes('Foundational') ? 'Foundational' : 'Proficient'
+                      ) : null;
+                      return (
+                        <span key={s} className="bg-brand-moss/5 text-brand-moss font-medium text-[10px] px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-brand-moss/10">
+                          <span>{s}</span>
+                          {shortProficiency && (
+                            <span className="bg-brand-clay/10 text-brand-clay font-mono font-bold text-[8px] px-1 rounded">
+                              {shortProficiency}
+                            </span>
+                          )}
+                        </span>
+                      );
+                    })}
                     {(teacher.curricula || teacher.curriculums || []).map(c => (
                       <span key={c} className="bg-brand-clay/10 text-brand-clay font-medium text-[10px] px-2.5 py-0.5 rounded-full">
                         {c}
@@ -455,9 +502,9 @@ export default function Marketplace({
                   </div>
                 </div>
 
-                {/* Bio text excerpt */}
-                <p className="font-sans text-xs text-brand-charcoal/80 leading-relaxed mb-6 line-clamp-2">
-                  "{teacher.bio || 'Professional African educator vetted by EduVistar standards.'}"
+                {/* Dynamic Bio text excerpt */}
+                <p className="font-sans text-xs text-brand-charcoal/80 leading-relaxed mb-6 line-clamp-2 italic">
+                  "{teacher.bio || `${teacher.name || 'Verified educator'} specializes in ${Array.isArray(teacher.subjects) && teacher.subjects.length > 0 ? teacher.subjects.join(' & ') : 'academic tutoring'} with proven mastery and individual student acceleration.`}"
                 </p>
               </div>
 
@@ -477,22 +524,24 @@ export default function Marketplace({
                     </div>
                   ) : (
                     <div className="flex justify-between items-center text-[10px] text-brand-charcoal/60 px-1">
-                      <span className="font-mono uppercase tracking-wider">Monthly Retainer:</span>
-                      <span className="font-medium text-brand-moss">Flexible rates</span>
+                      <span className="font-mono uppercase tracking-wider">Custom Availability:</span>
+                      <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                        ✓ Flexible Plans
+                      </span>
                     </div>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <button
                     onClick={() => onBookClick(teacher)}
-                    className="btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center"
+                    className="btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-bold py-3 px-3 sm:px-4 rounded-full text-xs uppercase tracking-wider text-center shadow-md shadow-brand-clay/10 min-h-[44px]"
                   >
                     Book Class
                   </button>
                   <button
                     onClick={() => onTeacherSelect && onTeacherSelect(teacherId)}
-                    className="btn-magnetic border border-brand-moss/20 text-brand-moss font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center hover:bg-brand-moss/5"
+                    className="btn-magnetic border border-brand-moss/20 text-brand-moss font-bold py-3 px-3 sm:px-4 rounded-full text-xs uppercase tracking-wider text-center hover:bg-brand-moss/5 min-h-[44px]"
                   >
                     View Profile
                   </button>
