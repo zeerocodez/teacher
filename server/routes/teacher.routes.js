@@ -129,10 +129,15 @@ router.post('/optimize-bio', authenticateToken, requireRole(['Teacher']), async 
 
 // POST Update teacher profile (builder)
 router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
-  const { uid, name, username: requestedUsername, location, rate, subjects, curricula, languages, bio, avatar, coverImage, govIdUrl, degreeUrl, cvUrl, videoUrl, currency, timezone, classroomLink, recordingTool, subjectProficiencies, whatsapp, linkedin } = req.body;
+  const { uid, name, username: requestedUsername, location, rate, subjects, curricula, languages, bio, avatar, coverImage, govIdUrl, degreeUrl, cvUrl, videoUrl, currency, timezone, classroomLink, recordingTool, subjectProficiencies, whatsapp, linkedin, bankDetails } = req.body;
   const teacher = await db.findOne('teachers', t => t.uid === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
+  }
+
+  // Validate hourly rate (must be positive integer in minor units)
+  if (rate !== undefined && (isNaN(parseInt(rate, 10)) || parseInt(rate, 10) <= 0)) {
+    return res.status(400).json({ error: "Hourly rate is required and must be greater than 0." });
   }
 
   let finalUsername = teacher.username;
@@ -146,11 +151,13 @@ router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwne
     }
   }
 
+  const isPayoutReady = !!(bankDetails && bankDetails.accountNumber && bankDetails.accountName) || !!teacher.payoutAccountReady;
+
   const updatedFields = {
     name: name ? sanitizeText(name) : teacher.name,
     username: finalUsername,
     location: location ? sanitizeText(location) : teacher.location,
-    rate: rate ? parseInt(rate, 10) : teacher.rate,
+    rate: rate !== undefined ? parseInt(rate, 10) : (teacher.rate || 400000),
     subjects: subjects !== undefined ? subjects : teacher.subjects,
     curricula: curricula !== undefined ? curricula : teacher.curricula,
     languages: languages !== undefined ? languages : teacher.languages,
@@ -164,6 +171,8 @@ router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwne
     subjectProficiencies: subjectProficiencies !== undefined ? subjectProficiencies : teacher.subjectProficiencies,
     whatsapp: whatsapp !== undefined ? sanitizeText(whatsapp) : teacher.whatsapp,
     linkedin: linkedin !== undefined ? sanitizeText(linkedin) : teacher.linkedin,
+    bankDetails: bankDetails !== undefined ? bankDetails : (teacher.bankDetails || null),
+    payoutAccountReady: isPayoutReady
   };
 
   if (govIdUrl !== undefined) updatedFields.govIdUrl = sanitizeText(govIdUrl);
@@ -178,9 +187,15 @@ router.post('/profile', authenticateToken, requireRole(['Teacher']), requireOwne
 
 // POST onboarding submissions (Teacher Onboarding)
 router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
-  const { uid, name, username: requestedUsername, location, whatsapp, linkedin, currency, rate, timezone, classroomLink, recordingTool, bio, subjects, curricula, languages, availability, videoUrl, avatar, coverImage, govIdUrl, degreeUrl, cvUrl, subjectProficiencies } = req.body;
+  const { uid, name, username: requestedUsername, location, whatsapp, linkedin, currency, rate, timezone, classroomLink, recordingTool, bio, subjects, curricula, languages, availability, videoUrl, avatar, coverImage, govIdUrl, degreeUrl, cvUrl, subjectProficiencies, bankDetails } = req.body;
   if (!uid || !name) {
     return res.status(400).json({ error: "Teacher UID and Display Name are required." });
+  }
+
+  // Validate hourly rate (required dynamic item)
+  const parsedRate = rate ? parseInt(rate, 10) : 0;
+  if (!parsedRate || parsedRate <= 0) {
+    return res.status(400).json({ error: "Hourly rate is required and must be greater than zero." });
   }
 
   const teacher = await db.findOne('teachers', t => t.uid === uid);
@@ -211,6 +226,8 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     }
   }
 
+  const isPayoutReady = !!(bankDetails && bankDetails.accountNumber && bankDetails.accountName);
+
   const updated = await db.update('teachers', teacher.id, {
     name: sanitizeText(name),
     username: finalUsername,
@@ -221,7 +238,7 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     timezone: timezone ? sanitizeText(timezone) : "Africa/Lagos",
     classroomLink: classroomLink ? sanitizeText(classroomLink) : "",
     recordingTool: recordingTool ? sanitizeText(recordingTool) : "",
-    rate: rate ? parseInt(rate, 10) : 0,
+    rate: parsedRate,
     bio: bio ? sanitizeText(bio) : "",
     subjects: subjects || [],
     curricula: curricula || [],
@@ -231,6 +248,8 @@ router.post('/onboard', authenticateToken, requireRole(['Teacher']), requireOwne
     avatar: avatar || teacher.avatar,
     coverImage: coverImage ? sanitizeText(coverImage) : (teacher.coverImage || ""),
     subjectProficiencies: subjectProficiencies || teacher.subjectProficiencies || {},
+    bankDetails: bankDetails || null,
+    payoutAccountReady: isPayoutReady,
     govIdUrl: govIdUrl ? sanitizeText(govIdUrl) : "",
     degreeUrl: degreeUrl ? sanitizeText(degreeUrl) : "",
     cvUrl: cvUrl ? sanitizeText(cvUrl) : "",

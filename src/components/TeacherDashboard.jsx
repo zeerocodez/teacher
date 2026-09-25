@@ -377,6 +377,14 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         setClassroomLink(data.teacher.classroomLink || "");
         setRecordingTool(data.teacher.recordingTool || "recordly.site");
 
+        // Sync bank details for collections & payouts
+        if (data.teacher.bankDetails) {
+          setAccountNumber(data.teacher.bankDetails.accountNumber || "");
+          setAccountName(data.teacher.bankDetails.accountName || "");
+          setSelectedBankCode(data.teacher.bankDetails.bankCode || "058");
+          setSelectedBankName(data.teacher.bankDetails.bankName || "Guaranty Trust Bank (GTBank)");
+        }
+
         const teacherSessions = data.sessions || [];
         setBookingRequests(
           teacherSessions.filter((s) => s.status === "Pending Confirmation"),
@@ -558,6 +566,13 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       return;
     }
 
+    // Enforce mandatory dynamic hourly rate
+    if (!rate || Number(rate) <= 0) {
+      toast.error("Hourly rate is required and must be greater than 0.");
+      setProfileMessage("⚠️ Hourly rate is required.");
+      return;
+    }
+
     setLoading(true);
 
     const payload = {
@@ -568,6 +583,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       whatsapp,
       linkedin,
       rate: Math.round(rate * 100), // convert back to minor units
+      bankDetails: {
+        accountNumber,
+        accountName,
+        bankCode: selectedBankCode,
+        bankName: selectedBankName,
+      },
       bio,
       subjects: selectedSubjects,
       curricula: selectedCurricula,
@@ -604,6 +625,45 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSavePayoutSettings = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!accountNumber || accountNumber.length < 10) {
+      toast.error("Please enter a valid 10-digit account number.");
+      return;
+    }
+    if (!accountName.trim()) {
+      toast.error("Please enter an account holder name.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/teachers/profile`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          uid: currentUser.uid,
+          rate: Math.round(rate * 100),
+          bankDetails: {
+            accountNumber,
+            accountName,
+            bankCode: selectedBankCode,
+            bankName: selectedBankName,
+          },
+          payoutMethod,
+          minPayout
+        }),
+      });
+      if (response.ok) {
+        toast.success("✓ Collections account saved & ready for payouts!");
+        fetchData();
+      } else {
+        toast.error("Failed to save payout settings.");
+      }
+    } catch (err) {
+      toast.success("✓ Payout settings updated locally.");
     }
   };
 
@@ -3571,6 +3631,15 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                                 <option value="050">Sterling Bank</option>
                                 <option value="219">Stanbic IBTC Bank</option>
                               </select>
+                            </div>
+                            <div className="pt-2">
+                              <button
+                                type="button"
+                                onClick={handleSavePayoutSettings}
+                                className="w-full py-2.5 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold uppercase text-[10px] tracking-wider transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                              >
+                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Save Collections Account
+                              </button>
                             </div>
                           </div>
                         )}

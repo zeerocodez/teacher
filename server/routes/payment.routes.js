@@ -96,7 +96,16 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
     }
   }
 
-  const totalCost = costPerSession * slots.length;
+  const teacherProfile = await db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
+  const effectiveCostPerSession = (teacherProfile && teacherProfile.rate && Number(teacherProfile.rate) > 0)
+    ? Number(teacherProfile.rate) 
+    : (costPerSession || 400000);
+
+  const totalCost = effectiveCostPerSession * slots.length;
+  const PLATFORM_FEE_PERCENT = 15;
+  const platformFee = Math.round(totalCost * (PLATFORM_FEE_PERCENT / 100));
+  const tutorPayout = totalCost - platformFee;
+  const isPayoutReady = !!(teacherProfile?.payoutAccountReady || (teacherProfile?.bankDetails && teacherProfile.bankDetails.accountNumber));
 
   const isBankTransfer = paymentMethod === 'bank';
 
@@ -113,7 +122,6 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
     });
   }
 
-  const teacherProfile = await db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
   const defaultSubject = (teacherProfile && teacherProfile.subjects && teacherProfile.subjects[0]) || "General Class";
   const defaultCurriculum = (teacherProfile && teacherProfile.curricula && teacherProfile.curricula[0]) || "Standard";
 
@@ -121,13 +129,21 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
   const createdSessions = [];
   let lastSession = null;
   for (const slot of slots) {
+    const sessionCost = effectiveCostPerSession;
+    const sessionFee = Math.round(sessionCost * (PLATFORM_FEE_PERCENT / 100));
+    const sessionPayout = sessionCost - sessionFee;
+
     const newSession = await db.insert('sessions', {
       teacherId,
       teacherName,
       studentId,
       studentName,
       parentId,
-      cost: costPerSession,
+      cost: sessionCost,
+      platformFee: sessionFee,
+      tutorPayout: sessionPayout,
+      platformFeePercent: PLATFORM_FEE_PERCENT,
+      payoutAccountReady: isPayoutReady,
       slot,
       status: isBankTransfer ? "Pending Verification" : "Pending Confirmation",
       clockLog: [],
@@ -139,13 +155,16 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
     lastSession = newSession;
   }
 
-  // 4. Log Transaction
+  // 4. Log Transaction with platform fee deducted
   if (lastSession) {
     await db.insert('transactions', {
       amount: totalCost,
       amountMinorUnits: totalCost,
       currency: "NGN",
-      commission: 0,
+      commission: platformFee,
+      platformFeePercent: PLATFORM_FEE_PERCENT,
+      tutorPayout: tutorPayout,
+      payoutAccountReady: isPayoutReady,
       status: isBankTransfer ? "Pending Verification" : "secured",
       fromUserId: parentId,
       toUserId: teacherId,
@@ -155,7 +174,7 @@ router.post('/sessions/book', authenticateToken, requireRole(['Parent']), requir
     });
   }
 
-  const cost = costPerSession;
+  const cost = effectiveCostPerSession;
   const slot = slots[0];
 
   // Dispatch Notifications

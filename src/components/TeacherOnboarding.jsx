@@ -30,7 +30,14 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [classroomLink, setClassroomLink] = useState('');
   const [recordingTool, setRecordingTool] = useState('');
-  const [rate, setRate] = useState(0); // ₦0 initial rate
+  const [rate, setRate] = useState(4000); // ₦4,000 initial dynamic rate
+  
+  // Payout Collections Account States
+  const [bankName, setBankName] = useState('Guaranty Trust Bank (GTBank)');
+  const [bankCode, setBankCode] = useState('058');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [accountName, setAccountName] = useState('');
+
   const [availability, setAvailability] = useState({
     Monday: [],
     Tuesday: [],
@@ -184,8 +191,16 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
       return;
     }
     if (step === 3) {
-      if (!rate || rate <= 0) {
-        setError('Please enter a valid hourly rate.');
+      if (!rate || Number(rate) < 1000) {
+        setError('Hourly rate is a required item (minimum ₦1,000 / hr). Parents will be billed this dynamic rate.');
+        return;
+      }
+      if (!accountNumber || accountNumber.trim().length !== 10 || !/^\d{10}$/.test(accountNumber.trim())) {
+        setError('Payment collection account number is required (10-digit NUBAN number).');
+        return;
+      }
+      if (!accountName || !accountName.trim()) {
+        setError('Account holder name is required for payout collections.');
         return;
       }
       const hasSlots = Object.values(availability).some(slots => slots.length > 0);
@@ -215,7 +230,7 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
       whatsapp,
       linkedin,
       currency,
-      rate: Math.round(rate * 100), // convert to minor units
+      rate: Math.round(Number(rate) * 100), // convert to minor units
       timezone,
       classroomLink,
       recordingTool,
@@ -231,6 +246,13 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
       trcnUrl,
       schoolIdUrl,
       cvUrl,
+      bankDetails: {
+        bankName,
+        bankCode,
+        accountNumber: accountNumber.trim(),
+        accountName: accountName.trim()
+      },
+      payoutAccountReady: true,
       tier: 'Freemium', // Base Freemium application; upgraded to Grade B upon document review, or Grade A via Academy
       isEliteApplicant: false
     };
@@ -629,8 +651,18 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
             </div>
 
             <div className="space-y-6 font-sans text-xs">
-              <div>
-                <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Hourly Rate</label>
+              {/* Dynamic Hourly Rate */}
+              <div className="bg-white border border-brand-moss/10 rounded-2xl p-4 space-y-2 shadow-xs">
+                <div className="flex items-center justify-between">
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss flex items-center gap-1.5">
+                    <span>Hourly Rate</span>
+                    <span className="font-mono text-[9px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold">Required · Dynamic</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-brand-clay font-bold">Min. ₦1,000 / hr</span>
+                </div>
+                <p className="text-[11px] text-brand-charcoal/70">
+                  Set your base hourly fee. When parents browse from the US, UK, Europe, or diaspora, EduVistar dynamically converts this to their local currency (USD, GBP, EUR, CAD, KES, GHS).
+                </p>
                 <div className="relative flex items-center">
                   <select 
                     value={currency} 
@@ -644,11 +676,102 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
                   <input
                     type="number"
                     required
+                    min="1000"
+                    step="500"
                     value={rate}
                     onChange={(e) => setRate(e.target.value)}
-                    className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl pl-[5.5rem] pr-4 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm font-bold"
+                    className="w-full bg-brand-cream/30 border border-brand-moss/10 rounded-xl pl-[5.5rem] pr-16 py-3 text-brand-charcoal focus:outline-none focus:border-brand-clay text-sm font-bold"
+                    placeholder="4000"
                   />
                   <span className="absolute right-4 font-sans text-2xs text-brand-charcoal/50">/ hour</span>
+                </div>
+              </div>
+
+              {/* Payment Account for Collections */}
+              <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-4 space-y-3 shadow-xs">
+                <div className="flex items-center justify-between">
+                  <label className="font-heading font-bold text-xs uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+                    <span>🏦 Payout & Collections Account</span>
+                    <span className="font-mono text-[9px] bg-emerald-200/80 text-emerald-900 px-2 py-0.5 rounded-full font-bold">Required for Collections</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-emerald-800 font-bold">Instant Payouts</span>
+                </div>
+                <p className="text-[11px] text-brand-charcoal/75 leading-relaxed">
+                  Provide your Nigerian bank account details so your earnings are automatically ready for collections. 
+                  EduVistar automatically deducts a <strong>15% platform fee</strong> per completed session, and the <strong>85% net payout</strong> is collected into this account.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-moss block mb-1">
+                      Bank Name
+                    </label>
+                    <select
+                      value={bankCode}
+                      onChange={(e) => {
+                        const code = e.target.value;
+                        setBankCode(code);
+                        const banks = {
+                          '058': 'Guaranty Trust Bank (GTBank)',
+                          '044': 'Access Bank',
+                          '057': 'Zenith Bank',
+                          '011': 'First Bank of Nigeria',
+                          '033': 'United Bank for Africa (UBA)',
+                          '035': 'Wema Bank / ALAT',
+                          '050': 'Ecobank Nigeria',
+                          '221': 'Stanbic IBTC Bank',
+                          '070': 'Fidelity Bank',
+                          '090267': 'Kuda Microfinance Bank',
+                          '090405': 'OPay Digital Services',
+                          '090338': 'PalmPay'
+                        };
+                        setBankName(banks[code] || 'Guaranty Trust Bank (GTBank)');
+                      }}
+                      className="w-full bg-white border border-brand-moss/10 rounded-xl px-3 py-2.5 text-xs text-brand-charcoal font-medium focus:outline-none focus:border-brand-clay"
+                    >
+                      <option value="058">Guaranty Trust Bank (GTBank)</option>
+                      <option value="044">Access Bank</option>
+                      <option value="057">Zenith Bank</option>
+                      <option value="011">First Bank of Nigeria</option>
+                      <option value="033">United Bank for Africa (UBA)</option>
+                      <option value="035">Wema Bank / ALAT</option>
+                      <option value="050">Ecobank Nigeria</option>
+                      <option value="221">Stanbic IBTC Bank</option>
+                      <option value="070">Fidelity Bank</option>
+                      <option value="090267">Kuda Microfinance Bank</option>
+                      <option value="090405">OPay Digital Services</option>
+                      <option value="090338">PalmPay</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-moss block mb-1">
+                      10-Digit NUBAN Account Number
+                    </label>
+                    <input
+                      type="text"
+                      maxLength="10"
+                      required
+                      placeholder="0123456789"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      className="w-full bg-white border border-brand-moss/10 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-moss block mb-1">
+                      Account Holder Full Name (Matching Official ID)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Christian Chinemerem Nwode"
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                      className="w-full bg-white border border-brand-moss/10 rounded-xl px-3 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay font-medium"
+                    />
+                  </div>
                 </div>
               </div>
 

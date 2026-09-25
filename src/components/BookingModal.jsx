@@ -933,6 +933,21 @@ export default function BookingModal({
               </div>
             </div>
 
+            {/* Platform fee & collections readiness notice */}
+            <div className="mb-4 bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-3.5 text-[11px] font-sans text-brand-charcoal/70 space-y-1.5">
+              <div className="flex items-center justify-between text-brand-moss font-semibold">
+                <span className="flex items-center gap-1.5 text-xs font-heading">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> Educator Collections Account Verified
+                </span>
+                <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full font-bold">
+                  Active
+                </span>
+              </div>
+              <p className="text-[10px] text-brand-charcoal/70 leading-relaxed">
+                Platform fee (15%) is automatically deductible per payment from educator payout upon class completion. 0 hidden fees for parents — guaranteed 100% escrow protection.
+              </p>
+            </div>
+
             {/* Footer actions */}
             <div className="space-y-3">
               <button

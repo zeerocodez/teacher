@@ -160,7 +160,34 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(false);
 
   // Dynamic App States for Portals Sync
-  const [selectedCurrency, setSelectedCurrency] = useState('NGN');
+  // Location & Preference Based Currency Detection for Parents
+  const detectInitialCurrency = () => {
+    try {
+      const saved = localStorage.getItem('eduvistar_currency');
+      if (saved && ['NGN', 'USD', 'GBP', 'EUR', 'GHS', 'CAD', 'KES'].includes(saved)) {
+        return saved;
+      }
+      const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').toLowerCase();
+      if (tz.includes('london') || tz.includes('belfast') || tz.includes('britain')) return 'GBP';
+      if (tz.includes('europe') || tz.includes('paris') || tz.includes('berlin') || tz.includes('madrid') || tz.includes('rome') || tz.includes('amsterdam')) return 'EUR';
+      if (tz.includes('toronto') || tz.includes('vancouver') || tz.includes('montreal') || tz.includes('edmonton')) return 'CAD';
+      if (tz.includes('america') || tz.includes('us/') || tz.includes('new_york') || tz.includes('chicago') || tz.includes('los_angeles')) return 'USD';
+      if (tz.includes('accra') || tz.includes('ghana')) return 'GHS';
+      if (tz.includes('nairobi') || tz.includes('kenya')) return 'KES';
+      return 'NGN';
+    } catch (e) {
+      return 'NGN';
+    }
+  };
+
+  const [selectedCurrency, setSelectedCurrency] = useState(detectInitialCurrency);
+
+  const handleCurrencyChange = (newCurrency) => {
+    setSelectedCurrency(newCurrency);
+    try {
+      localStorage.setItem('eduvistar_currency', newCurrency);
+    } catch (e) {}
+  };
   const [walletBalance, setWalletBalance] = useState(0); // in minor units
   const [escrowBalance, setEscrowBalance] = useState(0); // in minor units
   
@@ -196,13 +223,14 @@ export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [watchingTeacherVideo, setWatchingTeacherVideo] = useState(null);
 
-  // Exchange Rates & Display Engine (Integer logic)
+  // Dynamic Exchange Rates & Display Engine (Integer logic)
   const exchangeRates = {
-    NGN_USD: 0.00125,
-    NGN_GBP: 0.001,
-    NGN_EUR: 0.00116,
-    NGN_GHS: 0.0143,
-    NGN_CAD: 0.00172
+    NGN_USD: 0.00067,
+    NGN_GBP: 0.00052,
+    NGN_EUR: 0.00061,
+    NGN_GHS: 0.0105,
+    NGN_CAD: 0.00091,
+    NGN_KES: 0.086
   };
 
   const convertMinor = (ngnMinor, targetCurrency) => {
@@ -221,8 +249,9 @@ export default function App() {
       EUR: new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }),
       GHS: new Intl.NumberFormat('en-GH', { style: 'currency', currency: 'GHS', minimumFractionDigits: 0 }),
       CAD: new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }),
+      KES: new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }),
     };
-    return formatters[currency]?.format(value) ?? `${currency} ${value}`;
+    return formatters[currency]?.format(value) ?? `${currency} ${value.toFixed(2)}`;
   };
 
   // API Backend Sync
@@ -1060,11 +1089,11 @@ export default function App() {
                 <Globe className="w-3 h-3 text-brand-clay mr-1.5 shrink-0" />
                 <select
                   value={selectedCurrency}
-                  onChange={(e) => setSelectedCurrency(e.target.value)}
+                  onChange={(e) => handleCurrencyChange(e.target.value)}
                   className="bg-transparent text-white font-mono text-[9px] font-bold tracking-wider outline-none cursor-pointer pr-1"
                   aria-label="Currency"
                 >
-                  {['NGN', 'USD', 'GBP', 'EUR', 'GHS', 'CAD'].map(curr => (
+                  {['NGN', 'USD', 'GBP', 'EUR', 'GHS', 'CAD', 'KES'].map(curr => (
                     <option key={curr} value={curr} className="bg-brand-charcoal text-white font-mono text-xs">
                       {curr}
                     </option>
@@ -1242,10 +1271,10 @@ export default function App() {
                 <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-white/50">Currency</span>
                 <select
                   value={selectedCurrency}
-                  onChange={(e) => setSelectedCurrency(e.target.value)}
+                  onChange={(e) => handleCurrencyChange(e.target.value)}
                   className="w-full bg-brand-charcoal border border-white/15 rounded-xl py-2 px-3 text-xs font-bold text-white outline-none cursor-pointer"
                 >
-                  {['NGN', 'USD', 'GBP', 'EUR', 'GHS', 'CAD'].map(curr => (
+                  {['NGN', 'USD', 'GBP', 'EUR', 'GHS', 'CAD', 'KES'].map(curr => (
                     <option key={curr} value={curr} className="text-white bg-brand-charcoal">{curr}</option>
                   ))}
                 </select>
