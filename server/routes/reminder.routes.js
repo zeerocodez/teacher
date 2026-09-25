@@ -18,6 +18,15 @@ router.get('/session/:sessionId/whatsapp-link', authenticateToken, async (req, r
       return res.status(404).json({ error: "Session not found." });
     }
 
+    // Permission check: only admin, session teacher, or session parent can view reminder links
+    const isTeacher = session.teacherId === req.user.uid;
+    const isParent = session.parentId === req.user.uid;
+    const isAdmin = req.user.role === 'Admin' || req.user.role === 'admin';
+
+    if (!isTeacher && !isParent && !isAdmin) {
+      return res.status(403).json({ error: "Unauthorized to access reminder links for this session." });
+    }
+
     const teacher = await db.findOne('teachers', t => t.uid === session.teacherId || t.id === session.teacherId);
     const parent = await db.findOne('users', u => u.uid === session.parentId || u.id === session.parentId);
 
@@ -63,7 +72,7 @@ router.post('/session/:sessionId/send', authenticateToken, async (req, res) => {
     // Permission check: only admin, session teacher, or session parent can trigger
     const isTeacher = session.teacherId === req.user.uid;
     const isParent = session.parentId === req.user.uid;
-    const isAdmin = req.user.role === 'admin';
+    const isAdmin = req.user.role === 'Admin' || req.user.role === 'admin';
 
     if (!isTeacher && !isParent && !isAdmin) {
       return res.status(403).json({ error: "Unauthorized to send reminders for this session." });

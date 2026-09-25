@@ -177,6 +177,35 @@ router.post('/wallet/topup', authenticateToken, paymentRateLimiter, async (req, 
     });
   }
 
+  // Live Gateway Verification for Card / Paystack payments
+  const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+  const isPaystackLive = paystackSecret && !paystackSecret.includes('mock_paystack_secret_key');
+
+  if (method === 'card' || method === 'paystack') {
+    const { reference } = req.body;
+    if (isPaystackLive) {
+      if (!reference) {
+        return res.status(400).json({ error: "Payment reference is required to verify transaction." });
+      }
+      try {
+        const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+          headers: { 'Authorization': `Bearer ${paystackSecret}` }
+        });
+        const verifyData = await verifyRes.json();
+        if (!verifyRes.ok || !verifyData.status || verifyData.data.status !== 'success') {
+          return res.status(400).json({ error: "Card transaction could not be verified by payment gateway." });
+        }
+        // Deduplicate verification
+        const existingTx = await db.findOne('transactions', t => t.paymentReference === reference);
+        if (existingTx) {
+          return res.status(400).json({ error: "Payment reference has already been processed." });
+        }
+      } catch (err) {
+        return res.status(500).json({ error: "Gateway verification error." });
+      }
+    }
+  }
+
   let wallet = await db.findOne('wallets', w => w.uid === parentId);
   if (!wallet) {
     wallet = await db.insert('wallets', {

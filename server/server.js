@@ -1030,8 +1030,9 @@ app.post('/api/escrow/release-now', authenticateToken, async (req, res) => {
     return res.status(404).json({ error: "Session not found." });
   }
 
-  if (session.parentId !== req.user.uid && session.teacherId !== req.user.uid && req.user.role !== 'Admin') {
-    return res.status(403).json({ error: "Not authorized to release escrow for this session." });
+  // Authorization: Only the parent who paid or an Admin can trigger early escrow release
+  if (session.parentId !== req.user.uid && req.user.role !== 'Admin') {
+    return res.status(403).json({ error: "Access forbidden. Only the client parent or an administrator can authorize early escrow release." });
   }
 
   const releasedCount = await processEscrowClearance(sessionId);
@@ -1179,7 +1180,7 @@ app.get('/api/teachers/:teacherId/reviews', async (req, res) => {
 });
 
 // POST Generate AI Progress Report
-app.post('/api/ai/progress-report', authenticateToken, async (req, res) => {
+app.post('/api/ai/progress-report', authenticateToken, requireRole(['Teacher', 'Admin']), async (req, res) => {
   const { studentName, teacherNotes } = req.body;
   if (!studentName) {
     return res.status(400).json({ error: "studentName is required." });

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { db } from '../db.js';
 import { createNotification, sanitizeText } from '../utils.js';
 import { publicActionRateLimiter } from '../middleware/limiters.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -339,9 +340,18 @@ router.post('/evaluate', publicActionRateLimiter, async (req, res) => {
  * GET /api/diagnostic/reports/:studentId
  * Fetch diagnostic reports for a student or parent
  */
-router.get('/reports/:studentId', publicActionRateLimiter, async (req, res) => {
+router.get('/reports/:studentId', authenticateToken, async (req, res) => {
   try {
     const { studentId } = req.params;
+
+    // Authorization check
+    if (req.user.role !== 'Admin' && req.user.uid !== studentId) {
+      const student = await db.findOne('students', s => s.id === studentId || s.uid === studentId);
+      if (student && student.parentUid !== req.user.uid) {
+        return res.status(403).json({ error: "Access forbidden. Not authorized to view reports for this student." });
+      }
+    }
+
     const reports = await db.find('diagnostic_reports', r => r.studentId === studentId || r.parentId === studentId);
     return res.json({
       success: true,
@@ -356,13 +366,19 @@ router.get('/reports/:studentId', publicActionRateLimiter, async (req, res) => {
 /**
  * GET /api/diagnostic/report/:reportId
  */
-router.get('/report/:reportId', publicActionRateLimiter, async (req, res) => {
+router.get('/report/:reportId', authenticateToken, async (req, res) => {
   try {
     const { reportId } = req.params;
     const report = await db.findOne('diagnostic_reports', r => r.id === reportId);
     if (!report) {
       return res.status(404).json({ error: "Diagnostic report not found." });
     }
+
+    // Authorization check
+    if (req.user.role !== 'Admin' && report.parentId !== req.user.uid && report.studentId !== req.user.uid) {
+      return res.status(403).json({ error: "Access forbidden. Not authorized to view this diagnostic report." });
+    }
+
     return res.json({ success: true, report });
   } catch (err) {
     return res.status(500).json({ error: "Failed to retrieve report." });
