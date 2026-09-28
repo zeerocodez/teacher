@@ -81,6 +81,7 @@ export default function TeacherDashboard({
   };
 
   const [teacherProfile, setTeacherProfile] = useState(defaultVerifiedProfile);
+  const [academyProgress, setAcademyProgress] = useState(null);
   const [bookingRequests, setBookingRequests] = useState([]);
   const [activeSessions, setActiveSessions] = useState([]);
   const [wallet, setWallet] = useState({ balance: 0, escrow: 0 });
