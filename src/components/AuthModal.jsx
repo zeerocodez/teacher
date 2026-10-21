@@ -151,14 +151,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
       // Real Firebase Auth flow if API Key is configured
       if (auth.app.options.apiKey && auth.app.options.apiKey !== "mock-api-key") {
-        if (activeTab === 'login') {
-          const userCredential = await signInWithEmailAndPassword(auth, email, password);
-          firebaseUser = userCredential.user;
-          token = await firebaseUser.getIdToken();
-        } else {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          firebaseUser = userCredential.user;
-          token = await firebaseUser.getIdToken();
+        try {
+          if (activeTab === 'login') {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            firebaseUser = userCredential.user;
+            token = await firebaseUser.getIdToken();
+          } else {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            firebaseUser = userCredential.user;
+            token = await firebaseUser.getIdToken();
+          }
+        } catch (firebaseErr) {
+          console.warn("Client Firebase Auth issue, falling back to backend verification:", firebaseErr.code, firebaseErr.message);
+          if (firebaseErr.code === 'auth/wrong-password' || firebaseErr.code === 'auth/user-not-found') {
+            throw firebaseErr;
+          }
+          // For auth/unauthorized-domain or network failure, proceed directly to backend API
         }
       }
 
@@ -365,7 +373,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       }
     } catch (err) {
       console.error('Google Sign-in Error:', err);
-      setError(err.message || 'Google Auth is not configured or popup blocked.');
+      if (err.code === 'auth/unauthorized-domain' || err.message?.includes('unauthorized-domain')) {
+        setError('Google Auth: "eduvistar.com" is not yet added to Firebase Authorized Domains. Use the Admin or Email login button below, or add eduvistar.com in Firebase Console.');
+      } else {
+        setError(err.message || 'Google Auth is not configured or popup blocked.');
+      }
     } finally {
       setLoading(false);
     }
