@@ -303,7 +303,7 @@ export const SEED_TEACHERS = [
       "badge-verified"
     ],
     "videoUrl": "",
-    "avatar": "https://ui-avatars.com/api/?name=Adenike%20Enoch-Salami%20&background=1B3B2B&color=fff&size=200&bold=true",
+    "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
     "govId": "",
     "degree": "",
     "cvUrl": "",
