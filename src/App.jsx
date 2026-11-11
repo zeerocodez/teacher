@@ -505,6 +505,13 @@ export default function App() {
     }
   };
 
+  const handleOpenTeacherSignup = () => {
+    setAuthTab('register');
+    setAuthRole('Teacher');
+    setIsAuthOpen(true);
+    setIsMobileMenuOpen(false);
+  };
+
   // State handlers
   const handleBookClick = (teacher, student, preselectedSlots = []) => {
     if (!currentUser) {
@@ -1241,13 +1248,17 @@ export default function App() {
                 </div>
 
                 {currentUser.role === 'Teacher' && (
-                  <a 
-                    href="#academy" 
-                    className="hidden lg:flex btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full items-center gap-1.5"
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setIsTutorOnboarding(true);
+                      setCurrentView('dashboard');
+                    }}
+                    className="hidden lg:flex btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full items-center gap-1.5 shadow-md shadow-brand-clay/20 cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                    Academy Enrollment
-                  </a>
+                    Register as a Tutor
+                  </button>
                 )}
 
                 {currentView === 'dashboard' ? (
@@ -1287,8 +1298,18 @@ export default function App() {
               <>
                 <div className="hidden lg:flex items-center gap-3">
                   <button
+                    type="button"
+                    onClick={handleOpenTeacherSignup}
+                    className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white flex items-center gap-1.5 shadow-md shadow-brand-clay/20 cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Register as a Tutor
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => {
                       setAuthTab('login');
+                      setAuthRole('Parent');
                       setIsAuthOpen(true);
                     }}
                     className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border border-white/20 text-white hover:bg-white/10"
@@ -1296,35 +1317,38 @@ export default function App() {
                     Log In
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       setAuthTab('register');
+                      setAuthRole('Parent');
                       setIsAuthOpen(true);
                     }}
-                    className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90"
+                    className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-white text-brand-moss hover:bg-brand-cream"
                   >
                     Sign Up
                   </button>
                 </div>
 
-                {/* Mobile Header Auth Quick-Buttons */}
-                <div className="flex lg:hidden items-center gap-2 mr-1">
+                {/* Mobile Header Quick-Buttons */}
+                <div className="flex lg:hidden items-center gap-1.5 mr-1">
                   <button
-                    onClick={() => {
-                      setAuthTab('login');
-                      setIsAuthOpen(true);
-                    }}
-                    className="font-sans text-[11px] font-bold uppercase tracking-wider py-1 px-2.5 rounded-full text-white/90 hover:text-white border border-white/25 hover:bg-white/10 transition-colors"
+                    type="button"
+                    onClick={handleOpenTeacherSignup}
+                    className="font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-wider py-1.5 px-2.5 sm:px-3 rounded-full bg-brand-clay text-white shadow-sm hover:bg-brand-clay/90 transition-all flex items-center gap-1 shrink-0"
                   >
-                    Log In
+                    <Sparkles className="w-3 h-3" />
+                    <span>Register as Tutor</span>
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
-                      setAuthTab('register');
+                      setAuthTab('login');
+                      setAuthRole('Parent');
                       setIsAuthOpen(true);
                     }}
-                    className="font-sans text-[11px] font-bold uppercase tracking-wider py-1 px-3 rounded-full bg-brand-clay text-white shadow-sm hover:bg-brand-clay/90 transition-all"
+                    className="font-sans text-[10px] font-bold uppercase tracking-wider py-1.5 px-2 rounded-full text-white/90 hover:text-white border border-white/25 hover:bg-white/10 transition-colors shrink-0"
                   >
-                    Sign Up
+                    Log In
                   </button>
                 </div>
               </>
@@ -1427,14 +1451,18 @@ export default function App() {
                   </div>
 
                   {currentUser.role === 'Teacher' && (
-                    <a 
-                      href="#academy" 
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-1.5 text-center"
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setIsTutorOnboarding(true);
+                        setCurrentView('dashboard');
+                      }}
+                      className="bg-brand-clay hover:bg-brand-clay/90 text-white font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-1.5 text-center shadow-md cursor-pointer"
                     >
                       <Sparkles className="w-4 h-4 animate-pulse" />
-                      Academy Enrollment
-                    </a>
+                      Register as a Tutor
+                    </button>
                   )}
 
                   {currentView === 'dashboard' ? (
@@ -1622,13 +1650,14 @@ export default function App() {
               <span>{t('exploreMarketplace')}</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </a>
-            <a 
-              href="#academy" 
-              onClick={scrollToSection('academy')}
-              className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-brand-cream/10 backdrop-blur-sm text-brand-cream border border-brand-cream/30 hover:bg-brand-cream hover:text-brand-charcoal px-8 py-4 rounded-full"
+            <button 
+              type="button"
+              onClick={handleOpenTeacherSignup}
+              className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-brand-cream/10 backdrop-blur-sm text-brand-cream border border-brand-cream/30 hover:bg-brand-cream hover:text-brand-charcoal px-8 py-4 rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-md"
             >
-              {t('simulateLiveClass')}
-            </a>
+              <Sparkles className="w-4 h-4 text-brand-clay" />
+              <span>Register as a Tutor</span>
+            </button>
           </div>
 
           {/* Mobile Hero Direct Auth Buttons (Never Hidden Behind Hamburger) */}
@@ -1997,6 +2026,30 @@ export default function App() {
               </div>
             </div>
           </div>
+
+          {/* Educator Recruitment Banner (Register as a Tutor) */}
+          <div className="mt-14 bg-gradient-to-br from-brand-moss via-brand-moss/95 to-brand-charcoal text-white rounded-[2.5rem] p-8 sm:p-10 max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-brand-cream/10">
+            <div className="space-y-2 text-center sm:text-left">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-brand-clay font-bold block">
+                JOIN OUR VERIFIED TEACHER NETWORK
+              </span>
+              <h3 className="font-heading font-bold text-2xl sm:text-3xl text-white">
+                Are you an experienced educator?
+              </h3>
+              <p className="font-sans text-xs text-white/80 max-w-md leading-relaxed">
+                Teach students across Nigeria and abroad. Set your own hourly rates, choose your schedule, and receive guaranteed 100% escrow payouts.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleOpenTeacherSignup}
+              className="btn-magnetic shrink-0 font-sans font-bold text-xs uppercase tracking-wider bg-brand-clay hover:bg-brand-clay/90 text-white px-8 py-4 rounded-full shadow-lg shadow-brand-clay/30 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Register as a Tutor</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </section>
 
@@ -2080,17 +2133,6 @@ export default function App() {
         />
       </Suspense>
 
-      {/* Live Session Classroom Sandbox */}
-      <Suspense fallback={<LoadingFallback />}>
-        <SessionEngine 
-          bookedSessions={bookedSessions} 
-          onEndSession={handleEndSession}
-          escrowBalance={escrowBalance}
-          formatCurrency={formatCurrency}
-          selectedCurrency={selectedCurrency}
-          convertMinor={convertMinor}
-        />
-      </Suspense>
 
       {/* AI Academy */}
       <Suspense fallback={<LoadingFallback />}>
@@ -2453,6 +2495,34 @@ export default function App() {
             </div>
           </div>
 
+          {/* Pre-Footer Educator Callout: Register as a Tutor */}
+          <div className="mt-16 bg-white border border-brand-moss/10 rounded-[2.5rem] p-8 sm:p-10 max-w-5xl mx-auto shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 hover-lift">
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 rounded-2xl bg-brand-clay/10 text-brand-clay flex items-center justify-center shrink-0">
+                <Sparkles className="w-7 h-7 text-brand-clay" />
+              </div>
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-brand-clay font-bold block mb-1">
+                  TEACH WITH EDUVISTA AFRICA
+                </span>
+                <h3 className="font-heading font-bold text-2xl text-brand-moss">
+                  Join 100+ Verified Private Educators
+                </h3>
+                <p className="font-sans text-xs text-brand-charcoal/70 mt-1 max-w-lg leading-relaxed">
+                  Connect with motivated families seeking 1-on-1 online and home lessons. We manage invoicing, scheduling, and escrow protection so you can focus on teaching.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleOpenTeacherSignup}
+              className="btn-magnetic shrink-0 font-sans font-bold text-xs uppercase tracking-wider bg-brand-clay hover:bg-brand-clay/90 text-white px-8 py-4 rounded-full shadow-lg shadow-brand-clay/20 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+            >
+              <span>Register as a Tutor</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* Waitlist Banner Form */}
           <div className="mt-20 bg-brand-moss border border-brand-moss rounded-[3rem] p-8 md:p-12 text-brand-cream max-w-4xl mx-auto shadow-xl relative overflow-hidden">
             <div 
@@ -2605,6 +2675,8 @@ export default function App() {
           isOpen={isAuthOpen} 
           onClose={() => setIsAuthOpen(false)} 
           onSuccess={handleAuthSuccess}
+          initialTab={authTab}
+          initialRole={authRole}
         />
       </Suspense>
 

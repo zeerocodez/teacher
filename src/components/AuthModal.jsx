@@ -13,12 +13,19 @@ const Linkedin = ({ className }) => (
   </svg>
 );
 
-export default function AuthModal({ isOpen, onClose, onSuccess }) {
-  const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
+export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'login', initialRole = 'Parent' }) {
+  const [activeTab, setActiveTab] = useState(initialTab); // 'login' or 'register'
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
-  const [role, setRole] = useState('Parent'); // 'Parent' or 'Teacher'
+  const [role, setRole] = useState(initialRole); // 'Parent' or 'Teacher'
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (initialTab) setActiveTab(initialTab);
+      if (initialRole) setRole(initialRole);
+    }
+  }, [isOpen, initialTab, initialRole]);
   const [country, setCountry] = useState('Nigeria');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

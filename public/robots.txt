@@ -3,3 +3,4 @@ Allow: /
 Disallow: /api/
 
 Sitemap: https://eduvistar.com/sitemap.xml
+
