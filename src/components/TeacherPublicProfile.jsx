@@ -900,6 +900,30 @@ export default function TeacherPublicProfile({
                       </span>
                       <span>Recorded for EduVista Parents</span>
                     </div>
+
+                    {/* Book for Classes CTA button immediately under video */}
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (selectedSlots.length > 0) {
+                            onBookClick(teacher, null, selectedSlots);
+                          } else {
+                            const targetDate = selectedDate || new Date();
+                            const available = getSlotsForDate(targetDate);
+                            const firstSlotTime = available[0] || '10:00 AM';
+                            const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                            const dateString = targetDate.toISOString().split('T')[0];
+                            onBookClick(teacher, null, [{ day: dayName, time: firstSlotTime, dateString }]);
+                          }
+                        }}
+                        className="btn-magnetic w-full py-3.5 px-6 rounded-2xl bg-brand-clay hover:bg-brand-clay/95 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        <span>Book Classes with {teacher.name}</span>
+                        <ArrowRight className="w-4 h-4 ml-1" />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -960,30 +984,7 @@ export default function TeacherPublicProfile({
                     </div>
                   </div>
 
-                  {/* Video Intro (if available) */}
-                  {teacher.videoUrl && (
-                    <div className="border-t border-brand-moss/5 pt-4">
-                      <h4 className="font-heading font-bold text-sm text-brand-moss mb-3 flex items-center gap-2">
-                        <Video className="w-4 h-4 text-brand-clay" /> Video Introduction
-                      </h4>
-                      <div className="aspect-video w-full rounded-2xl overflow-hidden bg-brand-charcoal border border-brand-moss/10 shadow-md">
-                        {teacher.videoUrl.includes('youtube.com') || teacher.videoUrl.includes('youtu.be') ? (
-                          <iframe 
-                            className="w-full h-full"
-                            src={teacher.videoUrl.replace('watch?v=', 'embed/')} 
-                            title="Tutor Video Introduction"
-                            frameBorder="0" 
-                            allowFullScreen
-                          />
-                        ) : (
-                          <video controls className="w-full h-full object-cover">
-                            <source src={teacher.videoUrl} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                        )}
-                      </div>
-                    </div>
-                  )}
+
                 </div>
               )}
             </div>

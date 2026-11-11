@@ -4,60 +4,92 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduVistar | Premium 1-on-1 Online Home Tutoring & Private Lessons</title>
+    <title>EduVistar | Private Tutors in Nigeria & Online Home Lessons</title>
     
-    <!-- Full SEO Injection -->
-    <meta name="description" content="Connect with certified, background-checked African educators for elite online home tutoring and private lessons. We provide safe escrow payment protection, automated lesson timers, and weekly AI-powered student progress tracking globally." />
-    <meta name="keywords" content="online home tutoring and lessons, online home tutoring, private home lessons, online tutoring, verified private tutors, study WAEC online, learn Cambridge IGCSE, private lesson teachers, educational timed escrow, home lessons Nigeria, diaspora tutoring" />
-    <meta name="robots" content="index, follow" />
+    <!-- Full Search Engine Optimization (SEO) -->
+    <meta name="description" content="Find trusted, vetted private tutors in Nigeria for 1-on-1 online and home lessons. Safe escrow payment protection, lesson tracking, WAEC, IGCSE, Primary & Secondary curriculum specialists." />
+    <meta name="keywords" content="private tutors in Nigeria, home lessons Nigeria, private tutor Lagos, online tutoring Nigeria, WAEC tutor, IGCSE tutor Nigeria, British curriculum tutor, home lesson teacher Abuja, private lesson teachers, hire a tutor in Nigeria" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="author" content="EduVistar Africa" />
     <link rel="canonical" href="https://eduvistar.com/" />
+
+    <!-- Geo Tags for Local & Regional SEO (Nigeria & West Africa) -->
+    <meta name="geo.region" content="NG-LA" />
+    <meta name="geo.placename" content="Lagos, Nigeria" />
+    <meta name="geo.position" content="6.5244;3.3792" />
+    <meta name="ICBM" content="6.5244, 3.3792" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://eduvistar.com/" />
-    <meta property="og:title" content="EduVistar | Premium 1-on-1 Online Home Tutoring & Private Lessons" />
+    <meta property="og:site_name" content="EduVistar Africa" />
+    <meta property="og:locale" content="en_NG" />
+    <meta property="og:title" content="EduVistar | Private Tutors in Nigeria & Online Home Lessons" />
     <meta property="og:description" content="Connect with certified, background-checked African educators for elite online home tutoring and private lessons. Safe escrow payment protection, automated lesson timers, and weekly AI progress tracking." />
     <meta property="og:image" content="https://eduvistar.com/assets/og-image.jpg" />
 
-    <!-- Twitter -->
+    <!-- Twitter Card -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://eduvistar.com/" />
-    <meta property="twitter:title" content="EduVistar | Premium 1-on-1 Online Home Tutoring & Private Lessons" />
+    <meta property="twitter:title" content="EduVistar | Private Tutors in Nigeria & Online Home Lessons" />
     <meta property="twitter:description" content="Connect with certified, background-checked African educators for elite online home tutoring and private lessons. Safe escrow payment protection, automated lesson timers, and weekly AI progress tracking." />
     <meta property="twitter:image" content="https://eduvistar.com/assets/og-image.jpg" />
 
-    <!-- Schema.org JSON-LD Structured Data -->
+    <!-- Schema.org JSON-LD Structured Data: EducationalOrganization & WebSite Search -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "EducationalOrganization",
-      "name": "EduVistar Africa",
-      "url": "https://eduvistar.com/",
-      "logo": "https://eduvistar.com/logo.png",
-      "description": "Connecting elite African educators with students globally for 1-on-1 online home tutoring and lessons.",
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "NG"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "247"
-      },
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Online Home Tutoring and Private Lessons Services",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "1-on-1 Private Online Home Tutoring",
-              "description": "Customized personal lessons covering WAEC, JAMB, Cambridge IGCSE, and IB Diploma prep."
-            }
+      "@graph": [
+        {
+          "@type": "EducationalOrganization",
+          "@id": "https://eduvistar.com/#organization",
+          "name": "EduVistar Africa",
+          "url": "https://eduvistar.com/",
+          "logo": "https://eduvistar.com/favicon.svg",
+          "description": "Premier private tutoring and lesson platform connecting vetted educators with students across Nigeria and globally.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Lagos",
+            "addressRegion": "Lagos State",
+            "addressCountry": "NG"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "bestRating": "5",
+            "reviewCount": "348"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Private Lessons & Tutoring Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "1-on-1 Private Tutoring and Home Lessons",
+                  "description": "Personalized lessons covering Primary school, WAEC, JAMB, NECO, Cambridge IGCSE, and A-Levels with verified tutors."
+                }
+              }
+            ]
           }
-        ]
-      }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://eduvistar.com/#website",
+          "url": "https://eduvistar.com/",
+          "name": "EduVistar Africa",
+          "publisher": {
+            "@id": "https://eduvistar.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://eduvistar.com/#marketplace?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
     }
     </script>
     

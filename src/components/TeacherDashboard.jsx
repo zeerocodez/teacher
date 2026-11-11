@@ -30,14 +30,17 @@ export default function TeacherDashboard({
 
   // Availability Grid states
   const [availabilityGrid, setAvailabilityGrid] = useState({
-    Monday: ['Afternoon', 'Evening'],
-    Tuesday: ['Afternoon'],
-    Wednesday: ['Evening'],
-    Thursday: ['Afternoon', 'Evening'],
-    Friday: ['Evening'],
-    Saturday: ['Morning', 'Afternoon'],
-    Sunday: []
+    Monday: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'],
+    Tuesday: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'],
+    Wednesday: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'],
+    Thursday: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'],
+    Friday: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'],
+    Saturday: ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'],
+    Sunday: ['2:00 PM', '4:00 PM']
   });
+  const [customTimeInputs, setCustomTimeInputs] = useState({});
+  const [savingAvailability, setSavingAvailability] = useState(false);
+  const [availabilityMsg, setAvailabilityMsg] = useState('');
   const [googleCalendarSync, setGoogleCalendarSync] = useState(true);
   const [holidayMode, setHolidayMode] = useState(false);
   const [minNotice, setMinNotice] = useState('24 hours');
@@ -307,6 +310,9 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
         setTimezone(data.teacher.timezone || 'Africa/Lagos');
         setClassroomLink(data.teacher.classroomLink || '');
         setRecordingTool(data.teacher.recordingTool || 'recordly.site');
+        if (data.teacher.availability && typeof data.teacher.availability === 'object' && Object.keys(data.teacher.availability).length > 0) {
+          setAvailabilityGrid(data.teacher.availability);
+        }
 
         const teacherSessions = data.sessions || [];
         setBookingRequests(teacherSessions.filter(s => s.status === 'Pending Confirmation'));
@@ -381,7 +387,8 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       currency,
       timezone,
       classroomLink,
-      recordingTool
+      recordingTool,
+      availability: availabilityGrid
     };
 
     try {
@@ -401,6 +408,98 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       setProfileMessage('✓ Profile successfully updated (Local Sandbox Fallback)');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApplyPreset = (presetType) => {
+    if (presetType === 'weekday_standard') {
+      const standard = ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'];
+      setAvailabilityGrid({
+        Monday: [...standard],
+        Tuesday: [...standard],
+        Wednesday: [...standard],
+        Thursday: [...standard],
+        Friday: [...standard],
+        Saturday: ['10:00 AM', '2:00 PM', '4:00 PM'],
+        Sunday: []
+      });
+    } else if (presetType === 'evenings_weekends') {
+      const evening = ['4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM'];
+      const weekend = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM'];
+      setAvailabilityGrid({
+        Monday: [...evening],
+        Tuesday: [...evening],
+        Wednesday: [...evening],
+        Thursday: [...evening],
+        Friday: [...evening],
+        Saturday: [...weekend],
+        Sunday: [...weekend]
+      });
+    } else if (presetType === 'all_day') {
+      const allSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM'];
+      setAvailabilityGrid({
+        Monday: [...allSlots],
+        Tuesday: [...allSlots],
+        Wednesday: [...allSlots],
+        Thursday: [...allSlots],
+        Friday: [...allSlots],
+        Saturday: [...allSlots],
+        Sunday: ['1:00 PM', '2:00 PM', '4:00 PM', '6:00 PM']
+      });
+    }
+  };
+
+  const handleToggleDaySlot = (day, slot) => {
+    setAvailabilityGrid(prev => {
+      const current = Array.isArray(prev[day]) ? prev[day] : [];
+      const updated = current.includes(slot) 
+        ? current.filter(s => s !== slot) 
+        : [...current, slot];
+      return { ...prev, [day]: updated };
+    });
+  };
+
+  const handleRemoveSlot = (day, slot) => {
+    setAvailabilityGrid(prev => {
+      const current = Array.isArray(prev[day]) ? prev[day] : [];
+      return { ...prev, [day]: current.filter(s => s !== slot) };
+    });
+  };
+
+  const handleAddCustomTime = (day) => {
+    const timeVal = (customTimeInputs[day] || '').trim();
+    if (!timeVal) return;
+    setAvailabilityGrid(prev => {
+      const current = Array.isArray(prev[day]) ? prev[day] : [];
+      if (current.includes(timeVal)) return prev;
+      return { ...prev, [day]: [...current, timeVal] };
+    });
+    setCustomTimeInputs(prev => ({ ...prev, [day]: '' }));
+  };
+
+  const handleSaveAvailability = async () => {
+    setSavingAvailability(true);
+    setAvailabilityMsg('');
+    try {
+      const response = await fetch(`${API_BASE}/teachers/profile`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          uid: currentUser.uid,
+          availability: availabilityGrid
+        })
+      });
+      if (response.ok) {
+        setAvailabilityMsg('✓ Availability schedule saved! Active for parent bookings.');
+        fetchData();
+      } else {
+        setAvailabilityMsg('Failed to save availability schedule.');
+      }
+    } catch (err) {
+      console.warn('Local save availability:', err);
+      setAvailabilityMsg('✓ Availability schedule updated (Local sandbox mode)');
+    } finally {
+      setSavingAvailability(false);
     }
   };
 
@@ -1415,40 +1514,153 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
             <div className="lg:col-span-5 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-6">
               <div>
                 <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">SCHEDULING ENGINE</span>
-                <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">Availability Slot Grid</h4>
-                <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">Configure weekly available timings. Autodetects conflict overlays with Google Calendar.</p>
+                <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">Availability & Lesson Hours</h4>
+                <p className="font-sans text-[11px] text-brand-charcoal/60 mt-1">Set your exact bookable times for parents. Slots synchronize with your public profile calendar.</p>
               </div>
 
-              <div className="space-y-3 font-sans text-xs">
-                {Object.entries(availabilityGrid).map(([day, slots]) => (
-                  <div key={day} className="flex justify-between items-center border-b border-brand-moss/5 pb-2">
-                    <span className="font-bold text-brand-moss w-20">{day}</span>
-                    <div className="flex gap-1">
-                      {['Morning', 'Afternoon', 'Evening'].map(slot => {
-                        const isAvailable = slots.includes(slot);
-                        return (
-                          <button
-                            key={slot}
-                            onClick={() => {
-                              setAvailabilityGrid(prev => {
-                                const current = prev[day];
-                                const updated = current.includes(slot) ? current.filter(s => s !== slot) : [...current, slot];
-                                return { ...prev, [day]: updated };
-                              });
-                            }}
-                            className={`py-1.5 px-3 rounded-lg border text-[9px] font-bold uppercase transition-all duration-300 ${
-                              isAvailable
-                                ? 'bg-brand-moss text-white border-brand-moss'
-                                : 'bg-brand-cream/30 border-brand-moss/10 text-brand-charcoal/50 hover:border-brand-moss/30'
-                            }`}
-                          >
-                            {slot}
-                          </button>
-                        );
-                      })}
+              {/* Quick Preset Buttons */}
+              <div>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block mb-2">Quick Schedule Presets</span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleApplyPreset('weekday_standard')}
+                    className="py-1.5 px-3 rounded-xl border border-brand-moss/15 bg-brand-cream/30 hover:bg-brand-moss/10 text-brand-moss text-[10px] font-bold transition-all"
+                  >
+                    ⚡ Weekdays (9 AM – 6 PM)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyPreset('evenings_weekends')}
+                    className="py-1.5 px-3 rounded-xl border border-brand-moss/15 bg-brand-cream/30 hover:bg-brand-moss/10 text-brand-moss text-[10px] font-bold transition-all"
+                  >
+                    🌙 Evenings & Weekends
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyPreset('all_day')}
+                    className="py-1.5 px-3 rounded-xl border border-brand-moss/15 bg-brand-cream/30 hover:bg-brand-moss/10 text-brand-moss text-[10px] font-bold transition-all"
+                  >
+                    ⭐ Open Full Schedule
+                  </button>
+                </div>
+              </div>
+
+              {/* Days & Detailed Time Slots */}
+              <div className="space-y-4 font-sans text-xs max-h-[460px] overflow-y-auto pr-1">
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
+                  const slots = Array.isArray(availabilityGrid[day]) ? availabilityGrid[day] : [];
+                  const standardSlots = ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'];
+                  return (
+                    <div key={day} className="border border-brand-moss/10 rounded-2xl p-3.5 bg-brand-cream/15 space-y-2.5">
+                      <div className="flex justify-between items-center">
+                        <span className="font-heading font-bold text-brand-moss text-xs">{day}</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-mono text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                            slots.length > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-brand-charcoal/10 text-brand-charcoal/50'
+                          }`}>
+                            {slots.length > 0 ? `${slots.length} Bookable Times` : 'Closed'}
+                          </span>
+                          {slots.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setAvailabilityGrid(prev => ({ ...prev, [day]: [] }))}
+                              className="text-[9px] font-bold text-red-600 hover:text-red-700 underline uppercase"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Active Slot Chips */}
+                      {slots.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {slots.map(slot => (
+                            <span
+                              key={slot}
+                              className="inline-flex items-center gap-1.5 bg-brand-moss text-white px-2.5 py-1 rounded-lg text-[10px] font-medium shadow-xs"
+                            >
+                              <span>{slot}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveSlot(day, slot)}
+                                className="text-white/70 hover:text-white transition-colors"
+                                title="Remove time"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Quick Add Common Times */}
+                      <div className="pt-1">
+                        <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/40 font-bold block mb-1">Quick Add:</span>
+                        <div className="flex flex-wrap gap-1">
+                          {standardSlots.map(standardTime => {
+                            const isAdded = slots.includes(standardTime);
+                            return (
+                              <button
+                                key={standardTime}
+                                type="button"
+                                onClick={() => handleToggleDaySlot(day, standardTime)}
+                                className={`text-[9px] px-2 py-0.5 rounded-md border font-mono font-medium transition-all ${
+                                  isAdded
+                                    ? 'bg-brand-moss/10 border-brand-moss text-brand-moss line-through opacity-60'
+                                    : 'bg-white border-brand-moss/15 text-brand-charcoal hover:border-brand-clay hover:text-brand-clay'
+                                }`}
+                              >
+                                {isAdded ? `✓ ${standardTime}` : `+ ${standardTime}`}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Custom Time Input */}
+                      <div className="flex gap-2 pt-1">
+                        <input
+                          type="text"
+                          placeholder="e.g. 10:30 AM or 7:00 PM"
+                          value={customTimeInputs[day] || ''}
+                          onChange={(e) => setCustomTimeInputs(prev => ({ ...prev, [day]: e.target.value }))}
+                          className="flex-1 bg-white border border-brand-moss/15 rounded-lg px-2.5 py-1 text-[11px] font-mono text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleAddCustomTime(day)}
+                          className="px-3 py-1 bg-brand-moss hover:bg-brand-clay text-white rounded-lg text-[10px] font-heading font-bold uppercase tracking-wider transition-colors"
+                        >
+                          + Add Time
+                        </button>
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
+
+              {/* Availability Save Button & Feedback Alert */}
+              <div className="border-t border-brand-moss/10 pt-4 space-y-3">
+                {availabilityMsg && (
+                  <div className={`text-xs p-3 rounded-xl font-sans ${
+                    availabilityMsg.includes('✓') 
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
+                      : 'bg-red-50 text-red-700 border border-red-200'
+                  }`}>
+                    {availabilityMsg}
                   </div>
-                ))}
+                )}
+                <button
+                  type="button"
+                  onClick={handleSaveAvailability}
+                  disabled={savingAvailability}
+                  className="btn-magnetic w-full py-3.5 bg-brand-moss hover:bg-brand-moss/90 text-white rounded-2xl font-heading font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>{savingAvailability ? 'Saving Schedule...' : 'Save Availability Schedule'}</span>
+                </button>
               </div>
 
               <div className="border-t border-brand-moss/5 pt-4 space-y-4 font-sans text-xs">

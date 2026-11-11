@@ -1284,26 +1284,50 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div className="hidden lg:flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    setAuthTab('login');
-                    setIsAuthOpen(true);
-                  }}
-                  className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border border-white/20 text-white hover:bg-white/10"
-                >
-                  Log In
-                </button>
-                <button
-                  onClick={() => {
-                    setAuthTab('register');
-                    setIsAuthOpen(true);
-                  }}
-                  className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90"
-                >
-                  Sign Up
-                </button>
-              </div>
+              <>
+                <div className="hidden lg:flex items-center gap-3">
+                  <button
+                    onClick={() => {
+                      setAuthTab('login');
+                      setIsAuthOpen(true);
+                    }}
+                    className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border border-white/20 text-white hover:bg-white/10"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthTab('register');
+                      setIsAuthOpen(true);
+                    }}
+                    className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+
+                {/* Mobile Header Auth Quick-Buttons */}
+                <div className="flex lg:hidden items-center gap-2 mr-1">
+                  <button
+                    onClick={() => {
+                      setAuthTab('login');
+                      setIsAuthOpen(true);
+                    }}
+                    className="font-sans text-[11px] font-bold uppercase tracking-wider py-1 px-2.5 rounded-full text-white/90 hover:text-white border border-white/25 hover:bg-white/10 transition-colors"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthTab('register');
+                      setIsAuthOpen(true);
+                    }}
+                    className="font-sans text-[11px] font-bold uppercase tracking-wider py-1 px-3 rounded-full bg-brand-clay text-white shadow-sm hover:bg-brand-clay/90 transition-all"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              </>
             )}
 
             {/* Mobile Hamburger menu toggle */}
@@ -1606,6 +1630,32 @@ export default function App() {
               {t('simulateLiveClass')}
             </a>
           </div>
+
+          {/* Mobile Hero Direct Auth Buttons (Never Hidden Behind Hamburger) */}
+          {!currentUser && (
+            <div className="flex sm:hidden items-center gap-3 w-full mt-4 pt-4 border-t border-white/20">
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthTab('login');
+                  setIsAuthOpen(true);
+                }}
+                className="flex-1 py-3 px-4 rounded-full border border-white/40 bg-white/10 backdrop-blur-md text-white font-heading font-bold text-xs uppercase tracking-wider text-center active:scale-95 transition-all shadow-md"
+              >
+                Log In
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthTab('register');
+                  setIsAuthOpen(true);
+                }}
+                className="flex-1 py-3 px-4 rounded-full bg-brand-clay text-white font-heading font-bold text-xs uppercase tracking-wider text-center active:scale-95 transition-all shadow-lg shadow-brand-clay/30"
+              >
+                Sign Up Free
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

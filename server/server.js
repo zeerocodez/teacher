@@ -1030,7 +1030,7 @@ app.post('/api/teachers/optimize-bio', authenticateToken, requireRole(['Teacher'
 
 // POST Update teacher profile (builder)
 app.post('/api/teachers/profile', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
-  const { uid, name, location, rate, subjects, curricula, languages, bio, avatar, videoUrl, classroomLink, recordingTool } = req.body;
+  const { uid, name, location, rate, subjects, curricula, languages, bio, avatar, videoUrl, classroomLink, recordingTool, availability } = req.body;
   const teacher = db.findOne('teachers', t => t.uid === uid);
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
@@ -1047,7 +1047,8 @@ app.post('/api/teachers/profile', authenticateToken, requireRole(['Teacher']), r
     avatar: avatar !== undefined ? avatar : teacher.avatar,
     videoUrl: videoUrl !== undefined ? videoUrl : teacher.videoUrl,
     classroomLink: classroomLink !== undefined ? classroomLink : teacher.classroomLink,
-    recordingTool: recordingTool !== undefined ? recordingTool : teacher.recordingTool
+    recordingTool: recordingTool !== undefined ? recordingTool : teacher.recordingTool,
+    availability: availability !== undefined ? availability : teacher.availability
   });
 
   const user = db.findOne('users', u => u.uid === uid || u.id === uid);

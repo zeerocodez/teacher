@@ -422,7 +422,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     } catch (err) {
       console.error('Google Sign-in Error:', err);
       if (err.code === 'auth/unauthorized-domain' || err.message?.includes('unauthorized-domain')) {
-        setError('Google Auth: "eduvistar.com" is not yet added to Firebase Authorized Domains. Use the Admin or Email login button below, or add eduvistar.com in Firebase Console.');
+        setError('Google Auth: "eduvistar.com" is not yet added to Firebase Authorized Domains. Please use the email login form or add eduvistar.com in Firebase Console.');
       } else {
         setError(err.message || 'Google Auth is not configured or popup blocked.');
       }
@@ -1204,23 +1204,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 Next <ArrowRight className="w-4 h-4" />
               </button>
             ) : activeTab === 'login' ? (
-              <>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-magnetic flex-grow py-4 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2"
-                >
-                  {loading ? 'Processing...' : 'Log In'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAdminLoginShortcut}
-                  disabled={loading}
-                  className="flex-grow py-4 rounded-full border border-brand-moss/20 hover:border-brand-moss/45 bg-white hover:bg-brand-moss/5 text-brand-moss font-bold text-xs uppercase tracking-wider text-center cursor-pointer flex items-center justify-center gap-2 transition-all duration-300 shadow-sm"
-                >
-                  🔑 Admin
-                </button>
-              </>
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-magnetic w-full py-4 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2"
+              >
+                {loading ? 'Processing...' : 'Log In'}
+              </button>
             ) : (
               <button
                 type="submit"
