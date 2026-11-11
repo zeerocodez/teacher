@@ -20,7 +20,13 @@ import {
   History,
   Info,
   FileText,
-  Clipboard
+  Clipboard,
+  Search,
+  GraduationCap,
+  Gift,
+  ArrowUpRight,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 import Marketplace from './Marketplace';
 import { translations } from '../locales/i18n';
@@ -427,80 +433,211 @@ export default function ParentDashboard({
   return (
     <section id="dashboard" className="py-24 px-6 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto border-t border-brand-moss/10">
       
-      {/* Switcher Header */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-12 border-b border-brand-moss/10 pb-8">
-        <div>
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            {onBack && (
-              <button 
-                onClick={onBack}
-                className="mb-4 hidden lg:inline-flex items-center gap-1.5 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 px-3.5 py-1.5 rounded-full border border-brand-moss/10 transition-colors"
-              >
-                ← Back to Home
-              </button>
-            )}
-            {activeTab !== 'progress' && (
-              <button 
-                onClick={() => {
-                  setActiveTab('progress');
-                  window.location.hash = '#dashboard';
-                }}
-                className="inline-flex items-center gap-1.5 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 px-3.5 py-1.5 rounded-full border border-brand-moss/10 transition-colors"
-              >
-                ← Back to Dashboard Home
-              </button>
-            )}
+      {/* Redesigned Parent Command Center Header */}
+      <div className="mb-10">
+        
+        {/* Top Header Row: Welcome, Child Profile Chip & Wallet Chip */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-brand-moss/10">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              {onBack && (
+                <button 
+                  onClick={onBack}
+                  className="inline-flex items-center gap-1 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 px-3.5 py-1.5 rounded-full border border-brand-moss/10 transition-colors"
+                >
+                  ← Home
+                </button>
+              )}
+              {activeTab !== 'progress' && (
+                <button 
+                  onClick={() => {
+                    setActiveTab('progress');
+                    window.location.hash = '#dashboard';
+                  }}
+                  className="inline-flex items-center gap-1 font-sans font-bold text-[10px] uppercase tracking-wider text-brand-clay bg-brand-clay/10 hover:bg-brand-clay hover:text-white px-3.5 py-1.5 rounded-full transition-all"
+                >
+                  ← Academic Overview
+                </button>
+              )}
+              <span className="font-mono text-[10px] uppercase tracking-widest text-brand-clay font-bold px-2.5 py-0.5 rounded-full bg-brand-clay/10 border border-brand-clay/20">
+                Parent Portal
+              </span>
+            </div>
+
+            <h1 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl text-brand-moss tracking-tight">
+              {currentUser?.displayName ? `Welcome back, ${currentUser.displayName}` : 'Parent Dashboard'}
+            </h1>
+            <p className="font-sans text-xs text-brand-charcoal/70 mt-1 max-w-2xl leading-relaxed">
+              Track student cognitive insights, book vetted private tutors, and manage secure 100% escrow-protected lesson payments.
+            </p>
           </div>
-          <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block mb-1">EduVista Parent Portal</span>
-          <h2 className="font-heading font-bold text-3xl text-brand-moss">Platform Parent Dashboard</h2>
-          <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
-            Monitor learning cognitive insights, browse marketplace tutors, manage billing deposits, and audit lesson dispute filings.
-          </p>
-          {/* Parent Action Hub */}
-          <div className="flex flex-wrap items-center gap-2.5 mt-4">
-            <button
-              onClick={() => setActiveTab('marketplace')}
-              className="inline-flex items-center gap-2 font-heading font-bold text-xs uppercase tracking-wider text-white bg-brand-clay hover:bg-brand-clay/90 px-5 py-2.5 rounded-full shadow-md shadow-brand-clay/20 transition-all cursor-pointer"
-            >
-              <span>🔍</span> Find & Book a Tutor
-            </button>
-            <button
+
+          {/* Contextual Action & Status Chips (Zero Repetition) */}
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {/* Active Student Selector / Adder */}
+            <div className="bg-white border border-brand-moss/15 rounded-2xl p-2.5 px-3.5 shadow-xs flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-brand-moss/10 text-brand-moss flex items-center justify-center shrink-0">
+                <GraduationCap className="w-5 h-5 text-brand-clay" />
+              </div>
+              <div>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block">
+                  Active Student
+                </span>
+                {students.length > 1 ? (
+                  <select
+                    value={selectedChild}
+                    onChange={(e) => setSelectedChild(e.target.value)}
+                    className="font-heading font-bold text-xs text-brand-moss bg-transparent border-0 p-0 cursor-pointer focus:outline-none"
+                  >
+                    {students.map(s => (
+                      <option key={s.uid || s.id} value={s.uid || s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="font-heading font-bold text-xs text-brand-moss">
+                    {activeStudent.name || 'Student Profile'}
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddChildOpen(true)}
+                title="Add Another Child Profile"
+                className="ml-1 p-1.5 rounded-lg bg-brand-moss/5 hover:bg-brand-moss/10 text-brand-moss text-xs font-bold transition-colors cursor-pointer"
+              >
+                <PlusCircle className="w-4 h-4 text-brand-clay" />
+              </button>
+            </div>
+
+            {/* Wallet Escrow Chip -> Quick Jump to Billing */}
+            <button 
+              type="button"
               onClick={() => setActiveTab('billing')}
-              className="inline-flex items-center gap-2 font-heading font-bold text-xs uppercase tracking-wider text-brand-moss bg-white hover:bg-brand-cream border border-brand-moss/20 px-4 py-2.5 rounded-full shadow-xs transition-all cursor-pointer"
+              className={`bg-white border rounded-2xl p-2.5 px-3.5 shadow-xs flex items-center gap-2.5 transition-all cursor-pointer hover-lift text-left ${
+                activeTab === 'billing' ? 'border-brand-clay ring-2 ring-brand-clay/20' : 'border-brand-moss/15 hover:border-brand-clay/40'
+              }`}
+              title="Click to view billing, bank transfer details & deposit"
             >
-              <span>🏦</span> Flutterwave Bank Transfer
-            </button>
-            <button
-              onClick={() => setIsAddChildOpen(true)}
-              className="inline-flex items-center gap-2 font-heading font-bold text-xs uppercase tracking-wider text-brand-moss bg-brand-moss/5 hover:bg-brand-moss/10 border border-brand-moss/15 px-4 py-2.5 rounded-full transition-all cursor-pointer"
-            >
-              <span>👶</span> Add Child Profile
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center shrink-0">
+                <Wallet className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block">
+                  Escrow Balance
+                </span>
+                <span className="font-heading font-bold text-xs text-emerald-700">
+                  {formatCurrency(convertMinor(parentWalletBalance, selectedCurrency), selectedCurrency)}
+                </span>
+              </div>
+              <span className="font-mono text-[9px] font-bold text-brand-clay uppercase px-2 py-0.5 rounded-md bg-brand-clay/10 ml-1">
+                Top Up →
+              </span>
             </button>
           </div>
         </div>
 
-        {/* Tab Sub-navigation Switcher */}
-        <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-full p-1.5 self-center max-w-full gap-1 scrollbar-none">
-          {[
-            { id: 'progress', label: 'Academic Progress' },
-            { id: 'marketplace', label: 'Find & Book Tutors' },
-            { id: 'billing', label: 'Billing & Topup' },
-            { id: 'disputes', label: 'Disputes & Support' },
-            { id: 'affiliate', label: 'Affiliate & Referrals' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`py-2 px-4 rounded-full font-heading font-bold text-[10px] uppercase tracking-wider shrink-0 transition-all duration-300 ${
-                activeTab === tab.id
-                  ? 'bg-brand-moss text-white shadow-md'
-                  : 'text-brand-moss hover:bg-brand-moss/5'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        {/* Primary Dashboard Navigation Bar: Standout Full-Width Card Grid */}
+        <nav aria-label="Dashboard Navigation" className="mt-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {[
+              {
+                id: 'progress',
+                label: 'Academic Progress',
+                subtitle: `${attendanceRate}% Attendance`,
+                icon: BarChart2,
+                badge: `${studentSessions.length} Classes`
+              },
+              {
+                id: 'marketplace',
+                label: 'Find & Book Tutors',
+                subtitle: `${teachers.length || 20} Vetted Educators`,
+                icon: Search,
+                badge: '1-on-1 Lessons'
+              },
+              {
+                id: 'billing',
+                label: 'Billing & Topup',
+                subtitle: 'Flutterwave & Escrow',
+                icon: CreditCard,
+                badge: '100% Protected'
+              },
+              {
+                id: 'disputes',
+                label: 'Disputes & Support',
+                subtitle: '24/7 Resolution',
+                icon: ShieldCheck,
+                badge: 'Zero Risk'
+              },
+              {
+                id: 'affiliate',
+                label: 'Refer & Earn',
+                subtitle: '₦5,000 / Referral',
+                icon: Gift,
+                badge: 'Earn Credits'
+              }
+            ].map((tab, idx) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              const isLast = idx === 4;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    if (tab.id === 'progress') {
+                      window.location.hash = '#dashboard';
+                    }
+                  }}
+                  className={`group relative p-3 sm:p-4 rounded-2xl text-left transition-all duration-200 cursor-pointer flex flex-col justify-between border ${
+                    isLast ? 'col-span-2 sm:col-span-1' : ''
+                  } ${
+                    isActive
+                      ? 'bg-brand-moss text-white border-brand-moss shadow-xl shadow-brand-moss/20 ring-2 ring-brand-clay -translate-y-0.5'
+                      : 'bg-white hover:bg-white text-brand-charcoal border-brand-moss/10 hover:border-brand-clay/40 shadow-xs hover:shadow-md hover:-translate-y-0.5'
+                  }`}
+                >
+                  {/* Top line: Icon and status pill */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                      isActive 
+                        ? 'bg-white/15 text-brand-clay' 
+                        : 'bg-brand-moss/5 text-brand-moss group-hover:text-brand-clay group-hover:bg-brand-clay/10'
+                    }`}>
+                      <Icon className="w-4.5 h-4.5" />
+                    </div>
+                    <span className={`font-mono text-[9px] uppercase px-2 py-0.5 rounded-full font-bold ${
+                      isActive 
+                        ? 'bg-brand-clay text-white' 
+                        : 'bg-brand-moss/5 text-brand-charcoal/60 group-hover:bg-brand-clay/10 group-hover:text-brand-clay'
+                    }`}>
+                      {tab.badge}
+                    </span>
+                  </div>
+
+                  {/* Bottom: Main Title and Subtitle */}
+                  <div>
+                    <span className={`font-heading font-bold text-sm sm:text-base block tracking-tight ${
+                      isActive ? 'text-white' : 'text-brand-moss group-hover:text-brand-clay'
+                    }`}>
+                      {tab.label}
+                    </span>
+                    <span className={`font-sans text-[11px] block mt-0.5 truncate ${
+                      isActive ? 'text-white/80' : 'text-brand-charcoal/50'
+                    }`}>
+                      {tab.subtitle}
+                    </span>
+                  </div>
+
+                  {/* Active bottom border highlight */}
+                  {isActive && (
+                    <div className="absolute bottom-0 left-4 right-4 h-1 bg-brand-clay rounded-t-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
       </div>
 
       {/* ACTIVE SECTION: ACADEMIC PROGRESS */}

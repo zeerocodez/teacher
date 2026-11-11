@@ -312,7 +312,7 @@ export async function connectDb() {
     if (uri) {
       console.log("Database Migration: Connecting to production MongoDB...");
       try {
-        await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
+        await mongoose.connect(uri, { serverSelectionTimeoutMS: 2000 });
         isMongo = true;
         console.log("Database Migration: Connected to MongoDB successfully.");
         

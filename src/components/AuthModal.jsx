@@ -227,6 +227,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
               uid: mockUid,
               displayName: name,
               role,
+              username: role === 'Teacher' ? (username || name.toLowerCase().replace(/\s+/g, '')) : undefined,
               email,
               country,
               token: token || `token_${Date.now()}`
@@ -502,12 +503,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         return;
       }
 
-      // 3. Fallback for server 500/504 or HTML error so Google-verified user is never blocked
-      if (isHtmlError || !response || response.status >= 500) {
+      // 3. Fallback for server error or HTML error so Google-verified user is never blocked
+      if (isHtmlError || !response || !response.ok) {
+        if (data?.error && (data.error.toLowerCase().includes('username') || data.error.toLowerCase().includes('required'))) {
+          setError(data.error);
+          return;
+        }
         const fallbackUser = {
           uid: googleUserForSetup.uid || `user_${Date.now()}`,
           displayName: name,
           role,
+          username: role === 'Teacher' ? (username || name.toLowerCase().replace(/\s+/g, '')) : undefined,
           email: googleUserForSetup.email,
           country,
           avatar: googleUserForSetup.photoURL || null,
@@ -519,7 +525,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         return;
       }
 
-      // 4. Specific validation error (e.g. username taken)
+      // 4. Specific validation error
       setError(data?.error || 'Failed to complete registration.');
     } catch (err) {
       console.error('Google registration error:', err);

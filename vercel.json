@@ -6,6 +6,10 @@
       "destination": "/api/index.js"
     },
     {
+      "source": "/auth/:path*",
+      "destination": "/api/index.js"
+    },
+    {
       "source": "/teacher/:username",
       "destination": "/index.html"
     },

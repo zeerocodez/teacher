@@ -47,6 +47,14 @@ app.use(helmet({
 app.use('/uploads', express.static(uploadsDir));
 const PORT = process.env.PORT || 5000;
 
+// URL normalization: rewrite /auth/* to /api/auth/* if called without /api prefix
+app.use((req, res, next) => {
+  if (req.url.startsWith('/auth/')) {
+    req.url = '/api' + req.url;
+  }
+  next();
+});
+
 let dbInitialized = false;
 let dbInitPromise = null;
 
@@ -3919,6 +3927,20 @@ app.get('/api/reports/download/:studentId', authenticateToken, (req, res) => {
 // App initialization status check
 app.get('/api/status', (req, res) => {
   res.json({ status: "healthy", version: "2.0.0", message: "EduVista API Server Active." });
+});
+
+// Global API 404 handler (ensures JSON is always returned instead of HTML)
+app.use((req, res, next) => {
+  if (req.url.startsWith('/api') || req.url.startsWith('/auth')) {
+    return res.status(404).json({ error: `API route not found: ${req.method} ${req.url}` });
+  }
+  next();
+});
+
+// Global API error handler (prevents Express HTML crash pages)
+app.use((err, req, res, next) => {
+  console.error("Global API Error caught:", err);
+  res.status(err.status || 500).json({ error: err.message || "An unexpected server error occurred." });
 });
 
 // Start Server conditionally (only when not running inside Vercel serverless environment)
