@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
+mongoose.set('bufferCommands', false);
+
 let DATA_DIR = path.join(process.cwd(), 'server', 'data');
 
 if (process.env.VERCEL) {

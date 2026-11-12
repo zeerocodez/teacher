@@ -22,6 +22,7 @@ import {
   Sparkles,
   MessageSquare,
   Play,
+  ArrowRight,
   X
 } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';

@@ -45,7 +45,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use('/uploads', express.static(uploadsDir));
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // URL normalization: rewrite /auth/* to /api/auth/* if called without /api prefix
 app.use((req, res, next) => {
@@ -82,7 +82,7 @@ app.use(async (req, res, next) => {
 });
 
 // CORS origin security configuration
-const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:3000';
 app.use(cors({
   origin: (origin, callback) => {
     // Unconditionally allow requests with no origin (e.g. mobile apps, curl, server-to-server)
@@ -109,12 +109,14 @@ app.use(cors({
 }));
 
 // Path normalization middleware for Vercel serverless rewrites
-app.use((req, res, next) => {
-  if (!req.url.startsWith('/api') && !req.url.startsWith('/uploads')) {
-    req.url = '/api' + req.url;
-  }
-  next();
-});
+if (process.env.VERCEL) {
+  app.use((req, res, next) => {
+    if (!req.url.startsWith('/api') && !req.url.startsWith('/uploads')) {
+      req.url = '/api' + req.url;
+    }
+    next();
+  });
+}
 
 // Configure express.json to capture rawBody for webhook signature verification and support file attachments up to 50mb
 app.use(express.json({
@@ -841,6 +843,117 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
   } catch (err) {
     console.error("Auth login error:", err);
     res.status(500).json({ error: err.message || "Login encountered an unexpected issue." });
+  }
+});
+
+// Google Auth Endpoint (handles Google sign-ins, tokens, and domain fallback)
+app.post('/api/auth/google', authRateLimiter, async (req, res) => {
+  try {
+    const { email, displayName, photoURL, uid, role: requestedRole } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Google email is required." });
+    }
+
+    const cleanEmail = sanitizeText(email).trim().toLowerCase();
+    const cleanName = displayName ? sanitizeText(displayName).trim() : cleanEmail.split('@')[0];
+    const cleanAvatar = photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanName)}&background=2E4036&color=fff&size=200&bold=true`;
+
+    // 1. Check if user already exists by email or uid
+    let user = db.findOne('users', u => u.email.toLowerCase() === cleanEmail || (uid && u.uid === uid));
+
+    if (user) {
+      const token = jwt.sign({ uid: user.uid, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+      return res.json({ ...user, token, isNewUser: false });
+    }
+
+    // 2. If user does not exist and role was not specified, return exists: false for client setup
+    if (!requestedRole) {
+      const generatedUid = uid || `google_${Date.now()}`;
+      const tempToken = jwt.sign({ uid: generatedUid, role: 'Parent', email: cleanEmail }, JWT_SECRET, { expiresIn: '1h' });
+      return res.json({
+        exists: false,
+        email: cleanEmail,
+        displayName: cleanName,
+        photoURL: cleanAvatar,
+        uid: generatedUid,
+        token: tempToken
+      });
+    }
+
+    // 3. Auto-create user with requested role
+    let finalRole = requestedRole === 'Teacher' ? 'Teacher' : 'Parent';
+    if (cleanEmail === 'zeerocodes@gmail.com') {
+      finalRole = 'Admin';
+    }
+
+    const userUid = uid || `google_${Date.now()}`;
+    const newUser = await db.insert('users', {
+      uid: userUid,
+      email: cleanEmail,
+      displayName: cleanName,
+      role: finalRole,
+      country: "Nigeria",
+      status: "active",
+      avatar: cleanAvatar,
+      photoURL: cleanAvatar,
+      provider: "google"
+    });
+
+    if (finalRole === 'Teacher') {
+      const sanitizedUsername = req.body.username ? sanitizeText(req.body.username).toLowerCase().replace(/[^a-z0-9-]+/g, '').replace(/(^-|-$)/g, '') : '';
+      let baseUsername = sanitizedUsername || cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'tutor';
+      let finalUsername = baseUsername;
+      let counter = 1;
+      while (db.findOne('teachers', t => t.username === finalUsername)) {
+        finalUsername = `${baseUsername}-${counter}`;
+        counter++;
+      }
+
+      await db.insert('teachers', {
+        uid: userUid,
+        username: finalUsername,
+        name: cleanName,
+        location: "Nigeria",
+        subjects: [],
+        curricula: [],
+        rate: 500000,
+        rating: 5.0,
+        reviewsCount: 0,
+        badges: [],
+        bio: "Verified educator on EduVista.",
+        avatar: cleanAvatar,
+        online: true,
+        availability: {
+          Tomorrow: ["4:00 PM", "5:00 PM"],
+          Wednesday: ["3:00 PM", "4:00 PM"]
+        },
+        languages: ["English"],
+        verified: false,
+        status: "pending_approval",
+        stats: { sessionsTaught: 0, responseRate: 100 },
+        leaderboardOptIn: true
+      });
+
+      await db.insert('wallets', { uid: userUid, balance: 0, escrow: 0 });
+    } else if (finalRole === 'Parent') {
+      await db.insert('parents', {
+        uid: userUid,
+        children: ["Tunde"],
+        paymentMethods: ["card_visa_default"],
+        preferredCurrency: "NGN",
+        country: "Nigeria",
+        referralHits: 0
+      });
+
+      await db.insert('wallets', { uid: userUid, balance: 0, escrow: 0 });
+    }
+
+    const token = jwt.sign({ uid: userUid, role: finalRole, email: cleanEmail }, JWT_SECRET, { expiresIn: '7d' });
+    return res.json({ ...newUser, token, isNewUser: true });
+
+  } catch (err) {
+    console.error("Auth google error:", err);
+    res.status(500).json({ error: err.message || "Google sign-in encountered an unexpected issue." });
   }
 });
 
@@ -3938,14 +4051,27 @@ app.use((req, res, next) => {
   next();
 });
 
+// Database offline fallback error handler (AI Studio requirement)
+app.use((err, req, res, next) => {
+  if (err.name === 'MongooseError' || err.name === 'MongoNetworkError' || (err.message && err.message.includes('buffering timed out'))) {
+    console.warn('[AI Studio] Database offline — returning fallback response');
+    if (req.method === 'GET') {
+      return res.json(req.path.endsWith('s') || req.path.endsWith('s/') ? [] : {});
+    }
+    return res.status(503).json({ error: 'Service temporarily unavailable (database offline)' });
+  }
+  next(err);
+});
+
 // Global API error handler (prevents Express HTML crash pages)
 app.use((err, req, res, next) => {
   console.error("Global API Error caught:", err);
   res.status(err.status || 500).json({ error: err.message || "An unexpected server error occurred." });
 });
 
-// Start Server conditionally (only when not running inside Vercel serverless environment)
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+// Start Server conditionally (only when run directly as standalone script)
+const isDirectRun = Boolean(process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]);
+if (isDirectRun && (process.env.NODE_ENV !== 'production' || !process.env.VERCEL)) {
   ensureDb().then(() => {
     // Run automated 24h escrow release check on startup
     runAutomatedEscrowReleaseCron().catch(e => console.error("[ESCROW CRON] Initial run error:", e));
@@ -3955,15 +4081,16 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
       runAutomatedEscrowReleaseCron().catch(e => console.error("[ESCROW CRON] Recurring run error:", e));
     }, 10 * 60 * 1000);
 
-    app.listen(PORT, () => {
-      console.log(`EduVista Africa Backend Server running on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`EduVista Africa Backend Server running on http://0.0.0.0:${PORT}`);
     });
   }).catch(err => {
     console.error("Database initialization failed, starting server with fallback...", err);
-    app.listen(PORT, () => {
-      console.log(`EduVista Africa Backend Server running on http://localhost:${PORT} (failed init fallback)`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`EduVista Africa Backend Server running on http://0.0.0.0:${PORT} (failed init fallback)`);
     });
   });
 }
 
+export { ensureDb, runAutomatedEscrowReleaseCron };
 export default app;

@@ -1,0 +1,8 @@
+{
+  "name": "EduVistar",
+  "description": "Private Tutors in Nigeria & Online Home Lessons. Connect with verified educators with safe escrow payments, lesson tracking, and curriculum specialization.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
