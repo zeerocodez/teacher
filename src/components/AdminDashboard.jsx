@@ -403,11 +403,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
             setDisputes(rawDisputes);
           }
         } catch (e) {
-          // fallback mock disputes
-          setDisputes([
-            { id: 'disp_1', sessionId: 'sess_101', parentName: 'Ngozi Adeleke', teacherName: 'Mr. Adebayo Okafor', reason: 'Tutor late 15 minutes', status: 'Open', amount: 4000000 },
-            { id: 'disp_2', sessionId: 'sess_102', parentName: 'Sarah Mensah', teacherName: 'Mr. Kofi Mensah', reason: 'Technical disconnect', status: 'Open', amount: 4500000 }
-          ]);
+          setDisputes([]);
         }
 
         // Fetch Active 24h Escrow Holds
@@ -589,7 +585,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   // Dispute Recording Vow Request Form (Two-person authorization)
   const [recordingDisputeId, setRecordingDisputeId] = useState('');
   const [recordingReason, setRecordingReason] = useState('');
-  const [recordingApprover, setRecordingApprover] = useState('Admin Sarah Connor');
+  const [recordingApprover, setRecordingApprover] = useState('System Admin');
   const [recordingRequests, setRecordingRequests] = useState([]);
 
   // Bulk invite code generation
@@ -3283,8 +3279,13 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                       onChange={(e) => setRecordingDisputeId(e.target.value)}
                       className="w-full bg-brand-cream/40 border border-brand-moss/10 rounded-xl px-3 py-2.5 focus:outline-none"
                     >
-                      <option value="disp_1">disp_1 (Parent: Ngozi Adeleke vs Chioma)</option>
-                      <option value="disp_2">disp_2 (Parent: Sarah M. vs Adebayo Okafor)</option>
+                      {disputes.length > 0 ? (
+                        disputes.map(d => (
+                          <option key={d.id} value={d.id}>{d.id} ({d.reason || 'Active Dispute'})</option>
+                        ))
+                      ) : (
+                        <option value="">No active disputes on file</option>
+                      )}
                     </select>
                   </div>
                   <div>
@@ -3305,7 +3306,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                       required
                       value={recordingApprover}
                       onChange={(e) => setRecordingApprover(e.target.value)}
-                      placeholder="e.g. Admin Sarah Connor" 
+                      placeholder="e.g. System Admin" 
                       className="w-full bg-white border border-brand-moss/10 rounded-xl px-3 py-2.5 focus:outline-none text-xs"
                     />
                   </div>

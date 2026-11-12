@@ -37,6 +37,7 @@ import { detectDefaultCurrency } from './utils/timezone';
 
 const BookingModal = lazy(() => import('./components/BookingModal'));
 const Marketplace = lazy(() => import('./components/Marketplace'));
+const TutorDirectory = lazy(() => import('./components/TutorDirectory'));
 const SessionEngine = lazy(() => import('./components/SessionEngine'));
 const ParentDashboard = lazy(() => import('./components/ParentDashboard'));
 const Academy = lazy(() => import('./components/Academy'));
@@ -1115,16 +1116,15 @@ export default function App() {
             <BrandLogo light={true} className="h-11 md:h-12 lg:h-13 transition-transform duration-300 hover:scale-105" />
           </div>
           
-          {currentUser && (
-            <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
-              {currentUser.role === 'Parent' && (
-                <a href="#marketplace" className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
-              )}
-              {currentUser.role === 'Teacher' && (
-                <a href="#academy" className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</a>
-              )}
-            </div>
-          )}
+          <div className="hidden lg:flex items-center gap-6 font-sans font-semibold text-xs uppercase tracking-wider text-white/80">
+            <a href="#directory" className="hover:text-brand-clay transition-colors hover-lift">Tutor Directory</a>
+            {(!currentUser || currentUser.role === 'Parent') && (
+              <a href="#marketplace" className="hover:text-brand-clay transition-colors hover-lift">{t('navFindTeachers')}</a>
+            )}
+            {currentUser && currentUser.role === 'Teacher' && (
+              <a href="#academy" className="hover:text-brand-clay transition-colors hover-lift">{t('navAcademy')}</a>
+            )}
+          </div>
 
           <div className="flex items-center gap-4">
             {/* Desktop selectors (hidden on mobile/tablet) */}
@@ -1406,12 +1406,22 @@ export default function App() {
             </div>
 
             {/* Mobile Nav Links */}
-            {currentUser && (
-              <div className="flex flex-col gap-2.5 font-sans font-bold text-xs uppercase tracking-wider text-white/80 border-t border-white/5 pt-3">
-                {currentUser.role === 'Parent' && (
+            <div className="flex flex-col gap-2.5 font-sans font-bold text-xs uppercase tracking-wider text-white/80 border-t border-white/5 pt-3">
+                <a 
+                  href="#directory" 
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    const el = document.getElementById('directory');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }} 
+                  className="hover:text-brand-clay transition-colors py-1"
+                >
+                  Tutor Directory
+                </a>
+                {(!currentUser || currentUser.role === 'Parent') && (
                   <a 
                     href="#marketplace" 
-                    onClick={(e) => {
+                    onClick={() => {
                       setIsMobileMenuOpen(false);
                       const el = document.getElementById('marketplace');
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -1421,10 +1431,10 @@ export default function App() {
                     {t('navFindTeachers')}
                   </a>
                 )}
-                {currentUser.role === 'Teacher' && (
+                {currentUser && currentUser.role === 'Teacher' && (
                   <a 
                     href="#academy" 
-                    onClick={(e) => {
+                    onClick={() => {
                       setIsMobileMenuOpen(false);
                       const el = document.getElementById('academy');
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -1435,7 +1445,6 @@ export default function App() {
                   </a>
                 )}
               </div>
-            )}
 
             {/* Profile & Action items */}
             <div className="flex flex-col gap-2.5 border-t border-white/5 pt-3">
@@ -2120,6 +2129,19 @@ export default function App() {
         </div>
       </section>
 
+      {/* Tutor Directory Component: Search & Filter Tutors by Subject, Experience, and Hourly Rate */}
+      <Suspense fallback={<LoadingFallback />}>
+        <TutorDirectory 
+          teachers={teachers} 
+          selectedCurrency={selectedCurrency} 
+          onBookClick={handleBookClick}
+          formatCurrency={formatCurrency}
+          convertMinor={convertMinor}
+          onTeacherSelect={handleTutorProfileSelect}
+          onWatchVideo={(teacher) => setWatchingTeacherVideo(teacher)}
+        />
+      </Suspense>
+
       {/* Marketplace Find Teachers Component */}
       <Suspense fallback={<LoadingFallback />}>
         <Marketplace 
@@ -2604,6 +2626,7 @@ export default function App() {
           <div>
             <h4 className="font-heading font-semibold text-xs text-brand-clay mb-4 uppercase tracking-widest">Products</h4>
             <ul className="space-y-2.5 font-sans text-xs text-brand-cream/70">
+              <li><a href="#directory" className="hover:text-brand-clay transition-colors block">Tutor Directory</a></li>
               <li><a href="#marketplace" className="hover:text-brand-clay transition-colors block">Find Teachers</a></li>
               <li><a href="#academy" className="hover:text-brand-clay transition-colors block">ELITE TEACHERS ACADEMY</a></li>
             </ul>

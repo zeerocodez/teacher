@@ -81,8 +81,8 @@ export default function TeacherDashboard({
   const [recordingTool, setRecordingTool] = useState('recordly.site');
 
   // Homework grading panel states
-  const [gradingScore, setGradingScore] = useState(95);
-  const [gradingFeedback, setGradingFeedback] = useState('Brilliant solution. Very well aligned to curriculum guidelines.');
+  const [gradingScore, setGradingScore] = useState(0);
+  const [gradingFeedback, setGradingFeedback] = useState('');
   const [isGraded, setIsGraded] = useState(false);
 
   // Assignment Creator states
@@ -128,12 +128,12 @@ export default function TeacherDashboard({
     setAiReportLoading(true);
     setTimeout(() => {
       setAiReportContent(`[AI Generated Report - ${studentName}]
-Comprehension: Excellent capacity. Average assignment scores returned at 92%.
-Strengths: Analytical algebra factorisation speed calculation accuracy.
-Recommendations: Trigonometric graphing formulas require focused active drill worksheets.
-Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
+Assessment Track: Initial curriculum diagnosis active.
+Engagement: Consistent attendance during live scheduled lessons.
+Recommendations: Continue weekly assignment drills and homework practice.
+Conclusion: Educational progression actively monitored.`);
       setAiReportLoading(false);
-    }, 1500);
+    }, 1200);
   };
 
   const API_BASE = '/api';
@@ -346,18 +346,18 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
       }
     } catch (err) {
       console.warn("Backend API offline, using local states simulation for teacher:", err);
-      // Local state fallback simulation
+      // Clean zero-state fallback
       setTeacherProfile({
         uid: currentUser.uid,
         name: currentUser.displayName,
-        location: "Lagos, Nigeria",
-        subjects: ["Mathematics"],
-        curricula: ["WAEC"],
-        rate: 400000,
-        rating: 4.9,
-        reviewsCount: 1,
-        badges: ["badge-verified"],
-        bio: "Bio description here.",
+        location: "Nigeria",
+        subjects: [],
+        curricula: [],
+        rate: 0,
+        rating: 0,
+        reviewsCount: 0,
+        badges: [],
+        bio: "",
         avatar: ""
       });
     }
@@ -837,35 +837,43 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                   {formatCurrency(earnedThisMonth, selectedCurrency)}
                 </span>
                 <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Earned this month</span>
-                <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">↑ Net earnings</span>
+                <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">
+                  {earnedThisMonth > 0 ? '↑ Net earnings' : '0 earnings'}
+                </span>
               </div>
               <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
                 <span className="font-heading font-extrabold text-2xl text-brand-clay block">
                   {formatCurrency(wallet.escrow, selectedCurrency)}
                 </span>
                 <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">In escrow (pending)</span>
-                <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">Escrow secured</span>
+                <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">
+                  {wallet.escrow > 0 ? 'Escrow secured' : '0 in escrow'}
+                </span>
               </div>
               <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
                 <span className="font-heading font-extrabold text-2xl text-brand-moss block">
                   {formatCurrency(paidOutToDate, selectedCurrency)}
                 </span>
                 <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Paid out to date</span>
-                <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">Processed payouts</span>
+                <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">
+                  {paidOutToDate > 0 ? 'Processed payouts' : '0 payouts'}
+                </span>
               </div>
               <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
                 <span className="font-heading font-extrabold text-2xl text-rose-600 block">
                   {formatCurrency(commission, selectedCurrency)}
                 </span>
                 <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Commission</span>
-                <span className="font-mono text-[9px] text-rose-600 font-bold block mt-2">15% platform gross</span>
+                <span className="font-mono text-[9px] text-rose-600 font-bold block mt-2">15% platform fee</span>
               </div>
               <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm col-span-2 md:col-span-1">
                 <span className="font-heading font-extrabold text-2xl text-brand-moss block">
                   {sessionsCount}
                 </span>
                 <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Sessions this month</span>
-                <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">Total classes</span>
+                <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">
+                  {sessionsCount > 0 ? `${sessionsCount} classes` : '0 classes'}
+                </span>
               </div>
             </div>
             
@@ -1742,27 +1750,35 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-brand-moss/5 text-brand-charcoal/80">
-                      {roster.map((student) => (
-                        <tr 
-                          key={student.uid} 
-                          onClick={() => { setSelectedRosterStudent(student); setRosterNoteInput(student.note); }}
-                          className="hover:bg-brand-moss/5 transition-colors cursor-pointer"
-                        >
-                          <td className="py-3.5 font-bold text-brand-moss">{student.name}</td>
-                          <td className="py-3.5">{student.subject}</td>
-                          <td className="py-3.5 font-mono text-[10px]">{student.lastSession}</td>
-                          <td className="py-3.5 text-center font-bold">{student.assignments} pending</td>
-                          <td className="py-3.5 text-right flex items-center justify-end gap-2">
-                            <span className="font-bold text-emerald-600">{student.trend}</span>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleGenerateAiReport(student.name); }}
-                              className="px-2.5 py-1 bg-brand-clay text-white rounded-lg text-[9px] font-mono font-bold hover:bg-brand-clay/90 transition-all shadow-sm"
-                            >
-                              🪄 AI Report
-                            </button>
+                      {roster.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="py-8 text-center text-brand-charcoal/40 text-xs italic">
+                            No students enrolled in your roster yet. Completed and scheduled lessons will appear here automatically.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        roster.map((student) => (
+                          <tr 
+                            key={student.uid} 
+                            onClick={() => { setSelectedRosterStudent(student); setRosterNoteInput(student.note); }}
+                            className="hover:bg-brand-moss/5 transition-colors cursor-pointer"
+                          >
+                            <td className="py-3.5 font-bold text-brand-moss">{student.name}</td>
+                            <td className="py-3.5">{student.subject}</td>
+                            <td className="py-3.5 font-mono text-[10px]">{student.lastSession}</td>
+                            <td className="py-3.5 text-center font-bold">{student.assignments} pending</td>
+                            <td className="py-3.5 text-right flex items-center justify-end gap-2">
+                              <span className="font-bold text-emerald-600">{student.trend}</span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleGenerateAiReport(student.name); }}
+                                className="px-2.5 py-1 bg-brand-clay text-white rounded-lg text-[9px] font-mono font-bold hover:bg-brand-clay/90 transition-all shadow-sm"
+                              >
+                                🪄 AI Report
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1846,7 +1862,13 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                       onChange={(e) => setAssignStudent(e.target.value)}
                       className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay text-brand-charcoal"
                     >
-                      <option value="Tunde" className="text-brand-charcoal">Tunde (Parent: Ngozi A.)</option>
+                      {roster.length > 0 ? (
+                        roster.map(r => (
+                          <option key={r.uid} value={r.name} className="text-brand-charcoal">{r.name}</option>
+                        ))
+                      ) : (
+                        <option value="" className="text-brand-charcoal">No enrolled students yet</option>
+                      )}
                     </select>
                   </div>
 
@@ -1895,67 +1917,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                     <Sparkles className="w-5 h-5 text-brand-clay" />
                     <h4 className="font-heading font-bold text-sm text-white">Homework Submissions</h4>
                   </div>
-                  <span className="font-mono text-2xs text-brand-clay uppercase tracking-widest font-bold">1 PENDING</span>
+                  <span className="font-mono text-2xs text-brand-clay uppercase tracking-widest font-bold">0 PENDING</span>
                 </div>
 
-                <form onSubmit={handleHomeworkGrade} className="space-y-4 font-sans text-xs">
-                  <div className="bg-brand-moss/10 border border-brand-cream/10 rounded-xl p-3 font-mono text-[10px]">
-                    <div className="flex justify-between items-center text-brand-clay font-bold mb-1">
-                      <span>Tunde Okafor</span>
-                      <span>algebra_hw_4.txt</span>
-                    </div>
-                    <div className="text-brand-cream/70 leading-normal">
-                      x² - 5x + 6 = 0 <br />
-                      (x - 2)(x - 3) = 0 <br />
-                      Therefore, x = 2 or x = 3.
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">Score (1-100)</label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={gradingScore}
-                        onChange={(e) => setGradingScore(e.target.value)}
-                        className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-brand-clay"
-                      />
-                    </div>
-                    <div className="flex flex-col justify-end">
-                      <button
-                        type="button"
-                        onClick={() => alert('Simulated: Audio feedback recorded. File feedback_audio_dsp.mp3 attached.')}
-                        className="py-2.5 bg-brand-cream/10 hover:bg-brand-cream/15 text-white border border-brand-cream/20 rounded-xl font-mono text-[9px] uppercase tracking-wider font-bold text-center flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        🎤 Voice Note Feedback
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="font-heading font-bold text-[10px] uppercase tracking-wider text-brand-cream/60 block mb-1">Teacher Feedback</label>
-                    <textarea
-                      value={gradingFeedback}
-                      onChange={(e) => setGradingFeedback(e.target.value)}
-                      className="w-full bg-brand-cream/5 border border-brand-cream/10 rounded-xl p-3 text-white focus:outline-none focus:border-brand-clay h-16 resize-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="btn-magnetic w-full py-2.5 px-4 rounded-full bg-brand-clay text-white font-bold hover:bg-brand-clay/90 transition-colors shadow-lg text-2xs uppercase tracking-wider"
-                  >
-                    Grade Submission
-                  </button>
-
-                  {isGraded && (
-                    <div className="text-center text-emerald-400 font-mono text-[9px] animate-pulse">
-                      ✓ Grade recorded successfully.
-                    </div>
-                  )}
-                </form>
+                <div className="py-8 text-center text-brand-cream/50 text-xs font-sans">
+                  No pending homework submissions to grade. Student submissions will appear here automatically.
+                </div>
               </div>
             </div>
 
@@ -1965,10 +1932,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
               <h4 className="font-heading font-bold text-sm text-brand-moss mb-4">Gemini Progress Report Generator</h4>
               <button
                 type="button"
-                onClick={() => handleGenerateReport('Tunde')}
-                className="w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                disabled={roster.length === 0}
+                onClick={() => handleGenerateReport(roster[0]?.name || 'Student')}
+                className="w-full py-3 bg-brand-moss hover:bg-brand-clay text-white rounded-full font-heading font-bold uppercase text-[10px] tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Sparkles className="w-4 h-4 text-brand-clay animate-pulse" /> Generate Gemini Report for Tunde
+                <Sparkles className="w-4 h-4 text-brand-clay animate-pulse" /> 
+                {roster.length > 0 ? `Generate Gemini Report for ${roster[0].name}` : 'Enrolled Students Required for AI Report'}
               </button>
 
               {aiReportLoading && (
@@ -2162,10 +2131,10 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                   <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">Badge Progress (Tutor level)</h5>
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { badge: "Verified Tutor", status: "Earned", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-                      { badge: "Elite Certified", status: "Earned", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-                      { badge: "Top Rated", status: "Earned", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-                      { badge: "Elite Educator", status: "Locked (80%)", color: "bg-amber-50 text-amber-800 border-amber-200" }
+                      { badge: "Verified Tutor", status: teacherProfile?.verified ? "Earned" : "Pending", color: teacherProfile?.verified ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-amber-50 text-amber-800 border-amber-200" },
+                      { badge: "Elite Certified", status: teacherProfile?.eliteCertificate ? "Earned" : "Uncertified", color: teacherProfile?.eliteCertificate ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-gray-50 text-gray-600 border-gray-200" },
+                      { badge: "Top Rated", status: (teacherProfile?.rating >= 4.8 && (teacherProfile?.reviewsCount || 0) > 0) ? "Earned" : "In Progress", color: (teacherProfile?.rating >= 4.8 && (teacherProfile?.reviewsCount || 0) > 0) ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-gray-50 text-gray-600 border-gray-200" },
+                      { badge: "Master Educator", status: (activeSessions.filter(s => s.status === 'Completed').length >= 10) ? "Earned" : `${activeSessions.filter(s => s.status === 'Completed').length}/10 Classes`, color: (activeSessions.filter(s => s.status === 'Completed').length >= 10) ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-amber-50 text-amber-800 border-amber-200" }
                     ].map((b, i) => (
                       <div key={i} className={`p-2 border rounded-xl flex justify-between items-center text-[10px] ${b.color}`}>
                         <span className="font-bold">{b.badge}</span>
@@ -2178,31 +2147,41 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                 {/* Ratings Breakdown */}
                 <div className="space-y-2 border-t border-brand-moss/5 pt-4">
                   <h5 className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">Ratings Breakdown (5 dimensions)</h5>
-                  <div className="space-y-1 text-[11px] font-sans text-brand-charcoal/80">
-                    <div className="flex justify-between"><span>Punctuality</span><span className="font-bold text-brand-moss">4.9★</span></div>
-                    <div className="flex justify-between"><span>Teaching Quality</span><span className="font-bold text-brand-moss">5.0★</span></div>
-                    <div className="flex justify-between"><span>Communication</span><span className="font-bold text-brand-moss">4.8★</span></div>
-                    <div className="flex justify-between"><span>Preparedness</span><span className="font-bold text-brand-moss">4.9★</span></div>
-                    <div className="flex justify-between"><span>Student Progress</span><span className="font-bold text-brand-moss">4.9★</span></div>
-                  </div>
+                  {(teacherProfile?.reviewsCount || 0) > 0 ? (
+                    <div className="space-y-1 text-[11px] font-sans text-brand-charcoal/80">
+                      <div className="flex justify-between"><span>Punctuality</span><span className="font-bold text-brand-moss">{(teacherProfile.rating || 5.0).toFixed(1)}★</span></div>
+                      <div className="flex justify-between"><span>Teaching Quality</span><span className="font-bold text-brand-moss">{(teacherProfile.rating || 5.0).toFixed(1)}★</span></div>
+                      <div className="flex justify-between"><span>Communication</span><span className="font-bold text-brand-moss">{(teacherProfile.rating || 5.0).toFixed(1)}★</span></div>
+                      <div className="flex justify-between"><span>Preparedness</span><span className="font-bold text-brand-moss">{(teacherProfile.rating || 5.0).toFixed(1)}★</span></div>
+                      <div className="flex justify-between"><span>Student Progress</span><span className="font-bold text-brand-moss">{(teacherProfile.rating || 5.0).toFixed(1)}★</span></div>
+                    </div>
+                  ) : (
+                    <p className="text-[11px] font-sans text-brand-charcoal/50 italic py-1">
+                      No parent ratings yet. Reviews compute automatically upon lesson completions.
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Leaderboard Position */}
               <div className="lg:col-span-6 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm space-y-4">
                 <div>
-                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">WEEKLY COMPETITION</span>
+                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block">LEADERBOARD & STANDING</span>
                   <h4 className="font-heading font-bold text-base text-brand-moss">Leaderboard Position</h4>
-                  <p className="font-sans text-[10px] text-brand-charcoal/60 mt-0.5">Your ranking compared to all vetted tutors in Lagos.</p>
+                  <p className="font-sans text-[10px] text-brand-charcoal/60 mt-0.5">Your status compared to verified tutors.</p>
                 </div>
                 
                 <div className="bg-brand-cream/20 border border-brand-moss/5 p-4 rounded-2xl flex justify-between items-center">
                   <div>
-                    <span className="font-mono text-[10px] text-brand-charcoal/50 block">CURRENT RANK</span>
-                    <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-0.5">#4 in Lagos</span>
-                    <span className="font-mono text-[9px] text-emerald-600 block mt-1 font-bold">↑ Moved up 2 spots this week</span>
+                    <span className="font-mono text-[10px] text-brand-charcoal/50 block">CURRENT STATUS</span>
+                    <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-0.5">
+                      {teacherProfile?.verified ? 'Verified Active' : 'Pending Verification'}
+                    </span>
+                    <span className="font-mono text-[9px] text-brand-charcoal/60 block mt-1">
+                      {activeSessions.length > 0 ? `${activeSessions.length} active class(es) scheduled` : '0 active classes'}
+                    </span>
                   </div>
-                  <Trophy className="w-10 h-10 text-brand-clay animate-pulse" />
+                  <Trophy className="w-10 h-10 text-brand-clay" />
                 </div>
 
                 <div className="flex items-center justify-between font-sans text-xs border-t border-brand-moss/5 pt-4">
@@ -2257,13 +2236,21 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-brand-moss/5 text-brand-charcoal/80">
-                      {referrals.map((r, idx) => (
-                        <tr key={idx}>
-                          <td className="py-2 font-bold text-brand-moss">{r.name}</td>
-                          <td className="py-2"><span className="font-mono bg-emerald-50 text-emerald-800 py-0.5 px-2 rounded-full uppercase tracking-wider text-[8px] border border-emerald-100">{r.status}</span></td>
-                          <td className="py-2 text-right font-bold text-brand-moss">{formatCurrency(r.commission, selectedCurrency)}</td>
+                      {referrals.length === 0 ? (
+                        <tr>
+                          <td colSpan="3" className="py-6 text-center text-brand-charcoal/40 text-xs italic">
+                            No referred teachers yet. Share your invite link above to earn 10% commission.
+                          </td>
                         </tr>
-                      ))}
+                      ) : (
+                        referrals.map((r, idx) => (
+                          <tr key={idx}>
+                            <td className="py-2 font-bold text-brand-moss">{r.name}</td>
+                            <td className="py-2"><span className="font-mono bg-emerald-50 text-emerald-800 py-0.5 px-2 rounded-full uppercase tracking-wider text-[8px] border border-emerald-100">{r.status}</span></td>
+                            <td className="py-2 text-right font-bold text-brand-moss">{formatCurrency(r.commission, selectedCurrency)}</td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -2280,17 +2267,21 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
                 <div className="grid grid-cols-3 gap-2 text-center font-sans text-xs">
                   <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
                     <span className="text-brand-charcoal/50 block text-[9px] font-mono">Views (30d)</span>
-                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">342 views</span>
-                    <span className="text-[9px] text-emerald-600 block font-bold">↑ +15%</span>
+                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">{teacherProfile?.profileViews || 0}</span>
+                    <span className="text-[9px] text-brand-charcoal/50 block">Profile visits</span>
                   </div>
                   <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
                     <span className="text-brand-charcoal/50 block text-[9px] font-mono">Impressions</span>
-                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">1,240</span>
-                    <span className="text-[9px] text-brand-charcoal/50 block">Keyword searches</span>
+                    <span className="font-heading font-bold text-base text-brand-moss block mt-0.5">{teacherProfile?.searchImpressions || 0}</span>
+                    <span className="text-[9px] text-brand-charcoal/50 block">Search discoveries</span>
                   </div>
                   <div className="bg-brand-cream/20 border border-brand-moss/5 p-3 rounded-xl">
                     <span className="text-brand-charcoal/50 block text-[9px] font-mono">Conversion</span>
-                    <span className="font-heading font-bold text-base text-brand-clay block mt-0.5">18.2%</span>
+                    <span className="font-heading font-bold text-base text-brand-clay block mt-0.5">
+                      {teacherProfile?.profileViews > 0 
+                        ? `${Math.round((activeSessions.length / teacherProfile.profileViews) * 100)}%` 
+                        : '0%'}
+                    </span>
                     <span className="text-[9px] text-brand-charcoal/50 block">Views to Bookings</span>
                   </div>
                 </div>
@@ -2319,12 +2310,12 @@ Conclusion: Trajectory remains fully on-track to WAEC/JAMB exam standards.`);
             {/* Modules list progress */}
             <div className="space-y-4">
               {[
-                { title: 'Module 1: Platform Billing & Escrow Rules', status: 'Passed', score: '100%' },
-                { title: 'Module 2: Direct Interactive Teaching Methods', status: 'Passed', score: '95%' },
-                { title: 'Module 3: Deploying Gemini AI Tools in class', status: 'Passed', score: '90%' },
-                { title: 'Module 4: Student Motivation Techniques', status: 'In Progress', score: null },
-                { title: 'Module 5: Dispute Claims Management', status: 'Locked', score: null },
-                { title: 'Module 6: Capstone Teaching Roleplay Practice', status: 'Locked', score: null }
+                { title: 'Module 1: Platform Billing & Escrow Rules', status: 'Available', score: null },
+                { title: 'Module 2: Direct Interactive Teaching Methods', status: 'Available', score: null },
+                { title: 'Module 3: Deploying Gemini AI Tools in class', status: 'Available', score: null },
+                { title: 'Module 4: Student Motivation Techniques', status: 'Available', score: null },
+                { title: 'Module 5: Dispute Claims Management', status: 'Available', score: null },
+                { title: 'Module 6: Capstone Teaching Roleplay Practice', status: 'Available', score: null }
               ].map((m, idx) => (
                 <div key={idx} className="border border-brand-moss/5 rounded-2xl p-4 bg-brand-cream/5 flex justify-between items-center text-xs">
                   <div>

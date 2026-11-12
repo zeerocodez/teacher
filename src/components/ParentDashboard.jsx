@@ -29,6 +29,7 @@ import {
   Check
 } from 'lucide-react';
 import Marketplace from './Marketplace';
+import TutorDirectory from './TutorDirectory';
 import { translations } from '../locales/i18n';
 import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';
 
@@ -53,17 +54,15 @@ export default function ParentDashboard({
   onBack
 }) {
   const [activeTab, setActiveTab] = useState('progress'); // 'progress' | 'marketplace' | 'billing' | 'disputes' | 'affiliate'
+  const [tutorBrowseView, setTutorBrowseView] = useState('directory'); // 'directory' | 'leaderboard'
   const localT = t || ((key) => translations[lang]?.[key] || translations['en']?.[key] || key);
 
   const [copied, setCopied] = useState(false);
-  const [referralsList, setReferralsList] = useState([
-    { id: 'ref_u1', name: 'Sarah Mensah', date: '2026-06-08', status: 'Converted', commission: 500000 },
-    { id: 'ref_u2', name: 'Kofi Boakye', date: '2026-06-09', status: 'Converted', commission: 500000 }
-  ]);
+  const [referralsList, setReferralsList] = useState([]);
   const [referralStats, setReferralStats] = useState({
-    hits: 12,
-    conversions: 2,
-    earnings: 1000000
+    hits: 0,
+    conversions: 0,
+    earnings: 0
   });
 
   const [selectedChild, setSelectedChild] = useState('tunde'); // 'tunde' or 'yinka'
@@ -230,12 +229,7 @@ export default function ParentDashboard({
       }
     } catch (err) {
       console.warn("Failed to fetch AI insights:", err);
-      // Fallback descriptions
-      if (selectedChild === 'tunde') {
-        setAiInsight("Timi has achieved a 16% overall math improvement over the last 4 weeks. His quadratic factoring logic is verified, but we recommend dedicating the next session to trigonometric graphing formulas to correct slight angle calculations.");
-      } else {
-        setAiInsight("Yinka exhibits high vocabulary capacity. Her essay layouts align closely to IGCSE standards. Focus on grammatical syntax and paragraph structuring transitions during the next English lesson.");
-      }
+      setAiInsight("Complete your first tutoring sessions and homework assignments to unlock automated weekly AI progress scorecards and cognitive insights.");
     } finally {
       setAiLoading(false);
     }
@@ -367,42 +361,43 @@ export default function ParentDashboard({
   };
 
   // Attendance rate calculation based on progress database
-  const activeStudent = students.find(s => s.uid === selectedChild || s.id === selectedChild || s.name.toLowerCase() === selectedChild.toLowerCase()) || {
-    name: selectedChild === 'yinka' ? 'Zara Okafor' : 'Timi Okafor',
-    uid: selectedChild === 'yinka' ? 'student_2' : 'student_1',
-    xp: selectedChild === 'yinka' ? 950 : 1450,
-    badges: selectedChild === 'yinka' ? ["Consistent Learner", "Top Scorer"] : ["Perfect Attendance", "Assignment Champion", "Streak Master"]
+  // Attendance rate calculation based on progress database
+  const activeStudent = students.find(s => s.uid === selectedChild || s.id === selectedChild || s.name.toLowerCase() === selectedChild.toLowerCase()) || students[0] || {
+    name: selectedChild ? (selectedChild.charAt(0).toUpperCase() + selectedChild.slice(1)) : 'Student',
+    uid: 'student_1',
+    xp: 0,
+    badges: []
   };
 
   const studentSessions = (dashboardData?.sessions || parentBookedSessions).filter(s => {
     const sNameLower = s.studentName ? s.studentName.toLowerCase() : '';
     const activeNameLower = activeStudent.name ? activeStudent.name.toLowerCase() : '';
     const selectedChildLower = typeof selectedChild === 'string' ? selectedChild.toLowerCase() : '';
-    return sNameLower === activeNameLower || sNameLower === selectedChildLower || (selectedChildLower === 'tunde' && sNameLower === 'tunde') || (selectedChildLower === 'yinka' && sNameLower === 'zara');
+    return sNameLower === activeNameLower || sNameLower === selectedChildLower;
   });
   
   const totalBooked = studentSessions.length;
-  const totalAttended = studentSessions.filter(s => s.status === 'Completed' || s.status === 'Scheduled').length;
-  const attendanceRate = totalBooked > 0 ? Math.round((totalAttended / totalBooked) * 100) : 89;
+  const totalAttended = studentSessions.filter(s => s.status === 'Completed').length;
+  const attendanceRate = totalBooked > 0 ? Math.round((totalAttended / totalBooked) * 100) : 0;
 
   // Assignments filter per student
   const studentGrades = (dashboardData?.gradesLog || parentGradesLog).filter(g => {
     const gNameLower = g.student ? g.student.toLowerCase() : '';
     const activeNameLower = activeStudent.name ? activeStudent.name.toLowerCase() : '';
     const selectedChildLower = typeof selectedChild === 'string' ? selectedChild.toLowerCase() : '';
-    return gNameLower === activeNameLower || gNameLower === selectedChildLower || (selectedChildLower === 'tunde' && gNameLower === 'tunde') || (selectedChildLower === 'yinka' && gNameLower === 'zara');
+    return gNameLower === activeNameLower || gNameLower === selectedChildLower;
   });
 
   const studentPending = (dashboardData?.pendingAssignments || parentPendingAssignments).filter(p => {
     const pNameLower = p.studentName ? p.studentName.toLowerCase() : '';
     const activeNameLower = activeStudent.name ? activeStudent.name.toLowerCase() : '';
     const selectedChildLower = typeof selectedChild === 'string' ? selectedChild.toLowerCase() : '';
-    return pNameLower === activeNameLower || pNameLower === selectedChildLower || (selectedChildLower === 'tunde' && pNameLower === 'tunde') || (selectedChildLower === 'yinka' && pNameLower === 'zara');
+    return pNameLower === activeNameLower || pNameLower === selectedChildLower;
   });
 
   const avgGrade = studentGrades.length > 0
-    ? Math.round(studentGrades.reduce((sum, g) => sum + (g.grade?.score || g.score), 0) / studentGrades.length)
-    : 82;
+    ? Math.round(studentGrades.reduce((sum, g) => sum + (g.grade?.score || g.score || 0), 0) / studentGrades.length)
+    : 0;
 
   // Calculate Wallet spend breakdowns from Transactions ledger
   const parentTransactions = dashboardData?.transactions || [];
@@ -550,7 +545,7 @@ export default function ParentDashboard({
               {
                 id: 'marketplace',
                 label: 'Find & Book Tutors',
-                subtitle: `${teachers.length || 20} Vetted Educators`,
+                subtitle: teachers.length > 0 ? `${teachers.length} Vetted Educators` : 'Verified Educators',
                 icon: Search,
                 badge: '1-on-1 Lessons'
               },
@@ -649,29 +644,45 @@ export default function ParentDashboard({
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
               <span className="font-heading font-extrabold text-2xl text-emerald-600 block">{attendanceRate}%</span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Attendance this month</span>
-              <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">↑ +4% vs last month</span>
+              <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-2">
+                {totalBooked > 0 ? `${totalAttended} of ${totalBooked} completed` : '0 classes attended'}
+              </span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-brand-moss block">76%</span>
+              <span className="font-heading font-extrabold text-2xl text-brand-moss block">
+                {studentGrades.length + studentPending.length > 0 
+                  ? `${Math.round((studentGrades.length / (studentGrades.length + studentPending.length)) * 100)}%` 
+                  : '0%'}
+              </span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Assignments submitted</span>
-              <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">3 of 4 returned</span>
+              <span className="font-mono text-[9px] text-brand-moss font-bold block mt-2">
+                {studentGrades.length + studentPending.length > 0 
+                  ? `${studentGrades.length} of ${studentGrades.length + studentPending.length} submitted` 
+                  : '0 assignments'}
+              </span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
-              <span className="font-heading font-extrabold text-2xl text-brand-clay block">82%</span>
+              <span className="font-heading font-extrabold text-2xl text-brand-clay block">{avgGrade}%</span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Avg. assessment score</span>
-              <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">↑ +12% this month</span>
+              <span className="font-mono text-[9px] text-brand-clay font-bold block mt-2">
+                {studentGrades.length > 0 ? `From ${studentGrades.length} graded test(s)` : 'No assessments graded'}
+              </span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm">
               <span className="font-heading font-extrabold text-2xl text-brand-moss block">{studentSessions.length}</span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Sessions this month</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">2 upcoming scheduled</span>
+              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">
+                {studentSessions.filter(s => s.status !== 'Completed').length} upcoming scheduled
+              </span>
             </div>
             <div className="bg-white border border-brand-moss/10 rounded-[1.5rem] p-5 shadow-sm col-span-2 md:col-span-1">
               <span className="font-heading font-extrabold text-2xl text-emerald-600 block">
-                {formatCurrency(convertMinor(totalPaid || 1750000, selectedCurrency), selectedCurrency)}
+                {formatCurrency(convertMinor(totalPaid || 0, selectedCurrency), selectedCurrency)}
               </span>
               <span className="font-sans text-2xs text-brand-charcoal/60 block mt-1">Spent this month</span>
-              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">3 sessions in bundle</span>
+              <span className="font-mono text-[9px] text-brand-charcoal/40 block mt-2">
+                {studentSessions.filter(s => s.status === 'Completed').length} completed session(s)
+              </span>
             </div>
           </div>
           
@@ -1343,18 +1354,67 @@ export default function ParentDashboard({
         </div>
       )}
 
-      {/* ACTIVE SECTION: TUTOR MARKETPLACE */}
+      {/* ACTIVE SECTION: TUTOR DIRECTORY & MARKETPLACE */}
       {activeTab === 'marketplace' && (
-        <div className="animate-fade-up">
-          <Marketplace 
-            teachers={teachers || []} 
-            selectedCurrency={selectedCurrency} 
-            onBookClick={(teacher) => onBookClick(teacher, activeStudent)}
-            formatCurrency={formatCurrency}
-            convertMinor={convertMinor}
-            onTeacherSelect={onTeacherSelect}
-            isNested={true}
-          />
+        <div className="space-y-6 animate-fade-up">
+          {/* Sub-view switcher: Directory Search & Filters vs Rotating Leaderboard */}
+          <div className="flex items-center justify-between bg-white border border-brand-moss/10 rounded-2xl p-2.5 shadow-xs">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setTutorBrowseView('directory')}
+                className={`px-4 py-2 rounded-xl text-xs font-heading font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  tutorBrowseView === 'directory'
+                    ? 'bg-brand-moss text-white shadow-xs'
+                    : 'text-brand-charcoal/60 hover:text-brand-moss hover:bg-brand-moss/5'
+                }`}
+              >
+                Tutor Directory (Search & Filter)
+              </button>
+              <button
+                type="button"
+                onClick={() => setTutorBrowseView('leaderboard')}
+                className={`px-4 py-2 rounded-xl text-xs font-heading font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  tutorBrowseView === 'leaderboard'
+                    ? 'bg-brand-moss text-white shadow-xs'
+                    : 'text-brand-charcoal/60 hover:text-brand-moss hover:bg-brand-moss/5'
+                }`}
+              >
+                Featured Leaderboard
+              </button>
+            </div>
+            <span className="font-mono text-2xs text-brand-charcoal/50 hidden sm:inline pr-2">
+              {tutorBrowseView === 'directory' ? 'Live Database Querying Active' : '60s Rotating Showcase'}
+            </span>
+          </div>
+
+          {tutorBrowseView === 'directory' ? (
+            <TutorDirectory 
+              teachers={teachers || []} 
+              selectedCurrency={selectedCurrency} 
+              onBookClick={(teacher) => onBookClick(teacher, activeStudent)}
+              formatCurrency={formatCurrency}
+              convertMinor={convertMinor}
+              onTeacherSelect={onTeacherSelect}
+              onWatchVideo={(teacher) => {
+                if (onTeacherSelect) {
+                  const tutorId = teacher.username || teacher.uid || teacher.id;
+                  onTeacherSelect(tutorId);
+                }
+              }}
+              isNested={true}
+            />
+          ) : (
+            <Marketplace 
+              teachers={teachers || []} 
+              selectedCurrency={selectedCurrency} 
+              onBookClick={(teacher) => onBookClick(teacher, activeStudent)}
+              formatCurrency={formatCurrency}
+              convertMinor={convertMinor}
+              onTeacherSelect={onTeacherSelect}
+              isNested={true}
+            />
+          )}
         </div>
       )}
 
@@ -1586,7 +1646,7 @@ export default function ParentDashboard({
                 <div className="bg-brand-cream/20 border border-brand-moss/5 p-5 rounded-2xl mb-6">
                   <span className="font-sans text-[10px] text-brand-charcoal/50 uppercase block">Total Spent (All Sessions)</span>
                   <span className="font-heading font-bold text-2xl text-brand-moss">
-                    {formatCurrency(convertMinor(totalPaid || 750000, selectedCurrency), selectedCurrency)}
+                    {formatCurrency(convertMinor(totalPaid || 0, selectedCurrency), selectedCurrency)}
                   </span>
                 </div>
 
@@ -1594,18 +1654,8 @@ export default function ParentDashboard({
                 <div className="space-y-4 mb-6">
                   <h5 className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold">Breakdown by Subject</h5>
                   {Object.entries(spendBySubject).length === 0 ? (
-                    <div className="space-y-2">
-                      <div className="flex justify-between font-sans text-xs">
-                        <span>Mathematics</span>
-                        <span className="font-bold">₦4,000 (53%)</span>
-                      </div>
-                      <div className="w-full bg-brand-cream h-2 rounded-full"><div className="bg-brand-moss h-2 rounded-full w-[53%]" /></div>
-                      
-                      <div className="flex justify-between font-sans text-xs">
-                        <span>English</span>
-                        <span className="font-bold">₦3,500 (47%)</span>
-                      </div>
-                      <div className="w-full bg-brand-cream h-2 rounded-full"><div className="bg-brand-clay h-2 rounded-full w-[47%]" /></div>
+                    <div className="py-4 text-center font-sans text-brand-charcoal/40 text-xs italic">
+                      No lesson expenditure recorded yet.
                     </div>
                   ) : (
                     Object.entries(spendBySubject).map(([sub, amount], index) => {
@@ -1631,12 +1681,16 @@ export default function ParentDashboard({
                 {/* Spend Breakdown by Teacher */}
                 <div className="space-y-3">
                   <h5 className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/60 font-bold">Spend by Teacher</h5>
-                  {Object.entries(spendByTeacher).map(([teacherName, amount], index) => (
-                    <div key={index} className="flex justify-between items-center text-xs font-sans border-b border-brand-moss/5 pb-2">
-                      <span className="text-brand-charcoal/70">{teacherName}</span>
-                      <span className="font-bold text-brand-moss">{formatCurrency(convertMinor(amount, selectedCurrency), selectedCurrency)}</span>
-                    </div>
-                  ))}
+                  {Object.entries(spendByTeacher).length === 0 ? (
+                    <p className="text-[11px] font-sans text-brand-charcoal/40 italic py-1 text-center">No tutor transactions yet.</p>
+                  ) : (
+                    Object.entries(spendByTeacher).map(([teacherName, amount], index) => (
+                      <div key={index} className="flex justify-between items-center text-xs font-sans border-b border-brand-moss/5 pb-2">
+                        <span className="text-brand-charcoal/70">{teacherName}</span>
+                        <span className="font-bold text-brand-moss">{formatCurrency(convertMinor(amount, selectedCurrency), selectedCurrency)}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -1846,25 +1900,33 @@ export default function ParentDashboard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-brand-moss/5 text-brand-charcoal/80">
-                  {referralsList.map((ref) => (
-                    <tr key={ref.id}>
-                      <td className="py-3.5 font-bold text-brand-moss">{ref.name}</td>
-                      <td className="py-3.5 font-mono text-[10px]">{ref.date}</td>
-                      <td className="py-3.5">
-                        <span className={`font-mono text-[9px] font-bold uppercase px-2 py-0.5 rounded ${
-                          ref.status === 'Converted' ? 'bg-emerald-50 text-emerald-800' : 'bg-brand-cream/50 text-brand-charcoal/60'
-                        }`}>
-                          {ref.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-right font-bold text-brand-moss">
-                        {ref.commission > 0 
-                          ? formatCurrency(convertMinor(ref.commission, selectedCurrency), selectedCurrency)
-                          : '—'
-                        }
+                  {referralsList.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="py-8 text-center text-brand-charcoal/40 text-xs italic">
+                        No referred parents yet. Share your link above to begin earning commissions.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    referralsList.map((ref) => (
+                      <tr key={ref.id}>
+                        <td className="py-3.5 font-bold text-brand-moss">{ref.name}</td>
+                        <td className="py-3.5 font-mono text-[10px]">{ref.date}</td>
+                        <td className="py-3.5">
+                          <span className={`font-mono text-[9px] font-bold uppercase px-2 py-0.5 rounded ${
+                            ref.status === 'Converted' ? 'bg-emerald-50 text-emerald-800' : 'bg-brand-cream/50 text-brand-charcoal/60'
+                          }`}>
+                            {ref.status}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-right font-bold text-brand-moss">
+                          {ref.commission > 0 
+                            ? formatCurrency(convertMinor(ref.commission, selectedCurrency), selectedCurrency)
+                            : '—'
+                          }
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

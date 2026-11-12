@@ -3,8 +3,8 @@ import { Sparkles, Trophy, Flame, Award, BarChart3, Calendar, FileText, CheckCir
 
 export default function StudentPortal({ currentUser, selectedCurrency, formatCurrency, convertMinor, onBack }) {
   const [studentData, setStudentData] = useState(null);
-  const [xp, setXp] = useState(1450);
-  const [streak, setStreak] = useState(7);
+  const [xp, setXp] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'assignments' | 'portfolio'
   const [submissionLink, setSubmissionLink] = useState('');
   const [submittingId, setSubmittingId] = useState(null);
@@ -12,19 +12,8 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
   const [sessions, setSessions] = useState([]);
   const [leaderboardOptIn, setLeaderboardOptIn] = useState(true);
 
-  const [assignments, setAssignments] = useState([
-    { id: 1, title: "Algebraic Factorisation homework", subject: "Mathematics", teacher: "Mr. Adebayo Okafor", dueDate: "Tomorrow", status: "Pending" },
-    { id: 2, title: "WAEC Chemistry formulas", subject: "Chemistry", teacher: "Mr. Kofi Mensah", dueDate: "In 3 Days", status: "In Progress" },
-    { id: 3, title: "English Syntax & Paragraphing", subject: "English", teacher: "Mrs. Chioma", dueDate: "Completed", status: "Graded", score: 92, feedback: "Fantastic paragraph transitions. Keep reviewing relative pronouns." }
-  ]);
-
-  const [leaderboard, setLeaderboard] = useState([
-    { rank: 1, name: "Chinedu A.", xp: 1980, active: false },
-    { rank: 2, name: "Zara B.", xp: 1720, active: false },
-    { rank: 3, name: "Tunde O. (You)", xp: 1450, active: true },
-    { rank: 4, name: "Fatima S.", xp: 1390, active: false },
-    { rank: 5, name: "Kofi K.", xp: 1210, active: false }
-  ]);
+  const [assignments, setAssignments] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
 
   const API_BASE = '/api';
   const studentUid = currentUser?.uid || 'student_1';
@@ -45,8 +34,8 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
       if (res.ok) {
         const data = await res.json();
         if (data.student) {
-          setXp(data.student.xp || 1450);
-          setStreak(data.student.streak || 7);
+          setXp(data.student.xp || 0);
+          setStreak(data.student.streak || 0);
           setLeaderboardOptIn(data.student.leaderboardOptIn !== false);
         }
         if (data.assignments) {
@@ -79,17 +68,26 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
   }, [studentUid]);
 
   useEffect(() => {
-    // Sync simulated details from local parameters
+    // Dynamic calculations from actual student records
+    const gradedAssignments = assignments.filter(a => a.score !== undefined && a.score !== null);
+    const avgScore = gradedAssignments.length > 0 
+      ? Math.round(gradedAssignments.reduce((sum, a) => sum + Number(a.score), 0) / gradedAssignments.length)
+      : 0;
+
+    const completedSessions = sessions.filter(s => s.status === 'Completed').length;
+    const totalSessions = sessions.length;
+    const attendancePct = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+
     setStudentData({
       level: Math.floor(xp / 400) + 1,
-      levelLabel: xp >= 1200 ? 'Level 4 // Rising Scholar' : 'Level 2 // Explorer',
+      levelLabel: xp >= 1200 ? 'Level 4 // Rising Scholar' : (xp >= 400 ? 'Level 2 // Explorer' : 'Level 1 // New Scholar'),
       nextLevelXp: 400 - (xp % 400),
       percent: Math.round(((xp % 400) / 400) * 100),
-      badgesCount: 5,
-      attendance: 92,
-      score: 86
+      badgesCount: 0,
+      attendance: attendancePct,
+      score: avgScore
     });
-  }, [xp]);
+  }, [xp, assignments, sessions]);
 
   const xpRules = [
     { label: "Complete a session (attend full duration)", reward: "+100 XP", icon: "🎥" },
@@ -101,22 +99,29 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
   ];
 
   const badges = [
-    { title: "Perfect Attendance", status: "Earned", date: "June 2", icon: "🗓️", desc: "Attended 100% of sessions in a calendar month." },
-    { title: "Assignment Champion", status: "Earned", date: "May 28", icon: "📝", desc: "Submitted 10 assignments on time in a row." },
-    { title: "Top Scorer", status: "In Progress (80%)", date: "", icon: "⭐", desc: "Scored 90%+ on 5 consecutive assignments." },
-    { title: "Consistent Learner", status: "Earned", date: "May 15", icon: "🔄", desc: "Active (1+ session or assignment) 30 days in a row." },
-    { title: "Streak Master", status: "Earned", date: "June 8", icon: "🔥", desc: "7-day engagement streak maintained." },
-    { title: "Fast Finisher", status: "Locked", date: "", icon: "🚀", desc: "Submitted assignment within 2 hours of release." },
-    { title: "Subject Expert", status: "Earned", date: "May 20", icon: "💡", desc: "Average subject score of 85%+ over 10 sessions." },
-    { title: "Most Improved", status: "In Progress (60%)", date: "", icon: "📈", desc: "Score improved 30%+ over 4-week period." }
+    { title: "Perfect Attendance", status: "Locked", date: "", icon: "🗓️", desc: "Attend 100% of sessions in a calendar month." },
+    { title: "Assignment Champion", status: "Locked", date: "", icon: "📝", desc: "Submit 5 assignments on time in a row." },
+    { title: "Top Scorer", status: "Locked", date: "", icon: "⭐", desc: "Score 90%+ on consecutive assignments." },
+    { title: "Consistent Learner", status: "Locked", date: "", icon: "🔄", desc: "Active (1+ session or assignment) 7 days in a row." },
+    { title: "Streak Master", status: streak >= 7 ? "Earned" : "Locked", date: streak >= 7 ? "Active" : "", icon: "🔥", desc: "7-day engagement streak maintained." },
+    { title: "Fast Finisher", status: "Locked", date: "", icon: "🚀", desc: "Submit assignment within 2 hours of release." },
+    { title: "Subject Expert", status: "Locked", date: "", icon: "💡", desc: "Average subject score of 85%+ over 5 sessions." },
+    { title: "Most Improved", status: "Locked", date: "", icon: "📈", desc: "Score improved over consecutive assessments." }
   ];
 
-  const subjects = [
-    { name: "Algebra", percentage: 82, color: "bg-brand-moss" },
-    { name: "Quadratic equations", percentage: 54, color: "bg-brand-clay" },
-    { name: "Trigonometry", percentage: 31, color: "bg-rose-600" },
-    { name: "Statistics", percentage: 91, color: "bg-emerald-600" }
-  ];
+  const subjects = assignments.length > 0
+    ? Object.entries(
+        assignments.reduce((acc, a) => {
+          if (!acc[a.subject]) acc[a.subject] = [];
+          if (a.score !== undefined && a.score !== null) acc[a.subject].push(Number(a.score));
+          return acc;
+        }, {})
+      ).map(([name, scores]) => ({
+        name,
+        percentage: scores.length > 0 ? Math.round(scores.reduce((s, v) => s + v, 0) / scores.length) : 0,
+        color: "bg-brand-moss"
+      }))
+    : [];
 
 
 
@@ -197,9 +202,9 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
             <div>
               <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">BADGES EARNED</span>
               <span className="font-heading font-bold text-4xl text-brand-moss block flex items-center gap-1.5">
-                <Award className="w-8 h-8 text-brand-moss" /> {studentData?.badgesCount} / 8
+                <Award className="w-8 h-8 text-brand-moss" /> {studentData?.badgesCount || 0} / 8
               </span>
-              <span className="font-sans text-[10px] text-brand-charcoal/50 block mt-1">2 progress targets currently within reach</span>
+              <span className="font-sans text-[10px] text-brand-charcoal/50 block mt-1">Unlock badges through live lessons and assignments</span>
             </div>
           </div>
 
@@ -207,9 +212,11 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
           <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 shadow-sm flex flex-col justify-between hover-lift">
             <div>
               <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">AVERAGE GRADE</span>
-              <span className="font-heading font-bold text-4xl text-brand-moss block">86%</span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-600 font-bold block mt-1">
-                ✓ Comprehension Level High
+              <span className="font-heading font-bold text-4xl text-brand-moss block">
+                {studentData?.score > 0 ? `${studentData.score}%` : '0%'}
+              </span>
+              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-moss font-bold block mt-1">
+                {studentData?.score > 0 ? '✓ Comprehension Evaluated' : 'No tests graded yet'}
               </span>
             </div>
           </div>
@@ -424,20 +431,26 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
                 </h3>
                 
                 <div className="space-y-6">
-                  {subjects.map((sub, idx) => (
-                    <div key={idx} className="space-y-2">
-                      <div className="flex justify-between font-sans text-xs">
-                        <span className="text-brand-charcoal/80 font-bold">{sub.name}</span>
-                        <span className="font-mono font-bold text-brand-moss">{sub.percentage}% Mastered</span>
-                      </div>
-                      <div className="w-full bg-brand-cream/60 border border-brand-moss/5 rounded-full h-3.5 overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all duration-1000 ${sub.color}`} 
-                          style={{ width: `${sub.percentage}%` }}
-                        />
-                      </div>
+                  {subjects.length === 0 ? (
+                    <div className="py-6 text-center font-sans text-brand-charcoal/40 text-xs italic">
+                      No topic assessments completed yet. Complete homework assignments to unlock mastery metrics.
                     </div>
-                  ))}
+                  ) : (
+                    subjects.map((sub, idx) => (
+                      <div key={idx} className="space-y-2">
+                        <div className="flex justify-between font-sans text-xs">
+                          <span className="text-brand-charcoal/80 font-bold">{sub.name}</span>
+                          <span className="font-mono font-bold text-brand-moss">{sub.percentage}% Mastered</span>
+                        </div>
+                        <div className="w-full bg-brand-cream/60 border border-brand-moss/5 rounded-full h-3.5 overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-1000 ${sub.color}`} 
+                            style={{ width: `${sub.percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -660,32 +673,35 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
               </h3>
 
               <div className="space-y-4">
-                {[
-                  { teacher: "Mr. Adebayo Okafor", subject: "Mathematics Algebra", date: "June 8, 2026", duration: "60 mins", hasRecording: true },
-                  { teacher: "Mrs. Chioma", subject: "English Literature", date: "June 5, 2026", duration: "45 mins", hasRecording: false }
-                ].map((s, idx) => (
-                  <div key={idx} className="border border-brand-moss/5 bg-brand-cream/5 rounded-2xl p-4 flex justify-between items-center gap-4">
-                    <div>
-                      <h4 className="font-heading font-bold text-sm text-brand-moss">{s.subject}</h4>
-                      <p className="font-sans text-xs text-brand-charcoal/70 mt-0.5">
-                        Taught by: <b>{s.teacher}</b> · Billed: <b>{s.duration}</b>
-                      </p>
-                      <span className="font-mono text-[8px] text-brand-charcoal/40 block mt-1 uppercase">Date: {s.date}</span>
-                    </div>
-
-                    {s.hasRecording && (
-                      <a 
-                        href="https://res.cloudinary.com/demo/video/upload/dog.mp4"
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="bg-brand-moss/5 border border-brand-moss/10 p-2.5 rounded-full text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center justify-center"
-                        title="Play Lesson Recording"
-                      >
-                        <PlayCircle className="w-4.5 h-4.5" />
-                      </a>
-                    )}
+                {sessions.filter(s => s.status === 'Completed').length === 0 ? (
+                  <div className="py-8 text-center text-brand-charcoal/40 text-xs italic">
+                    No past tutorial sessions recorded yet. Completed classes will show duration and playback links here.
                   </div>
-                ))}
+                ) : (
+                  sessions.filter(s => s.status === 'Completed').map((s, idx) => (
+                    <div key={idx} className="border border-brand-moss/5 bg-brand-cream/5 rounded-2xl p-4 flex justify-between items-center gap-4">
+                      <div>
+                        <h4 className="font-heading font-bold text-sm text-brand-moss">{s.subject}</h4>
+                        <p className="font-sans text-xs text-brand-charcoal/70 mt-0.5">
+                          Taught by: <b>{s.teacherName}</b> · Billed: <b>60 mins</b>
+                        </p>
+                        <span className="font-mono text-[8px] text-brand-charcoal/40 block mt-1 uppercase">Date: {s.slot?.day || 'Completed'}</span>
+                      </div>
+
+                      {s.recordingUrl && (
+                        <a 
+                          href={s.recordingUrl}
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="bg-brand-moss/5 border border-brand-moss/10 p-2.5 rounded-full text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center justify-center"
+                          title="Play Lesson Recording"
+                        >
+                          <PlayCircle className="w-4.5 h-4.5" />
+                        </a>
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -700,24 +716,25 @@ export default function StudentPortal({ currentUser, selectedCurrency, formatCur
               </p>
 
               <div className="space-y-3 font-sans text-xs">
-                <div className="border border-brand-moss/10 rounded-xl p-3 flex justify-between items-center bg-brand-cream/10">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">📊</span>
-                    <div>
-                      <span className="font-bold block text-brand-moss">algebra_hw_3.txt</span>
-                      <span className="font-mono text-[8px] text-brand-charcoal/50 block uppercase">Mathematics · Graded: 85/100</span>
-                    </div>
+                {assignments.filter(a => a.status === 'Graded').length === 0 ? (
+                  <div className="py-8 text-center text-brand-charcoal/40 text-xs italic">
+                    No graded coursework in portfolio yet. Complete homework assignments to build your academic portfolio.
                   </div>
-                </div>
-                <div className="border border-brand-moss/10 rounded-xl p-3 flex justify-between items-center bg-brand-cream/10">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">📝</span>
-                    <div>
-                      <span className="font-bold block text-brand-moss">english_syntax_essay.pdf</span>
-                      <span className="font-mono text-[8px] text-brand-charcoal/50 block uppercase">English · Graded: 92/100</span>
+                ) : (
+                  assignments.filter(a => a.status === 'Graded').map((a, idx) => (
+                    <div key={idx} className="border border-brand-moss/10 rounded-xl p-3 flex justify-between items-center bg-brand-cream/10">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">📊</span>
+                        <div>
+                          <span className="font-bold block text-brand-moss">{a.title}</span>
+                          <span className="font-mono text-[8px] text-brand-charcoal/50 block uppercase">
+                            {a.subject} · Graded: {a.score}/100
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  ))
+                )}
               </div>
             </div>
 
