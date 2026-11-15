@@ -1,337 +1,10 @@
 export const SEED_TEACHERS = [
   {
-    "uid": "01FgVp2ka9S8Kx556FWToI0Jcv23",
-    "id": "01FgVp2ka9S8Kx556FWToI0Jcv23",
-    "name": "Mckendra Asuquo",
-    "username": "teachermckendra",
-    "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [
-      "English"
-    ],
-    "rate": 350000,
-    "status": "onboarding",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-online-learning-with-a-teacher-41221-large.mp4",
-    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLRdMJmI8Z6xXMjYKemNtfocff3RBEY6roWPeLzyWBtx38aqUpk=s400-c",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 2647,
-    "submittedTime": "2647h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "0r5AeYFk25dsfLftgiV5zQBwhh33",
-    "id": "0r5AeYFk25dsfLftgiV5zQBwhh33",
-    "name": "Blessing Akpan",
-    "username": "blessingakpansunday01gmailcom",
-    "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [
-      "English"
-    ],
-    "rate": 350000,
-    "status": "onboarding",
-    "verified": false,
-    "tier": "Grade A",
-    "badges": [
-      "badge-ai-cert"
-    ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-giving-an-online-class-41224-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 2620,
-    "submittedTime": "2620h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "4EnoPUNrm9fExrxBczoTBHL1Wg82",
-    "id": "4EnoPUNrm9fExrxBczoTBHL1Wg82",
-    "name": "Nuel Jeff",
-    "username": "zeerocodes",
-    "location": "Rwanda",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [
-      "English"
-    ],
-    "rate": 350000,
-    "status": "onboarding",
-    "verified": false,
-    "tier": "Grade B",
-    "badges": [
-      "badge-verified"
-    ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-female-teacher-explaining-a-lesson-online-41223-large.mp4",
-    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLA85oewq-DwwXIXnhpAMdDEYXBbUD4OOuf5REwcMjS9hA6Mvg=s400-c",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 2889,
-    "submittedTime": "2889h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "8uwu4OqdeRfAPlGPvaGmYSu9nYE2",
-    "id": "8uwu4OqdeRfAPlGPvaGmYSu9nYE2",
-    "name": "Ngozi Ibembo",
-    "username": "ng",
-    "location": "Nigeria",
-    "whatsapp": "08022324656",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [
-      "English"
-    ],
-    "rate": 1000,
-    "status": "pending_approval",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-conducting-an-online-lesson-41225-large.mp4",
-    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786353399/vp8lvozl7jcki8jh3qtv.png",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1734,
-    "submittedTime": "1734h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
     "id": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
-    "name": "Aniebietobong Imaha",
+    "uid": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
     "username": "aniebietobongimaha",
+    "name": "Aniebietobong Imaha",
     "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
     "subjects": [
       "General Tutoring",
       "Mathematics"
@@ -340,166 +13,38 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "WAEC"
     ],
-    "languages": [
-      "English"
-    ],
     "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
+    "rating": 5,
+    "reviewsCount": 0,
     "badges": [
       "badge-verified"
     ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-teacher-explaining-a-math-problem-41227-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 72,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1018,
-    "submittedTime": "1018h ago",
     "bio": "Aniebietobong Imaha is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "EGIwdC6Qc1YLkg10tWLmgvD1lc13",
-    "id": "EGIwdC6Qc1YLkg10tWLmgvD1lc13",
-    "name": "Ruth Uko",
-    "username": "ruthiee",
-    "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
     "languages": [
       "English"
     ],
-    "rate": 350000,
-    "status": "onboarding",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-online-learning-with-a-teacher-41221-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1589156280159-27698a70f29e?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 2620,
-    "submittedTime": "2620h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
     },
-    "online": true
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "createdAt": "2026-09-09T06:03:49.729Z",
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:22.455Z",
+    "status": "verified"
   },
   {
-    "uid": "ENjZobEDIcSpxIM240HNXA2sYXr2",
     "id": "ENjZobEDIcSpxIM240HNXA2sYXr2",
-    "name": "Modesayo Okeniyi ",
+    "uid": "ENjZobEDIcSpxIM240HNXA2sYXr2",
     "username": "teachermo",
+    "name": "Modesayo Okeniyi ",
     "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
     "subjects": [
       "General Tutoring",
       "Mathematics"
@@ -508,342 +53,139 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "WAEC"
     ],
-    "languages": [
-      "English"
-    ],
     "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
+    "rating": 5,
+    "reviewsCount": 0,
     "badges": [
       "badge-verified"
     ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-giving-an-online-class-41224-large.mp4",
-    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786356757/rrdkhtm35wbzjasdpevw.png",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 70,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1108,
-    "submittedTime": "1108h ago",
     "bio": "Modesayo Okeniyi  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
-    "id": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
-    "name": "Enobong Edubio ",
-    "username": "teacher-eno",
-    "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [
-      "General Tutoring",
-      "Mathematics"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
-    ],
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
     "languages": [
       "English"
     ],
-    "rate": 350000,
-    "status": "active",
     "verified": true,
-    "tier": "Grade B",
-    "badges": [
-      "badge-verified"
-    ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-female-teacher-explaining-a-lesson-online-41223-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 96,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1016,
-    "submittedTime": "1016h ago",
-    "bio": "Enobong Edubio  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
     },
-    "online": true
-  },
-  {
-    "uid": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-    "id": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-    "name": "Adenike Enoch-Salami ",
-    "username": "adenike",
-    "location": "Nigeria",
+    "leaderboardOptIn": true,
     "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [
-      "General Tutoring",
-      "Mathematics"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
-    ],
-    "languages": [
-      "English"
-    ],
-    "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
-    "badges": [
-      "badge-verified"
-    ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-conducting-an-online-lesson-41225-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 74,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1015,
-    "submittedTime": "1015h ago",
-    "bio": "Adenike Enoch-Salami  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "LoWGDCMnwgMxERiN7Rak88xCkmw1",
-    "id": "LoWGDCMnwgMxERiN7Rak88xCkmw1",
-    "name": "desayo",
-    "username": "desayo",
-    "location": "Nigeria",
-    "whatsapp": "234567345",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [
-      "English"
-    ],
-    "rate": 400000,
-    "status": "pending_approval",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-teacher-explaining-a-math-problem-41227-large.mp4",
+    "createdAt": "2026-09-05T11:40:26.724Z",
     "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786356757/rrdkhtm35wbzjasdpevw.png",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1734,
-    "submittedTime": "1734h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
+    "videoUrl": "",
+    "updatedAt": "2026-11-15T09:12:23.095Z",
+    "status": "verified"
   },
   {
-    "uid": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
+    "id": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
+    "uid": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
+    "username": "teacher-eno",
+    "name": "Enobong Edubio ",
+    "location": "Nigeria",
+    "subjects": [
+      "General Tutoring",
+      "Mathematics"
+    ],
+    "curricula": [
+      "Primary (Ages 6-11)",
+      "WAEC"
+    ],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Enobong Edubio  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
+    },
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "createdAt": "2026-09-09T07:22:29.109Z",
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:23.249Z",
+    "status": "verified"
+  },
+  {
+    "id": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
+    "uid": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
+    "username": "adenike",
+    "name": "Adenike Enoch-Salami ",
+    "location": "Nigeria",
+    "subjects": [
+      "General Tutoring",
+      "Mathematics"
+    ],
+    "curricula": [
+      "Primary (Ages 6-11)",
+      "WAEC"
+    ],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Adenike Enoch-Salami  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
+    },
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "createdAt": "2026-09-09T08:33:48.289Z",
+    "availability": {
+      "Thursday": [
+        "10:00 AM",
+        "11:00 AM",
+        "2:00 PM"
+      ],
+      "Friday": [
+        "1:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "2:00 PM",
+        "3:00 PM",
+        "4:00 PM"
+      ],
+      "Tomorrow": [
+        "3:00 PM",
+        "4:00 PM",
+        "5:00 PM"
+      ]
+    },
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:23.383Z",
+    "status": "verified"
+  },
+  {
     "id": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
-    "name": " Christian Nwode",
+    "uid": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
     "username": "chris",
+    "name": " Christian Nwode",
     "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
     "subjects": [
       "General Tutoring",
       "Mathematics"
@@ -852,246 +194,38 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "WAEC"
     ],
-    "languages": [
-      "English"
-    ],
     "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
+    "rating": 5,
+    "reviewsCount": 0,
     "badges": [
       "badge-verified"
     ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-online-learning-with-a-teacher-41221-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 97,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1019,
-    "submittedTime": "1019h ago",
     "bio": " Christian Nwode is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
-    "id": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
-    "name": "Daniel ",
-    "username": "daniel-government",
-    "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
     "languages": [
       "English"
     ],
-    "rate": 350000,
-    "status": "onboarding",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-giving-an-online-class-41224-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 2620,
-    "submittedTime": "2620h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
     },
-    "online": true
-  },
-  {
-    "uid": "StubTCOEqVfNpSmPMzG4YfcK4pD2",
-    "id": "StubTCOEqVfNpSmPMzG4YfcK4pD2",
-    "name": "Eminent Umosung",
-    "username": "teacher-eminent",
-    "location": "Nigeria",
+    "leaderboardOptIn": true,
     "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [
-      "English"
-    ],
-    "rate": 350000,
-    "status": "onboarding",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-female-teacher-explaining-a-lesson-online-41223-large.mp4",
-    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLbMZWzD7Lnc90ESpF39SqEgDrkcq0H-rPCv1EkrGW4c_LgnahP=s400-c",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 2620,
-    "submittedTime": "2620h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
+    "createdAt": "2026-09-09T04:27:02.836Z",
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:23.758Z",
+    "status": "verified"
   },
   {
-    "uid": "dR7Gw9FFOtcDFEd9rZNcv5058962",
     "id": "dR7Gw9FFOtcDFEd9rZNcv5058962",
-    "name": "Edidiong Wilson ",
+    "uid": "dR7Gw9FFOtcDFEd9rZNcv5058962",
     "username": "teacher-eddy",
+    "name": "Edidiong Wilson ",
     "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
     "subjects": [
       "General Tutoring",
       "Mathematics"
@@ -1100,86 +234,38 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "WAEC"
     ],
-    "languages": [
-      "English"
-    ],
     "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
+    "rating": 5,
+    "reviewsCount": 0,
     "badges": [
       "badge-verified"
     ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-conducting-an-online-lesson-41225-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 97,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 958,
-    "submittedTime": "958h ago",
     "bio": "Edidiong Wilson  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
     },
-    "online": true
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "createdAt": "2026-09-11T18:18:48.537Z",
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:24.394Z",
+    "status": "verified"
   },
   {
-    "uid": "f3qayET3XBYgSrPzL9h7nAZUDog2",
     "id": "f3qayET3XBYgSrPzL9h7nAZUDog2",
-    "name": "Laura Elvis Jaja ",
+    "uid": "f3qayET3XBYgSrPzL9h7nAZUDog2",
     "username": "tteacherlaura-phonics",
+    "name": "Laura Elvis Jaja ",
     "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
     "subjects": [
       "General Tutoring",
       "Mathematics"
@@ -1188,244 +274,38 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "WAEC"
     ],
-    "languages": [
-      "English"
-    ],
     "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
+    "rating": 5,
+    "reviewsCount": 0,
     "badges": [
       "badge-verified"
     ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-teacher-explaining-a-math-problem-41227-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 70,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1022,
-    "submittedTime": "1022h ago",
     "bio": "Laura Elvis Jaja  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
-  },
-  {
-    "uid": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
-    "id": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
-    "name": "Dorcas Adenigba",
-    "username": "dorcas-english",
-    "location": "Nigeria",
-    "whatsapp": "+2347060830994",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
     "languages": [
       "English"
     ],
-    "rate": 500000,
-    "status": "pending_approval",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-online-learning-with-a-teacher-41221-large.mp4",
-    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786388183/bpdav8s1uiwwjatberoi.jpg",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1725,
-    "submittedTime": "1725h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
     },
-    "online": true
-  },
-  {
-    "uid": "teacher_fresh",
-    "id": "teacher_fresh",
-    "name": "Dr. Chidi Johnson",
-    "username": "",
-    "location": "Enugu, Nigeria",
+    "leaderboardOptIn": true,
     "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [],
-    "rate": 350000,
-    "status": "pending_approval",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-giving-an-online-class-41224-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1,
-    "submittedTime": "1h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
+    "createdAt": "2026-09-09T01:45:54.677Z",
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:24.540Z",
+    "status": "verified"
   },
   {
-    "uid": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
     "id": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
-    "name": "Joy Usanga ",
+    "uid": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
     "username": "tchrjoyu",
+    "name": "Joy Usanga ",
     "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
     "subjects": [
       "General Tutoring",
       "Mathematics"
@@ -1434,86 +314,38 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "WAEC"
     ],
-    "languages": [
-      "English"
-    ],
     "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
+    "rating": 5,
+    "reviewsCount": 0,
     "badges": [
       "badge-verified"
     ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-female-teacher-explaining-a-lesson-online-41223-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 92,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1016,
-    "submittedTime": "1016h ago",
     "bio": "Joy Usanga  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
     },
-    "online": true
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "createdAt": "2026-09-09T07:27:18.159Z",
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:25.455Z",
+    "status": "verified"
   },
   {
-    "uid": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
     "id": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
-    "name": "Editi Edidiong",
+    "uid": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
     "username": "editiedidiong",
+    "name": "Editi Edidiong",
     "location": "Nigeria",
-    "whatsapp": "",
-    "linkedin": "",
-    "email": "",
     "subjects": [
       "General Tutoring",
       "Mathematics"
@@ -1522,153 +354,30 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "WAEC"
     ],
-    "languages": [
-      "English"
-    ],
     "rate": 350000,
-    "status": "active",
-    "verified": true,
-    "tier": "Grade B",
+    "rating": 5,
+    "reviewsCount": 0,
     "badges": [
       "badge-verified"
     ],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-teacher-conducting-an-online-lesson-41225-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 95,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1018,
-    "submittedTime": "1018h ago",
     "bio": "Editi Edidiong is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
+    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "online": true,
+    "availability": {},
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "stats": {
+      "sessionsTaught": 0,
+      "responseRate": 100
     },
-    "online": true
-  },
-  {
-    "uid": "teacher_fresh",
-    "id": "teacher_fresh",
-    "name": "Dr. Chidi Johnson",
-    "username": "",
-    "location": "Enugu, Nigeria",
+    "leaderboardOptIn": true,
     "whatsapp": "",
-    "linkedin": "",
-    "email": "",
-    "subjects": [],
-    "curricula": [],
-    "languages": [],
-    "rate": 350000,
-    "status": "pending_approval",
-    "verified": false,
-    "tier": "Pending",
-    "badges": [],
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-teacher-explaining-a-math-problem-41227-large.mp4",
-    "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=600&auto=format&fit=crop",
-    "govId": "",
-    "degree": "",
-    "cvUrl": "",
-    "geminiBioScore": 75,
-    "idMatch": "Passed",
-    "duplicateCheck": "Clear",
-    "slaHoursElapsed": 1,
-    "submittedTime": "1h ago",
-    "bio": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    },
-    "online": true
+    "createdAt": "2026-09-09T05:52:06.030Z",
+    "videoUrl": "",
+    "avatar": "",
+    "updatedAt": "2026-11-15T09:12:25.618Z",
+    "status": "verified"
   }
 ];

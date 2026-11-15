@@ -174,8 +174,10 @@ function sanitizeObject(obj) {
   return obj;
 }
 
-// Teacher avatar helper to ensure authentic images or branded educator portrait fallback
+// Teacher avatar helper to ensure authentic images or clean brand monogram fallback
 const REJECTED_AVATAR_PATTERNS = [
+  'unsplash.com',
+  'images.unsplash.com',
   'ui-avatars.com',
   'placeholder',
   'avatar-default',
@@ -195,23 +197,29 @@ const REJECTED_AVATAR_PATTERNS = [
   'yfk97qh8g7ekbaaif9od'
 ];
 
-const EDUCATOR_PORTRAITS = [
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?q=80&w=600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1589156280159-27698a70f29e?q=80&w=600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=600&auto=format&fit=crop'
-];
+function getTeacherInitials(name = 'Tutor') {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'ED';
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function getTeacherMonogram(name = 'Tutor') {
+  const initials = getTeacherInitials(name);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+    <rect width="120" height="120" rx="60" fill="#1C2B22"/>
+    <circle cx="60" cy="60" r="56" fill="none" stroke="#C85A32" stroke-width="2.5" opacity="0.4"/>
+    <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" fill="#FBF8F3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="42" letter-spacing="1">${initials}</text>
+  </svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
 
 function isRealTeacherAvatar(avatar) {
   if (!avatar || typeof avatar !== 'string') return false;
-  const clean = avatar.trim();
-  if (!clean || clean.includes('ui-avatars.com')) return false;
+  const clean = avatar.trim().toLowerCase();
+  if (!clean) return false;
   for (const pattern of REJECTED_AVATAR_PATTERNS) {
-    if (clean.includes(pattern)) return false;
+    if (clean.includes(pattern.toLowerCase())) return false;
   }
   return true;
 }
@@ -220,12 +228,7 @@ function getTeacherAvatar(avatar, name = 'Tutor') {
   if (isRealTeacherAvatar(avatar)) {
     return avatar.trim();
   }
-  const cleanName = (name || 'Tutor').trim();
-  let hash = 0;
-  for (let i = 0; i < cleanName.length; i++) {
-    hash = (hash + cleanName.charCodeAt(i)) % EDUCATOR_PORTRAITS.length;
-  }
-  return EDUCATOR_PORTRAITS[hash] || EDUCATOR_PORTRAITS[0];
+  return getTeacherMonogram(name);
 }
 
 // Global Input Sanitization Middleware to prevent XSS
@@ -1044,11 +1047,20 @@ app.get('/api/teachers', (req, res) => {
   
   let teachers = db.find('teachers');
   if (all === 'true' || all === true) {
-    // Return all teachers
+    // Return all teachers (for admin management)
   } else if (status && status !== 'all') {
     teachers = teachers.filter(t => t.status === status);
   } else {
-    teachers = teachers.filter(t => !t.status || t.status === 'verified' || t.status === 'active' || t.verified);
+    // Only return active/verified teachers who have complete profiles (real name, rich bio, subjects, rate)
+    teachers = teachers.filter(t => {
+      const isApproved = !t.status || t.status === 'verified' || t.status === 'active' || t.verified;
+      if (!isApproved) return false;
+      const hasName = t.name && t.name.trim().length >= 3;
+      const hasBio = t.bio && t.bio.trim().length >= 25 && t.bio.trim().toLowerCase() !== 'move';
+      const hasSubjects = Array.isArray(t.subjects) && t.subjects.length > 0;
+      const hasRate = Number(t.rate) > 0;
+      return Boolean(hasName && hasBio && hasSubjects && hasRate);
+    });
   }
   
   if (subject) {

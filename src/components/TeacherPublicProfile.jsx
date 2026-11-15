@@ -25,7 +25,7 @@ import {
   ArrowRight,
   X
 } from 'lucide-react';
-import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';
+import { getTeacherAvatar, handleAvatarError, isRealTeacherVideo } from '../utils/avatar';
 
 export default function TeacherPublicProfile({ 
   username, 
@@ -231,168 +231,7 @@ export default function TeacherPublicProfile({
           return;
         }
         
-        if (usernameLower === 'adenike') {
-          const mockAdenike = {
-            uid: "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-            id: "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-            name: "Adenike Enoch-Salami",
-            location: "Lagos, Nigeria",
-            subjects: ["Mathematics", "General Tutoring"],
-            curricula: ["Primary (Ages 6-11)", "WAEC", "Cambridge"],
-            rate: 350000,
-            rating: 5.0,
-            reviewsCount: 18,
-            badges: ["badge-verified", "badge-bg-checked", "badge-top-rated"],
-            bio: "Adenike Enoch-Salami is a verified educator on EduVista specializing in personalized instruction, foundational numeracy, and WAEC exam success. With extensive classroom experience, she tailors each lesson to the individual learner's pace.",
-            avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
-            coverImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop",
-            languages: ["English", "Yoruba"],
-            availability: {
-              Tomorrow: ["3:00 PM", "4:00 PM", "5:00 PM"],
-              Wednesday: ["2:00 PM", "3:00 PM", "4:00 PM"],
-              Thursday: ["10:00 AM", "11:00 AM", "2:00 PM"],
-              Friday: ["1:00 PM", "2:00 PM"]
-            },
-            reviews: [
-              { 
-                parent: "Ngozi A.", 
-                text: "Fantastic tutor. Helped my child significantly with algebra concepts.", 
-                score: 5, 
-                date: "11/4/2026", 
-                dimensions: { Punctuality: 5, Quality: 5, Communication: 4, Preparedness: 5, Impact: 5 } 
-              }
-            ]
-          };
-          setTeacher(mockAdenike);
-          document.title = `${mockAdenike.name} | Online Home Tutoring & Lessons | EduVista`;
-        } else if (usernameLower === 'adebayo') {
-          const mockAdebayo = {
-            uid: "teacher_1",
-            id: "teacher_1",
-            name: "Mr. Adebayo Okafor",
-            location: "Lagos, Nigeria",
-            subjects: ["Mathematics", "Physics"],
-            curricula: ["WAEC", "JAMB", "IGCSE", "High School (Ages 15-18)"],
-            rate: 400000,
-            rating: 4.9,
-            reviewsCount: 247,
-            badges: ["badge-verified", "badge-top-rated", "badge-bg-checked"],
-            bio: "12 years teaching mathematics preparation. Specializes in algebra speed calculations and IGCSE/WAEC exam setups.",
-            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
-            coverImage: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop",
-            videoUrl: "https://res.cloudinary.com/demo/video/upload/elephants.mp4",
-            languages: ["English", "Yoruba"],
-            availability: {
-              Tomorrow: ["4:00 PM", "5:00 PM"],
-              Wednesday: ["3:00 PM", "4:00 PM"]
-            },
-            reviews: [
-              { parent: "Kehinde A.", text: "Excellent algebra prep. Tunde passed his WAEC with an A1!", score: 5 },
-              { parent: "Sarah M.", text: "Great physics explanations. Highly recommend.", score: 5 }
-            ]
-          };
-          setTeacher(mockAdebayo);
-          document.title = `${mockAdebayo.name} | Online Home Tutoring & Lessons | EduVista`;
-        } else if (usernameLower === 'kofi') {
-          const mockKofi = {
-            uid: "teacher_2",
-            id: "teacher_2",
-            name: "Mr. Kofi Mensah",
-            location: "Accra, Ghana",
-            subjects: ["Chemistry", "Mathematics"],
-            curricula: ["WAEC", "Cambridge", "Middle School (Ages 12-14)", "High School (Ages 15-18)"],
-            rate: 450000,
-            rating: 4.8,
-            reviewsCount: 118,
-            badges: ["badge-verified", "badge-fast"],
-            bio: "Practical sciences master. Makes complex chemical formulas simple using visual laboratory representations.",
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
-            coverImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&auto=format&fit=crop",
-            videoUrl: "https://res.cloudinary.com/demo/video/upload/dog.mp4",
-            languages: ["English", "Twi"],
-            availability: {
-              Tomorrow: ["2:00 PM", "3:00 PM"],
-              Wednesday: ["1:00 PM", "2:00 PM"]
-            },
-            reviews: []
-          };
-          setTeacher(mockKofi);
-          document.title = `${mockKofi.name} | Online Home Tutoring & Lessons | EduVista`;
-        } else if (usernameLower === 'chioma') {
-          const mockChioma = {
-            uid: "teacher_3",
-            id: "teacher_3",
-            name: "Mrs. Chioma Nwachukwu",
-            location: "Enugu, Nigeria",
-            subjects: ["English", "Literature"],
-            curricula: ["WAEC", "Cambridge", "SAT", "Primary (Ages 6-11)", "Middle School (Ages 12-14)"],
-            rate: 350000,
-            rating: 5.0,
-            reviewsCount: 92,
-            badges: ["badge-verified", "badge-elite"],
-            bio: "Creative writing and syntax focus. Multi-jurisdiction English instructor with an emphasis on SAT prep.",
-            avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600&auto=format&fit=crop",
-            coverImage: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop",
-            videoUrl: "https://res.cloudinary.com/demo/video/upload/elephants.mp4",
-            languages: ["English", "Igbo"],
-            availability: {
-              Tomorrow: ["9:00 AM", "10:00 AM"],
-              Thursday: ["1:00 PM", "2:00 PM"]
-            },
-            reviews: []
-          };
-          setTeacher(mockChioma);
-          document.title = `${mockChioma.name} | Online Home Tutoring & Lessons | EduVista`;
-        } else if (usernameLower === 'aminata') {
-          const mockAminata = {
-            uid: "teacher_4",
-            id: "teacher_4",
-            name: "Ms. Aminata Diallo",
-            location: "Nairobi, Kenya",
-            subjects: ["Physics", "Chemistry"],
-            curricula: ["IB Diploma", "Cambridge", "Primary (Ages 6-11)", "Middle School (Ages 12-14)"],
-            rate: 550000,
-            rating: 4.9,
-            reviewsCount: 204,
-            badges: ["badge-verified", "badge-top-rated"],
-            bio: "Bilingual instructor specializing in AP, IB, and IGCSE physics frameworks.",
-            avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600&auto=format&fit=crop",
-            coverImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop",
-            languages: ["English", "French", "Swahili"],
-            availability: {
-              Wednesday: ["9:00 AM", "10:00 AM"],
-              Friday: ["1:00 PM", "2:00 PM"]
-            },
-            reviews: []
-          };
-          setTeacher(mockAminata);
-          document.title = `${mockAminata.name} | Online Home Tutoring & Lessons | EduVista`;
-        } else if (usernameLower === 'fatima') {
-          const mockFatima = {
-            uid: "teacher_5",
-            id: "teacher_5",
-            name: "Mrs. Fatima Bello",
-            location: "Abuja, Nigeria",
-            subjects: ["English", "Mathematics"],
-            curricula: ["Nursery (Ages 2-5)", "Primary (Ages 6-11)"],
-            rate: 300000,
-            rating: 4.9,
-            reviewsCount: 84,
-            badges: ["badge-verified", "badge-top-rated"],
-            bio: "Early childhood development specialist. Passionate about phonics, foundational numeracy, and active learning strategies.",
-            avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=600&auto=format&fit=crop",
-            coverImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
-            languages: ["English", "Hausa"],
-            availability: {
-              Tomorrow: ["1:00 PM", "2:00 PM"],
-              Thursday: ["10:00 AM", "11:00 AM"]
-            },
-            reviews: []
-          };
-          setTeacher(mockFatima);
-        } else {
-          setError('Tutor profile not found.');
-        }
+        setError('Tutor profile not found.');
       } finally {
         setLoading(false);
       }
@@ -766,7 +605,7 @@ export default function TeacherPublicProfile({
               </div>
 
               {/* Quick Action: Video Intro Pill */}
-              {teacher.videoUrl && (
+              {isRealTeacherVideo(teacher.videoUrl) && (
                 <div className="mt-3 flex justify-center sm:justify-start">
                   <button
                     type="button"
@@ -849,7 +688,7 @@ export default function TeacherPublicProfile({
           <div className={`space-y-6 lg:col-span-8 ${mobileTab === 'booking' ? 'hidden lg:block' : 'block'}`}>
             
             {/* Section: Teacher Video Introduction */}
-            {teacher.videoUrl && (
+            {isRealTeacherVideo(teacher.videoUrl) && (
               <div id="tutor-video-section" className="bg-white border border-brand-moss/10 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 shadow-sm space-y-4">
                 <button
                   type="button"

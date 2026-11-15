@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Star, ShieldCheck, CheckCircle2, Award, Zap, HelpCircle, Play, ChevronLeft, ChevronRight, RotateCw } from 'lucide-react';
-import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';
+import { getTeacherAvatar, handleAvatarError, isRealTeacherVideo } from '../utils/avatar';
 
 export default function Marketplace({ 
   teachers = [], 
@@ -24,11 +24,12 @@ export default function Marketplace({
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          setLeaderboard(data);
+          const valid = data.filter(t => t.name && t.name.trim().length >= 3 && t.bio && t.bio.trim().length >= 25 && Array.isArray(t.subjects) && t.subjects.length > 0);
+          setLeaderboard(valid);
         } else if (Array.isArray(teachers) && teachers.length > 0) {
-          // Fallback to active teachers in props
+          // Fallback to complete verified teachers in props
           const sorted = [...teachers]
-            .filter(t => !t.status || t.status === 'verified' || t.status === 'active')
+            .filter(t => t.name && t.name.trim().length >= 3 && t.bio && t.bio.trim().length >= 25 && Array.isArray(t.subjects) && t.subjects.length > 0 && (!t.status || t.status === 'verified' || t.status === 'active'))
             .sort((a, b) => (b.rating || 5) - (a.rating || 5));
           setLeaderboard(sorted);
         }
@@ -36,7 +37,7 @@ export default function Marketplace({
       .catch(err => {
         console.warn("Failed to fetch leaderboard, falling back to teachers props:", err);
         if (Array.isArray(teachers) && teachers.length > 0) {
-          setLeaderboard(teachers.filter(t => !t.status || t.status === 'verified' || t.status === 'active'));
+          setLeaderboard(teachers.filter(t => t.name && t.name.trim().length >= 3 && t.bio && t.bio.trim().length >= 25 && Array.isArray(t.subjects) && t.subjects.length > 0 && (!t.status || t.status === 'verified' || t.status === 'active')));
         }
       });
   }, [teachers]);
@@ -87,9 +88,16 @@ export default function Marketplace({
     return batch;
   }, [leaderboard, rotationIndex]);
 
-  // Filter teachers based on state
+  // Filter teachers based on real completeness and active filter criteria
   const filteredTeachers = (teachers || []).filter(t => {
     if (!t) return false;
+    // Strict completeness gate: only show genuine educators with complete information
+    const hasName = t.name && t.name.trim().length >= 3;
+    const hasBio = t.bio && t.bio.trim().length >= 25 && t.bio.trim().toLowerCase() !== 'move';
+    const hasSubjects = Array.isArray(t.subjects) && t.subjects.length > 0;
+    const hasRate = Number(t.rate) > 0;
+    if (!hasName || !hasBio || !hasSubjects || !hasRate) return false;
+
     const tSubjects = t.subjects || [];
     const tCurricula = t.curricula || t.curriculums || [];
 
@@ -144,7 +152,7 @@ export default function Marketplace({
           Find Your Perfect Verified Instructor
         </h2>
         <p className="font-sans text-sm text-brand-charcoal/70 mt-3 max-w-xl mx-auto">
-          Every teacher is biometrically verified, Elite-Academy certified, and rated by parents. Top 5% of African pedagogy.
+          Every educator is identity-verified, credential-checked, and committed to personalized student excellence.
         </p>
       </div>
 
@@ -222,11 +230,17 @@ export default function Marketplace({
                       <span className="truncate">{teacher.name || 'Elite Tutor'}</span>
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                     </h4>
-                    <div className="flex items-center text-brand-clay mt-1">
-                      <Star className="w-3.5 h-3.5 fill-current shrink-0" />
-                      <span className="font-heading font-bold text-xs ml-1 text-white">{teacher.rating || '5.0'}</span>
-                      <span className="text-xs text-brand-cream/50 ml-1">({teacher.reviewsCount || 0} reviews)</span>
-                    </div>
+                    {teacher.reviews && teacher.reviews.length > 0 ? (
+                      <div className="flex items-center text-brand-clay mt-1">
+                        <Star className="w-3.5 h-3.5 fill-current shrink-0" />
+                        <span className="font-heading font-bold text-xs ml-1 text-white">{teacher.rating || '5.0'}</span>
+                        <span className="text-xs text-brand-cream/60 ml-1">({teacher.reviews.length} {teacher.reviews.length === 1 ? 'review' : 'reviews'})</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center text-emerald-300 mt-1">
+                        <span className="font-sans text-[11px] font-medium text-white/80">Verified Educator</span>
+                      </div>
+                    )}
                     {teacher.subjects && teacher.subjects.length > 0 && (
                       <div className="text-[10px] text-brand-cream/60 truncate mt-1">
                         {teacher.subjects.slice(0, 2).join(' · ')}
@@ -255,8 +269,8 @@ export default function Marketplace({
             />
           </div>
 
-          <div className="text-xs text-brand-charcoal/50 font-mono">
-            SHOWING {filteredTeachers.length} OF {teachers.length} EDUCATORS
+          <div className="text-xs text-brand-charcoal/60 font-mono font-bold">
+            SHOWING {filteredTeachers.length} VERIFIED EDUCATORS
           </div>
         </div>
 
@@ -460,12 +474,18 @@ export default function Marketplace({
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-50" />
                     </h3>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <div className="flex items-center text-brand-clay">
-                        <Star className="w-3.5 h-3.5 fill-current" />
-                        <span className="font-heading font-bold text-xs ml-1 text-brand-moss">{teacher.rating || '5.0'}</span>
-                      </div>
-                      <span className="text-xs text-brand-charcoal/50">({teacher.reviewsCount || 0} sessions)</span>
-                      {teacher.videoUrl && (
+                      {teacher.reviews && teacher.reviews.length > 0 ? (
+                        <div className="flex items-center text-brand-clay">
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                          <span className="font-heading font-bold text-xs ml-1 text-brand-moss">{teacher.rating || '5.0'}</span>
+                          <span className="text-xs text-brand-charcoal/50 ml-1">({teacher.reviews.length} {teacher.reviews.length === 1 ? 'review' : 'reviews'})</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center text-emerald-700">
+                          <span className="text-xs font-sans font-medium text-brand-moss/80">Verified Educator</span>
+                        </div>
+                      )}
+                      {isRealTeacherVideo(teacher.videoUrl) && (
                         <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider font-bold text-brand-clay bg-brand-clay/10 px-2 py-0.5 rounded-full">
                           <Play className="w-2.5 h-2.5 fill-current" /> Video
                         </span>

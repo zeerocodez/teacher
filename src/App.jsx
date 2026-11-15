@@ -164,30 +164,8 @@ export default function App() {
   const [activeToast, setActiveToast] = useState(null);
   const prevUnreadCountRef = useRef(0);
 
-  // Vetted Teachers Database state (so we can append reviews)
-  const [teachers, setTeachers] = useState([
-    {
-      id: "teacher_1",
-      uid: "teacher_1",
-      username: "adebayo",
-      name: "Mr. Adebayo Okafor",
-      location: "Lagos, Nigeria",
-      subjects: ["Mathematics", "Physics"],
-      curriculums: ["WAEC", "JAMB", "IGCSE", "High School (Ages 15-18)", "University Prep"],
-      rate: 400000, // ₦4,000/hr
-      rating: 4.9,
-      reviewsCount: 247,
-      badges: ["badge-verified", "badge-top-rated", "badge-bg-checked"],
-      bio: "12 years teaching mathematics preparation. Specializes in algebra speed calculations and IGCSE/WAEC exam setups.",
-      avatar: "",
-      coverImage: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop",
-      online: true,
-      reviews: [
-        { parent: "Kehinde A.", text: "Excellent algebra prep. Tunde passed his WAEC with an A1!", score: 5 },
-        { parent: "Sarah M.", text: "Great physics explanations. Highly recommend.", score: 5 }
-      ]
-    }
-  ]);
+  // Vetted Teachers Database state
+  const [teachers, setTeachers] = useState([]);
 
   // Booking Modal Trigger State
   const [selectedTeacherForBooking, setSelectedTeacherForBooking] = useState(null);
@@ -1740,10 +1718,19 @@ export default function App() {
             </a>
           </div>
 
-          <div className="trust-fade flex flex-wrap items-center justify-center gap-8 sm:gap-16 text-3xl sm:text-4xl md:text-5xl font-heading font-extrabold tracking-tight mt-4 select-none">
-            <span className="text-brand-clay font-drama">4,200+</span>
-            <span className="text-white font-drama italic font-light">98 countries</span>
-            <span className="text-brand-clay">4.9★</span>
+          <div className="trust-fade flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-6 select-none font-sans text-xs sm:text-sm text-brand-cream/80">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xs py-2 px-4 rounded-full border border-white/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span className="font-medium text-white">100% Vetted Instructors</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xs py-2 px-4 rounded-full border border-white/10">
+              <span className="w-2 h-2 rounded-full bg-brand-clay"></span>
+              <span className="font-medium text-white">Escrow Payment Protection</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xs py-2 px-4 rounded-full border border-white/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span className="font-medium text-white">1-on-1 Online & Home Lessons</span>
+            </div>
           </div>
 
           {/* Parent Testimonials Section */}
@@ -2403,7 +2390,7 @@ export default function App() {
               </span>
             </h2>
             <p className="font-sans text-brand-cream/80 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed pt-2">
-              Join 18,000+ families across Africa and the diaspora who trust EduVista Africa for their children's private tutoring. Verified teachers. Transparent progress. Payment protection. Always.
+              Join families across Nigeria and the diaspora who trust EduVista Africa for their children's private tutoring. Verified teachers. Transparent progress. Payment protection. Always.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
@@ -2528,7 +2515,7 @@ export default function App() {
                   TEACH WITH EDUVISTA AFRICA
                 </span>
                 <h3 className="font-heading font-bold text-2xl text-brand-moss">
-                  Join 100+ Verified Private Educators
+                  Join Verified Private Educators
                 </h3>
                 <p className="font-sans text-xs text-brand-charcoal/70 mt-1 max-w-lg leading-relaxed">
                   Connect with motivated families seeking 1-on-1 online and home lessons. We manage invoicing, scheduling, and escrow protection so you can focus on teaching.

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon } from 'lucide-react';
-import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';
+import { getTeacherAvatar, handleAvatarError, isRealTeacherAvatar } from '../utils/avatar';
 
 export default function TeacherDashboard({
   currentUser,
@@ -1232,6 +1232,39 @@ Conclusion: Educational progression actively monitored.`);
                         <option value="EUR">EUR (€)</option>
                       </select>
                     </div>
+
+                    {/* Transparent Commission & Take-Home Breakdown */}
+                    {rate > 0 && (
+                      <div className="mt-3 bg-brand-cream/60 border border-brand-moss/10 rounded-2xl p-4 space-y-2.5">
+                        <div className="flex items-center justify-between text-xs font-heading font-bold text-brand-moss">
+                          <span>15% Commission & Net Take-Home</span>
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-mono px-2 py-0.5 rounded-full font-bold">100% Transparent</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-center pt-1.5 border-t border-brand-moss/10">
+                          <div className="bg-white rounded-xl p-2 border border-brand-moss/5 shadow-xs">
+                            <span className="text-[9px] font-mono text-brand-charcoal/60 uppercase block">Parent Pays</span>
+                            <span className="font-heading font-bold text-sm text-brand-moss block mt-0.5">
+                              {currency === 'NGN' ? '₦' : currency} {rate.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="bg-white rounded-xl p-2 border border-brand-moss/5 shadow-xs">
+                            <span className="text-[9px] font-mono text-rose-600 uppercase font-bold block">EduVista (15%)</span>
+                            <span className="font-heading font-bold text-sm text-rose-600 block mt-0.5">
+                              - {currency === 'NGN' ? '₦' : currency} {Math.round(rate * 0.15).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="bg-emerald-50 rounded-xl p-2 border border-emerald-200 shadow-xs">
+                            <span className="text-[9px] font-mono text-emerald-800 uppercase font-bold block">You Receive (85%)</span>
+                            <span className="font-heading font-bold text-sm text-emerald-700 block mt-0.5">
+                              = {currency === 'NGN' ? '₦' : currency} {Math.round(rate * 0.85).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-brand-charcoal/70 leading-relaxed">
+                          For every lesson completed, EduVista retains 15% for payment escrow processing, calendar booking, student acquisition, and 24/7 parent support. You receive <b>85%</b> net payout directly to your bank account.
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2">Timezone</label>
@@ -1281,8 +1314,12 @@ Conclusion: Educational progression actively monitored.`);
                     <label className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss flex items-center gap-2">
                       <User className="w-4 h-4 text-brand-clay" /> Teacher Profile Photo
                     </label>
-                    <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
-                      {avatar ? 'Photo Active ✓' : 'Required'}
+                    <span className={`font-mono text-[9px] uppercase px-2 py-0.5 rounded-full font-bold ${
+                      isRealTeacherAvatar(avatar) 
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
+                        : 'bg-amber-50 text-amber-800 border border-amber-200'
+                    }`}>
+                      {isRealTeacherAvatar(avatar) ? 'Real Photo Active ✓' : 'Upload Real Photo'}
                     </span>
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -1307,7 +1344,11 @@ Conclusion: Educational progression actively monitored.`);
                           <span className="text-xs text-brand-clay font-bold animate-pulse">Uploading photo... {avatarUploadProgress}%</span>
                         </div>
                       )}
-                      <p className="text-[10px] text-brand-charcoal/60">Upload your real, authentic portrait photo. Real photos build trust with parents and increase bookings.</p>
+                      <p className="text-[10px] text-brand-charcoal/60">
+                        {isRealTeacherAvatar(avatar) 
+                          ? 'Real photo active. Your authentic photo builds trust with parents.' 
+                          : 'Currently displaying your brand monogram initials. Upload a clear, friendly photo of yourself to show parents who they are hiring.'}
+                      </p>
                       <div className="pt-1">
                         <input
                           type="text"

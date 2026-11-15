@@ -110,12 +110,18 @@ export default function TutorDirectory({
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
-          // Filter to verified / active or onboarding educators with valid profile
-          const normalized = data.map(t => ({
+          // Gate to complete, authentic educators with real profiles
+          const completeOnly = data.filter(t => 
+            t.name && t.name.trim().length >= 3 && 
+            t.bio && t.bio.trim().length >= 25 && t.bio.trim().toLowerCase() !== 'move' &&
+            Array.isArray(t.subjects) && t.subjects.length > 0 &&
+            Number(t.rate) > 0
+          );
+          const normalized = completeOnly.map(t => ({
             ...t,
             id: t.uid || t.id,
-            subjects: (t.subjects && t.subjects.length > 0) ? t.subjects : ['General Tutoring'],
-            curricula: (t.curricula && t.curricula.length > 0) ? t.curricula : ['Primary & Secondary', 'WAEC'],
+            subjects: t.subjects || [],
+            curricula: t.curricula || t.curriculums || [],
             rate: t.rate || 350000,
             rating: t.rating || 5.0,
             reviewsCount: t.reviewsCount || 0
