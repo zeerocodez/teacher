@@ -584,7 +584,7 @@ export default function TeacherPublicProfile({
                 <Award className="w-5 h-5 text-brand-clay" title="Verified Tutor Profile" />
               </div>
               <p className="font-drama italic text-sm text-brand-clay font-medium">
-                Professional Instructor in {Array.isArray(teacher.subjects) ? teacher.subjects.join(' & ') : (teacher.subjects || 'General Tutoring')}
+                Professional Instructor in {Array.isArray(teacher.subjects) && teacher.subjects.length > 0 ? teacher.subjects.join(' · ') : (teacher.subjects || 'Private Lessons')}
               </p>
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2 font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/70">
                 <div className="flex items-center gap-1">
@@ -592,15 +592,22 @@ export default function TeacherPublicProfile({
                   <span>{teacher.location || 'Nigeria'}</span>
                 </div>
                 <span className="text-brand-charcoal/20">|</span>
-                <div className="flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-current text-brand-clay" />
-                  <span className="font-bold text-brand-moss">{teacher.rating || 5.0}</span>
-                  <span className="text-brand-charcoal/50">({reviews.length || teacher.reviewsCount || 0} reviews)</span>
-                </div>
+                {(reviews.length > 0 || (teacher.reviewsCount || 0) > 0) ? (
+                  <div className="flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-current text-brand-clay" />
+                    <span className="font-bold text-brand-moss">{teacher.rating || 5.0}</span>
+                    <span className="text-brand-charcoal/50">({reviews.length || teacher.reviewsCount} reviews)</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-emerald-700 font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Verified Educator</span>
+                  </div>
+                )}
                 <span className="text-brand-charcoal/20">|</span>
                 <div className="flex items-center gap-1 text-emerald-700 font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Verified Tutor</span>
+                  <Award className="w-3.5 h-3.5" />
+                  <span>Vetted Credentials</span>
                 </div>
               </div>
 
@@ -805,7 +812,7 @@ export default function TeacherPublicProfile({
                     <div className="bg-brand-cream/20 p-3.5 rounded-2xl border border-brand-moss/5">
                       <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block mb-2">Specialized Subjects</span>
                       <div className="flex gap-1.5 flex-wrap">
-                        {(teacher.subjects || ['General Tutoring']).map(subj => (
+                        {(teacher.subjects && teacher.subjects.length > 0 ? teacher.subjects : ['Private Tutoring']).map(subj => (
                           <span key={subj} className="bg-white px-2.5 py-1 rounded-lg text-xs font-medium text-brand-moss border border-brand-moss/10">
                             {subj}
                           </span>
@@ -815,7 +822,7 @@ export default function TeacherPublicProfile({
                     <div className="bg-brand-cream/20 p-3.5 rounded-2xl border border-brand-moss/5">
                       <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block mb-2">Curriculum Standards</span>
                       <div className="flex gap-1.5 flex-wrap">
-                        {(teacher.curricula || ['Primary (Ages 6-11)', 'WAEC']).map(curr => (
+                        {(teacher.curricula && teacher.curricula.length > 0 ? teacher.curricula : ['Universal Standards']).map(curr => (
                           <span key={curr} className="bg-white px-2.5 py-1 rounded-lg text-xs font-medium text-brand-clay border border-brand-clay/10">
                             {curr}
                           </span>

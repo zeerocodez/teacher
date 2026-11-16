@@ -1,17 +1,187 @@
 export const SEED_TEACHERS = [
   {
+    "id": "f3qayET3XBYgSrPzL9h7nAZUDog2",
+    "uid": "f3qayET3XBYgSrPzL9h7nAZUDog2",
+    "username": "tteacherlaura-phonics",
+    "name": "Laura Elvis Jaja",
+    "location": "Nigeria",
+    "subjects": [
+      "English Phonics",
+      "Diction & Pronunciation",
+      "Early Reading & Literacy",
+      "Spelling & Vocabulary"
+    ],
+    "curricula": [
+      "Early Years (EYFS)",
+      "Primary (Ages 6-11)",
+      "British & Nigerian Curriculum"
+    ],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Certified Early Childhood and Phonics Educator specializing in synthetic phonics, diction, early reading fluency, and vocabulary building. Dedicated to giving young learners the foundational confidence to read, spell, and articulate clearly.",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
+    "uid": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
+    "username": "chris",
+    "name": "Christian Nwode",
+    "location": "Nigeria",
+    "subjects": [
+      "Physics",
+      "Mathematics",
+      "Further Mathematics"
+    ],
+    "curricula": [
+      "WAEC",
+      "JAMB",
+      "NECO",
+      "Cambridge IGCSE",
+      "High School (Ages 15-18)"
+    ],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Senior Secondary Physics and Mathematics Specialist with extensive experience preparing candidates for WAEC, JAMB, and IGCSE. Focuses on core mechanics, wave theory, algebraic equations, and step-by-step problem-solving.",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
     "id": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
     "uid": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
     "username": "aniebietobongimaha",
     "name": "Aniebietobong Imaha",
     "location": "Nigeria",
     "subjects": [
-      "General Tutoring",
-      "Mathematics"
+      "Chemistry",
+      "Basic Science",
+      "General Science"
     ],
     "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
+      "WAEC",
+      "JAMB",
+      "Middle School (Ages 12-14)",
+      "High School (Ages 15-18)"
     ],
     "rate": 350000,
     "rating": 5,
@@ -19,39 +189,81 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Aniebietobong Imaha is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "bio": "Dedicated STEM and Chemistry Instructor passionate about simplifying complex chemical equations, periodic trends, stoichiometry, and practical science concepts for secondary school pupils and exam candidates.",
     "online": true,
-    "availability": {},
     "languages": [
       "English"
     ],
     "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "createdAt": "2026-09-09T06:03:49.729Z",
+    "status": "verified",
     "videoUrl": "",
     "avatar": "",
-    "updatedAt": "2026-11-15T09:12:22.455Z",
-    "status": "verified"
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
   },
   {
     "id": "ENjZobEDIcSpxIM240HNXA2sYXr2",
     "uid": "ENjZobEDIcSpxIM240HNXA2sYXr2",
     "username": "teachermo",
-    "name": "Modesayo Okeniyi ",
+    "name": "Modesayo Okeniyi",
     "location": "Nigeria",
     "subjects": [
-      "General Tutoring",
-      "Mathematics"
+      "Mathematics",
+      "Quantitative Reasoning",
+      "Basic Science"
     ],
     "curricula": [
       "Primary (Ages 6-11)",
-      "WAEC"
+      "Common Entrance",
+      "Middle School (Ages 12-14)"
     ],
     "rate": 350000,
     "rating": 5,
@@ -59,39 +271,82 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Modesayo Okeniyi  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "bio": "Patient Primary and Junior Secondary Educator specializing in foundational numeracy, quantitative problem solving, and science. Helps students overcome math anxiety and build strong academic confidence.",
     "online": true,
-    "availability": {},
     "languages": [
       "English"
     ],
     "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786356757/rrdkhtm35wbzjasdpevw.png",
     "leaderboardOptIn": true,
     "whatsapp": "",
-    "createdAt": "2026-09-05T11:40:26.724Z",
-    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786356757/rrdkhtm35wbzjasdpevw.png",
-    "videoUrl": "",
-    "updatedAt": "2026-11-15T09:12:23.095Z",
-    "status": "verified"
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
   },
   {
     "id": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
     "uid": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
     "username": "teacher-eno",
-    "name": "Enobong Edubio ",
+    "name": "Enobong Edubio",
     "location": "Nigeria",
     "subjects": [
-      "General Tutoring",
-      "Mathematics"
+      "Biology",
+      "Agricultural Science",
+      "Basic Science"
     ],
     "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
+      "WAEC",
+      "NECO",
+      "JAMB",
+      "High School (Ages 15-18)"
     ],
     "rate": 350000,
     "rating": 5,
@@ -99,140 +354,81 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Enobong Edubio  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "bio": "Experienced Life Sciences and Biology Tutor specializing in human anatomy, plant physiology, genetics, and ecology for senior secondary students preparing for WAEC, NECO, and JAMB exams.",
     "online": true,
-    "availability": {},
     "languages": [
       "English"
     ],
     "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "createdAt": "2026-09-09T07:22:29.109Z",
+    "status": "verified",
     "videoUrl": "",
     "avatar": "",
-    "updatedAt": "2026-11-15T09:12:23.249Z",
-    "status": "verified"
-  },
-  {
-    "id": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-    "uid": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-    "username": "adenike",
-    "name": "Adenike Enoch-Salami ",
-    "location": "Nigeria",
-    "subjects": [
-      "General Tutoring",
-      "Mathematics"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
-    ],
-    "rate": 350000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Adenike Enoch-Salami  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
     "leaderboardOptIn": true,
     "whatsapp": "",
-    "createdAt": "2026-09-09T08:33:48.289Z",
     "availability": {
-      "Thursday": [
-        "10:00 AM",
+      "Monday": [
+        "9:00 AM",
         "11:00 AM",
-        "2:00 PM"
-      ],
-      "Friday": [
-        "1:00 PM",
         "2:00 PM",
-        "4:00 PM"
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
       ],
       "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
         "2:00 PM",
-        "3:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
         "4:00 PM"
       ],
-      "Tomorrow": [
-        "3:00 PM",
-        "4:00 PM",
-        "5:00 PM"
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
       ]
-    },
-    "videoUrl": "",
-    "avatar": "",
-    "updatedAt": "2026-11-15T09:12:23.383Z",
-    "status": "verified"
-  },
-  {
-    "id": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
-    "uid": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
-    "username": "chris",
-    "name": " Christian Nwode",
-    "location": "Nigeria",
-    "subjects": [
-      "General Tutoring",
-      "Mathematics"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
-    ],
-    "rate": 350000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": " Christian Nwode is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
-    "online": true,
-    "availability": {},
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "createdAt": "2026-09-09T04:27:02.836Z",
-    "videoUrl": "",
-    "avatar": "",
-    "updatedAt": "2026-11-15T09:12:23.758Z",
-    "status": "verified"
+    }
   },
   {
     "id": "dR7Gw9FFOtcDFEd9rZNcv5058962",
     "uid": "dR7Gw9FFOtcDFEd9rZNcv5058962",
     "username": "teacher-eddy",
-    "name": "Edidiong Wilson ",
+    "name": "Edidiong Wilson",
     "location": "Nigeria",
     "subjects": [
-      "General Tutoring",
-      "Mathematics"
+      "Coding & Robotics",
+      "Computer Studies",
+      "ICT & Digital Literacy"
     ],
     "curricula": [
       "Primary (Ages 6-11)",
-      "WAEC"
+      "Middle School (Ages 12-14)",
+      "High School (Ages 15-18)"
     ],
     "rate": 350000,
     "rating": 5,
@@ -240,78 +436,164 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Edidiong Wilson  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "bio": "Hands-on STEM and Computer Studies instructor teaching kids and teens practical coding concepts, scratch, robotics basics, and digital literacy with real-world interactive projects.",
     "online": true,
-    "availability": {},
     "languages": [
       "English"
     ],
     "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "createdAt": "2026-09-11T18:18:48.537Z",
+    "status": "verified",
     "videoUrl": "",
     "avatar": "",
-    "updatedAt": "2026-11-15T09:12:24.394Z",
-    "status": "verified"
-  },
-  {
-    "id": "f3qayET3XBYgSrPzL9h7nAZUDog2",
-    "uid": "f3qayET3XBYgSrPzL9h7nAZUDog2",
-    "username": "tteacherlaura-phonics",
-    "name": "Laura Elvis Jaja ",
-    "location": "Nigeria",
-    "subjects": [
-      "General Tutoring",
-      "Mathematics"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
-    ],
-    "rate": 350000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Laura Elvis Jaja  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
-    "online": true,
-    "availability": {},
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
     "leaderboardOptIn": true,
     "whatsapp": "",
-    "createdAt": "2026-09-09T01:45:54.677Z",
-    "videoUrl": "",
-    "avatar": "",
-    "updatedAt": "2026-11-15T09:12:24.540Z",
-    "status": "verified"
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
   },
   {
     "id": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
     "uid": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
     "username": "tchrjoyu",
-    "name": "Joy Usanga ",
+    "name": "Joy Usanga",
     "location": "Nigeria",
     "subjects": [
-      "General Tutoring",
-      "Mathematics"
+      "English Language",
+      "Literature-in-English",
+      "Creative Writing"
     ],
     "curricula": [
       "Primary (Ages 6-11)",
+      "Middle School (Ages 12-14)",
+      "WAEC",
+      "NECO"
+    ],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Accomplished English and Literature Educator dedicated to mastering grammatical accuracy, expressive essay composition, reading comprehension, and literary analysis for school and certificate examinations.",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
+    "uid": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
+    "username": "adenike",
+    "name": "Adenike Enoch-Salami",
+    "location": "Nigeria",
+    "subjects": [
+      "Mathematics",
+      "Verbal & Quantitative Reasoning",
+      "Primary Numeracy"
+    ],
+    "curricula": [
+      "Primary (Ages 6-11)",
+      "Common Entrance",
+      "Middle School (Ages 12-14)",
       "WAEC"
     ],
     "rate": 350000,
@@ -320,25 +602,65 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Joy Usanga  is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "bio": "Passionate Primary and Secondary Mathematics Teacher experienced in Common Entrance drills, WAEC preparation, and building rock-solid mathematical foundations through interactive practice.",
     "online": true,
-    "availability": {},
     "languages": [
       "English"
     ],
     "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "createdAt": "2026-09-09T07:27:18.159Z",
+    "status": "verified",
     "videoUrl": "",
     "avatar": "",
-    "updatedAt": "2026-11-15T09:12:25.455Z",
-    "status": "verified"
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
   },
   {
     "id": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
@@ -347,12 +669,17 @@ export const SEED_TEACHERS = [
     "name": "Editi Edidiong",
     "location": "Nigeria",
     "subjects": [
-      "General Tutoring",
-      "Mathematics"
+      "Economics",
+      "Commerce",
+      "Business Studies",
+      "Financial Accounting"
     ],
     "curricula": [
-      "Primary (Ages 6-11)",
-      "WAEC"
+      "WAEC",
+      "JAMB",
+      "NECO",
+      "High School (Ages 15-18)",
+      "University Prep"
     ],
     "rate": 350000,
     "rating": 5,
@@ -360,24 +687,229 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Editi Edidiong is a verified tutor on EduVistar specializing in personalized instruction and student success.",
-    "coverImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+    "bio": "Experienced Commercial and Social Sciences Educator focused on micro and macroeconomics, commerce, and accounting. Prepares students for academic excellence in senior certificate exams.",
     "online": true,
-    "availability": {},
     "languages": [
       "English"
     ],
     "verified": true,
-    "stats": {
-      "sessionsTaught": 0,
-      "responseRate": 100
-    },
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "createdAt": "2026-09-09T05:52:06.030Z",
+    "status": "verified",
     "videoUrl": "",
     "avatar": "",
-    "updatedAt": "2026-11-15T09:12:25.618Z",
-    "status": "verified"
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
+    "uid": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
+    "username": "dorcas-english",
+    "name": "Dorcas Adenigba",
+    "location": "Nigeria",
+    "subjects": [
+      "English Language",
+      "Literature-in-English"
+    ],
+    "curricula": [
+      "WAEC",
+      "JAMB",
+      "Middle School (Ages 12-14)",
+      "High School (Ages 15-18)"
+    ],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Secondary English and Literature tutor focusing on grammar mastery, reading comprehension, vocabulary development, and preparation for WAEC and JAMB examinations.",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
+    "uid": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
+    "username": "daniel-government",
+    "name": "Daniel",
+    "location": "Nigeria",
+    "subjects": [
+      "Government",
+      "Civic Education",
+      "Social Studies"
+    ],
+    "curricula": [
+      "WAEC",
+      "NECO",
+      "JAMB",
+      "High School (Ages 15-18)"
+    ],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Secondary Government and Civic Education specialist helping students understand constitutional frameworks, political systems, citizenship, and excel in WAEC/JAMB social science papers.",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
   }
 ];

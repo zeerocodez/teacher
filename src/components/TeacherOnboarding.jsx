@@ -128,7 +128,7 @@ export default function TeacherOnboarding({ currentUser, onComplete, onBack }) {
     };
   };
 
-  const availableSubjects = ["Mathematics", "Physics", "Chemistry", "English", "Literature"];
+  const availableSubjects = ["Mathematics", "Further Mathematics", "Physics", "Chemistry", "Biology", "English Phonics", "English Language", "Literature-in-English", "Coding & Robotics", "Economics", "Commerce", "Government", "Basic Science", "Quantitative Reasoning"];
   const availableCurricula = ["WAEC", "JAMB", "IGCSE", "Cambridge", "IB Diploma", "Primary (Ages 6-11)", "Middle School (Ages 12-14)", "High School (Ages 15-18)"];
 
   const toggleSubject = (s) => {

@@ -32,8 +32,8 @@ export default function BookingModal({
 
   useEffect(() => {
     if (teacher) {
-      setSelectedSubject(teacher.subjects?.[0] || 'General');
-      setSelectedCurriculum(teacher.curricula?.[0] || 'Standard');
+      setSelectedSubject(teacher.subjects?.[0] || 'Private Lesson');
+      setSelectedCurriculum(teacher.curricula?.[0] || 'Standard Curriculum');
     }
   }, [teacher]);
   
@@ -655,7 +655,7 @@ export default function BookingModal({
                       <option key={sub} value={sub}>{sub}</option>
                     ))}
                     {(!teacher.subjects || teacher.subjects.length === 0) && (
-                      <option value="General">General</option>
+                      <option value="Private Lesson">Private Lesson</option>
                     )}
                   </select>
                 </div>
@@ -670,7 +670,7 @@ export default function BookingModal({
                       <option key={curr} value={curr}>{curr}</option>
                     ))}
                     {(!teacher.curricula || teacher.curricula.length === 0) && (
-                      <option value="Standard">Standard</option>
+                      <option value="Standard Curriculum">Standard Curriculum</option>
                     )}
                   </select>
                 </div>

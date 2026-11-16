@@ -146,15 +146,16 @@ export default function TutorDirectory({
   // Distinct list of subjects dynamically extracted from loaded teachers
   const availableSubjects = useMemo(() => {
     const defaultList = [
+      'English Phonics',
+      'English Language',
       'Mathematics',
-      'English & Literature',
       'Physics',
       'Chemistry',
       'Biology',
       'Coding & Robotics',
-      'French',
       'Economics',
-      'General Tutoring'
+      'Government',
+      'Literature-in-English'
     ];
     const extracted = new Set(defaultList);
     (teachers || []).forEach(t => {
@@ -642,7 +643,7 @@ export default function TutorDirectory({
                       SPECIALIZATIONS
                     </span>
                     <div className="flex flex-wrap gap-1.5">
-                      {(tutor.subjects || ['General Tutoring']).slice(0, 3).map((sub, i) => (
+                      {(tutor.subjects && tutor.subjects.length > 0 ? tutor.subjects : ['Private Tutoring']).slice(0, 3).map((sub, i) => (
                         <span 
                           key={i} 
                           className="font-sans text-[11px] font-medium px-2 py-0.5 rounded-lg bg-brand-cream/60 border border-brand-moss/10 text-brand-moss"
@@ -765,7 +766,7 @@ export default function TutorDirectory({
 
                     {/* Subjects */}
                     <div className="flex flex-wrap gap-1.5 items-center">
-                      {(tutor.subjects || ['General Tutoring']).map((sub, i) => (
+                      {(tutor.subjects && tutor.subjects.length > 0 ? tutor.subjects : ['Private Tutoring']).map((sub, i) => (
                         <span 
                           key={i} 
                           className="font-sans text-[10px] font-medium px-2 py-0.5 rounded-md bg-brand-cream/60 border border-brand-moss/10 text-brand-moss"

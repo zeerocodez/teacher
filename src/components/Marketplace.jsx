@@ -105,12 +105,16 @@ export default function Marketplace({
       'Mathematics', 
       'Physics', 
       'Chemistry', 
+      'Biology',
+      'English Phonics',
       'English', 
       'Literature', 
-      'French', 
-      'Spanish', 
+      'Economics',
+      'Government',
       'Coding & Robotics', 
-      'Data Science'
+      'Data Science',
+      'French', 
+      'Spanish'
     ];
 
     const standardCurricula = [
