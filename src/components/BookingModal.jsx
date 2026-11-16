@@ -30,15 +30,22 @@ export default function BookingModal({
   const userTimezone = useMemo(() => getUserTimezone(), []);
   const timezoneAbbr = useMemo(() => getTimezoneAbbr(userTimezone), [userTimezone]);
 
+  const [paymentMethod, setPaymentMethod] = useState('bank');
+  const [copiedAccount, setCopiedAccount] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
   useEffect(() => {
     if (teacher) {
       setSelectedSubject(teacher.subjects?.[0] || 'Private Lesson');
       setSelectedCurriculum(teacher.curricula?.[0] || 'Standard Curriculum');
+      // If wallet does not have enough balance, default to Direct Bank Transfer so checkout is immediately ready
+      if ((walletBalance || 0) < (teacher.rate || 350000)) {
+        setPaymentMethod('bank');
+      } else {
+        setPaymentMethod('wallet');
+      }
     }
-  }, [teacher]);
-  
-  const [paymentMethod, setPaymentMethod] = useState('wallet');
-  const [isProcessing, setIsProcessing] = useState(false);
+  }, [teacher, walletBalance]);
 
   // Credit Card Gateway States
   const [showCardForm, setShowCardForm] = useState(false);
@@ -736,72 +743,24 @@ export default function BookingModal({
               </div>
             </div>
 
+            {/* Escrow Guarantee Trust Banner */}
+            <div className="bg-emerald-50/80 border border-emerald-200/90 rounded-2xl p-3.5 mb-5 flex items-start gap-3">
+              <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+              <div className="text-[11px] font-sans leading-relaxed text-emerald-950">
+                <span className="font-bold text-emerald-900 block">100% Escrow Payment Protection</span>
+                Your funds remain safely locked until your lesson is fully completed and confirmed. Full money-back guarantee if any scheduling issue occurs.
+              </div>
+            </div>
+
             {/* Payment Processor */}
             <div className="mb-6">
               <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-3 flex items-center gap-1.5">
                 <CreditCard className="w-3.5 h-3.5 text-brand-clay" /> 2. Choose Payment Method
               </span>
               <div className="space-y-2">
-                {/* Wallet Payment Option */}
-                <button
-                  onClick={() => setPaymentMethod('wallet')}
-                  className={`w-full py-3 px-4 rounded-xl border text-left font-sans transition-all duration-300 flex items-center justify-between ${
-                    paymentMethod === 'wallet'
-                      ? 'border-brand-moss bg-brand-moss/5 ring-1 ring-brand-moss'
-                      : 'border-brand-moss/10 bg-white hover:border-brand-moss/30'
-                  }`}
-                >
-                  <div>
-                    <span className="text-xs font-bold block text-brand-charcoal">EduVista Balance Wallet</span>
-                    <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
-                      Available: {formatCurrency(convertMinor(walletBalance, selectedCurrency), selectedCurrency)}
-                    </span>
-                  </div>
-                  {isWalletInsufficient && (
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full font-bold">
-                      Low Balance
-                    </span>
-                  )}
-                </button>
-                {isWalletInsufficient && (
-                  <div className="text-[11px] text-red-600 mt-1.5 px-3 py-2 font-sans flex justify-between items-center bg-rose-50/50 border border-rose-100 rounded-xl">
-                    <span>Insufficient funds in balance wallet.</span>
-                    <a
-                      href="/#topup"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onClose();
-                        window.history.pushState(null, '', '/#topup');
-                        window.dispatchEvent(new PopStateEvent('popstate'));
-                      }}
-                      className="font-heading font-extrabold text-[10px] uppercase tracking-wider text-brand-clay hover:underline cursor-pointer"
-                    >
-                      Top Up Wallet →
-                    </a>
-                  </div>
-                )}
-
-                {/* Credit Card Option (Paystack simulation) */}
-                <button
-                  onClick={() => setPaymentMethod('card')}
-                  className={`w-full py-3 px-4 rounded-xl border text-left font-sans transition-all duration-300 flex items-center justify-between ${
-                    paymentMethod === 'card'
-                      ? 'border-brand-moss bg-brand-moss/5 ring-1 ring-brand-moss'
-                      : 'border-brand-moss/10 bg-white hover:border-brand-moss/30'
-                  }`}
-                >
-                  <div>
-                    <span className="text-xs font-bold block text-brand-charcoal">
-                      Credit / Debit Card (Paystack & Stripe)
-                    </span>
-                    <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
-                      Local Nigerian & International Cards, Apple Pay, Mobile Money
-                    </span>
-                  </div>
-                </button>
-
                 {/* Direct Bank Transfer Option (Flutterwave MFB) */}
                 <button
+                  type="button"
                   onClick={() => setPaymentMethod('bank')}
                   className={`w-full py-3 px-4 rounded-xl border text-left font-sans transition-all duration-300 flex items-center justify-between ${
                     paymentMethod === 'bank'
@@ -812,7 +771,7 @@ export default function BookingModal({
                   <div>
                     <span className="text-xs font-bold block text-brand-charcoal flex items-center gap-1.5">
                       🏦 Direct Bank Transfer
-                      <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[8px] font-bold py-0.2 px-1.5 rounded">Instant Escrow</span>
+                      <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 font-mono text-[8px] font-bold py-0.5 px-1.5 rounded">Fast Escrow</span>
                     </span>
                     <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
                       Transfer directly to Flutterwave MFB · Morichcare Educational Services
@@ -823,7 +782,7 @@ export default function BookingModal({
                 {paymentMethod === 'bank' && (
                   <div className="bg-brand-moss/5 border border-brand-moss/15 rounded-xl p-3.5 space-y-2 animate-fade-in font-sans text-xs">
                     <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block">
-                      Official EduVista Payment Details
+                      Official EduVista Payment Account
                     </span>
                     <div className="bg-white border border-brand-moss/10 p-2.5 rounded-lg space-y-1 font-mono text-[10px]">
                       <div className="flex justify-between items-center">
@@ -843,18 +802,78 @@ export default function BookingModal({
                             onClick={(e) => {
                               e.stopPropagation();
                               navigator.clipboard?.writeText('9811117173');
-                              alert('Copied 9811117173 to clipboard!');
+                              setCopiedAccount(true);
+                              setTimeout(() => setCopiedAccount(false), 2500);
                             }}
-                            className="px-1.5 py-0.5 text-[8px] bg-brand-clay/10 text-brand-clay hover:bg-brand-clay hover:text-white rounded font-bold"
+                            className={`px-2 py-0.5 text-[8px] rounded font-bold transition-colors ${
+                              copiedAccount 
+                                ? 'bg-emerald-600 text-white' 
+                                : 'bg-brand-clay/10 text-brand-clay hover:bg-brand-clay hover:text-white'
+                            }`}
                           >
-                            Copy
+                            {copiedAccount ? 'Copied ✓' : 'Copy'}
                           </button>
                         </div>
                       </div>
                     </div>
                     <p className="text-[10px] text-brand-charcoal/60 italic">
-                      After transfer, click below to confirm booking. Escrow will verify the transaction immediately.
+                      After transfer, click below to confirm your booking. Your educator will be notified immediately.
                     </p>
+                  </div>
+                )}
+
+                {/* Credit Card Option (Paystack simulation) */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('card')}
+                  className={`w-full py-3 px-4 rounded-xl border text-left font-sans transition-all duration-300 flex items-center justify-between ${
+                    paymentMethod === 'card'
+                      ? 'border-brand-moss bg-brand-moss/5 ring-1 ring-brand-moss'
+                      : 'border-brand-moss/10 bg-white hover:border-brand-moss/30'
+                  }`}
+                >
+                  <div>
+                    <span className="text-xs font-bold block text-brand-charcoal">
+                      💳 Credit / Debit Card (Instant Gateway)
+                    </span>
+                    <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
+                      Local Nigerian & International Cards, Apple Pay, Mobile Money
+                    </span>
+                  </div>
+                </button>
+
+                {/* Wallet Payment Option */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('wallet')}
+                  className={`w-full py-3 px-4 rounded-xl border text-left font-sans transition-all duration-300 flex items-center justify-between ${
+                    paymentMethod === 'wallet'
+                      ? 'border-brand-moss bg-brand-moss/5 ring-1 ring-brand-moss'
+                      : 'border-brand-moss/10 bg-white hover:border-brand-moss/30'
+                  }`}
+                >
+                  <div>
+                    <span className="text-xs font-bold block text-brand-charcoal">EduVista Balance Wallet</span>
+                    <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
+                      Available: {formatCurrency(convertMinor(walletBalance, selectedCurrency), selectedCurrency)}
+                    </span>
+                  </div>
+                  {isWalletInsufficient && (
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-bold">
+                      Low Balance
+                    </span>
+                  )}
+                </button>
+                {paymentMethod === 'wallet' && isWalletInsufficient && (
+                  <div className="text-[11px] text-amber-800 mt-1.5 px-3 py-2 font-sans flex justify-between items-center bg-amber-50/70 border border-amber-200 rounded-xl">
+                    <span>Wallet balance insufficient for this booking.</span>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('bank')}
+                      className="font-heading font-extrabold text-[10px] uppercase tracking-wider text-brand-clay hover:underline cursor-pointer"
+                    >
+                      Use Bank Transfer Instead →
+                    </button>
                   </div>
                 )}
               </div>

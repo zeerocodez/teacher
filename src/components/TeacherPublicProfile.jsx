@@ -304,7 +304,7 @@ export default function TeacherPublicProfile({
 
   // Render the Booking and Classes component block
   const renderBookingAndClasses = () => (
-    <div className="bg-white border border-brand-moss/10 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 shadow-lg space-y-6">
+    <div id="booking-calendar-card" className="bg-white border border-brand-moss/10 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 shadow-lg space-y-6">
       {/* Dropdown Header */}
       <button 
         type="button"
@@ -980,6 +980,37 @@ export default function TeacherPublicProfile({
 
         </div>
 
+      </div>
+
+      {/* Sticky Mobile Booking CTA Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-brand-moss/10 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <div className="max-w-md mx-auto flex items-center justify-between gap-3">
+          <div>
+            <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Standard Rate</span>
+            <span className="font-heading font-extrabold text-base text-brand-moss">
+              {formatCurrency(convertMinor(teacher.rate || 350000, selectedCurrency), selectedCurrency)}
+              <span className="font-sans text-2xs text-brand-charcoal/60 font-normal"> / hr</span>
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileTab('all');
+              setOpenSections(prev => ({ ...prev, booking: true }));
+              setTimeout(() => {
+                const bookingEl = document.getElementById('booking-calendar-card');
+                if (bookingEl) {
+                  bookingEl.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.scrollTo({ top: 380, behavior: 'smooth' });
+                }
+              }, 50);
+            }}
+            className="btn-magnetic px-5 py-2.5 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-extrabold text-xs uppercase tracking-wider shadow-md shadow-brand-clay/20 transition-all cursor-pointer"
+          >
+            Book Lesson Now →
+          </button>
+        </div>
       </div>
 
     </article>

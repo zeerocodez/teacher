@@ -168,6 +168,20 @@ export default function ParentDashboard({
     }
   };
 
+  const handleAddToGoogleCalendar = (session) => {
+    if (!session) return;
+    const teacherName = session.teacherName || 'Private Tutor';
+    const studentName = session.studentName || 'Student';
+    const subject = session.subject || 'Lesson';
+    const slotInfo = session.slot ? `${session.slot.day || ''} ${session.slot.time || ''}` : 'Scheduled Time';
+    const title = encodeURIComponent(`EduVistar Tutoring: ${subject} with ${teacherName}`);
+    const details = encodeURIComponent(`1-on-1 Lesson for ${studentName} with ${teacherName}.\nSubject: ${subject}\nTime: ${slotInfo}\nClassroom Link: ${session.classLink || 'https://eduvistar.com/classroom'}\nProtected by EduVistar Escrow.`);
+    const location = encodeURIComponent(session.classLink || 'https://eduvistar.com/classroom');
+
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
+    window.open(calendarUrl, '_blank', 'noopener,noreferrer');
+  };
+
   // Clock Log Modal States
   const [isClockLogOpen, setIsClockLogOpen] = useState(false);
   const [selectedClockSession, setSelectedClockSession] = useState(null);
@@ -685,6 +699,60 @@ export default function ParentDashboard({
               </span>
             </div>
           </div>
+
+          {/* Section 1.5: Next Upcoming Scheduled Lesson Hero Card */}
+          {(() => {
+            const nextSession = (parentBookedSessions || []).find(s => s.status !== 'Completed');
+            if (!nextSession) return null;
+            return (
+              <div className="bg-gradient-to-r from-brand-moss to-brand-moss/90 text-white rounded-[2rem] p-6 md:p-8 shadow-md border border-brand-moss/20 animate-fade-in">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 font-mono text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full font-bold">
+                        Next Upcoming Class
+                      </span>
+                      <span className="font-mono text-2xs text-white/60">
+                        100% Escrow Protected
+                      </span>
+                    </div>
+                    <h3 className="font-heading font-bold text-xl md:text-2xl text-white">
+                      {nextSession.subject || 'Lesson'} with {nextSession.teacherName}
+                    </h3>
+                    <p className="font-sans text-xs text-white/80 flex flex-wrap items-center gap-x-4 gap-y-1">
+                      <span><strong>Student:</strong> {nextSession.studentName || 'Your Child'}</span>
+                      <span>·</span>
+                      <span><strong>Scheduled Time:</strong> {nextSession.slot ? `${nextSession.slot.day || ''} at ${nextSession.slot.time || ''}` : 'Confirmed Slot'}</span>
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <a
+                      href={nextSession.classLink || 'https://eduvistar.com/classroom'}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn-magnetic px-5 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-brand-moss font-heading font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all"
+                    >
+                      Join Classroom Now →
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => handleAddToGoogleCalendar(nextSession)}
+                      className="px-4 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-heading font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors"
+                    >
+                      Add to Calendar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpenChat(nextSession)}
+                      className="px-4 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-heading font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors"
+                    >
+                      Message Tutor
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
           
           {/* Parent Guided Checklist */}
           {(() => {
@@ -706,29 +774,29 @@ export default function ParentDashboard({
                   : "Set up your child's profile to track personalized progress and attendance.",
                 expect: "Customizes curriculum matching (WAEC, IGCSE, British, Primary).",
                 completed: students.length > 0,
-                actionLabel: "Add Child Profile",
+                actionLabel: students.length > 0 ? "Add Another Child" : "Add Child Profile",
                 action: () => setIsAddChildOpen(true)
               },
               {
                 step: 3,
-                title: "Fund Wallet & Escrow",
-                desc: parentWalletBalance > 0
-                  ? `Wallet funded: ${formatCurrency(convertMinor(parentWalletBalance, selectedCurrency), selectedCurrency)}.`
-                  : "Deposit securely via Flutterwave MFB (Bank Transfer) or Card. 100% money-back escrow.",
-                expect: "Your funds are held safely in escrow until the lesson is completed.",
-                completed: parentWalletBalance > 0,
-                actionLabel: "View Bank Details",
+                title: "Direct Escrow Protection",
+                desc: (parentBookedSessions.length > 0 || parentWalletBalance > 0)
+                  ? "Escrow protection active: Funds are secured safely and only released post-lesson."
+                  : "Book lessons directly using Bank Transfer (Flutterwave MFB), Card, or Wallet with 100% money-back escrow protection.",
+                expect: "Your payment is protected. Full refund if any scheduling issue occurs.",
+                completed: (parentBookedSessions.length > 0 || parentWalletBalance > 0),
+                actionLabel: parentBookedSessions.length > 0 ? "Protected ✓" : "View Payment Info",
                 action: () => setActiveTab('billing')
               },
               {
                 step: 4,
-                title: "Choose & Book Tutor",
+                title: "Choose & Book Verified Tutor",
                 desc: parentBookedSessions.length > 0
-                  ? `${parentBookedSessions.length} session(s) scheduled.`
-                  : "Browse certified educators, pick an open date and time, and confirm your lesson.",
-                expect: "Instant booking confirmation and automated classroom link generated.",
+                  ? `${parentBookedSessions.length} session(s) scheduled with verified educators.`
+                  : "Browse certified tutors, pick an open date and time on their calendar, and book instantly.",
+                expect: "Instant confirmation and automated classroom link generated.",
                 completed: parentBookedSessions.length > 0,
-                actionLabel: "Browse Tutors",
+                actionLabel: parentBookedSessions.length > 0 ? "Book Another Class" : "Browse Tutors",
                 action: () => setActiveTab('marketplace')
               },
               {
@@ -1160,8 +1228,9 @@ export default function ParentDashboard({
                               </button>
                             )}
                             <button
-                              onClick={() => alert('Event added to Google Calendar!')}
+                              onClick={() => handleAddToGoogleCalendar(session)}
                               className="py-1.5 px-3 border border-brand-moss/10 hover:bg-brand-moss/5 rounded-xl font-heading text-brand-charcoal font-bold text-[10px] uppercase tracking-wider text-center transition-colors"
+                              title="Add session to your Google Calendar"
                             >
                               Add to Calendar
                             </button>

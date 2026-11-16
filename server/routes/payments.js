@@ -105,7 +105,7 @@ router.post('/checkout', authenticateToken, checkoutRateLimiter, async (req, res
       // Define callback url
       const callbackUrl = req.headers.origin 
         ? `${req.headers.origin}/#dashboard` 
-        : `${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}/#dashboard`;
+        : `${process.env.CLIENT_ORIGIN || (process.env.VERCEL ? 'https://eduvistar.com' : 'http://localhost:5173')}/#dashboard`;
 
       console.log(`[PAYMENTS] Initializing live Paystack checkout for ${email}, amount: ${paystackAmount} ${currency}`);
 

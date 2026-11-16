@@ -81,6 +81,7 @@ export default function TutorDirectory({
 
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStage, setSelectedStage] = useState('All'); // 'All' | 'Primary' | 'WAEC_JAMB' | 'Phonics' | 'STEM' | 'Commercial'
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [selectedExperience, setSelectedExperience] = useState('All');
   const [rateFilterTier, setRateFilterTier] = useState('All'); // 'All' | 'under_3500' | '3500_5000' | 'above_5000' | 'custom'
@@ -186,6 +187,31 @@ export default function TutorDirectory({
       });
     }
 
+    // 1.5. Quick Filter by Stage / Category Pill
+    if (selectedStage !== 'All') {
+      list = list.filter(t => {
+        const curricula = Array.isArray(t.curricula) ? t.curricula : [];
+        const subjects = Array.isArray(t.subjects) ? t.subjects : [];
+        const terms = [...curricula, ...subjects].map(x => String(x).toLowerCase());
+        if (selectedStage === 'Primary') {
+          return terms.some(x => x.includes('primary') || x.includes('eyfs') || x.includes('common entrance') || x.includes('numeracy'));
+        }
+        if (selectedStage === 'WAEC_JAMB') {
+          return terms.some(x => x.includes('waec') || x.includes('jamb') || x.includes('neco') || x.includes('high school') || x.includes('igcse'));
+        }
+        if (selectedStage === 'Phonics') {
+          return terms.some(x => x.includes('phonics') || x.includes('reading') || x.includes('literacy') || x.includes('diction'));
+        }
+        if (selectedStage === 'STEM') {
+          return terms.some(x => x.includes('physics') || x.includes('chemistry') || x.includes('biology') || x.includes('science') || x.includes('coding') || x.includes('robotics') || x.includes('mathematics'));
+        }
+        if (selectedStage === 'Commercial') {
+          return terms.some(x => x.includes('economics') || x.includes('commerce') || x.includes('business') || x.includes('accounting') || x.includes('government'));
+        }
+        return true;
+      });
+    }
+
     // 2. Filter by Subject
     if (selectedSubject !== 'All') {
       list = list.filter(t => {
@@ -251,6 +277,7 @@ export default function TutorDirectory({
   // Reset all filters
   const handleResetFilters = () => {
     setSearchQuery('');
+    setSelectedStage('All');
     setSelectedSubject('All');
     setSelectedExperience('All');
     setRateFilterTier('All');
@@ -258,7 +285,7 @@ export default function TutorDirectory({
     setSortBy('recommended');
   };
 
-  const isFiltered = searchQuery !== '' || selectedSubject !== 'All' || selectedExperience !== 'All' || rateFilterTier !== 'All' || maxHourlyRate < 15000;
+  const isFiltered = searchQuery !== '' || selectedStage !== 'All' || selectedSubject !== 'All' || selectedExperience !== 'All' || rateFilterTier !== 'All' || maxHourlyRate < 15000;
 
   return (
     <section id="directory" className={`${isNested ? 'pt-4 pb-16' : 'py-20'} px-4 sm:px-8 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto`}>
@@ -392,6 +419,31 @@ export default function TutorDirectory({
           </div>
         </div>
 
+        {/* Quick Stage / Level Category Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none pt-1">
+          {[
+            { id: 'All', label: 'All Educators' },
+            { id: 'Primary', label: '🎒 Primary (Ages 6-11)' },
+            { id: 'WAEC_JAMB', label: '🎓 WAEC & JAMB Prep' },
+            { id: 'Phonics', label: '📖 Phonics & Early Reading' },
+            { id: 'STEM', label: '🔬 Sciences & STEM' },
+            { id: 'Commercial', label: '📈 Commercial & Arts' }
+          ].map(pill => (
+            <button
+              key={pill.id}
+              type="button"
+              onClick={() => setSelectedStage(pill.id)}
+              className={`px-3.5 py-1.5 rounded-full font-heading font-bold text-[11px] uppercase tracking-wider whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                selectedStage === pill.id
+                  ? 'bg-brand-moss text-white shadow-xs'
+                  : 'bg-brand-cream/80 hover:bg-brand-cream text-brand-moss/80 border border-brand-moss/10'
+              }`}
+            >
+              {pill.label}
+            </button>
+          ))}
+        </div>
+
         {/* Filter Controls Row (Responsive Grid) */}
         <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-brand-moss/5 ${showFiltersMobile ? 'block' : 'hidden sm:grid'}`}>
           
@@ -490,10 +542,16 @@ export default function TutorDirectory({
             {isFiltered && (
               <>
                 <span className="text-brand-charcoal/30">·</span>
+                {selectedStage !== 'All' && (
+                  <span className="bg-brand-moss/10 text-brand-moss text-[11px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 font-bold">
+                    Stage: {selectedStage.replace('_', ' & ')}
+                    <button type="button" onClick={() => setSelectedStage('All')} className="hover:text-brand-clay cursor-pointer">×</button>
+                  </span>
+                )}
                 {selectedSubject !== 'All' && (
                   <span className="bg-brand-moss/10 text-brand-moss text-[11px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     Subject: {selectedSubject}
-                    <button type="button" onClick={() => setSelectedSubject('All')} className="hover:text-brand-clay">×</button>
+                    <button type="button" onClick={() => setSelectedSubject('All')} className="hover:text-brand-clay cursor-pointer">×</button>
                   </span>
                 )}
                 {selectedExperience !== 'All' && (

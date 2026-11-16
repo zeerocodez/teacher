@@ -2003,6 +2003,7 @@ app.post('/api/sessions/book', authenticateToken, requireRole(['Parent']), requi
   const teacherProfile = db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
   const defaultSubject = (teacherProfile && teacherProfile.subjects && teacherProfile.subjects[0]) || "General Class";
   const defaultCurriculum = (teacherProfile && teacherProfile.curricula && teacherProfile.curricula[0]) || "Standard";
+  const teacherClassLink = (teacherProfile && teacherProfile.classroomLink && teacherProfile.classroomLink.trim()) || "https://eduvistar.com/classroom";
 
   // 3. Create Session Records
   const createdSessions = [];
@@ -2020,7 +2021,8 @@ app.post('/api/sessions/book', authenticateToken, requireRole(['Parent']), requi
       clockLog: [],
       recordingConsent: { teacher: true, parent: true },
       subject: subject || defaultSubject,
-      curriculum: curriculum || defaultCurriculum
+      curriculum: curriculum || defaultCurriculum,
+      classLink: teacherClassLink
     });
     createdSessions.push(newSession);
     lastSession = newSession;
