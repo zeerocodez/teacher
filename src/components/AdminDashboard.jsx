@@ -41,7 +41,9 @@ import {
   Phone,
   Mail,
   ArrowRight,
-  Sliders
+  Sliders,
+  Save,
+  Edit3
 } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';
 import { SEED_TEACHERS } from '../data/seedTeachers';
@@ -73,11 +75,85 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   const [vetDegree, setVetDegree] = useState(false);
   const [vetVideo, setVetVideo] = useState(false);
 
+  // Educator In-Place Profile Editor
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    subjects: '',
+    curricula: '',
+    rate: '',
+    bio: ''
+  });
+  const [editSaving, setEditSaving] = useState(false);
+  const [editSuccessMsg, setEditSuccessMsg] = useState('');
+
   useEffect(() => {
     setVetId(false);
     setVetDegree(false);
     setVetVideo(false);
+    if (selectedApp) {
+      setEditForm({
+        name: selectedApp.name || '',
+        subjects: Array.isArray(selectedApp.subjects) ? selectedApp.subjects.join(', ') : (selectedApp.subjects || ''),
+        curricula: Array.isArray(selectedApp.curricula) ? selectedApp.curricula.join(', ') : (selectedApp.curricula || ''),
+        rate: selectedApp.rate ? String(Math.round(selectedApp.rate / 100)) : '4000',
+        bio: selectedApp.bio || ''
+      });
+      setIsEditingProfile(false);
+      setEditSuccessMsg('');
+    }
   }, [selectedApp]);
+
+  const handleSaveTeacherProfile = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!selectedApp) return;
+    setEditSaving(true);
+    setEditSuccessMsg('');
+    try {
+      const rawRateNaira = parseInt(editForm.rate, 10) || 4000;
+      const rateMinor = rawRateNaira * 100;
+      const parsedSubjects = editForm.subjects.split(',').map(s => s.trim()).filter(Boolean);
+      const parsedCurricula = editForm.curricula.split(',').map(c => c.trim()).filter(Boolean);
+
+      const payload = {
+        name: editForm.name.trim(),
+        subjects: parsedSubjects,
+        curricula: parsedCurricula,
+        rate: rateMinor,
+        hourlyRate: rateMinor,
+        bio: editForm.bio.trim()
+      };
+
+      const res = await fetch(`${API_BASE}/admin/teachers/${selectedApp.uid || selectedApp.id}/update`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setApplications(prev => prev.map(a => {
+          if (a.uid === selectedApp.uid || a.id === selectedApp.id) {
+            return { ...a, ...payload };
+          }
+          return a;
+        }));
+        setSelectedApp(prev => ({ ...prev, ...payload }));
+        setEditSuccessMsg('Profile updated and synchronized live successfully!');
+        setTimeout(() => {
+          setIsEditingProfile(false);
+          setEditSuccessMsg('');
+        }, 1500);
+      } else {
+        alert(data.error || 'Failed to update teacher profile');
+      }
+    } catch (err) {
+      console.error("Save profile error:", err);
+      alert('An unexpected error occurred while saving profile.');
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   // Financial Stats & Chart Currency Filter
   const [chartCurrency, setChartCurrency] = useState('NGN');
@@ -2005,6 +2081,18 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
 
                             {/* Direct Contact Links */}
                             <div className="flex flex-wrap items-center gap-2 mt-2 pt-2 border-t border-brand-moss/5">
+                              <button
+                                type="button"
+                                onClick={() => setIsEditingProfile(!isEditingProfile)}
+                                className={`inline-flex items-center gap-1 font-mono text-[9px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full transition-all cursor-pointer ${
+                                  isEditingProfile 
+                                    ? 'bg-rose-100 text-rose-700 border border-rose-300' 
+                                    : 'bg-brand-moss text-white hover:bg-brand-moss/90 shadow-sm'
+                                }`}
+                              >
+                                <Edit3 className="w-2.5 h-2.5" />
+                                {isEditingProfile ? 'Cancel Edit' : 'Edit Subjects & Profile'}
+                              </button>
                               {selectedApp.whatsapp && (
                                 <a
                                   href={`https://wa.me/${selectedApp.whatsapp.replace(/[^0-9]/g, '')}`}
@@ -2037,6 +2125,125 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                           </div>
                         </div>
                       </div>
+
+                      {/* Live Educator Profile Editor Form */}
+                      {isEditingProfile && (
+                        <form onSubmit={handleSaveTeacherProfile} className="bg-brand-cream/50 border-2 border-brand-moss/20 rounded-2xl p-4 space-y-3 font-sans text-xs animate-fade-up shadow-sm">
+                          <div className="flex items-center justify-between pb-2 border-b border-brand-moss/10">
+                            <h5 className="font-heading font-bold text-brand-moss text-xs flex items-center gap-1.5">
+                              <Edit3 className="w-3.5 h-3.5 text-brand-clay" /> Edit Educator Profile Details
+                            </h5>
+                            <span className="font-mono text-[9px] text-brand-charcoal/50">Admin Exclusive</span>
+                          </div>
+
+                          {editSuccessMsg && (
+                            <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs px-3 py-2 rounded-xl flex items-center gap-2 font-mono">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <span>{editSuccessMsg}</span>
+                            </div>
+                          )}
+
+                          <div>
+                            <label className="font-mono text-[9px] uppercase font-bold text-brand-charcoal/60 block mb-1">
+                              Educator Full Name
+                            </label>
+                            <input
+                              type="text"
+                              value={editForm.name}
+                              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                              required
+                              className="w-full bg-white border border-brand-moss/15 rounded-xl px-3 py-2 text-xs text-brand-moss focus:outline-none focus:border-brand-clay font-bold"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="font-mono text-[9px] uppercase font-bold text-brand-charcoal/60 block mb-1">
+                              Teaching Subjects (Comma-separated)
+                            </label>
+                            <input
+                              type="text"
+                              value={editForm.subjects}
+                              onChange={(e) => setEditForm({ ...editForm, subjects: e.target.value })}
+                              placeholder="e.g. English Literature, Chemistry, WAEC Preparatory"
+                              required
+                              className="w-full bg-white border border-brand-moss/15 rounded-xl px-3 py-2 text-xs text-brand-moss focus:outline-none focus:border-brand-clay font-mono"
+                            />
+                            <span className="font-mono text-[8px] text-brand-charcoal/50 block mt-0.5">
+                              Subjects directly control marketplace search and categorization tags.
+                            </span>
+                          </div>
+
+                          <div>
+                            <label className="font-mono text-[9px] uppercase font-bold text-brand-charcoal/60 block mb-1">
+                              Target Curricula (Comma-separated)
+                            </label>
+                            <input
+                              type="text"
+                              value={editForm.curricula}
+                              onChange={(e) => setEditForm({ ...editForm, curricula: e.target.value })}
+                              placeholder="e.g. WAEC, NECO, Cambridge IGCSE, JAMB"
+                              className="w-full bg-white border border-brand-moss/15 rounded-xl px-3 py-2 text-xs text-brand-moss focus:outline-none focus:border-brand-clay font-mono"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="font-mono text-[9px] uppercase font-bold text-brand-charcoal/60 block mb-1">
+                              Hourly Fee Floor (₦ / hour)
+                            </label>
+                            <input
+                              type="number"
+                              value={editForm.rate}
+                              onChange={(e) => setEditForm({ ...editForm, rate: e.target.value })}
+                              placeholder="e.g. 5000"
+                              required
+                              min="1000"
+                              step="500"
+                              className="w-full bg-white border border-brand-moss/15 rounded-xl px-3 py-2 text-xs text-brand-moss focus:outline-none focus:border-brand-clay font-bold"
+                            />
+                            <span className="font-mono text-[8px] text-brand-charcoal/50 block mt-0.5">
+                              Saved as {parseInt(editForm.rate, 10) ? `₦${Number(editForm.rate).toLocaleString()}/hr` : '₦0/hr'}
+                            </span>
+                          </div>
+
+                          <div>
+                            <label className="font-mono text-[9px] uppercase font-bold text-brand-charcoal/60 block mb-1">
+                              Educator Biography / Background
+                            </label>
+                            <textarea
+                              rows={3}
+                              value={editForm.bio}
+                              onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                              placeholder="Verified pedagogical background, certifications..."
+                              className="w-full bg-white border border-brand-moss/15 rounded-xl p-3 text-xs text-brand-moss focus:outline-none focus:border-brand-clay"
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-2">
+                            <button
+                              type="submit"
+                              disabled={editSaving}
+                              className="flex-1 py-2 px-3 bg-brand-moss hover:bg-brand-moss/90 text-white rounded-xl font-mono text-[10px] uppercase font-bold tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                            >
+                              {editSaving ? (
+                                <>
+                                  <RefreshCw className="w-3 h-3 animate-spin" /> Saving Live...
+                                </>
+                              ) : (
+                                <>
+                                  <Save className="w-3 h-3" /> Save Changes
+                                </>
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsEditingProfile(false)}
+                              className="py-2 px-3 bg-white border border-brand-moss/20 text-brand-moss hover:bg-brand-moss/5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-wider transition-all"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      )}
 
                       {/* Vetting System AI and compliance check indicators */}
                       <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-4 space-y-3 font-sans text-xs">

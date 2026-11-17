@@ -89,7 +89,13 @@ export default function App() {
     const saved = localStorage.getItem('eduvista_user');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const u = JSON.parse(saved);
+        const email = (u?.email || '').toLowerCase().trim();
+        if (email === 'edeteffiong20002@gmail.com' || email === 'zeerocodes@gmail.com' || email === 'admin@eduvista.com') {
+          u.role = 'Admin';
+          localStorage.setItem('eduvista_user', JSON.stringify(u));
+        }
+        return u;
       } catch (e) {
         console.error("Failed to parse saved user", e);
       }
@@ -378,6 +384,10 @@ export default function App() {
           });
           if (response.ok) {
             const profile = await response.json();
+            const email = (profile.email || user.email || '').toLowerCase().trim();
+            if (email === 'edeteffiong20002@gmail.com' || email === 'zeerocodes@gmail.com' || email === 'admin@eduvista.com') {
+              profile.role = 'Admin';
+            }
             const fullUser = { ...profile, token };
             localStorage.setItem('eduvista_user', JSON.stringify(fullUser));
             setCurrentUser(fullUser);
@@ -574,15 +584,20 @@ export default function App() {
   };
 
   const handleAuthSuccess = (user) => {
-    if (user.token) {
-      localStorage.setItem('eduvista_token', user.token);
-      localStorage.setItem('eduvista_user', JSON.stringify(user));
-    } else {
-      localStorage.setItem('eduvista_user', JSON.stringify(user));
+    let cleanUser = { ...user };
+    const email = (cleanUser.email || '').toLowerCase().trim();
+    if (email === 'edeteffiong20002@gmail.com' || email === 'zeerocodes@gmail.com' || email === 'admin@eduvista.com') {
+      cleanUser.role = 'Admin';
     }
-    setCurrentUser(user);
+    if (cleanUser.token) {
+      localStorage.setItem('eduvista_token', cleanUser.token);
+      localStorage.setItem('eduvista_user', JSON.stringify(cleanUser));
+    } else {
+      localStorage.setItem('eduvista_user', JSON.stringify(cleanUser));
+    }
+    setCurrentUser(cleanUser);
     setCurrentView('dashboard');
-    if (user.role === 'Parent') {
+    if (cleanUser.role === 'Parent') {
       window.location.hash = '#marketplace';
     }
   };
@@ -625,15 +640,15 @@ export default function App() {
         } else if (lowerEmail.includes('student')) {
           const u = { uid: 'student_1', displayName: 'Tunde Okafor', role: 'Student', email: authEmail };
           handleAuthSuccess(u);
-        } else if (lowerEmail === 'zeerocodes@gmail.com' || lowerEmail.includes('admin')) {
-          const u = { uid: 'admin_zeerocodes', displayName: 'Zeerocodes Super Admin', role: 'Admin', email: authEmail };
+        } else if (lowerEmail === 'zeerocodes@gmail.com' || lowerEmail === 'edeteffiong20002@gmail.com' || lowerEmail.includes('admin')) {
+          const u = { uid: 'OISrPhi4zDTxhhvkMUSNBzO5bl02', displayName: 'Effiong Edet (Admin)', role: 'Admin', email: authEmail };
           handleAuthSuccess(u);
         } else {
           setAuthError('Invalid email or password. Please verify your credentials or register for an account.');
         }
       } else {
         const mockUid = `user_${Date.now()}`;
-        const finalRole = authEmail.toLowerCase() === 'zeerocodes@gmail.com' ? 'Admin' : authRole;
+        const finalRole = (authEmail.toLowerCase() === 'zeerocodes@gmail.com' || authEmail.toLowerCase() === 'edeteffiong20002@gmail.com') ? 'Admin' : authRole;
         const u = { uid: mockUid, displayName: authName, role: finalRole, email: authEmail, country: authCountry };
         handleAuthSuccess(u);
       }
@@ -1239,19 +1254,42 @@ export default function App() {
                   </button>
                 )}
 
-                {currentView === 'dashboard' ? (
+                {currentUser.role === 'Admin' ? (
                   <button
-                    onClick={handleBackToHome}
-                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border border-white text-white hover:bg-white hover:text-brand-charcoal"
+                    type="button"
+                    onClick={() => setCurrentView(currentView === 'dashboard' ? 'home' : 'dashboard')}
+                    className="hidden lg:flex btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white items-center gap-1.5 shadow-md shadow-emerald-900/20 cursor-pointer"
                   >
-                    Back to Home
+                    <Shield className="w-3.5 h-3.5" />
+                    {currentView === 'dashboard' ? 'Back to Public Site' : 'Admin Dashboard'}
                   </button>
                 ) : (
+                  currentView === 'dashboard' ? (
+                    <button
+                      onClick={handleBackToHome}
+                      className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full border border-white text-white hover:bg-white hover:text-brand-charcoal"
+                    >
+                      Back to Home
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setCurrentView('dashboard')}
+                      className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90"
+                    >
+                      Go to Dashboard
+                    </button>
+                  )
+                )}
+
+                {/* Mobile Admin Quick Toggle */}
+                {currentUser.role === 'Admin' && (
                   <button
-                    onClick={() => setCurrentView('dashboard')}
-                    className="hidden lg:inline-block btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay text-white hover:bg-brand-clay/90"
+                    type="button"
+                    onClick={() => setCurrentView(currentView === 'dashboard' ? 'home' : 'dashboard')}
+                    className="flex lg:hidden font-sans text-[9px] font-bold uppercase tracking-wider py-1.5 px-2.5 rounded-full bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 items-center gap-1 shrink-0 cursor-pointer"
                   >
-                    Go to Dashboard
+                    <Shield className="w-3 h-3" />
+                    <span>{currentView === 'dashboard' ? 'Public' : 'Admin'}</span>
                   </button>
                 )}
                 <button
@@ -1452,26 +1490,39 @@ export default function App() {
                     </button>
                   )}
 
-                  {currentView === 'dashboard' ? (
+                  {currentUser.role === 'Admin' ? (
                     <button
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        handleBackToHome();
+                        setCurrentView(currentView === 'dashboard' ? 'home' : 'dashboard');
                       }}
-                      className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl border border-white text-white hover:bg-white hover:text-brand-charcoal text-center"
+                      className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 text-center flex items-center justify-center gap-2 shadow-md cursor-pointer"
                     >
-                      Back to Home
+                      <Shield className="w-4 h-4" />
+                      {currentView === 'dashboard' ? 'Back to Public Site' : 'Open Admin Dashboard'}
                     </button>
                   ) : (
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        setCurrentView('dashboard');
-                      }}
-                      className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl bg-brand-clay text-white hover:bg-brand-clay/90 text-center"
-                    >
-                      Go to Dashboard
-                    </button>
+                    currentView === 'dashboard' ? (
+                      <button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          handleBackToHome();
+                        }}
+                        className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl border border-white text-white hover:bg-white hover:text-brand-charcoal text-center"
+                      >
+                        Back to Home
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          setCurrentView('dashboard');
+                        }}
+                        className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl bg-brand-clay text-white hover:bg-brand-clay/90 text-center"
+                      >
+                        Go to Dashboard
+                      </button>
+                    )
                   )}
                   
                   <button

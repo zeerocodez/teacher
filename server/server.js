@@ -368,6 +368,23 @@ async function guaranteeInitialProfiles() {
     console.log("Guaranteed zeerocodes@gmail.com admin profile.");
   }
 
+  const edetAdmin = db.findOne('users', u => (u.email || '').toLowerCase() === 'edeteffiong20002@gmail.com');
+  if (!edetAdmin) {
+    await db.insert('users', {
+      uid: "OISrPhi4zDTxhhvkMUSNBzO5bl02",
+      email: "edeteffiong20002@gmail.com",
+      displayName: "Effiong Edet",
+      role: "Admin",
+      country: "Nigeria",
+      status: "active",
+      salt: defaultCreds.salt,
+      passwordHash: defaultCreds.hash
+    });
+    console.log("Guaranteed edeteffiong20002@gmail.com admin profile.");
+  } else if (edetAdmin.role !== 'Admin') {
+    await db.update('users', edetAdmin.id || edetAdmin.uid, { role: 'Admin' });
+  }
+
   const teacher1User = db.findOne('users', u => u.uid === 'teacher_1');
   if (!teacher1User) {
     await db.insert('users', {
@@ -545,6 +562,18 @@ async function createNotification(userId, type, title, body) {
   }
 }
 
+// Permanent Super Admin and Admin Emails list
+const ADMIN_EMAILS = [
+  'edeteffiong20002@gmail.com',
+  'zeerocodes@gmail.com',
+  'admin@eduvista.com'
+];
+
+function isAdminEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+}
+
 // Security Middleware: Verify Firebase ID Token or fallback to JWT
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -558,10 +587,13 @@ function authenticateToken(req, res, next) {
         const uid = decodedToken.uid;
         // Lookup user profile in database cache
         const user = db.findOne('users', u => u.uid === uid);
+        const userEmail = (user?.email || decodedToken.email || '').toLowerCase().trim();
+        const role = isAdminEmail(userEmail) ? 'Admin' : (user?.role || decodedToken.role || 'Parent');
+
         if (user) {
           req.user = {
             uid: user.uid,
-            role: user.role,
+            role,
             email: user.email,
             displayName: user.displayName
           };
@@ -569,7 +601,7 @@ function authenticateToken(req, res, next) {
           // If profile sync hasn't occurred yet, build basic request context
           req.user = {
             uid: uid,
-            role: decodedToken.role || 'Parent',
+            role,
             email: decodedToken.email
           };
         }
@@ -582,6 +614,9 @@ function authenticateToken(req, res, next) {
             console.warn("JWT verification error (Firebase catch):", jwtErr.message);
             return res.status(403).json({ error: "Invalid or expired token." });
           }
+          if (user && isAdminEmail(user.email)) {
+            user.role = 'Admin';
+          }
           req.user = user;
           next();
         });
@@ -593,6 +628,9 @@ function authenticateToken(req, res, next) {
         console.warn("JWT verification error (No Firebase):", err.message);
         return res.status(403).json({ error: "Invalid or expired token." });
       }
+      if (user && isAdminEmail(user.email)) {
+        user.role = 'Admin';
+      }
       req.user = user;
       next();
     });
@@ -603,6 +641,10 @@ function authenticateToken(req, res, next) {
 function requireRole(roles) {
   return (req, res, next) => {
     if (!req.user) return res.status(401).json({ error: "Unauthorized." });
+    if (isAdminEmail(req.user.email) || req.user.role === 'Admin') {
+      req.user.role = 'Admin';
+      return next();
+    }
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ error: "Access forbidden. Insufficient permissions." });
     }
@@ -616,7 +658,8 @@ function requireOwnerOrAdmin(req, res, next) {
   if (!requestedUid) {
     return res.status(400).json({ error: "User identity parameter is required." });
   }
-  if (req.user.role === 'Admin') {
+  if (req.user.role === 'Admin' || isAdminEmail(req.user.email)) {
+    req.user.role = 'Admin';
     return next();
   }
   if (req.user.uid !== requestedUid) {
@@ -840,6 +883,11 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
       }
     }
 
+    if (isAdminEmail(user.email) && user.role !== 'Admin') {
+      user.role = 'Admin';
+      await db.update('users', user.id || user.uid, { role: 'Admin' });
+    }
+
     const token = jwt.sign({ uid: user.uid, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
 
     res.json({ ...user, token });
@@ -865,6 +913,10 @@ app.post('/api/auth/google', authRateLimiter, async (req, res) => {
     let user = db.findOne('users', u => u.email.toLowerCase() === cleanEmail || (uid && u.uid === uid));
 
     if (user) {
+      if (isAdminEmail(cleanEmail) && user.role !== 'Admin') {
+        user.role = 'Admin';
+        await db.update('users', user.id || user.uid, { role: 'Admin' });
+      }
       const token = jwt.sign({ uid: user.uid, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
       return res.json({ ...user, token, isNewUser: false });
     }
@@ -885,7 +937,7 @@ app.post('/api/auth/google', authRateLimiter, async (req, res) => {
 
     // 3. Auto-create user with requested role
     let finalRole = requestedRole === 'Teacher' ? 'Teacher' : 'Parent';
-    if (cleanEmail === 'zeerocodes@gmail.com') {
+    if (isAdminEmail(cleanEmail)) {
       finalRole = 'Admin';
     }
 
@@ -1034,6 +1086,9 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
   const user = db.findOne('users', u => u.uid === uid || u.id === uid);
   if (!user) {
     return res.status(404).json({ error: "User profile not found." });
+  }
+  if (isAdminEmail(user.email)) {
+    user.role = 'Admin';
   }
   res.json(user);
 });
@@ -1549,6 +1604,75 @@ app.post(['/api/admin/applications/respond', '/api/admin/teachers/:id/decision']
     message: `${teacher.name} action '${action}' applied successfully.`,
     teacher: updatedTeacher
   });
+});
+
+// POST /api/admin/teachers/:id/update - Admin direct educator profile editor
+app.post('/api/admin/teachers/:id/update', authenticateAdminOrDev, requireRole(['Admin']), async (req, res) => {
+  try {
+    const teacherId = req.params.id;
+    const { subjects, curricula, bio, rate, hourlyRate, name, status, verified, languages, location } = req.body;
+
+    const teacher = db.findOne('teachers', t => t.uid === teacherId || t.id === teacherId);
+    if (!teacher) {
+      return res.status(404).json({ error: "Teacher profile not found." });
+    }
+
+    const updates = {};
+    if (subjects !== undefined) {
+      updates.subjects = Array.isArray(subjects) 
+        ? subjects.map(s => String(s).trim()).filter(Boolean)
+        : String(subjects).split(',').map(s => s.trim()).filter(Boolean);
+    }
+    if (curricula !== undefined) {
+      updates.curricula = Array.isArray(curricula) 
+        ? curricula.map(c => String(c).trim()).filter(Boolean)
+        : String(curricula).split(',').map(c => c.trim()).filter(Boolean);
+    }
+    if (bio !== undefined) updates.bio = String(bio).trim();
+    if (rate !== undefined) updates.rate = parseInt(rate, 10);
+    if (hourlyRate !== undefined) updates.hourlyRate = parseInt(hourlyRate, 10);
+    if (name !== undefined) updates.name = String(name).trim();
+    if (status !== undefined) updates.status = status;
+    if (verified !== undefined) updates.verified = !!verified;
+    if (languages !== undefined) {
+      updates.languages = Array.isArray(languages)
+        ? languages.map(l => String(l).trim()).filter(Boolean)
+        : String(languages).split(',').map(l => l.trim()).filter(Boolean);
+    }
+    if (location !== undefined) updates.location = String(location).trim();
+    updates.updatedAt = new Date().toISOString();
+
+    const updatedTeacher = await db.update('teachers', teacher.id, updates);
+
+    // Also update users collection if name updated
+    if (name) {
+      const user = db.findOne('users', u => u.uid === teacherId || u.id === teacherId);
+      if (user) {
+        await db.update('users', user.id, { displayName: String(name).trim() });
+      }
+    }
+
+    // Sync to Firestore if available
+    try {
+      if (getApps().length > 0) {
+        const { getFirestore } = await import('firebase-admin/firestore');
+        const firestore = getFirestore();
+        await firestore.collection('teachers').doc(teacherId).set(updates, { merge: true });
+        console.log(`Synced teacher ${teacherId} update to Firestore.`);
+      }
+    } catch (fsErr) {
+      console.warn("Firestore teacher update sync notice:", fsErr.message);
+    }
+
+    res.json({
+      success: true,
+      message: `${updatedTeacher.name || 'Teacher'} profile updated successfully.`,
+      teacher: updatedTeacher
+    });
+  } catch (err) {
+    console.error("Admin teacher update error:", err);
+    res.status(500).json({ error: "Failed to update teacher profile." });
+  }
 });
 
 // GET teacher by SEO-friendly username

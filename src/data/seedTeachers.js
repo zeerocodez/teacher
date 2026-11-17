@@ -89,15 +89,12 @@ export const SEED_TEACHERS = [
     "name": "Christian Nwode",
     "location": "Nigeria",
     "subjects": [
-      "Physics",
-      "Mathematics",
-      "Further Mathematics"
+      "General Studies"
     ],
     "curricula": [
       "WAEC",
       "JAMB",
       "NECO",
-      "Cambridge IGCSE",
       "High School (Ages 15-18)"
     ],
     "rate": 500000,
@@ -106,7 +103,7 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Senior Secondary Physics and Mathematics Specialist with extensive experience preparing candidates for WAEC, JAMB, and IGCSE. Focuses on core mechanics, wave theory, algebraic equations, and step-by-step problem-solving.",
+    "bio": "Dedicated Senior Secondary Educator specializing in structured curriculum mastery, effective study techniques, and exam preparation.",
     "online": true,
     "languages": [
       "English"
@@ -338,15 +335,13 @@ export const SEED_TEACHERS = [
     "name": "Enobong Edubio",
     "location": "Nigeria",
     "subjects": [
-      "Biology",
-      "Agricultural Science",
       "Basic Science"
     ],
     "curricula": [
       "WAEC",
       "NECO",
       "JAMB",
-      "High School (Ages 15-18)"
+      "Junior Secondary (Ages 11-14)"
     ],
     "rate": 400000,
     "rating": 5,
@@ -354,7 +349,7 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Experienced Life Sciences and Biology Tutor specializing in human anatomy, plant physiology, genetics, and ecology for senior secondary students preparing for WAEC, NECO, and JAMB exams.",
+    "bio": "Dedicated Science and Foundations Educator committed to step-by-step academic mastery, conceptual clarity, and exam success.",
     "online": true,
     "languages": [
       "English"
