@@ -123,7 +123,7 @@ export default function TutorDirectory({
             id: t.uid || t.id,
             subjects: t.subjects || [],
             curricula: t.curricula || t.curriculums || [],
-            rate: t.rate || 350000,
+            rate: Number(t.rate) > 0 ? Number(t.rate) : 400000,
             rating: t.rating || 5.0,
             reviewsCount: t.reviewsCount || 0
           }));
@@ -234,7 +234,7 @@ export default function TutorDirectory({
     // 4. Filter by Hourly Rate
     if (rateFilterTier !== 'All') {
       list = list.filter(t => {
-        const rateInNaira = (t.rate || 350000) / 100;
+        const rateInNaira = (Number(t.rate) || 400000) / 100;
         if (rateFilterTier === 'under_3500') return rateInNaira <= 3500;
         if (rateFilterTier === '3500_5000') return rateInNaira > 3500 && rateInNaira <= 5000;
         if (rateFilterTier === 'above_5000') return rateInNaira > 5000;
@@ -243,7 +243,7 @@ export default function TutorDirectory({
       });
     } else if (maxHourlyRate < 15000) {
       list = list.filter(t => {
-        const rateInNaira = (t.rate || 350000) / 100;
+        const rateInNaira = (Number(t.rate) || 400000) / 100;
         return rateInNaira <= maxHourlyRate;
       });
     }
@@ -625,7 +625,7 @@ export default function TutorDirectory({
           {filteredAndSortedTutors.map((tutor) => {
             const exp = getTutorExperience(tutor);
             const tutorId = tutor.username || tutor.uid || tutor.id;
-            const convertedRate = safeConvertMinor(tutor.rate || 350000, selectedCurrency);
+            const convertedRate = safeConvertMinor(Number(tutor.rate) || 400000, selectedCurrency);
 
             return (
               <div
@@ -767,7 +767,7 @@ export default function TutorDirectory({
           {filteredAndSortedTutors.map((tutor) => {
             const exp = getTutorExperience(tutor);
             const tutorId = tutor.username || tutor.uid || tutor.id;
-            const convertedRate = safeConvertMinor(tutor.rate || 350000, selectedCurrency);
+            const convertedRate = safeConvertMinor(Number(tutor.rate) || 400000, selectedCurrency);
 
             return (
               <div

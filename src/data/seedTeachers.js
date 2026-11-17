@@ -16,7 +16,7 @@ export const SEED_TEACHERS = [
       "Primary (Ages 6-11)",
       "British & Nigerian Curriculum"
     ],
-    "rate": 350000,
+    "rate": 400000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -100,7 +100,7 @@ export const SEED_TEACHERS = [
       "Cambridge IGCSE",
       "High School (Ages 15-18)"
     ],
-    "rate": 350000,
+    "rate": 500000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -183,7 +183,7 @@ export const SEED_TEACHERS = [
       "Middle School (Ages 12-14)",
       "High School (Ages 15-18)"
     ],
-    "rate": 350000,
+    "rate": 450000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -265,7 +265,7 @@ export const SEED_TEACHERS = [
       "Common Entrance",
       "Middle School (Ages 12-14)"
     ],
-    "rate": 350000,
+    "rate": 400000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -348,7 +348,7 @@ export const SEED_TEACHERS = [
       "JAMB",
       "High School (Ages 15-18)"
     ],
-    "rate": 350000,
+    "rate": 400000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -430,7 +430,7 @@ export const SEED_TEACHERS = [
       "Middle School (Ages 12-14)",
       "High School (Ages 15-18)"
     ],
-    "rate": 350000,
+    "rate": 600000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -513,7 +513,7 @@ export const SEED_TEACHERS = [
       "WAEC",
       "NECO"
     ],
-    "rate": 350000,
+    "rate": 450000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -681,7 +681,7 @@ export const SEED_TEACHERS = [
       "High School (Ages 15-18)",
       "University Prep"
     ],
-    "rate": 350000,
+    "rate": 400000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
@@ -763,7 +763,7 @@ export const SEED_TEACHERS = [
       "Middle School (Ages 12-14)",
       "High School (Ages 15-18)"
     ],
-    "rate": 350000,
+    "rate": 500000,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [

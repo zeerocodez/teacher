@@ -370,10 +370,10 @@ export default function Marketplace({
           if (!aHasElite && bHasElite) return 1;
           return 0;
         }).map(teacher => {
-          const rateValue = teacher.rate || 350000;
+          const rateValue = Number(teacher.rate) || 400000;
           const convertedRate = convertMinor(rateValue, selectedCurrency);
           const formattedRate = formatCurrency(convertedRate, selectedCurrency);
-          const standardRateVal = teacher.rate || 400000;
+          const standardRateVal = Number(teacher.rate) || 400000;
           const convertedStandardRate = convertMinor(standardRateVal, selectedCurrency);
           const formattedStandardRate = formatCurrency(convertedStandardRate, selectedCurrency);
           const teacherId = teacher.username || teacher.uid || teacher.id;

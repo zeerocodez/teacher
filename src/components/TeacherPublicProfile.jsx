@@ -338,7 +338,7 @@ export default function TeacherPublicProfile({
               <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/60 font-bold block mb-1">STANDARD HOURLY RATE</span>
               <div className="flex items-baseline gap-1">
                 <span className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-moss">
-                  {formatCurrency(convertMinor(teacher.rate || 350000, selectedCurrency), selectedCurrency)}
+                  {formatCurrency(convertMinor(Number(teacher.rate) || 400000, selectedCurrency), selectedCurrency)}
                 </span>
                 <span className="font-mono text-xs text-brand-charcoal/60">/ hour</span>
               </div>
@@ -988,7 +988,7 @@ export default function TeacherPublicProfile({
           <div>
             <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Standard Rate</span>
             <span className="font-heading font-extrabold text-base text-brand-moss">
-              {formatCurrency(convertMinor(teacher.rate || 350000, selectedCurrency), selectedCurrency)}
+              {formatCurrency(convertMinor(Number(teacher.rate) || 400000, selectedCurrency), selectedCurrency)}
               <span className="font-sans text-2xs text-brand-charcoal/60 font-normal"> / hr</span>
             </span>
           </div>

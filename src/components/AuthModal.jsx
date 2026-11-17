@@ -33,13 +33,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
   const [googleUserForSetup, setGoogleUserForSetup] = useState(null);
   const [eliteCertificate, setEliteCertificate] = useState('');
 
-  // Google Account Chooser & Direct Auth states
-  const [showGoogleChooser, setShowGoogleChooser] = useState(false);
-  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
-  const [customGoogleName, setCustomGoogleName] = useState('');
-  const [customGoogleRole, setCustomGoogleRole] = useState('Parent');
-  const [isCustomGoogleOpen, setIsCustomGoogleOpen] = useState(false);
-
   // Teacher Onboarding signup states
   const [signupStep, setSignupStep] = useState(1);
   const [whatsapp, setWhatsapp] = useState('');
@@ -334,116 +327,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
     }
   };
 
-  const handleAdminLoginShortcut = async () => {
-    setError('');
-    setLoading(true);
-    try {
-      setEmail('admin@eduvista.com');
-      setPassword('password123');
-
-      let firebaseUser = null;
-      let token = null;
-
-      if (auth.app.options.apiKey && auth.app.options.apiKey !== "mock-api-key") {
-        try {
-          const userCredential = await signInWithEmailAndPassword(auth, 'admin@eduvista.com', 'password123');
-          firebaseUser = userCredential.user;
-          token = await firebaseUser.getIdToken();
-        } catch (firebaseErr) {
-          console.warn("Firebase admin sign-in failed, trying backend directly:", firebaseErr.message);
-        }
-      }
-
-      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ email: 'admin@eduvista.com', password: 'password123', uid: firebaseUser?.uid })
-      });
-
-      let data = {};
-      try {
-        const text = await response.text();
-        data = JSON.parse(text);
-      } catch (parseErr) {
-        data = null;
-      }
-
-      if (response.ok && data?.token) {
-        onSuccess({ ...data, token: data.token || token });
-        onClose();
-      } else {
-        // Guaranteed instant admin entry fallback
-        onSuccess({ uid: 'admin_1', displayName: 'System Admin', role: 'Admin', email: 'admin@eduvista.com' });
-        onClose();
-      }
-    } catch (err) {
-      console.error('Admin login error:', err);
-      onSuccess({ uid: 'admin_1', displayName: 'System Admin', role: 'Admin', email: 'admin@eduvista.com' });
-      onClose();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSelectGoogleAccount = async ({ email: selectedEmail, displayName: selectedName, role: selectedRole, photoURL: selectedPhoto }) => {
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${API_BASE}/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: selectedEmail,
-          displayName: selectedName,
-          role: selectedRole || (selectedEmail.toLowerCase() === 'zeerocodes@gmail.com' ? 'Admin' : (activeTab === 'register' ? role : undefined)),
-          photoURL: selectedPhoto
-        })
-      });
-
-      const data = await response.json();
-      if (response.ok && data) {
-        if (data.exists === false) {
-          setShowGoogleChooser(false);
-          setGoogleUserForSetup({
-            uid: data.uid,
-            email: data.email,
-            displayName: data.displayName || '',
-            photoURL: data.photoURL || '',
-            token: data.token
-          });
-          if (data.displayName) setName(data.displayName);
-          return;
-        }
-
-        onSuccess(data);
-        setShowGoogleChooser(false);
-        onClose();
-      } else {
-        setError(data?.error || 'Authentication encountered an issue.');
-      }
-    } catch (err) {
-      console.warn('Google direct auth fallback:', err);
-      const cleanEmail = selectedEmail.toLowerCase();
-      let fallbackUser;
-      if (cleanEmail === 'zeerocodes@gmail.com' || cleanEmail.includes('admin')) {
-        fallbackUser = { uid: 'admin_zeero', email: cleanEmail, displayName: selectedName || 'Zeerocodes Admin', role: 'Admin', country: 'Nigeria', token: `token_${Date.now()}` };
-      } else if (cleanEmail.includes('teacher') || selectedRole === 'Teacher') {
-        fallbackUser = { uid: 'teacher_1', email: cleanEmail, displayName: selectedName || 'Mr. Adebayo Okafor', role: 'Teacher', country: 'Nigeria', token: `token_${Date.now()}` };
-      } else {
-        fallbackUser = { uid: `google_${Date.now()}`, email: cleanEmail, displayName: selectedName || cleanEmail.split('@')[0], role: selectedRole || 'Parent', country: 'Nigeria', token: `token_${Date.now()}` };
-      }
-      onSuccess(fallbackUser);
-      setShowGoogleChooser(false);
-      onClose();
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGoogleSignIn = async () => {
     setError('');
     setLoading(true);
@@ -489,16 +372,23 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
           onSuccess({ ...data, token: data.token || token });
           onClose();
           return;
+        } else {
+          setError(data?.error || 'Authentication encountered an issue. Please try again.');
         }
+      } else {
+        setError('Google Authentication is initializing. Please sign in with your email and password below.');
       }
-
-      // If no valid Firebase client config or if popup fails, open chooser
-      setShowGoogleChooser(true);
     } catch (err) {
-      console.warn('Google Sign-in popup failed or domain unauthorized, opening Account Chooser:', err.code, err.message);
-      // Seamlessly switch to Account Chooser instead of showing blocking error banner
-      setShowGoogleChooser(true);
-      setError('');
+      console.warn('Google Sign-in notice:', err.code, err.message);
+      if (err.code === 'auth/popup-blocked') {
+        setError('Your browser blocked the sign-in popup. Please allow popups for eduvistar.com or log in using your email and password below.');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in popup was closed before completion. Please try again.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError('This domain is currently being verified. Please log in using your email and password.');
+      } else {
+        setError(err.message || 'Unable to complete Google sign-in. Please use your email and password.');
+      }
     } finally {
       setLoading(false);
     }
@@ -607,216 +497,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
   };
 
   if (!isOpen) return null;
-
-  if (showGoogleChooser) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-        {/* Backdrop */}
-        <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => setShowGoogleChooser(false)} />
-
-        {/* Modal Container */}
-        <div className="relative bg-brand-cream border border-brand-moss/20 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-md p-6 sm:p-7 md:p-8 shadow-2xl z-10 max-h-[92vh] overflow-y-auto scrollbar-none font-sans">
-          {/* Close Button */}
-          <button
-            onClick={() => setShowGoogleChooser(false)}
-            className="absolute top-5 right-5 w-8 h-8 rounded-full bg-brand-moss/10 hover:bg-brand-moss/20 flex items-center justify-center text-brand-moss transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
-
-          {/* Google Header */}
-          <div className="flex flex-col items-center text-center mb-5">
-            <div className="w-12 h-12 rounded-2xl bg-white shadow-md border border-brand-moss/10 flex items-center justify-center mb-3">
-              <svg className="w-7 h-7" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
-            </div>
-            <h3 className="font-heading font-bold text-xl text-brand-moss tracking-tight">Sign in with Google</h3>
-            <p className="text-xs text-brand-charcoal/70 mt-1">Choose an account to continue to <span className="font-semibold text-brand-moss">EduVistar</span></p>
-          </div>
-
-          {/* Notice info banner */}
-          <div className="bg-emerald-50/80 border border-emerald-200/60 rounded-xl p-2.5 mb-4 text-[11px] text-emerald-800 flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Direct Google Identity verification active for preview & domain environments.</span>
-          </div>
-
-          {/* Error Message if any */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-3.5 py-2.5 rounded-xl mb-4 leading-relaxed">
-              {error}
-            </div>
-          )}
-
-          {/* Quick Account Selector List */}
-          <div className="space-y-2 mb-4">
-            {/* Account 1: zeerocodes@gmail.com */}
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleSelectGoogleAccount({
-                email: 'zeerocodes@gmail.com',
-                displayName: 'Zeerocodes Admin',
-                role: 'Admin',
-                photoURL: 'https://ui-avatars.com/api/?name=Zeerocodes+Admin&background=2E4036&color=fff&size=200&bold=true'
-              })}
-              className="w-full text-left p-3 rounded-2xl border border-brand-moss/10 bg-white hover:border-brand-clay/60 hover:bg-brand-clay/5 transition-all flex items-center gap-3 group cursor-pointer shadow-sm"
-            >
-              <div className="w-10 h-10 rounded-full bg-brand-moss text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                Z
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-heading font-bold text-sm text-brand-charcoal truncate">Zeerocodes Admin</span>
-                  <span className="bg-amber-100 text-amber-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0">Super Admin</span>
-                </div>
-                <p className="text-xs text-brand-charcoal/60 truncate">zeerocodes@gmail.com</p>
-              </div>
-            </button>
-
-            {/* Account 2: teacher@eduvista.com / Adebayo Okafor */}
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleSelectGoogleAccount({
-                email: 'teacher@eduvista.com',
-                displayName: 'Mr. Adebayo Okafor',
-                role: 'Teacher',
-                photoURL: 'https://ui-avatars.com/api/?name=Adebayo+Okafor&background=CC5833&color=fff&size=200&bold=true'
-              })}
-              className="w-full text-left p-3 rounded-2xl border border-brand-moss/10 bg-white hover:border-brand-clay/60 hover:bg-brand-clay/5 transition-all flex items-center gap-3 group cursor-pointer shadow-sm"
-            >
-              <div className="w-10 h-10 rounded-full bg-brand-clay text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                A
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-heading font-bold text-sm text-brand-charcoal truncate">Mr. Adebayo Okafor</span>
-                  <span className="bg-emerald-100 text-emerald-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0">Verified Tutor</span>
-                </div>
-                <p className="text-xs text-brand-charcoal/60 truncate">teacher@eduvista.com</p>
-              </div>
-            </button>
-
-            {/* Account 3: parent@eduvista.com / Ngozi Adeleke */}
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleSelectGoogleAccount({
-                email: 'parent@eduvista.com',
-                displayName: 'Ngozi Adeleke',
-                role: 'Parent',
-                photoURL: 'https://ui-avatars.com/api/?name=Ngozi+Adeleke&background=2E4036&color=fff&size=200&bold=true'
-              })}
-              className="w-full text-left p-3 rounded-2xl border border-brand-moss/10 bg-white hover:border-brand-clay/60 hover:bg-brand-clay/5 transition-all flex items-center gap-3 group cursor-pointer shadow-sm"
-            >
-              <div className="w-10 h-10 rounded-full bg-teal-800 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                N
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-heading font-bold text-sm text-brand-charcoal truncate">Ngozi Adeleke</span>
-                  <span className="bg-blue-100 text-blue-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0">Parent</span>
-                </div>
-                <p className="text-xs text-brand-charcoal/60 truncate">parent@eduvista.com</p>
-              </div>
-            </button>
-          </div>
-
-          {/* Toggle "Use another Google Account" */}
-          <div className="border-t border-brand-moss/10 pt-3">
-            {!isCustomGoogleOpen ? (
-              <button
-                type="button"
-                onClick={() => setIsCustomGoogleOpen(true)}
-                className="w-full p-3 rounded-2xl border border-dashed border-brand-moss/25 hover:border-brand-moss/50 hover:bg-white text-left flex items-center gap-3 text-xs font-medium text-brand-charcoal/80 transition-colors cursor-pointer"
-              >
-                <div className="w-8 h-8 rounded-full bg-brand-moss/10 flex items-center justify-center text-brand-moss font-bold">
-                  +
-                </div>
-                <span>Use another Google account</span>
-              </button>
-            ) : (
-              <div className="p-3.5 rounded-2xl bg-white border border-brand-moss/15 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss">Enter Google Details</span>
-                  <button
-                    type="button"
-                    onClick={() => setIsCustomGoogleOpen(false)}
-                    className="text-2xs text-brand-charcoal/40 hover:text-brand-charcoal underline"
-                  >
-                    Cancel
-                  </button>
-                </div>
-                <div>
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@gmail.com"
-                    value={customGoogleEmail}
-                    onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                    className="w-full bg-brand-cream/50 border border-brand-moss/15 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Full Name (optional)"
-                    value={customGoogleName}
-                    onChange={(e) => setCustomGoogleName(e.target.value)}
-                    className="w-full bg-brand-cream/50 border border-brand-moss/15 rounded-xl px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setCustomGoogleRole('Parent')}
-                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all ${customGoogleRole === 'Parent' ? 'bg-brand-moss text-white' : 'bg-brand-cream/60 text-brand-charcoal/70 border border-brand-moss/10'}`}
-                  >
-                    Parent
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCustomGoogleRole('Teacher')}
-                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all ${customGoogleRole === 'Teacher' ? 'bg-brand-moss text-white' : 'bg-brand-cream/60 text-brand-charcoal/70 border border-brand-moss/10'}`}
-                  >
-                    Teacher
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  disabled={loading || !customGoogleEmail.includes('@')}
-                  onClick={() => handleSelectGoogleAccount({
-                    email: customGoogleEmail,
-                    displayName: customGoogleName || customGoogleEmail.split('@')[0],
-                    role: customGoogleRole
-                  })}
-                  className="w-full py-2.5 rounded-xl bg-brand-clay hover:bg-brand-clay/90 text-white font-bold text-xs shadow cursor-pointer disabled:opacity-50"
-                >
-                  {loading ? 'Authenticating...' : 'Continue as ' + (customGoogleEmail || 'Google User')}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Bottom Controls */}
-          <div className="mt-4 pt-3 border-t border-brand-moss/10 flex items-center justify-between text-xs">
-            <button
-              type="button"
-              onClick={() => setShowGoogleChooser(false)}
-              className="text-brand-moss hover:text-brand-clay font-medium transition-colors cursor-pointer flex items-center gap-1"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to email login
-            </button>
-            <span className="text-[10px] text-brand-charcoal/40 font-mono">EduVistar OAuth</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (googleUserForSetup) {
     return (
@@ -1524,15 +1204,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
             />
           </svg>
           Continue with Google
-        </button>
-
-        <button
-          type="button"
-          onClick={() => { setError(''); setShowGoogleChooser(true); }}
-          className="mt-2 text-center w-full text-[11px] text-brand-clay hover:text-brand-clay/80 font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer"
-        >
-          <span>Domain issues? Select Google account directly</span>
-          <ArrowRight className="w-3 h-3" />
         </button>
 
         <div className="mt-3.5 flex items-center justify-center gap-1.5 text-[10px] text-brand-charcoal/50">

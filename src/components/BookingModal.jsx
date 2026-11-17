@@ -39,7 +39,8 @@ export default function BookingModal({
       setSelectedSubject(teacher.subjects?.[0] || 'Private Lesson');
       setSelectedCurriculum(teacher.curricula?.[0] || 'Standard Curriculum');
       // If wallet does not have enough balance, default to Direct Bank Transfer so checkout is immediately ready
-      if ((walletBalance || 0) < (teacher.rate || 350000)) {
+      const requiredRate = Number(teacher.rate) || 400000;
+      if ((walletBalance || 0) < requiredRate) {
         setPaymentMethod('bank');
       } else {
         setPaymentMethod('wallet');
@@ -59,7 +60,7 @@ export default function BookingModal({
   const [otpCode, setOtpCode] = useState('');
   const [paymentStatusText, setPaymentStatusText] = useState('');
 
-  const teacherRateMinor = teacher ? (teacher.rate || 0) : 350000;
+  const teacherRateMinor = Number(teacher?.rate) || 400000;
   const baseActiveRateMinor = teacherRateMinor;
 
   // Apply 10% Sibling bundle discount if selected
