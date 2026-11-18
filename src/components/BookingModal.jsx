@@ -60,6 +60,14 @@ export default function BookingModal({
   const [otpCode, setOtpCode] = useState('');
   const [paymentStatusText, setPaymentStatusText] = useState('');
 
+  const activeCurrency = selectedCurrency || localStorage.getItem('eduvista_currency') || 'NGN';
+  const safeFormatCurrency = typeof formatCurrency === 'function' ? formatCurrency : ((val, curr = activeCurrency) => {
+    const syms = { NGN: '₦', USD: '$', GBP: '£', EUR: '€', CAD: 'CA$', GHS: 'GH₵' };
+    const sym = syms[curr] || '₦';
+    return `${sym}${(Number(val) || 0).toLocaleString()}`;
+  });
+  const safeConvertMinor = typeof convertMinor === 'function' ? convertMinor : ((amountMinor) => Math.round(Number(amountMinor || 0) / 100));
+
   const teacherRateMinor = Number(teacher?.rate) || 400000;
   const baseActiveRateMinor = teacherRateMinor;
 
@@ -68,8 +76,8 @@ export default function BookingModal({
     ? Math.round(baseActiveRateMinor * 0.9)
     : baseActiveRateMinor;
 
-  const convertedRateMinor = convertMinor(activeRateMinor, selectedCurrency);
-  const formattedRate = formatCurrency(convertedRateMinor, selectedCurrency);
+  const convertedRateMinor = safeConvertMinor(activeRateMinor, activeCurrency);
+  const formattedRate = safeFormatCurrency(convertedRateMinor, activeCurrency);
 
   // Generate upcoming slots based on teacher availability mapped to actual calendar dates
   const generateUpcomingSlots = (availability) => {
@@ -177,7 +185,7 @@ export default function BookingModal({
 
   const numSelected = selectedSlots.length > 0 ? selectedSlots.length : 1;
   const totalRateMinor = activeRateMinor * numSelected;
-  const formattedTotalRate = formatCurrency(convertMinor(totalRateMinor, selectedCurrency), selectedCurrency);
+  const formattedTotalRate = safeFormatCurrency(safeConvertMinor(totalRateMinor, activeCurrency), activeCurrency);
 
   const isSlotBooked = (slot) => {
     return (bookedSessions || []).some(session => 
@@ -856,7 +864,7 @@ export default function BookingModal({
                   <div>
                     <span className="text-xs font-bold block text-brand-charcoal">EduVista Balance Wallet</span>
                     <span className="text-[10px] text-brand-charcoal/60 mt-0.5 block">
-                      Available: {formatCurrency(convertMinor(walletBalance, selectedCurrency), selectedCurrency)}
+                      Available: {safeFormatCurrency(safeConvertMinor(walletBalance, activeCurrency), activeCurrency)}
                     </span>
                   </div>
                   {isWalletInsufficient && (

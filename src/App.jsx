@@ -3,6 +3,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   ShieldCheck,
+  Shield,
+  LayoutDashboard,
+  ArrowLeft,
   Layers,
   Globe,
   Calendar,
@@ -34,6 +37,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import BrandLogo from './components/BrandLogo';
 import { getTeacherAvatar } from './utils/avatar';
 import { detectDefaultCurrency } from './utils/timezone';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const BookingModal = lazy(() => import('./components/BookingModal'));
 const Marketplace = lazy(() => import('./components/Marketplace'));
@@ -106,14 +110,16 @@ export default function App() {
     const path = window.location.pathname;
     const match = path.match(/\/teacher\/([^/]+)/);
     if (match) return 'teacher_profile';
-    const saved = localStorage.getItem('eduvista_user');
-    return saved ? 'dashboard' : 'home';
+    const hash = window.location.hash;
+    if (hash === '#dashboard') return 'dashboard';
+    return 'home';
   });
   const [profileUsername, setProfileUsername] = useState(() => {
     const path = window.location.pathname;
     const match = path.match(/\/teacher\/([^/]+)/);
     return match ? match[1] : '';
   });
+  const [pendingBooking, setPendingBooking] = useState(null);
   const [isTutorOnboarding, setIsTutorOnboarding] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -441,7 +447,17 @@ export default function App() {
         setProfileUsername(username);
       } else {
         const savedUser = localStorage.getItem('eduvista_user');
-        if (hash === '#topup' || hash === '#billing') {
+        if (hash === '#dashboard') {
+          if (!savedUser) {
+            setCurrentView('home');
+            setProfileUsername('');
+            setAuthTab('login');
+            setIsAuthOpen(true);
+          } else {
+            setCurrentView('dashboard');
+            setProfileUsername('');
+          }
+        } else if (hash === '#topup' || hash === '#billing') {
           if (!savedUser) {
             setCurrentView('home');
             setProfileUsername('');
@@ -452,9 +468,9 @@ export default function App() {
             setProfileUsername('');
           }
         } else {
-          // If no specific hash, set to dashboard if logged in, or home
-          const saved = localStorage.getItem('eduvista_user');
-          setCurrentView(saved ? 'dashboard' : 'home');
+          // Keep the home page alive! Default on eduvistar.com is ALWAYS home view.
+          // Users access their dashboard via the prominent header button.
+          setCurrentView('home');
           setProfileUsername('');
           // Refresh ScrollTrigger and reset timeline when returning home
           setTimeout(() => {
@@ -504,7 +520,9 @@ export default function App() {
   // State handlers
   const handleBookClick = (teacher, student, preselectedSlots = []) => {
     if (!currentUser) {
+      setPendingBooking({ teacher, student, preselectedSlots });
       setAuthTab('login');
+      setAuthRole('Parent');
       setIsAuthOpen(true);
       return;
     }
@@ -596,9 +614,31 @@ export default function App() {
       localStorage.setItem('eduvista_user', JSON.stringify(cleanUser));
     }
     setCurrentUser(cleanUser);
-    setCurrentView('dashboard');
-    if (cleanUser.role === 'Parent') {
-      window.location.hash = '#marketplace';
+    setIsAuthOpen(false);
+
+    // If there is an active pending booking from clicking "Book Lesson", fulfill it immediately!
+    if (pendingBooking && pendingBooking.teacher) {
+      const pb = pendingBooking;
+      setPendingBooking(null);
+      setSelectedTeacherForBooking(pb.teacher);
+      setSelectedStudentForBooking(pb.student || null);
+      setBookingPreselectedSlots(pb.preselectedSlots || []);
+      setIsBookingOpen(true);
+      return;
+    }
+
+    if (cleanUser.role === 'Admin') {
+      setCurrentView('dashboard');
+    } else if (cleanUser.role === 'Teacher') {
+      if (cleanUser.status === 'onboarding' || (!cleanUser.subjects?.length && !cleanUser.subject)) {
+        setIsTutorOnboarding(true);
+      }
+      setCurrentView('dashboard');
+    } else {
+      // For Parents & students: keep the home page alive unless they explicitly visited dashboard
+      if (currentView !== 'dashboard') {
+        setCurrentView('home');
+      }
     }
   };
 
@@ -1281,15 +1321,33 @@ export default function App() {
                   )
                 )}
 
-                {/* Mobile Admin Quick Toggle */}
-                {currentUser.role === 'Admin' && (
+                {/* Mobile Quick Action for Logged In Users (All Roles) */}
+                {currentUser.role === 'Admin' ? (
                   <button
                     type="button"
                     onClick={() => setCurrentView(currentView === 'dashboard' ? 'home' : 'dashboard')}
-                    className="flex lg:hidden font-sans text-[9px] font-bold uppercase tracking-wider py-1.5 px-2.5 rounded-full bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 items-center gap-1 shrink-0 cursor-pointer"
+                    className="flex lg:hidden font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-wider py-1.5 px-2.5 rounded-full bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 items-center gap-1 shrink-0 cursor-pointer"
                   >
                     <Shield className="w-3 h-3" />
                     <span>{currentView === 'dashboard' ? 'Public' : 'Admin'}</span>
+                  </button>
+                ) : currentView === 'dashboard' ? (
+                  <button
+                    type="button"
+                    onClick={handleBackToHome}
+                    className="flex lg:hidden font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-wider py-1.5 px-2.5 rounded-full border border-white/30 text-white hover:bg-white/10 items-center gap-1 shrink-0 cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3 h-3" />
+                    <span>Public</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentView('dashboard')}
+                    className="flex lg:hidden font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-wider py-1.5 px-2.5 rounded-full bg-brand-clay text-white shadow-sm hover:bg-brand-clay/90 items-center gap-1 shrink-0 cursor-pointer"
+                  >
+                    <LayoutDashboard className="w-3 h-3" />
+                    <span>Dashboard</span>
                   </button>
                 )}
                 <button
@@ -1345,26 +1403,26 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Mobile Header Quick-Buttons */}
+                {/* Mobile Header Quick-Buttons for Visitors (Prominent Log In & Tutor Signup) */}
                 <div className="flex lg:hidden items-center gap-1.5 mr-1">
-                  <button
-                    type="button"
-                    onClick={handleOpenTeacherSignup}
-                    className="font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-wider py-1.5 px-2.5 sm:px-3 rounded-full bg-brand-clay text-white shadow-sm hover:bg-brand-clay/90 transition-all flex items-center gap-1 shrink-0"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Register as Tutor</span>
-                  </button>
                   <button
                     type="button"
                     onClick={() => {
                       setAuthTab('login');
-                      setAuthRole('Parent');
                       setIsAuthOpen(true);
                     }}
-                    className="font-sans text-[10px] font-bold uppercase tracking-wider py-1.5 px-2 rounded-full text-white/90 hover:text-white border border-white/25 hover:bg-white/10 transition-colors shrink-0"
+                    className="font-sans text-[10px] font-bold uppercase tracking-wider py-1.5 px-3 rounded-full text-white bg-white/15 hover:bg-white/25 border border-white/35 transition-all flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
                   >
-                    Log In
+                    <User className="w-3 h-3 text-brand-clay" />
+                    <span>Log In</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenTeacherSignup}
+                    className="font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-wider py-1.5 px-2.5 sm:px-3 rounded-full bg-brand-clay text-white shadow-sm hover:bg-brand-clay/90 transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Tutors</span>
                   </button>
                 </div>
               </>
@@ -1544,27 +1602,41 @@ export default function App() {
                   </button>
                 </>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-2.5">
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       setAuthTab('login');
                       setIsAuthOpen(true);
                     }}
-                    className="font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl border border-white/20 text-white hover:bg-white/10 text-center"
+                    className="w-full font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl border border-white/25 text-white hover:bg-white/10 text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                   >
-                    Log In
+                    <User className="w-4 h-4 text-brand-clay" />
+                    <span>Log In to Dashboard</span>
                   </button>
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      setAuthTab('register');
-                      setIsAuthOpen(true);
-                    }}
-                    className="font-sans text-xs uppercase tracking-wider font-bold py-3 px-4 rounded-xl bg-brand-clay text-white hover:bg-brand-clay/90 text-center"
-                  >
-                    Sign Up
-                  </button>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setAuthTab('register');
+                        setAuthRole('Parent');
+                        setIsAuthOpen(true);
+                      }}
+                      className="font-sans text-[11px] uppercase tracking-wider font-bold py-2.5 px-3 rounded-xl bg-white text-brand-moss hover:bg-brand-cream text-center cursor-pointer"
+                    >
+                      Parent Signup
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleOpenTeacherSignup();
+                      }}
+                      className="font-sans text-[11px] uppercase tracking-wider font-bold py-2.5 px-3 rounded-xl bg-brand-clay text-white hover:bg-brand-clay/90 text-center flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Tutor Signup</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -1574,17 +1646,19 @@ export default function App() {
 
       {/* Teacher Public Profile View */}
       {currentView === 'teacher_profile' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <TeacherPublicProfile 
-            username={profileUsername}
-            onBack={handleBackToHome}
-            onBookClick={handleBookClick}
-            selectedCurrency={selectedCurrency}
-            formatCurrency={formatCurrency}
-            convertMinor={convertMinor}
-            bookedSessions={bookedSessions}
-          />
-        </Suspense>
+        <ErrorBoundary onReset={handleBackToHome}>
+          <Suspense fallback={<LoadingFallback />}>
+            <TeacherPublicProfile 
+              username={profileUsername}
+              onBack={handleBackToHome}
+              onBookClick={handleBookClick}
+              selectedCurrency={selectedCurrency}
+              formatCurrency={formatCurrency}
+              convertMinor={convertMinor}
+              bookedSessions={bookedSessions}
+            />
+          </Suspense>
+        </ErrorBoundary>
       )}
 
       {/* Main View Wrapper (hidden when viewing teacher profile to avoid unmounting conflicts with GSAP pinning) */}
@@ -2716,20 +2790,22 @@ export default function App() {
       </footer>
 
       {/* Interactive Booking Modal */}
-      <Suspense fallback={<ModalLoadingFallback />}>
-        <BookingModal
-          isOpen={isBookingOpen}
-          onClose={() => setIsBookingOpen(false)}
-          teacher={selectedTeacherForBooking}
-          selectedCurrency={selectedCurrency}
-          walletBalance={walletBalance}
-          onBook={handleBookingConfirm}
-          formatCurrency={formatCurrency}
-          convertMinor={convertMinor}
-          bookedSessions={bookedSessions}
-          preselectedSlots={bookingPreselectedSlots}
-        />
-      </Suspense>
+      <ErrorBoundary onReset={() => setIsBookingOpen(false)}>
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <BookingModal
+            isOpen={isBookingOpen}
+            onClose={() => setIsBookingOpen(false)}
+            teacher={selectedTeacherForBooking}
+            selectedCurrency={selectedCurrency}
+            walletBalance={walletBalance}
+            onBook={handleBookingConfirm}
+            formatCurrency={formatCurrency}
+            convertMinor={convertMinor}
+            bookedSessions={bookedSessions}
+            preselectedSlots={bookingPreselectedSlots}
+          />
+        </Suspense>
+      </ErrorBoundary>
 
       <Suspense fallback={<ModalLoadingFallback />}>
         <AuthModal 

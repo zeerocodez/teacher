@@ -906,5 +906,83 @@ export const SEED_TEACHERS = [
         "4:00 PM"
       ]
     }
+  },
+  {
+    "id": "4EnoPUNrm9fExrxBczoTBHL1Wg82",
+    "uid": "4EnoPUNrm9fExrxBczoTBHL1Wg82",
+    "username": "nuzz",
+    "name": "Nuel Jeff",
+    "location": "Nigeria",
+    "subjects": [
+      "Coding & Robotics"
+    ],
+    "curricula": [
+      "High School (Ages 15-18)"
+    ],
+    "rate": 400000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "Dedicated Coding and Robotics Instructor specializing in programming fundamentals, computational thinking, and hands-on technology education for secondary school students.",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
   }
 ];

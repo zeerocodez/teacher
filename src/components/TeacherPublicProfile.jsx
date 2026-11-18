@@ -36,6 +36,14 @@ export default function TeacherPublicProfile({
   convertMinor,
   bookedSessions = []
 }) {
+  const activeCurrency = selectedCurrency || localStorage.getItem('eduvista_currency') || 'NGN';
+  const safeFormatCurrency = typeof formatCurrency === 'function' ? formatCurrency : ((val, curr = activeCurrency) => {
+    const syms = { NGN: '₦', USD: '$', GBP: '£', EUR: '€', CAD: 'CA$', GHS: 'GH₵' };
+    const sym = syms[curr] || '₦';
+    return `${sym}${(Number(val) || 0).toLocaleString()}`;
+  });
+  const safeConvertMinor = typeof convertMinor === 'function' ? convertMinor : ((amountMinor) => Math.round(Number(amountMinor || 0) / 100));
+
   const [teacher, setTeacher] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -168,11 +176,19 @@ export default function TeacherPublicProfile({
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!username) return;
+      if (!username || !username.trim()) {
+        setLoading(false);
+        setError('No tutor username was provided.');
+        return;
+      }
+
+      const cleanUsername = decodeURIComponent(username).replace(/^@/, '').trim();
+      const usernameLower = cleanUsername.toLowerCase();
       setLoading(true);
       setError('');
+
       try {
-        const response = await fetch(`${API_BASE}/teachers/by-username/${username}`);
+        const response = await fetch(`${API_BASE}/teachers/by-username/${encodeURIComponent(cleanUsername)}`);
         if (response.ok) {
           const data = await response.json();
           // Guarantee real photo if empty
@@ -194,11 +210,11 @@ export default function TeacherPublicProfile({
           const subjects = Array.isArray(data.subjects) ? data.subjects.join(', ') : 'subjects';
           metaDesc.setAttribute('content', `Book premium online home tutoring and private lessons with ${data.name || 'this tutor'} on EduVista. Specializes in ${subjects}. Vetted credentials, secure escrow payment protection.`);
         } else {
-          const usernameLower = username.toLowerCase();
           const seedMatch = SEED_TEACHERS.find(t => 
-            (t.username && t.username.toLowerCase() === usernameLower) ||
-            (t.uid && t.uid === username) ||
-            (t.id && String(t.id) === username)
+            (t.username && t.username.toLowerCase().replace(/^@/, '') === usernameLower) ||
+            (t.uid && t.uid.toLowerCase() === usernameLower) ||
+            (t.id && String(t.id).toLowerCase() === usernameLower) ||
+            (t.name && t.name.toLowerCase() === usernameLower)
           );
           if (seedMatch) {
             setTeacher({
@@ -213,13 +229,13 @@ export default function TeacherPublicProfile({
           setError(errData.error || 'Tutor public profile page not found.');
         }
       } catch (err) {
-        console.warn("API offline, falling back to seed search for username:", username);
-        const usernameLower = username.toLowerCase();
+        console.warn("API offline, falling back to seed search for username:", cleanUsername);
         
         const seedMatch = SEED_TEACHERS.find(t => 
-          (t.username && t.username.toLowerCase() === usernameLower) ||
-          (t.uid && t.uid === username) ||
-          (t.id && String(t.id) === username)
+          (t.username && t.username.toLowerCase().replace(/^@/, '') === usernameLower) ||
+          (t.uid && t.uid.toLowerCase() === usernameLower) ||
+          (t.id && String(t.id).toLowerCase() === usernameLower) ||
+          (t.name && t.name.toLowerCase() === usernameLower)
         );
         if (seedMatch) {
           setTeacher({
@@ -338,7 +354,7 @@ export default function TeacherPublicProfile({
               <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/60 font-bold block mb-1">STANDARD HOURLY RATE</span>
               <div className="flex items-baseline gap-1">
                 <span className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-moss">
-                  {formatCurrency(convertMinor(Number(teacher.rate) || 400000, selectedCurrency), selectedCurrency)}
+                  {safeFormatCurrency(safeConvertMinor(Number(teacher?.rate) || 400000, activeCurrency), activeCurrency)}
                 </span>
                 <span className="font-mono text-xs text-brand-charcoal/60">/ hour</span>
               </div>
@@ -988,7 +1004,7 @@ export default function TeacherPublicProfile({
           <div>
             <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Standard Rate</span>
             <span className="font-heading font-extrabold text-base text-brand-moss">
-              {formatCurrency(convertMinor(Number(teacher.rate) || 400000, selectedCurrency), selectedCurrency)}
+              {safeFormatCurrency(safeConvertMinor(Number(teacher?.rate) || 400000, activeCurrency), activeCurrency)}
               <span className="font-sans text-2xs text-brand-charcoal/60 font-normal"> / hr</span>
             </span>
           </div>
