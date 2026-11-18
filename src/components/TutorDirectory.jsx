@@ -762,13 +762,13 @@ export default function TutorDirectory({
             return (
               <div
                 key={tutor.id || tutor.uid}
-                className="bg-white border border-brand-moss/10 hover:border-brand-clay/40 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                className="bg-white border border-brand-moss/10 hover:border-brand-clay/40 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group overflow-hidden"
               >
                 <div>
                   {/* Top Header: Avatar, Name, Trust Badge & Hourly Rate */}
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
+                  <div className="flex items-start justify-between gap-3 mb-4 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="relative shrink-0">
                         <img
                           src={getTeacherAvatar(tutor.avatar, tutor.name)}
                           alt={tutor.name || 'Tutor'}
@@ -783,11 +783,12 @@ export default function TutorDirectory({
                         )}
                       </div>
 
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 min-w-0">
                           <h4 
                             onClick={() => onTeacherSelect && onTeacherSelect(tutorId)}
                             className="font-heading font-bold text-base text-brand-moss group-hover:text-brand-clay transition-colors truncate cursor-pointer"
+                            title={tutor.name}
                           >
                             {tutor.name}
                           </h4>
@@ -795,18 +796,18 @@ export default function TutorDirectory({
                             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" title="Identity Verified & Vetted" />
                           )}
                         </div>
-                        <p className="font-mono text-2xs text-brand-charcoal/50 truncate">
+                        <p className="font-mono text-2xs text-brand-charcoal/50 truncate block" title={`@${tutor.username}`}>
                           @{tutor.username || (tutor.name ? tutor.name.toLowerCase().replace(/\s+/g, '') : 'tutor')}
                         </p>
                       </div>
                     </div>
 
                     {/* Hourly Rate Display */}
-                    <div className="text-right shrink-0">
-                      <span className="font-heading font-extrabold text-lg sm:text-xl text-brand-moss block leading-none">
+                    <div className="text-right shrink-0 pl-2">
+                      <span className="font-heading font-extrabold text-lg sm:text-xl text-brand-moss block leading-none whitespace-nowrap">
                         {safeFormatCurrency(convertedRate, selectedCurrency)}
                       </span>
-                      <span className="font-mono text-[9px] text-brand-charcoal/50 uppercase">/ hour</span>
+                      <span className="font-mono text-[9px] text-brand-charcoal/50 uppercase block mt-1 whitespace-nowrap">/ hour</span>
                     </div>
                   </div>
 
