@@ -523,45 +523,23 @@ export default function App() {
     setIsMobileMenuOpen(false);
   };
 
-  // State handlers
+  // State handlers: Booking Modal opens immediately with selected educator
   const handleBookClick = (teacher, student, preselectedSlots = []) => {
-    if (!currentUser) {
-      setPendingBooking({ teacher, student, preselectedSlots });
-      setAuthTab('login');
-      setAuthRole('Parent');
-      setIsAuthOpen(true);
-      return;
-    }
-
-    const demoUids = ['teacher_1', 'teacher_2', 'teacher_3', 'teacher_4', 'teacher_5', 'teacher_test_pay'];
-    const isDemoTutor = demoUids.includes(teacher.uid || teacher.id);
-    if (isDemoTutor) {
-      const realTutor = teachers.find(t => !demoUids.includes(t.uid || t.id));
-      if (realTutor) {
-        alert(`Booking sessions with demo content tutors is disabled. Redirecting you to book our verified tutor, ${realTutor.name}.`);
-        setSelectedTeacherForBooking(realTutor);
-        setSelectedStudentForBooking(student || null);
-        setBookingPreselectedSlots([]);
-        setIsBookingOpen(true);
-        if (currentView === 'teacher_profile') {
-          setProfileUsername(realTutor.username);
-        }
-      } else {
-        alert("Booking sessions with demo content tutors is disabled. Please register a real teacher account to book classes.");
-      }
-      return;
-    }
-
+    if (!teacher) return;
     setSelectedTeacherForBooking(teacher);
     setSelectedStudentForBooking(student || null);
-    setBookingPreselectedSlots(preselectedSlots);
+    setBookingPreselectedSlots(preselectedSlots || []);
     setIsBookingOpen(true);
   };
 
   const handleBackToHome = () => {
     const basePath = window.location.pathname.startsWith('/EduVista') ? '/EduVista/' : '/';
     window.history.pushState({}, '', basePath);
-    setCurrentView('home');
+    if (currentUser && currentUser.role === 'Parent') {
+      setCurrentView('dashboard');
+    } else {
+      setCurrentView('home');
+    }
     setProfileUsername('');
     // Ensure scroll resets
     window.scrollTo({ top: 0, behavior: 'smooth' });

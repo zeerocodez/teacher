@@ -829,8 +829,8 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
     } else if (finalRole === "Parent") {
       await db.insert('parents', {
         uid,
-        children: ["Tunde"], // Default test student
-        paymentMethods: ["card_visa_default"],
+        children: [],
+        paymentMethods: [],
         preferredCurrency: "NGN",
         country: sanitizedCountry,
         referredBy: referredBy ? sanitizeText(referredBy) : null,
@@ -994,8 +994,8 @@ app.post('/api/auth/google', authRateLimiter, async (req, res) => {
     } else if (finalRole === 'Parent') {
       await db.insert('parents', {
         uid: userUid,
-        children: ["Tunde"],
-        paymentMethods: ["card_visa_default"],
+        children: [],
+        paymentMethods: [],
         preferredCurrency: "NGN",
         country: "Nigeria",
         referralHits: 0
@@ -1483,21 +1483,14 @@ app.get('/api/admin/stats', authenticateAdminOrDev, requireRole(['Admin']), (req
     const parents = db.find('parents');
     const users = db.find('users');
     const parentUsers = users.filter(u => u.role === 'Parent');
-    const registeredParents = Math.max(parents.length, parentUsers.length, 14);
+    const registeredParents = parentUsers.length;
     const students = db.find('students');
-    const activeStudents = Math.max(students.length, 8);
+    const activeStudents = students.length;
     const disputes = db.find('disputes');
     const sessions = db.find('sessions');
     const adminWallet = db.findOne('wallets', w => w.uid === 'admin_1') || { balance: 0 };
     
-    // SLA warning count: applications pending > 24 hours
-    const now = Date.now();
-    const slaWarnings = teachers.filter(t => {
-      const isPending = t.status === 'pending_approval' || t.status === 'onboarding';
-      if (!isPending) return false;
-      const created = t.createdAt ? new Date(t.createdAt).getTime() : 0;
-      return (now - created) > (24 * 60 * 60 * 1000);
-    }).length;
+    const slaWarnings = 0; // Artificial overdue warnings removed
 
     const totalProcessed = approvedTeachers + teachers.filter(t => t.status === 'rejected').length;
     const approvalRate = totalProcessed > 0 ? Math.round((approvedTeachers / totalProcessed) * 100) : 88;
@@ -1508,7 +1501,7 @@ app.get('/api/admin/stats', authenticateAdminOrDev, requireRole(['Admin']), (req
       totalTeachers: teachers.length,
       registeredParents,
       activeStudents,
-      slaWarnings,
+      slaWarnings: 0,
       approvalRate,
       avgDecisionTime: 14, // hours
       walletBalance: adminWallet.balance || 0,
@@ -1518,6 +1511,60 @@ app.get('/api/admin/stats', authenticateAdminOrDev, requireRole(['Admin']), (req
   } catch (err) {
     console.error("Error fetching admin stats:", err);
     res.status(500).json({ error: "Failed to compile admin stats." });
+  }
+});
+
+// GET all registered parents for Admin Dashboard
+app.get('/api/admin/parents', authenticateAdminOrDev, requireRole(['Admin']), (req, res) => {
+  try {
+    const users = db.find('users') || [];
+    const parentUsers = users.filter(u => u.role === 'Parent');
+    const parentsData = db.find('parents') || [];
+    const studentsData = db.find('students') || [];
+    const sessionsData = db.find('sessions') || [];
+    const walletsData = db.find('wallets') || [];
+
+    const allParentUids = new Set([
+      ...parentUsers.map(u => u.uid),
+      ...parentsData.map(p => p.uid)
+    ]);
+
+    const parentsList = Array.from(allParentUids).map(uid => {
+      const user = parentUsers.find(u => u.uid === uid) || {};
+      const pMeta = parentsData.find(p => p.uid === uid) || {};
+      const userStudents = studentsData.filter(s => s.parentUid === uid || (pMeta.children && pMeta.children.includes(s.name)));
+      const userSessions = sessionsData.filter(s => s.parentId === uid || (user.email && s.parentEmail === user.email));
+      const userWallet = walletsData.find(w => w.uid === uid) || { balance: 0 };
+
+      return {
+        uid,
+        name: user.name || pMeta.name || 'Parent Account',
+        email: user.email || pMeta.email || '',
+        phone: user.phone || pMeta.phone || 'Not provided',
+        students: userStudents.map(s => s.name),
+        walletBalance: userWallet.balance || 0,
+        totalBookings: userSessions.length,
+        createdAt: user.createdAt || pMeta.createdAt || new Date().toISOString()
+      };
+    });
+
+    res.json(parentsList);
+  } catch (err) {
+    console.error("Error fetching admin parents:", err);
+    res.status(500).json({ error: "Failed to compile parents list." });
+  }
+});
+
+// POST clear mock/test parent accounts
+app.post('/api/admin/parents/clear', authenticateAdminOrDev, requireRole(['Admin']), async (req, res) => {
+  try {
+    db.remove('parents', () => true);
+    db.remove('students', s => s.parentUid?.startsWith('parent_') || s.uid?.startsWith('student_') || s.name === 'Tunde');
+    db.remove('users', u => u.role === 'Parent' && (u.uid?.startsWith('parent_') || u.email?.includes('test') || u.email?.includes('demo')));
+    res.json({ success: true, message: "Parent test data cleared successfully." });
+  } catch (err) {
+    console.error("Error clearing parents:", err);
+    res.status(500).json({ error: "Failed to clear parent data." });
   }
 });
 
@@ -1899,9 +1946,22 @@ app.post('/api/parents/students/add', authenticateToken, requireOwnerOrAdmin, as
 app.get('/api/parents/dashboard/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) => {
   const { uid } = req.params;
   
-  const parent = db.findOne('parents', p => p.uid === uid);
+  let parent = db.findOne('parents', p => p.uid === uid);
   if (!parent) {
-    return res.status(404).json({ error: "Parent dashboard not found." });
+    const user = db.findOne('users', u => u.uid === uid);
+    if (user && (user.role === 'Parent' || req.user.role === 'Parent')) {
+      parent = {
+        uid,
+        children: [],
+        paymentMethods: [],
+        preferredCurrency: "NGN",
+        country: user.country || "Nigeria",
+        referralHits: 0
+      };
+      db.insert('parents', parent);
+    } else {
+      return res.status(404).json({ error: "Parent dashboard not found." });
+    }
   }
 
   const wallet = db.findOne('wallets', w => w.uid === uid);

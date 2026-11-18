@@ -200,11 +200,24 @@ export default function TutorDirectory({
   const filteredAndSortedTutors = useMemo(() => {
     let list = [...((teachers && teachers.length > 0) ? teachers : SEED_TEACHERS)];
 
+    // STRICT VETTING & ADMIN APPROVAL GATE:
+    // Teachers must be approved by admin before appearing on cards.
+    list = list.filter(t => {
+      if (!t) return false;
+      const isApproved = (t.status === 'verified' || t.status === 'active' || t.verified === true) &&
+                         t.status !== 'pending_approval' && 
+                         t.status !== 'onboarding' && 
+                         t.status !== 'rejected' && 
+                         t.status !== 'needs_revision';
+      return isApproved;
+    });
+
     // 0. Filter by Lesson Delivery Mode (home vs online)
+    // Strictly enforce: if a teacher did not choose home tutoring, DO NOT make them available for home lessons.
     if (selectedMode === 'home') {
-      list = list.filter(t => !t.lessonModes || t.lessonModes.includes('home'));
+      list = list.filter(t => Array.isArray(t.lessonModes) && t.lessonModes.includes('home'));
     } else if (selectedMode === 'online') {
-      list = list.filter(t => !t.lessonModes || t.lessonModes.includes('online') || t.online !== false);
+      list = list.filter(t => t.online !== false || (Array.isArray(t.lessonModes) && t.lessonModes.includes('online')));
     }
 
     // 0.5. Filter by City / Hub
@@ -826,9 +839,9 @@ export default function TutorDirectory({
                   {/* Delivery Mode & Trust Shield Badges */}
                   <div className="flex items-center gap-1.5 flex-wrap mb-3 font-sans">
                     <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand-moss/5 text-brand-moss font-bold border border-brand-moss/10 flex items-center gap-1">
-                      {tutor.lessonModes?.includes('home') ? '🏡 Home' : ''}
-                      {tutor.lessonModes?.includes('home') && (tutor.lessonModes?.includes('online') || tutor.online !== false) ? ' + ' : ''}
-                      {(tutor.lessonModes?.includes('online') || tutor.online !== false) ? '💻 Online' : ''}
+                      {Array.isArray(tutor.lessonModes) && tutor.lessonModes.includes('home') ? '🏡 Home' : ''}
+                      {Array.isArray(tutor.lessonModes) && tutor.lessonModes.includes('home') && (tutor.lessonModes?.includes('online') || tutor.online !== false) ? ' + ' : ''}
+                      {(tutor.lessonModes?.includes('online') || tutor.online !== false || !Array.isArray(tutor.lessonModes) || !tutor.lessonModes.includes('home')) ? '💻 Online' : ''}
                       {tutor.location ? ` · ${tutor.location.split(',')[0]}` : ''}
                     </span>
 
@@ -836,10 +849,10 @@ export default function TutorDirectory({
                       type="button"
                       onClick={() => setTrustModalTutor(tutor)}
                       className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 flex items-center gap-1 hover:bg-emerald-100 transition-colors cursor-pointer"
-                      title="Click to view 4-tier security audit"
+                      title="Click to view security audit"
                     >
                       <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                      <span>Trust Shield 4/4</span>
+                      <span>{Array.isArray(tutor.lessonModes) && tutor.lessonModes.includes('home') ? 'Trust Shield 4/4' : 'Trust Shield 3/3'}</span>
                     </button>
                   </div>
 
@@ -975,18 +988,18 @@ export default function TutorDirectory({
                     {/* Delivery & Trust Shield Strip */}
                     <div className="flex items-center gap-1.5 flex-wrap mb-2 font-sans">
                       <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand-moss/5 text-brand-moss font-bold border border-brand-moss/10 flex items-center gap-1">
-                        {tutor.lessonModes?.includes('home') ? '🏡 Home' : ''}
-                        {tutor.lessonModes?.includes('home') && (tutor.lessonModes?.includes('online') || tutor.online !== false) ? ' + ' : ''}
-                        {(tutor.lessonModes?.includes('online') || tutor.online !== false) ? '💻 Online' : ''}
+                        {Array.isArray(tutor.lessonModes) && tutor.lessonModes.includes('home') ? '🏡 Home' : ''}
+                        {Array.isArray(tutor.lessonModes) && tutor.lessonModes.includes('home') && (tutor.lessonModes?.includes('online') || tutor.online !== false) ? ' + ' : ''}
+                        {(tutor.lessonModes?.includes('online') || tutor.online !== false || !Array.isArray(tutor.lessonModes) || !tutor.lessonModes.includes('home')) ? '💻 Online' : ''}
                       </span>
                       <button
                         type="button"
                         onClick={() => setTrustModalTutor(tutor)}
                         className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 flex items-center gap-1 hover:bg-emerald-100 transition-colors cursor-pointer"
-                        title="Click to view 4-tier security audit"
+                        title="Click to view security audit"
                       >
                         <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                        <span>Trust Shield 4/4</span>
+                        <span>{Array.isArray(tutor.lessonModes) && tutor.lessonModes.includes('home') ? 'Trust Shield 4/4' : 'Trust Shield 3/3'}</span>
                       </button>
                     </div>
 

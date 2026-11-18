@@ -515,26 +515,6 @@ export async function seedDatabase() {
       status: "active",
       salt: "d56360976c",
       passwordHash: "8b7e28a506bb8029d2f2d93e17cd3626be0cd776fa2e7d704ba44dfb8d80f8cd"
-    },
-    {
-      uid: "parent_1",
-      email: "parent@eduvista.com",
-      displayName: "Ngozi Adeleke",
-      role: "Parent",
-      country: "Nigeria",
-      status: "active",
-      salt: "d56360976c",
-      passwordHash: "8b7e28a506bb8029d2f2d93e17cd3626be0cd776fa2e7d704ba44dfb8d80f8cd"
-    },
-    {
-      uid: "student_1",
-      email: "student@eduvista.com",
-      displayName: "Tunde Okafor",
-      role: "Student",
-      country: "Nigeria",
-      status: "active",
-      salt: "d56360976c",
-      passwordHash: "8b7e28a506bb8029d2f2d93e17cd3626be0cd776fa2e7d704ba44dfb8d80f8cd"
     }
   ];
 
@@ -546,17 +526,8 @@ export async function seedDatabase() {
     console.error('Failed to write users:', err.message);
   }
 
-  // Seed Parents
-  const defaultParents = [
-    {
-      uid: "parent_1",
-      children: ["Tunde"],
-      paymentMethods: ["card_visa_1234"],
-      preferredCurrency: "NGN",
-      country: "Nigeria",
-      referralHits: 0
-    }
-  ];
+  // Seed Parents (Initialized clean - populated dynamically upon user registration)
+  const defaultParents = [];
   CACHE['parents'] = defaultParents;
   try {
     const enc = encrypt(JSON.stringify(defaultParents, null, 2));
@@ -565,19 +536,8 @@ export async function seedDatabase() {
     console.error('Failed to write parents:', err.message);
   }
 
-  // Seed Students
-  const defaultStudents = [
-    {
-      uid: "student_1",
-      parentUid: "parent_1",
-      name: "Tunde",
-      dob: "2015-05-15",
-      subjects: ["Mathematics"],
-      xp: 0,
-      badges: [],
-      progressBySubject: {}
-    }
-  ];
+  // Seed Students (Initialized clean - populated dynamically by parents)
+  const defaultStudents = [];
   CACHE['students'] = defaultStudents;
   try {
     const enc = encrypt(JSON.stringify(defaultStudents, null, 2));
@@ -589,8 +549,7 @@ export async function seedDatabase() {
   // Seed Wallets (All initialized to 0)
   const defaultWallets = [
     { uid: "admin_1", balance: 0, escrow: 0 },
-    { uid: "admin_zeero", balance: 0, escrow: 0 },
-    { uid: "parent_1", balance: 0, escrow: 0 }
+    { uid: "admin_zeero", balance: 0, escrow: 0 }
   ];
   CACHE['wallets'] = defaultWallets;
   try {

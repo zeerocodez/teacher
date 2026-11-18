@@ -211,6 +211,111 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   const [selectedViewEmail, setSelectedViewEmail] = useState(null);
   const [emailLogsLoading, setEmailLogsLoading] = useState(false);
 
+  // Registered Parents & Teachers Registry state
+  const [parentsList, setParentsList] = useState([]);
+  const [userDirectoryTab, setUserDirectoryTab] = useState('parents'); // 'parents' | 'teachers'
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+
+  const downloadParentsCsv = () => {
+    if (!parentsList || parentsList.length === 0) {
+      triggerToast('No registered parents found to export.');
+      return;
+    }
+    const headers = ['UID', 'Name', 'Email', 'Phone', 'Students/Children', 'Wallet Balance (NGN)', 'Total Bookings', 'Registration Date'];
+    const rows = parentsList.map(p => [
+      `"${p.uid || ''}"`,
+      `"${(p.name || '').replace(/"/g, '""')}"`,
+      `"${(p.email || '').replace(/"/g, '""')}"`,
+      `"${(p.phone || '').replace(/"/g, '""')}"`,
+      `"${Array.isArray(p.students) ? p.students.join('; ') : ''}"`,
+      p.walletBalance ? Math.round(p.walletBalance / 100) : 0,
+      p.totalBookings || 0,
+      `"${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ''}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `eduvista-registered-parents-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    triggerToast('✓ Parents directory CSV exported successfully.');
+  };
+
+  const downloadTeachersCsv = () => {
+    if (!applications || applications.length === 0) {
+      triggerToast('No registered teachers found to export.');
+      return;
+    }
+    const headers = ['UID', 'Name', 'Username', 'Email', 'Phone/WhatsApp', 'Location', 'Status', 'Tier', 'Hourly Rate (NGN)', 'Subjects', 'Curricula', 'Lesson Modes', 'Trust Shield', 'Joined Date'];
+    const rows = applications.map(t => [
+      `"${t.uid || t.id || ''}"`,
+      `"${(t.name || '').replace(/"/g, '""')}"`,
+      `"${(t.username || '').replace(/"/g, '""')}"`,
+      `"${(t.email || '').replace(/"/g, '""')}"`,
+      `"${(t.whatsapp || t.phone || '').replace(/"/g, '""')}"`,
+      `"${(t.location || '').replace(/"/g, '""')}"`,
+      `"${t.status || (t.verified ? 'verified' : 'pending')}"`,
+      `"${t.tier || 'Standard'}"`,
+      Number(t.rate) ? Math.round(Number(t.rate) / 100) : 4000,
+      `"${Array.isArray(t.subjects) ? t.subjects.join('; ') : ''}"`,
+      `"${Array.isArray(t.curricula) ? t.curricula.join('; ') : ''}"`,
+      `"${Array.isArray(t.lessonModes) ? t.lessonModes.join('; ') : (t.online !== false ? 'online' : '')}"`,
+      `"${(t.verified || t.status === 'verified') ? '4/4' : '3/4'}"`,
+      `"${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `eduvista-registered-teachers-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    triggerToast('✓ Teachers directory CSV exported successfully.');
+  };
+
+  const handleClearParents = async () => {
+    if (!window.confirm("Are you sure you want to clear all mock/test parent accounts? This action cannot be undone.")) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/parents/clear`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        triggerToast("✓ Test parent data cleared.");
+        fetchAdminData();
+      }
+    } catch (e) {
+      console.error(e);
+      triggerToast("Failed to clear parent data.");
+    }
+  };
+
+  const filteredParents = useMemo(() => {
+    if (!parentsList) return [];
+    if (!userSearchQuery.trim()) return parentsList;
+    const q = userSearchQuery.toLowerCase().trim();
+    return parentsList.filter(p => 
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.email || '').toLowerCase().includes(q) ||
+      (p.phone || '').toLowerCase().includes(q)
+    );
+  }, [parentsList, userSearchQuery]);
+
+  const filteredTeachersForUserTab = useMemo(() => {
+    if (!applications) return [];
+    if (!userSearchQuery.trim()) return applications;
+    const q = userSearchQuery.toLowerCase().trim();
+    return applications.filter(t => 
+      (t.name || '').toLowerCase().includes(q) ||
+      (t.username || '').toLowerCase().includes(q) ||
+      (t.email || '').toLowerCase().includes(q) ||
+      (Array.isArray(t.subjects) && t.subjects.some(s => s.toLowerCase().includes(q)))
+    );
+  }, [applications, userSearchQuery]);
+
   const fetchEmailData = async () => {
     try {
       setEmailLogsLoading(true);
@@ -476,7 +581,20 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         setApplications(mappedApps);
       }
 
-        // Fetch B2B Schools
+      // Fetch registered parents
+      try {
+        const parentsRes = await fetch(`${API_BASE}/admin/parents`, { headers });
+        if (parentsRes.ok) {
+          const pData = await parentsRes.json();
+          if (Array.isArray(pData)) {
+            setParentsList(pData);
+          }
+        }
+      } catch (e) {
+        console.warn("Failed /admin/parents fetch:", e);
+      }
+
+      // Fetch B2B Schools
         const schoolRes = await fetch(`${API_BASE}/admin/b2b-schools`, { headers });
         if (schoolRes.ok) {
           const rawSchools = await schoolRes.json();
@@ -675,7 +793,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
   const [gdprRequests, setGdprRequests] = useState([]);
   const [cookieConsentLogs, setCookieConsentLogs] = useState([]);
   const [policyVersions, setPolicyVersions] = useState([
-    { version: 'v2.1', date: '2026-04-12', status: 'Active (NITDA Approved)' }
+    { version: 'v2.1', date: '2026-04-12', status: 'Active (NDPR Certified)' }
   ]);
   const [breachLogs, setBreachLogs] = useState([]);
 
@@ -1187,6 +1305,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-3xl p-1.5 gap-1 max-w-full scrollbar-none">
           {[
             { id: 'financials', label: 'Financials & Payouts' },
+            { id: 'users', label: `👥 Parents & Teachers (${parentsList.length})` },
             { id: 'concierge', label: `📋 Concierge CRM (${tutorRequests.filter(r => r.status !== 'Closed').length})` },
             { id: 'vetting', label: `Teachers & Vetting (${pendingApps.length} pending)` },
             { id: 'disputes', label: 'Disputes & Policy' },
@@ -1253,14 +1372,14 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
 
           {/* Card 2: Registered Parents */}
           <div 
-            onClick={() => setActiveSubSection('emails')}
+            onClick={() => { setActiveSubSection('users'); setUserDirectoryTab('parents'); }}
             className="bg-white border border-brand-moss/10 rounded-2xl p-4 shadow-xs hover:border-brand-clay/40 hover:shadow-md transition-all cursor-pointer group"
           >
             <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/50 block group-hover:text-brand-clay transition-colors">
               Registered Parents
             </span>
             <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-1">
-              {adminStats.registeredParents || 14}
+              {adminStats.registeredParents !== undefined ? adminStats.registeredParents : parentsList.length}
             </span>
             <span className="font-mono text-[8px] text-emerald-600 font-bold block mt-1">
               ✓ Verified Client Accounts
@@ -1276,38 +1395,29 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               Active Students
             </span>
             <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-1">
-              {adminStats.activeStudents || 8}
+              {adminStats.activeStudents !== undefined ? adminStats.activeStudents : 0}
             </span>
             <span className="font-mono text-[8px] text-brand-charcoal/50 block mt-1">
               Enrolled Learners
             </span>
           </div>
 
-          {/* Card 4: SLA Warnings */}
+          {/* Card 4: Registered Users */}
           <div 
-            onClick={() => { setActiveSubSection('vetting'); setTeacherViewMode('pipeline'); setPipelineFilter('sla'); }}
-            className={`bg-white border rounded-2xl p-4 shadow-xs transition-all cursor-pointer group ${
-              (applications.filter(a => a.slaHoursElapsed > 24 && (a.status === 'pending_approval' || a.status === 'onboarding')).length > 0 || adminStats.slaWarnings > 0)
-                ? 'border-rose-300 bg-rose-50/15 hover:border-rose-400'
-                : 'border-brand-moss/10 hover:border-brand-clay/40'
-            }`}
+            onClick={() => { setActiveSubSection('users'); setUserDirectoryTab('parents'); }}
+            className="bg-white border border-brand-moss/10 rounded-2xl p-4 shadow-xs hover:border-brand-clay/40 hover:shadow-md transition-all cursor-pointer group"
           >
-            <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/50 block group-hover:text-rose-600 transition-colors">
-              SLA Warnings
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/50 block group-hover:text-brand-clay transition-colors">
+                User Registry
+              </span>
+              <Users className="w-3.5 h-3.5 text-brand-moss/40" />
+            </div>
+            <span className="font-heading font-extrabold text-2xl text-brand-moss block mt-1">
+              {parentsList.length + applications.length}
             </span>
-            <span className={`font-heading font-extrabold text-2xl block mt-1 ${
-              (applications.filter(a => a.slaHoursElapsed > 24 && (a.status === 'pending_approval' || a.status === 'onboarding')).length > 0 || adminStats.slaWarnings > 0)
-                ? 'text-rose-600'
-                : 'text-brand-moss'
-            }`}>
-              {applications.filter(a => a.slaHoursElapsed > 24 && (a.status === 'pending_approval' || a.status === 'onboarding')).length || adminStats.slaWarnings || 0}
-            </span>
-            <span className={`font-mono text-[8px] font-bold block mt-1 ${
-              (applications.filter(a => a.slaHoursElapsed > 24 && (a.status === 'pending_approval' || a.status === 'onboarding')).length > 0 || adminStats.slaWarnings > 0)
-                ? 'text-rose-600 animate-pulse'
-                : 'text-emerald-600'
-            }`}>
-              {(applications.filter(a => a.slaHoursElapsed > 24 && (a.status === 'pending_approval' || a.status === 'onboarding')).length > 0 || adminStats.slaWarnings > 0) ? '⚠️ Action Required' : '✓ Zero Overdue'}
+            <span className="font-mono text-[8px] text-emerald-600 font-bold block mt-1">
+              ✓ Exportable CSV
             </span>
           </div>
 
@@ -1322,8 +1432,8 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
             <span className="font-heading font-extrabold text-2xl text-brand-clay block mt-1">
               {applications.filter(a => a.status === 'pending_approval' || a.status === 'onboarding').length || adminStats.pendingTeachers || 0}
             </span>
-            <span className="font-mono text-[8px] text-brand-charcoal/50 block mt-1">
-              SLA: 48h limit
+            <span className="font-mono text-[8px] text-amber-700 font-bold block mt-1">
+              Ready for Audit
             </span>
           </div>
 
@@ -1349,7 +1459,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               {adminStats.avgDecisionTime || 14}h
             </span>
             <span className="font-mono text-[8px] text-emerald-600 font-bold block mt-1">
-              ✓ NITDA &lt;48h
+              ✓ Target &lt;24h
             </span>
           </div>
         </div>
@@ -1889,7 +1999,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block mb-1">EDUCATOR ONBOARDING & QUALITY ASSURANCE</span>
               <h3 className="font-heading font-bold text-2xl text-brand-moss">Teacher Verification & Directory</h3>
               <p className="font-sans text-xs text-brand-charcoal/70 mt-0.5">
-                Audit credentials, approve elite tiers (Grade A VVIP / Grade B / Freemium), and enforce SLA standards.
+                Audit credentials, verify background clearance, and approve educator tiers.
               </p>
             </div>
           </div>
@@ -1933,12 +2043,17 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50">
-                Live Data Synchronized
-              </span>
+              <button 
+                onClick={downloadTeachersCsv} 
+                className="py-1.5 px-3 rounded-lg border border-brand-moss/20 hover:bg-brand-moss hover:text-white text-brand-moss text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Download Teachers CSV"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Teachers (CSV)</span>
+              </button>
               <button 
                 onClick={fetchAdminData} 
-                className="p-1.5 rounded-lg border border-brand-moss/10 hover:bg-brand-moss/5 text-brand-moss transition-colors"
+                className="p-1.5 rounded-lg border border-brand-moss/10 hover:bg-brand-moss/5 text-brand-moss transition-colors cursor-pointer"
                 title="Refresh from server"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -1953,14 +2068,13 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               <div className="flex flex-wrap items-center gap-2">
                 {[
                   { id: 'all', label: `All Pending (${applications.filter(a => a.status === 'pending_approval' || a.status === 'onboarding').length})` },
-                  { id: 'sla', label: `Critical SLA >24h (${applications.filter(a => a.slaHoursElapsed > 24 && (a.status === 'pending_approval' || a.status === 'onboarding')).length})` },
                   { id: 'revision', label: `Needs Revision (${applications.filter(a => a.status === 'needs_revision' || a.status === 'info_requested').length})` },
                   { id: 'all_apps', label: `All Candidates (${applications.length})` }
                 ].map(filter => (
                   <button
                     key={filter.id}
                     onClick={() => setPipelineFilter(filter.id)}
-                    className={`py-1.5 px-3.5 rounded-full font-mono text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                    className={`py-1.5 px-3.5 rounded-full font-mono text-[10px] font-bold uppercase tracking-wider transition-all border cursor-pointer ${
                       pipelineFilter === filter.id
                         ? 'bg-brand-clay text-white border-brand-clay shadow-sm'
                         : 'bg-white text-brand-moss/70 border-brand-moss/10 hover:border-brand-moss/30'
@@ -2076,22 +2190,8 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                                   {isPending ? 'Pending Audit' : isRevision ? 'Revision Req' : isVerified ? 'Verified' : app.status}
                                 </span>
 
-                                <span className={`font-mono text-[8px] font-bold py-0.5 px-2 rounded border uppercase ${
-                                  app.slaHoursElapsed > 48
-                                    ? 'bg-rose-600 text-white animate-bounce'
-                                    : app.slaHoursElapsed > 36
-                                    ? 'bg-rose-50 border-rose-200 text-rose-700 animate-pulse'
-                                    : app.slaHoursElapsed > 24
-                                    ? 'bg-amber-50 border-amber-200 text-amber-700'
-                                    : 'bg-brand-moss/5 border-brand-moss/10 text-brand-moss/70'
-                                }`}>
-                                  {app.slaHoursElapsed > 48 
-                                    ? 'SLA OVERDUE (NITDA ESCALATION)' 
-                                    : app.slaHoursElapsed > 36 
-                                    ? '36h CRITICAL ALERT' 
-                                    : app.slaHoursElapsed > 24 
-                                    ? '24h ESCALATION ACTIVE' 
-                                    : `SLA: ${app.slaHoursElapsed}h elapsed`}
+                                <span className="font-mono text-[8px] font-bold py-0.5 px-2 rounded border uppercase bg-brand-moss/5 border-brand-moss/10 text-brand-moss/70">
+                                  {app.submittedTime || `${app.slaHoursElapsed || 1}h ago`}
                                 </span>
                               </div>
                             </div>
@@ -2111,8 +2211,8 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                           <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block">
                             EDUCATOR DOSSIER AUDIT
                           </span>
-                          <span className="font-mono text-[8px] font-bold text-rose-500 uppercase tracking-widest">
-                            SLA Elapsed: {selectedApp.slaHoursElapsed} hours
+                          <span className="font-mono text-[8px] font-bold text-brand-charcoal/60 uppercase tracking-widest">
+                            Submitted: {selectedApp.submittedTime || `${selectedApp.slaHoursElapsed || 1}h ago`}
                           </span>
                         </div>
 
@@ -4363,7 +4463,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
                   <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-2 animate-pulse">
                     <AlertOctagon className="w-5.5 h-5.5 text-rose-600 shrink-0" />
                     <span className="font-mono text-[9px] text-rose-800 leading-normal">
-                      SLA Warning: "{rejectionReasons.find(r => r.count >= 40)?.reason}" exceeds the 40% threshold. Recommended action triggered: Update Onboarding Step 4 with clearer image resolution upload specifications.
+                      Quality Advisory: "{rejectionReasons.find(r => r.count >= 40)?.reason}" exceeds the 40% threshold. Recommended action triggered: Update Onboarding Step 4 with clearer image resolution upload specifications.
                     </span>
                   </div>
                 )}
@@ -4658,6 +4758,257 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* REGISTERED PARENTS & TEACHERS DIRECTORY (EXPORTABLE CSV) */}
+      {activeSubSection === 'users' && (
+        <div className="space-y-6 animate-fade-up">
+          {/* Header strip */}
+          <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-6 sm:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">
+                  REGISTRY & DATA MANAGEMENT
+                </span>
+                <span className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-[9px] font-mono px-2 py-0.5 rounded-full font-bold">
+                  NDPR & GDPR Compliant
+                </span>
+              </div>
+              <h3 className="font-heading font-bold text-2xl text-brand-moss mt-1">Registered Parents & Teachers</h3>
+              <p className="font-sans text-xs text-brand-charcoal/70 mt-1 max-w-xl">
+                Audit verified accounts, inspect parent profiles, monitor teacher onboarding dossiers, and export full records to CSV spreadsheets.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              {userDirectoryTab === 'parents' ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={downloadParentsCsv}
+                    className="py-2.5 px-4 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-mono text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-md shadow-brand-clay/20 transition-all cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download Parents (CSV)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleClearParents}
+                    className="py-2.5 px-3.5 rounded-full border border-rose-300 text-rose-600 hover:bg-rose-50 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    title="Clear legacy mock parent accounts"
+                  >
+                    Clear Test Parents
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={downloadTeachersCsv}
+                  className="py-2.5 px-4 rounded-full bg-brand-moss hover:bg-brand-moss/90 text-white font-mono text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Teachers (CSV)</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={fetchAdminData}
+                className="p-2.5 rounded-full border border-brand-moss/15 hover:bg-brand-moss/5 text-brand-moss transition-colors cursor-pointer"
+                title="Refresh user data"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Directory Tab Switcher & Search Bar */}
+          <div className="bg-white border border-brand-moss/10 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center bg-brand-moss/5 p-1 rounded-xl w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setUserDirectoryTab('parents')}
+                className={`flex-1 sm:flex-none py-2 px-5 rounded-lg font-heading font-bold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                  userDirectoryTab === 'parents'
+                    ? 'bg-white text-brand-moss shadow-xs'
+                    : 'text-brand-charcoal/60 hover:text-brand-moss'
+                }`}
+              >
+                👨‍👩‍👧 Registered Parents ({parentsList.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserDirectoryTab('teachers')}
+                className={`flex-1 sm:flex-none py-2 px-5 rounded-lg font-heading font-bold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                  userDirectoryTab === 'teachers'
+                    ? 'bg-white text-brand-moss shadow-xs'
+                    : 'text-brand-charcoal/60 hover:text-brand-moss'
+                }`}
+              >
+                🎓 Registered Teachers ({applications.length})
+              </button>
+            </div>
+
+            <div className="relative w-full sm:w-72">
+              <Search className="w-4 h-4 text-brand-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={userSearchQuery}
+                onChange={(e) => setUserSearchQuery(e.target.value)}
+                placeholder={userDirectoryTab === 'parents' ? "Search parents by name, email, phone..." : "Search teachers by name, subject..."}
+                className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-brand-clay"
+              />
+            </div>
+          </div>
+
+          {/* PARENTS DIRECTORY VIEW */}
+          {userDirectoryTab === 'parents' && (
+            <div className="space-y-4">
+              {filteredParents.length === 0 ? (
+                <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-12 text-center space-y-3 font-sans">
+                  <Users className="w-10 h-10 text-brand-moss/30 mx-auto" />
+                  <h4 className="font-heading font-bold text-lg text-brand-moss">No Registered Parents Found</h4>
+                  <p className="text-xs text-brand-charcoal/60 max-w-sm mx-auto">
+                    New parents who create an account or request a tutor will automatically appear here with their verified credentials.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredParents.map((parent) => (
+                    <div
+                      key={parent.uid}
+                      className="bg-white border border-brand-moss/10 rounded-2xl p-5 shadow-xs hover:border-brand-clay/30 hover:shadow-md transition-all flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="w-10 h-10 rounded-full bg-brand-moss/10 text-brand-moss flex items-center justify-center font-heading font-bold text-sm shrink-0">
+                            {parent.name?.charAt(0) || 'P'}
+                          </div>
+                          <span className="font-mono text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+                            Client Account
+                          </span>
+                        </div>
+
+                        <div>
+                          <h4 className="font-heading font-bold text-base text-brand-moss truncate">{parent.name}</h4>
+                          <span className="font-mono text-[11px] text-brand-charcoal/60 block truncate">{parent.email || 'No email provided'}</span>
+                          {parent.phone && parent.phone !== 'Not provided' && (
+                            <span className="font-mono text-[10px] text-brand-clay block mt-0.5">{parent.phone}</span>
+                          )}
+                        </div>
+
+                        <div className="pt-2 border-t border-brand-moss/5 space-y-1.5 font-sans text-xs">
+                          <div className="flex justify-between items-center text-brand-charcoal/70">
+                            <span className="text-[11px]">Enrolled Students:</span>
+                            <span className="font-bold text-brand-moss">
+                              {Array.isArray(parent.students) && parent.students.length > 0 ? parent.students.join(', ') : 'None registered yet'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-brand-charcoal/70">
+                            <span className="text-[11px]">Total Bookings:</span>
+                            <span className="font-bold text-brand-moss">{parent.totalBookings || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-brand-charcoal/70">
+                            <span className="text-[11px]">Wallet Balance:</span>
+                            <span className="font-mono font-bold text-emerald-700">
+                              ₦{(parent.walletBalance ? Math.round(parent.walletBalance / 100) : 0).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-brand-moss/5 mt-4 flex items-center justify-between text-[10px] font-mono text-brand-charcoal/50">
+                        <span>Joined: {parent.createdAt ? new Date(parent.createdAt).toLocaleDateString() : 'Active'}</span>
+                        <span className="text-emerald-700 font-bold">NDPR Protected</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TEACHERS DIRECTORY VIEW */}
+          {userDirectoryTab === 'teachers' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredTeachersForUserTab.map((teacher) => (
+                  <div
+                    key={teacher.uid || teacher.id}
+                    className="bg-white border border-brand-moss/10 rounded-2xl p-5 shadow-xs hover:border-brand-clay/30 hover:shadow-md transition-all flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <img
+                          src={getTeacherAvatar(teacher.avatar, teacher.name)}
+                          alt={teacher.name}
+                          className="w-10 h-10 rounded-full object-cover border border-brand-moss/10"
+                        />
+                        <span className={`font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold border ${
+                          teacher.verified || teacher.status === 'verified'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : (teacher.status === 'pending_approval' ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-brand-moss/5 text-brand-moss/70 border-brand-moss/10')
+                        }`}>
+                          {teacher.verified || teacher.status === 'verified' ? 'Verified ✓' : (teacher.status === 'pending_approval' ? 'Pending Audit' : teacher.status)}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="font-heading font-bold text-base text-brand-moss truncate">{teacher.name}</h4>
+                        <span className="font-mono text-[10px] text-brand-charcoal/50 block">@{teacher.username || 'tutor'}</span>
+                        <span className="font-sans text-xs text-brand-charcoal/70 block mt-1 truncate">
+                          {Array.isArray(teacher.subjects) ? teacher.subjects.slice(0, 3).join(', ') : teacher.subjects}
+                        </span>
+                      </div>
+
+                      <div className="pt-2 border-t border-brand-moss/5 space-y-1.5 font-sans text-xs">
+                        <div className="flex justify-between items-center text-brand-charcoal/70">
+                          <span className="text-[11px]">Standard Rate:</span>
+                          <span className="font-mono font-bold text-brand-moss">
+                            ₦{(Number(teacher.rate) ? Math.round(Number(teacher.rate) / 100) : 4000).toLocaleString()}/hr
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-brand-charcoal/70">
+                          <span className="text-[11px]">Lesson Delivery:</span>
+                          <span className="font-bold text-brand-moss">
+                            {Array.isArray(teacher.lessonModes) && teacher.lessonModes.includes('home') ? '🏡 Home + 💻 Online' : '💻 Online Only'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-brand-charcoal/70">
+                          <span className="text-[11px]">Trust Shield:</span>
+                          <span className="font-bold text-emerald-700">
+                            {(teacher.verified || teacher.status === 'verified') ? '4/4 Verified' : 'In Review'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-brand-moss/5 mt-4 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedApp(teacher);
+                          setActiveSubSection('vetting');
+                          setTeacherViewMode('pipeline');
+                        }}
+                        className="py-1.5 px-3 rounded-lg bg-brand-moss/5 hover:bg-brand-moss/10 text-brand-moss font-mono text-[9px] uppercase font-bold tracking-wider transition-colors cursor-pointer"
+                      >
+                        Audit Dossier
+                      </button>
+                      <a
+                        href={`https://eduvistar.com/teacher/${teacher.username || teacher.uid}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-1.5 px-3 rounded-lg border border-brand-moss/15 hover:border-brand-clay text-brand-clay font-mono text-[9px] uppercase font-bold tracking-wider transition-colors"
+                      >
+                        Public Card ↗
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

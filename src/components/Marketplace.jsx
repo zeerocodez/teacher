@@ -537,18 +537,28 @@ export default function Marketplace({
 
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => onBookClick(teacher)}
-                    className="btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center"
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onBookClick) onBookClick(teacher);
+                    }}
+                    className="btn-magnetic bg-brand-clay hover:bg-brand-clay/90 text-white font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center cursor-pointer shadow-sm transition-all"
                   >
                     Book Lesson
                   </button>
-                  <a
-                    href="#chat"
-                    onClick={(e) => { e.preventDefault(); alert(`Simulated Chat with ${teacher.name}. Interface is active in parent/teacher dashboards.`); }}
-                    className="btn-magnetic border border-brand-moss/20 text-brand-moss font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center hover:bg-brand-moss/5"
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const tutorId = teacher.username || teacher.uid || teacher.id;
+                      if (onTeacherSelect) {
+                        onTeacherSelect(tutorId);
+                      }
+                    }}
+                    className="btn-magnetic border border-brand-moss/20 text-brand-moss font-bold py-2.5 px-4 rounded-full text-xs uppercase tracking-wider text-center hover:bg-brand-moss/5 transition-colors cursor-pointer"
                   >
-                    Message
-                  </a>
+                    View Profile
+                  </button>
                 </div>
               </div>
             </div>

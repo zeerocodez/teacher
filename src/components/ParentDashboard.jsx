@@ -65,7 +65,7 @@ export default function ParentDashboard({
     earnings: 0
   });
 
-  const [selectedChild, setSelectedChild] = useState('tunde'); // 'tunde' or 'yinka'
+  const [selectedChild, setSelectedChild] = useState('');
   const [students, setStudents] = useState([]);
   const [aiInsight, setAiInsight] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -195,7 +195,7 @@ export default function ParentDashboard({
   const [topupCurrency, setTopupCurrency] = useState(selectedCurrency || 'NGN');
 
   const API_BASE = '/api';
-  const parentUid = currentUser?.uid || 'parent_1'; // Seeded test parent or active user
+  const parentUid = currentUser?.uid || currentUser?.id || 'parent_me';
 
   const getAuthHeaders = (extraHeaders = {}) => {
     const token = localStorage.getItem('eduvista_token');
@@ -215,8 +215,18 @@ export default function ParentDashboard({
       if (res.ok) {
         const data = await res.json();
         setDashboardData(data);
-        if (data.students) {
+        if (Array.isArray(data.students)) {
           setStudents(data.students);
+          if (data.students.length > 0) {
+            setSelectedChild(prev => {
+              if (prev && data.students.some(s => s.uid === prev || s.id === prev || s.name.toLowerCase() === prev.toLowerCase())) {
+                return prev;
+              }
+              return data.students[0].uid || data.students[0].id || data.students[0].name.toLowerCase();
+            });
+          } else {
+            setSelectedChild('');
+          }
         }
         if (data.referralsList) {
           setReferralsList(data.referralsList);
@@ -978,7 +988,17 @@ export default function ParentDashboard({
                     );
                   })}
                   {students.length === 0 && (
-                    <span className="text-[10px] text-brand-charcoal/50 w-full text-center py-2 italic">No children registered yet. Click Add Child to start.</span>
+                    <div className="w-full text-center py-5 px-4 bg-brand-cream/30 border border-dashed border-brand-moss/20 rounded-2xl space-y-2">
+                      <p className="font-heading font-bold text-xs text-brand-moss">No student profiles registered yet</p>
+                      <p className="text-[11px] text-brand-charcoal/60">Add your child's profile to track their homework scores, pedagogical lesson notes, and cognitive insights.</p>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddChildOpen(true)}
+                        className="btn-magnetic mt-1 py-1.5 px-3.5 rounded-lg bg-brand-moss hover:bg-brand-clay text-white font-heading font-bold text-2xs uppercase tracking-wider transition-colors cursor-pointer"
+                      >
+                        + Add First Child Profile
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -1408,10 +1428,10 @@ export default function ParentDashboard({
                         </div>
                       </div>
                       <div className="font-sans text-xs text-brand-charcoal/80 space-y-1 bg-white border border-brand-moss/5 rounded-xl p-3 leading-relaxed">
-                        <div><b>Topics:</b> {selectedChild === 'tunde' ? 'Quadratic factoring logic and coefficients.' : 'IGCSE English relative pronouns and syntax clauses.'}</div>
-                        <div><b>Strengths:</b> {selectedChild === 'tunde' ? 'Comprehension is fast; excellent linear algebraic calculations.' : 'Extremely rich vocabulary capacity.'}</div>
-                        <div><b>Focus:</b> {selectedChild === 'tunde' ? 'Review non-standard coefficients.' : 'Review transition words and paragraph structures.'}</div>
-                        <div><b>Next Lesson Prep:</b> {selectedChild === 'tunde' ? 'Trigonometric graphing equations.' : 'IGCSE argumentative essay writing.'}</div>
+                        <div><b>Topics Covered:</b> {session.pedagogyNotes?.topics || session.topics || 'Lesson curriculum coverage & key concepts.'}</div>
+                        <div><b>Key Strengths:</b> {session.pedagogyNotes?.strengths || session.strengths || 'Active student engagement and strong comprehension.'}</div>
+                        <div><b>Focus Areas:</b> {session.pedagogyNotes?.focus || session.focusAreas || 'Independent problem solving and guided practice.'}</div>
+                        <div><b>Next Lesson Prep:</b> {session.pedagogyNotes?.nextPrep || session.nextPrep || 'Review assignment exercises prior to next session.'}</div>
                       </div>
                     </div>
 
@@ -1521,7 +1541,7 @@ export default function ParentDashboard({
             <TutorDirectory 
               teachers={teachers || []} 
               selectedCurrency={selectedCurrency} 
-              onBookClick={(teacher) => onBookClick(teacher, activeStudent)}
+              onBookClick={(teacher) => onBookClick && onBookClick(teacher, activeStudent)}
               formatCurrency={formatCurrency}
               convertMinor={convertMinor}
               onTeacherSelect={onTeacherSelect}
@@ -1537,7 +1557,7 @@ export default function ParentDashboard({
             <Marketplace 
               teachers={teachers || []} 
               selectedCurrency={selectedCurrency} 
-              onBookClick={(teacher) => onBookClick(teacher, activeStudent)}
+              onBookClick={(teacher) => onBookClick && onBookClick(teacher, activeStudent)}
               formatCurrency={formatCurrency}
               convertMinor={convertMinor}
               onTeacherSelect={onTeacherSelect}
@@ -1714,7 +1734,7 @@ export default function ParentDashboard({
                         <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold block">🏦 Direct Bank Transfer Details</span>
                         <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[8px] font-bold py-0.5 px-2 rounded-full uppercase">Instant Verification</span>
                       </div>
-                      <p className="text-brand-charcoal/70">Please make a transfer of the exact amount in your selected deposit currency <strong className="uppercase">{topupCurrency}</strong>. Ensure you include your parent user ID <strong className="font-mono">{currentUser?.uid || 'parent_1'}</strong> as the transfer description/reference.</p>
+                      <p className="text-brand-charcoal/70">Please make a transfer of the exact amount in your selected deposit currency <strong className="uppercase">{topupCurrency}</strong>. Ensure you include your parent user ID <strong className="font-mono">{currentUser?.uid || currentUser?.id || 'EDU-PARENT'}</strong> as the transfer description/reference.</p>
                       <div className="bg-white border border-brand-moss/10 p-3.5 rounded-xl space-y-2 font-mono text-[10px] shadow-xs">
                         <div className="flex justify-between items-center py-0.5 border-b border-brand-moss/5">
                           <span className="text-brand-charcoal/50">BANK NAME:</span>

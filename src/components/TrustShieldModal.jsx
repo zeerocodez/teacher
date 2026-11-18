@@ -4,6 +4,8 @@ import { X, ShieldCheck, CheckCircle2, UserCheck, GraduationCap, Home, Video } f
 export default function TrustShieldModal({ isOpen, onClose, tutor }) {
   if (!isOpen || !tutor) return null;
 
+  const isHomeTutor = Array.isArray(tutor.lessonModes) && tutor.lessonModes.includes('home');
+
   const trustTiers = [
     {
       icon: UserCheck,
@@ -19,9 +21,12 @@ export default function TrustShieldModal({ isOpen, onClose, tutor }) {
     },
     {
       icon: Home,
-      title: "Home Lesson Clearance & Guarantor",
-      status: "Cleared ✓",
-      desc: "Physical residential address confirmed along with 2 verified professional/community guarantors for child safety in in-person home tutoring."
+      title: "Home Lesson Clearance & Guarantors",
+      status: isHomeTutor ? "Cleared ✓" : "N/A (Online Only)",
+      badgeColor: isHomeTutor ? "bg-emerald-100 text-emerald-800" : "bg-brand-moss/10 text-brand-moss",
+      desc: isHomeTutor 
+        ? "Physical residential address confirmed along with 2 verified professional/community guarantors on file for child safety in in-person home tutoring."
+        : "Educator teaches exclusively online. In-person home visits are disabled, and physical address clearance is not required for online-only delivery."
     },
     {
       icon: Video,
@@ -70,7 +75,7 @@ export default function TrustShieldModal({ isOpen, onClose, tutor }) {
                     </div>
                     <span className="font-heading font-bold text-xs text-brand-moss">{tier.title}</span>
                   </div>
-                  <span className="font-mono text-[9px] uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+                  <span className={`font-mono text-[9px] uppercase px-2 py-0.5 rounded-full font-bold ${tier.badgeColor || 'bg-emerald-100 text-emerald-800'}`}>
                     {tier.status}
                   </span>
                 </div>
