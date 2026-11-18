@@ -306,11 +306,35 @@ export default function TeacherPublicProfile({
   if (error || !teacher) {
     return (
       <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center p-6 text-center">
-        <h2 className="font-heading font-bold text-2xl text-brand-moss mb-2">Profile Not Found</h2>
-        <p className="font-sans text-xs text-brand-charcoal/70 max-w-sm mb-6">{error || 'This public tutor page is suspended, unverified, or does not exist.'}</p>
-        <button onClick={onBack} className="py-2.5 px-6 rounded-full bg-brand-moss text-white font-heading font-bold text-xs uppercase tracking-wider flex items-center gap-2">
-          <ArrowLeft className="w-4 h-4" /> Return to Homepage
-        </button>
+        <div className="w-16 h-16 rounded-full bg-brand-moss/10 text-brand-moss flex items-center justify-center mb-4">
+          <BookOpen className="w-8 h-8 text-brand-clay" />
+        </div>
+        <h2 className="font-heading font-bold text-2xl text-brand-moss mb-2">Tutor Profile Not Found</h2>
+        <p className="font-sans text-xs text-brand-charcoal/70 max-w-sm mb-6 leading-relaxed">
+          {error || 'This educator profile is unverified or the address may have moved. Browse our directory of vetted in-person and online teachers.'}
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <button 
+            type="button"
+            onClick={onBack} 
+            className="py-2.5 px-6 rounded-full bg-brand-moss text-white font-heading font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-brand-moss/90 transition-all shadow-md cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" /> Return to Homepage
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onBack();
+              setTimeout(() => {
+                const el = document.getElementById('directory');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 120);
+            }}
+            className="py-2.5 px-6 rounded-full bg-brand-clay text-white font-heading font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-brand-clay/90 transition-all shadow-md cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4" /> Browse Verified Tutors
+          </button>
+        </div>
       </div>
     );
   }

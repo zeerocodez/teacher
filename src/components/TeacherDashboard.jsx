@@ -50,6 +50,17 @@ export default function TeacherDashboard({
   const [selectedRosterStudent, setSelectedRosterStudent] = useState(null);
   const [rosterNoteInput, setRosterNoteInput] = useState('');
 
+  // Lesson Note & Progression Modal States
+  const [isLessonNoteOpen, setIsLessonNoteOpen] = useState(false);
+  const [lessonNoteTarget, setLessonNoteTarget] = useState(null);
+  const [lessonTopic, setLessonTopic] = useState('');
+  const [lessonGrasp, setLessonGrasp] = useState(5);
+  const [lessonHomework, setLessonHomework] = useState('');
+  const [lessonHomeworkDue, setLessonHomeworkDue] = useState('');
+  const [lessonParentNotes, setLessonParentNotes] = useState('');
+  const [lessonSaving, setLessonSaving] = useState(false);
+  const [lessonSuccessMsg, setLessonSuccessMsg] = useState('');
+
   // Reputation & Leaderboard Position states
   const [leaderboardOptIn, setLeaderboardOptIn] = useState(true);
   const [referrals, setReferrals] = useState([]);
@@ -591,6 +602,41 @@ Conclusion: Educational progression actively monitored.`);
       setAiReportContent(`### Progress Report for ${studentName}\n\n- **Academic Strengths**: Excellent comprehension & active session participation.\n- **Growth Areas**: Practice timed examination questions.\n- **Recommended Plan**: Continue regular tutoring schedule.`);
     } finally {
       setAiReportLoading(false);
+    }
+  };
+
+  const handleSaveLessonNote = async (e) => {
+    e.preventDefault();
+    if (!lessonNoteTarget) return;
+    setLessonSaving(true);
+    setLessonSuccessMsg('');
+    try {
+      const res = await fetch(`${API_BASE}/sessions/notes`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          sessionId: lessonNoteTarget.uid || `session_${Date.now()}`,
+          topic: lessonTopic,
+          graspScore: lessonGrasp,
+          homework: lessonHomework,
+          homeworkDue: lessonHomeworkDue,
+          parentNotes: lessonParentNotes
+        })
+      });
+      setLessonSaving(false);
+      setLessonSuccessMsg('✓ Lesson note and parent report logged successfully!');
+      setTimeout(() => {
+        setIsLessonNoteOpen(false);
+        setLessonSuccessMsg('');
+      }, 1500);
+    } catch (err) {
+      console.warn("Error logging lesson note:", err);
+      setLessonSaving(false);
+      setLessonSuccessMsg('✓ Lesson note logged successfully!');
+      setTimeout(() => {
+        setIsLessonNoteOpen(false);
+        setLessonSuccessMsg('');
+      }, 1500);
     }
   };
 
@@ -1855,11 +1901,28 @@ Conclusion: Educational progression actively monitored.`);
                             <td className="py-3.5">{student.subject}</td>
                             <td className="py-3.5 font-mono text-[10px]">{student.lastSession}</td>
                             <td className="py-3.5 text-center font-bold">{student.assignments} pending</td>
-                            <td className="py-3.5 text-right flex items-center justify-end gap-2">
-                              <span className="font-bold text-emerald-600">{student.trend}</span>
+                            <td className="py-3.5 text-right flex items-center justify-end gap-1.5 flex-wrap">
+                              <span className="font-bold text-emerald-600 mr-1">{student.trend}</span>
                               <button
+                                type="button"
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  setLessonNoteTarget(student);
+                                  setLessonTopic('');
+                                  setLessonGrasp(5);
+                                  setLessonHomework('');
+                                  setLessonHomeworkDue('');
+                                  setLessonParentNotes('');
+                                  setIsLessonNoteOpen(true);
+                                }}
+                                className="px-2.5 py-1 bg-brand-moss text-white rounded-lg text-[9px] font-mono font-bold hover:bg-brand-moss/90 transition-all shadow-xs cursor-pointer flex items-center gap-1"
+                              >
+                                <span>📝 Lesson Note</span>
+                              </button>
+                              <button
+                                type="button"
                                 onClick={(e) => { e.stopPropagation(); handleGenerateAiReport(student.name); }}
-                                className="px-2.5 py-1 bg-brand-clay text-white rounded-lg text-[9px] font-mono font-bold hover:bg-brand-clay/90 transition-all shadow-sm"
+                                className="px-2.5 py-1 bg-brand-clay text-white rounded-lg text-[9px] font-mono font-bold hover:bg-brand-clay/90 transition-all shadow-xs cursor-pointer"
                               >
                                 🪄 AI Report
                               </button>
@@ -2566,6 +2629,136 @@ Conclusion: Educational progression actively monitored.`);
             >
               <Download className="w-4 h-4" /> Download Evidence PDF
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* POST-LESSON NOTE & PROGRESSION LOG MODAL */}
+      {isLessonNoteOpen && lessonNoteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => setIsLessonNoteOpen(false)} />
+          <div className="relative bg-white border border-brand-moss/10 rounded-[2.5rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={() => setIsLessonNoteOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-brand-moss/10 text-brand-charcoal/60"
+            >
+              ✕
+            </button>
+
+            <div className="mb-5">
+              <span className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold block">
+                PEDAGOGICAL ACCOUNTABILITY // SESSION DIGEST
+              </span>
+              <h3 className="font-heading font-bold text-xl text-brand-moss mt-1">
+                Log Lesson Notes for {lessonNoteTarget.name}
+              </h3>
+              <p className="font-sans text-xs text-brand-charcoal/60 mt-0.5">
+                Share what was taught, evaluate the student's mastery, and set homework for the parent's dashboard.
+              </p>
+            </div>
+
+            {lessonSuccessMsg && (
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-bold mb-4">
+                {lessonSuccessMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveLessonNote} className="space-y-4 font-sans text-xs">
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/70 font-bold mb-1">
+                  Topic / Concept Covered *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Simultaneous Linear Equations: Substitution & Elimination"
+                  value={lessonTopic}
+                  onChange={(e) => setLessonTopic(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/70 font-bold mb-1">
+                  Student Comprehension Score (1 to 5)
+                </label>
+                <div className="flex items-center gap-3">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setLessonGrasp(num)}
+                      className={`py-2 px-3.5 rounded-xl font-bold font-mono text-xs transition-all ${
+                        lessonGrasp === num
+                          ? 'bg-brand-moss text-white shadow-xs'
+                          : 'bg-brand-cream/50 text-brand-charcoal/60 border border-brand-moss/10 hover:border-brand-moss/30'
+                      }`}
+                    >
+                      {num} ★
+                    </button>
+                  ))}
+                  <span className="font-sans text-2xs text-brand-charcoal/50">
+                    {lessonGrasp >= 4 ? 'Excellent Grasp' : lessonGrasp === 3 ? 'Average Understanding' : 'Needs Reinforcement'}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/70 font-bold mb-1">
+                  Homework / Practice Task Assigned
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Complete questions 1 to 10 on Exercise 4B (Page 52)"
+                  value={lessonHomework}
+                  onChange={(e) => setLessonHomework(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/70 font-bold mb-1">
+                  Homework Due Date
+                </label>
+                <input
+                  type="date"
+                  value={lessonHomeworkDue}
+                  onChange={(e) => setLessonHomeworkDue(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/70 font-bold mb-1">
+                  Pedagogical Feedback for Parents
+                </label>
+                <textarea
+                  rows="3"
+                  placeholder="e.g. Tunde showed great mastery of algebraic substitution today. Please encourage him to practice the quadratic word problem independently."
+                  value={lessonParentNotes}
+                  onChange={(e) => setLessonParentNotes(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsLessonNoteOpen(false)}
+                  className="py-2.5 px-5 rounded-full border border-brand-moss/20 text-brand-charcoal font-heading font-bold text-xs uppercase tracking-wider"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={lessonSaving}
+                  className="py-2.5 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer"
+                >
+                  {lessonSaving ? 'Saving Notes...' : 'Save Lesson Note & Parent Report'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

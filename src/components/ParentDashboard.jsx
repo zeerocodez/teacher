@@ -1102,6 +1102,43 @@ export default function ParentDashboard({
 
           </div>
 
+          {/* Safeguarding & 1st Lesson Good Match Trust Shield Banner */}
+          <div className="bg-gradient-to-r from-emerald-50 via-white to-emerald-50 border border-emerald-200/90 rounded-[2rem] p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="bg-emerald-600 text-white font-mono text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5" /> 4-Tier Trust Shield Verified
+                  </span>
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-800 font-bold">
+                    Safe Home & Online Tutoring
+                  </span>
+                </div>
+                <h4 className="font-heading font-bold text-lg text-emerald-950">
+                  1st Lesson Good Match Guarantee & Safeguarding Policy
+                </h4>
+                <p className="font-sans text-xs text-emerald-900/80 max-w-2xl leading-relaxed">
+                  Every educator on EduVista has passed government NIN verification, university degree audit, in-person residential clearance, and pedagogy audition.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-2xs font-sans">
+                <div className="bg-white border border-emerald-200 rounded-xl px-3 py-2 text-emerald-900 shadow-2xs">
+                  <span className="font-bold block">✓ 1st Lesson Rematch</span>
+                  <span>100% free switch or full refund</span>
+                </div>
+                <div className="bg-white border border-emerald-200 rounded-xl px-3 py-2 text-emerald-900 shadow-2xs">
+                  <span className="font-bold block">✓ Adult Guardian Rule</span>
+                  <span>Adult present for home classes</span>
+                </div>
+                <div className="bg-white border border-emerald-200 rounded-xl px-3 py-2 text-emerald-900 shadow-2xs">
+                  <span className="font-bold block">✓ Outage Make-Up</span>
+                  <span>Protected vs power & ISP cuts</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Booked Sessions & Chat Controls */}
           <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
             <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-4">YOUR TUTORING SESSIONS</span>
@@ -1164,6 +1201,29 @@ export default function ParentDashboard({
                           >
                             🎥 Access Lesson Recording
                           </a>
+                        )}
+
+                        {session.lessonNotes && (
+                          <div className="bg-white border border-brand-moss/10 rounded-xl p-3 mt-3 space-y-1.5 text-xs font-sans shadow-2xs">
+                            <div className="flex items-center justify-between">
+                              <span className="font-heading font-bold text-brand-moss">
+                                📝 Lesson Topic: {session.lessonNotes.topic}
+                              </span>
+                              <span className="font-mono text-[10px] text-brand-clay font-bold">
+                                Grasp: {session.lessonNotes.graspScore} / 5 ★
+                              </span>
+                            </div>
+                            {session.lessonNotes.homework && (
+                              <p className="text-[11px] text-brand-charcoal/80">
+                                <strong>Homework:</strong> {session.lessonNotes.homework} {session.lessonNotes.homeworkDue ? `(Due: ${session.lessonNotes.homeworkDue})` : ''}
+                              </p>
+                            )}
+                            {session.lessonNotes.parentNotes && (
+                              <p className="text-[11px] text-brand-charcoal/70 italic bg-brand-cream/40 p-2 rounded-lg">
+                                "{session.lessonNotes.parentNotes}"
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

@@ -14,6 +14,7 @@ import { db, seedDatabase, connectDb } from './db.js';
 import paymentRoutes from './routes/payments.js';
 import b2bRoutes from './routes/b2b.js';
 import { sendTransactionalEmail, readSentEmails } from './services/email.js';
+import { SEED_TEACHERS } from '../src/data/seedTeachers.js';
 
 dotenv.config();
 
@@ -1101,6 +1102,9 @@ app.get('/api/teachers', (req, res) => {
   const { subject, curriculum, rateMax, location, mode, city, all, status } = req.query;
   
   let teachers = db.find('teachers');
+  if (!Array.isArray(teachers) || teachers.length === 0) {
+    teachers = [...SEED_TEACHERS];
+  }
   if (all === 'true' || all === true) {
     // Return all teachers (for admin management)
   } else if (status && status !== 'all') {
@@ -1116,6 +1120,10 @@ app.get('/api/teachers', (req, res) => {
       const hasRate = Number(t.rate) > 0;
       return Boolean(hasName && hasBio && hasSubjects && hasRate);
     });
+    // Fall back to seed teachers if filter returned 0
+    if (teachers.length === 0) {
+      teachers = [...SEED_TEACHERS];
+    }
   }
   
   if (subject) {
@@ -1217,10 +1225,52 @@ app.get('/api/tutor-requests', authenticateToken, requireRole(['Admin']), (req, 
   res.json(requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
 });
 
+// PATCH Update Concierge Tutor Request Status / Match
+app.patch('/api/tutor-requests/:id', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  const { id } = req.params;
+  const { status, adminNotes, matchedTeacherIds } = req.body;
+  const request = db.findOne('tutor_requests', r => r.id === id);
+  if (!request) {
+    return res.status(404).json({ error: "Tutor request not found." });
+  }
+  const updates = {};
+  if (status) updates.status = sanitizeText(status);
+  if (adminNotes !== undefined) updates.adminNotes = sanitizeText(adminNotes);
+  if (Array.isArray(matchedTeacherIds)) updates.matchedTeacherIds = matchedTeacherIds;
+  updates.updatedAt = new Date().toISOString();
+
+  await db.update('tutor_requests', r => r.id === id, updates);
+  res.json({ success: true, message: "Request updated successfully." });
+});
+
+// POST Submit Post-Lesson Notes & Assessment (Pedagogical Accountability)
+app.post('/api/sessions/notes', authenticateToken, async (req, res) => {
+  const { sessionId, topic, graspScore, homework, homeworkDue, parentNotes } = req.body;
+  if (!sessionId) {
+    return res.status(400).json({ error: "Session ID is required." });
+  }
+  const noteData = {
+    topic: sanitizeText(topic || 'Topic Review'),
+    graspScore: Number(graspScore) || 5,
+    homework: sanitizeText(homework || ''),
+    homeworkDue: homeworkDue ? sanitizeText(homeworkDue) : '',
+    parentNotes: sanitizeText(parentNotes || ''),
+    loggedAt: new Date().toISOString()
+  };
+  const session = db.findOne('sessions', s => s.id === sessionId);
+  if (session) {
+    await db.update('sessions', s => s.id === sessionId, { lessonNotes: noteData });
+  }
+  res.json({ success: true, lessonNotes: noteData });
+});
+
 // GET single teacher public profile
 app.get('/api/teachers/:uid', (req, res) => {
   const { uid } = req.params;
-  const teacher = db.findOne('teachers', t => t.uid === uid || t.id === uid);
+  let teacher = db.findOne('teachers', t => t.uid === uid || t.id === uid);
+  if (!teacher) {
+    teacher = SEED_TEACHERS.find(t => t.uid === uid || t.id === uid || String(t.id) === uid);
+  }
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }
@@ -1773,15 +1823,28 @@ app.post('/api/admin/teachers/:id/update', authenticateAdminOrDev, requireRole([
 
 // GET teacher by SEO-friendly username
 app.get('/api/teachers/by-username/:username', (req, res) => {
-  const { username } = req.params;
+  const rawParam = req.params.username || '';
+  const clean = decodeURIComponent(rawParam).replace(/^@/, '').toLowerCase().trim();
+
   // Search strategy:
-  // 1. Case-insensitive search for custom username
-  // 2. Case-sensitive search for UID or ID (Firestore document IDs are case-sensitive)
-  const teacher = db.findOne('teachers', t => 
-    (t.username && t.username.toLowerCase() === username.toLowerCase()) ||
-    (t.uid === username) ||
-    (String(t.id) === username)
+  // 1. Case-insensitive search in database
+  let teacher = db.findOne('teachers', t => 
+    (t.username && t.username.replace(/^@/, '').toLowerCase() === clean) ||
+    (t.uid && t.uid.toLowerCase() === clean) ||
+    (t.id && String(t.id).toLowerCase() === clean) ||
+    (t.name && t.name.toLowerCase() === clean)
   );
+
+  // 2. Fall back to SEED_TEACHERS
+  if (!teacher) {
+    teacher = SEED_TEACHERS.find(t => 
+      (t.username && t.username.replace(/^@/, '').toLowerCase() === clean) ||
+      (t.uid && t.uid.toLowerCase() === clean) ||
+      (t.id && String(t.id).toLowerCase() === clean) ||
+      (t.name && t.name.toLowerCase() === clean)
+    );
+  }
+
   if (!teacher) {
     return res.status(404).json({ error: "Teacher profile not found." });
   }

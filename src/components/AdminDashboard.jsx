@@ -238,6 +238,59 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
     }
   };
 
+  // Concierge Tutor Requests Matching CRM State
+  const [tutorRequests, setTutorRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
+  const [selectedRequestForMatch, setSelectedRequestForMatch] = useState(null);
+  const [conciergeStatusFilter, setConciergeStatusFilter] = useState('all');
+  const [selectedTutorsForProposal, setSelectedTutorsForProposal] = useState([]);
+
+  const fetchTutorRequests = async () => {
+    setLoadingRequests(true);
+    try {
+      const res = await fetch(`${API_BASE}/tutor-requests`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTutorRequests(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch tutor requests:", err);
+    } finally {
+      setLoadingRequests(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTutorRequests();
+  }, []);
+
+  useEffect(() => {
+    if (activeSubSection === 'concierge') {
+      fetchTutorRequests();
+    }
+  }, [activeSubSection]);
+
+  const handleUpdateRequestStatus = async (requestId, status, matchedIds = null) => {
+    try {
+      const bodyPayload = { status };
+      if (matchedIds !== null) {
+        bodyPayload.matchedTeacherIds = matchedIds;
+      }
+      const res = await fetch(`${API_BASE}/tutor-requests/${requestId}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(bodyPayload)
+      });
+      if (res.ok) {
+        setTutorRequests(prev => prev.map(r => r.id === requestId ? { ...r, ...bodyPayload } : r));
+      }
+    } catch (err) {
+      console.error("Failed to update tutor request status:", err);
+    }
+  };
+
   useEffect(() => {
     if (activeSubSection === 'emails') {
       fetchEmailData();
@@ -1134,6 +1187,7 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
         <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-3xl p-1.5 gap-1 max-w-full scrollbar-none">
           {[
             { id: 'financials', label: 'Financials & Payouts' },
+            { id: 'concierge', label: `📋 Concierge CRM (${tutorRequests.filter(r => r.status !== 'Closed').length})` },
             { id: 'vetting', label: `Teachers & Vetting (${pendingApps.length} pending)` },
             { id: 'disputes', label: 'Disputes & Policy' },
             { id: 'groups', label: 'Groups & Bundles' },
@@ -4604,6 +4658,310 @@ export default function AdminDashboard({ currentUser, selectedCurrency, formatCu
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* CONCIERGE TUTOR MATCHING CRM */}
+      {activeSubSection === 'concierge' && (
+        <div className="space-y-6 animate-fade-up">
+          {/* Header strip */}
+          <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-6 sm:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold">
+                  CONCIERGE INTAKE ENGINE
+                </span>
+                <span className="bg-brand-clay/10 text-brand-clay text-[9px] font-mono px-2 py-0.5 rounded-full font-bold">
+                  {tutorRequests.filter(r => r.status === 'Pending Match').length} Awaiting Match
+                </span>
+              </div>
+              <h3 className="font-heading font-bold text-2xl text-brand-moss mt-1">Parent Tutor Matching CRM</h3>
+              <p className="font-sans text-xs text-brand-charcoal/70 mt-1 max-w-xl">
+                Match incoming parent requests with verified educators for home lessons and global virtual classes. Dispatch 1-click WhatsApp proposals.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={fetchTutorRequests}
+                className="py-2.5 px-4 rounded-full border border-brand-moss/15 hover:bg-brand-moss/5 text-brand-moss font-mono text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingRequests ? 'animate-spin' : ''}`} />
+                <span>Refresh Feed</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Status Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {[
+              { id: 'all', label: `All Requests (${tutorRequests.length})` },
+              { id: 'Pending Match', label: `Pending Match (${tutorRequests.filter(r => r.status === 'Pending Match').length})` },
+              { id: 'Contacted', label: `Contacted (${tutorRequests.filter(r => r.status === 'Contacted').length})` },
+              { id: 'Matched', label: `Matched (${tutorRequests.filter(r => r.status === 'Matched').length})` },
+              { id: 'Closed', label: `Closed (${tutorRequests.filter(r => r.status === 'Closed').length})` }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setConciergeStatusFilter(tab.id)}
+                className={`py-1.5 px-4 rounded-full font-heading font-bold text-[10px] uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                  conciergeStatusFilter === tab.id
+                    ? 'bg-brand-moss text-white shadow-xs'
+                    : 'bg-white hover:bg-brand-cream border border-brand-moss/10 text-brand-charcoal/70'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Requests Grid / Empty State */}
+          {tutorRequests.length === 0 ? (
+            <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-12 text-center max-w-md mx-auto shadow-sm">
+              <div className="w-14 h-14 rounded-full bg-brand-clay/10 text-brand-clay flex items-center justify-center mx-auto mb-3">
+                <Users className="w-7 h-7" />
+              </div>
+              <h4 className="font-heading font-bold text-base text-brand-moss mb-1">No Tutor Requests Yet</h4>
+              <p className="font-sans text-xs text-brand-charcoal/60 leading-relaxed mb-4">
+                Parent intake requests submitted via the "Request a Tutor" concierge wizard will appear here in real time.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {tutorRequests
+                .filter(r => conciergeStatusFilter === 'all' || r.status === conciergeStatusFilter)
+                .map((req) => {
+                  const phoneClean = (req.phone || '').replace(/\D/g, '');
+                  const isMatchingThis = selectedRequestForMatch?.id === req.id;
+
+                  // Find matching educators
+                  const reqSubjects = Array.isArray(req.subjects) ? req.subjects : [req.subjects || ''];
+                  const matchedTeachers = applications.filter(t => {
+                    const tSubjects = Array.isArray(t.subjects) ? t.subjects.map(s => s.toLowerCase()) : [];
+                    return reqSubjects.some(sub => tSubjects.some(ts => ts.includes(sub.toLowerCase())));
+                  }).slice(0, 4);
+
+                  return (
+                    <div 
+                      key={req.id} 
+                      className={`bg-white border rounded-[2rem] p-6 shadow-sm space-y-4 transition-all ${
+                        req.status === 'Pending Match' 
+                          ? 'border-brand-clay/40 ring-1 ring-brand-clay/10' 
+                          : 'border-brand-moss/10'
+                      }`}
+                    >
+                      {/* Top Row: Parent Name & Status */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/40 font-bold">
+                              {req.id}
+                            </span>
+                            <span className="text-brand-charcoal/20">·</span>
+                            <span className="font-mono text-[9px] text-brand-charcoal/50">
+                              {new Date(req.createdAt).toLocaleDateString('en-NG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <h4 className="font-heading font-bold text-lg text-brand-moss mt-0.5">{req.parentName}</h4>
+                          <span className="font-sans text-xs text-brand-charcoal/70 flex items-center gap-1.5 mt-0.5">
+                            <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                            <b>{req.phone}</b>
+                            {req.email && <span className="text-brand-charcoal/40">({req.email})</span>}
+                          </span>
+                        </div>
+
+                        {/* Status Selector Dropdown */}
+                        <select
+                          value={req.status || 'Pending Match'}
+                          onChange={(e) => handleUpdateRequestStatus(req.id, e.target.value)}
+                          className={`font-mono text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border cursor-pointer outline-none ${
+                            req.status === 'Pending Match'
+                              ? 'bg-amber-50 text-amber-800 border-amber-300'
+                              : req.status === 'Matched'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                                : req.status === 'Contacted'
+                                  ? 'bg-blue-50 text-blue-800 border-blue-300'
+                                  : 'bg-gray-100 text-gray-700 border-gray-300'
+                          }`}
+                        >
+                          <option value="Pending Match">Pending Match</option>
+                          <option value="Contacted">Contacted</option>
+                          <option value="Matched">Matched</option>
+                          <option value="Closed">Closed</option>
+                        </select>
+                      </div>
+
+                      {/* Request Specs Matrix */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-brand-cream/40 border border-brand-moss/10 rounded-2xl p-3.5 text-xs font-sans">
+                        <div>
+                          <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Grade / Stage</span>
+                          <span className="font-bold text-brand-moss">{req.studentClass || 'Primary / Secondary'}</span>
+                        </div>
+                        <div>
+                          <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Delivery Mode</span>
+                          <span className="font-bold text-brand-clay flex items-center gap-1">
+                            {req.lessonMode?.includes('Home') ? '🏡 Home Lessons' : '💻 Online Classes'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Schedule</span>
+                          <span className="font-bold text-brand-moss">{req.frequency || '3 days/week'}</span>
+                        </div>
+                        <div className="col-span-2 sm:col-span-3">
+                          <span className="font-mono text-[8px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Location Hub / Neighborhood</span>
+                          <span className="text-brand-charcoal/80 font-medium">
+                            {req.locationCity} {req.locationArea ? `(${req.locationArea})` : ''}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Subjects Pills */}
+                      <div>
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block font-bold mb-1.5">
+                          Requested Subjects:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(Array.isArray(req.subjects) ? req.subjects : [req.subjects]).map((sub, sIdx) => (
+                            <span key={sIdx} className="bg-brand-moss/10 text-brand-moss px-2.5 py-0.5 rounded-full text-xs font-bold">
+                              {sub}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Special Notes / Learning Goals */}
+                      {req.notes && (
+                        <div className="bg-white border border-brand-moss/10 rounded-xl p-3 text-xs font-sans text-brand-charcoal/80 italic">
+                          "{req.notes}"
+                        </div>
+                      )}
+
+                      {/* Actions Strip */}
+                      <div className="pt-2 border-t border-brand-moss/10 flex flex-wrap items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isMatchingThis) {
+                              setSelectedRequestForMatch(null);
+                              setSelectedTutorsForProposal([]);
+                            } else {
+                              setSelectedRequestForMatch(req);
+                              setSelectedTutorsForProposal(matchedTeachers.map(t => t.id || t.uid));
+                            }
+                          }}
+                          className="py-2 px-4 rounded-full bg-brand-clay text-white font-heading font-bold text-[10px] uppercase tracking-wider flex items-center gap-1.5 hover:bg-brand-clay/90 transition-all shadow-xs cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>{isMatchingThis ? 'Hide Match Panel' : '⚡ Match Vetted Tutors'}</span>
+                        </button>
+
+                        <a
+                          href={`https://wa.me/${phoneClean}?text=${encodeURIComponent(
+                            `Hello ${req.parentName}! This is EduVista Africa Academic Advisors. We received your tutor request for ${Array.isArray(req.subjects) ? req.subjects.join(', ') : req.subjects} (${req.studentClass}). We are preparing your verified educator match proposals now!`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="py-2 px-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-heading font-bold text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-xs transition-all cursor-pointer"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5 fill-current" />
+                          <span>WhatsApp Parent</span>
+                        </a>
+                      </div>
+
+                      {/* Matching Drawer */}
+                      {isMatchingThis && (
+                        <div className="bg-brand-cream/50 border border-brand-clay/20 rounded-2xl p-4 space-y-3 animate-fade-in mt-3">
+                          <div className="flex justify-between items-center">
+                            <span className="font-heading font-bold text-xs text-brand-moss uppercase tracking-wider">
+                              Recommended Verified Educators ({matchedTeachers.length})
+                            </span>
+                            <span className="font-mono text-[9px] text-brand-charcoal/50">
+                              Select tutors to include in proposal
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            {matchedTeachers.map((t) => {
+                              const isPicked = selectedTutorsForProposal.includes(t.id || t.uid);
+                              return (
+                                <div
+                                  key={t.id || t.uid}
+                                  onClick={() => {
+                                    if (isPicked) {
+                                      setSelectedTutorsForProposal(prev => prev.filter(id => id !== (t.id || t.uid)));
+                                    } else {
+                                      setSelectedTutorsForProposal(prev => [...prev, (t.id || t.uid)]);
+                                    }
+                                  }}
+                                  className={`p-3 rounded-xl border flex items-center gap-3 cursor-pointer transition-all ${
+                                    isPicked 
+                                      ? 'bg-white border-brand-clay ring-1 ring-brand-clay shadow-xs' 
+                                      : 'bg-white/60 border-brand-moss/10 hover:border-brand-moss/30'
+                                  }`}
+                                >
+                                  <img
+                                    src={getTeacherAvatar(t.avatar, t.name)}
+                                    alt={t.name}
+                                    className="w-10 h-10 rounded-full object-cover border border-brand-moss/10"
+                                    onError={handleAvatarError(t.name)}
+                                  />
+                                  <div className="min-w-0 flex-1 text-left">
+                                    <h5 className="font-heading font-bold text-xs text-brand-moss truncate">{t.name}</h5>
+                                    <span className="text-[10px] text-brand-clay font-bold block">
+                                      ₦{(Number(t.rate) / 100).toLocaleString()}/hr · {t.rating || 5.0}★
+                                    </span>
+                                    <span className="text-[9px] text-brand-charcoal/50 truncate block">
+                                      {Array.isArray(t.subjects) ? t.subjects.slice(0, 2).join(', ') : t.subjects}
+                                    </span>
+                                  </div>
+                                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                    isPicked ? 'bg-brand-clay border-brand-clay text-white' : 'border-brand-moss/30'
+                                  }`}>
+                                    {isPicked && <Check className="w-2.5 h-2.5" />}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* 1-Click WhatsApp Proposal Dispatch */}
+                          {selectedTutorsForProposal.length > 0 && (() => {
+                            const pickedTutorObjects = applications.filter(t => selectedTutorsForProposal.includes(t.id || t.uid));
+                            const proposalMsg = `Hello ${req.parentName}! This is EduVista Africa Academic Advisors following up on your request for private tutoring in ${Array.isArray(req.subjects) ? req.subjects.join(', ') : req.subjects} (${req.lessonMode} - ${req.studentClass}).\n\nWe have audited and matched these verified educators for your child:\n\n${pickedTutorObjects.map((t, i) => `${i + 1}. *${t.name}* (${t.rating || 5.0}★ verified)\n   Specializes in: ${Array.isArray(t.subjects) ? t.subjects.slice(0, 3).join(', ') : t.subjects}\n   Rate: ₦${(Number(t.rate) / 100).toLocaleString()}/hr (100% Escrow Protected)\n   Profile: https://eduvistar.com/teacher/${t.username || t.uid}\n`).join('\n')}\nWould you like us to schedule your child's 1st lesson test-drive with our Good Match Guarantee?`;
+
+                            return (
+                              <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-brand-moss/10">
+                                <a
+                                  href={`https://wa.me/${phoneClean}?text=${encodeURIComponent(proposalMsg)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() => handleUpdateRequestStatus(req.id, 'Matched', selectedTutorsForProposal)}
+                                  className="py-2.5 px-4 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-heading font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+                                >
+                                  <MessageSquare className="w-4 h-4 fill-current" />
+                                  <span>Send Pre-Filled WhatsApp Proposal ({selectedTutorsForProposal.length} Tutors)</span>
+                                </a>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateRequestStatus(req.id, 'Matched', selectedTutorsForProposal)}
+                                  className="py-2 px-3 rounded-full border border-brand-moss/20 hover:bg-brand-moss/5 text-brand-moss font-mono text-[9px] uppercase tracking-wider font-bold cursor-pointer"
+                                >
+                                  Mark as Matched
+                                </button>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
+
+                    </div>
+                  );
+                })}
+            </div>
+          )}
         </div>
       )}
 

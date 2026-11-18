@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';
 import TrustShieldModal from './TrustShieldModal';
+import { SEED_TEACHERS } from '../data/seedTeachers';
 
 /**
  * Normalizes and extracts experience level from teacher record.
@@ -81,9 +82,16 @@ export default function TutorDirectory({
   onRequestTutor,
   isNested = false
 }) {
-  const [teachers, setTeachers] = useState(initialTeachers);
+  const [teachers, setTeachers] = useState(() => (Array.isArray(initialTeachers) && initialTeachers.length > 0) ? initialTeachers : SEED_TEACHERS);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState('');
+
+  // Keep teachers synced whenever initialTeachers prop arrives
+  useEffect(() => {
+    if (Array.isArray(initialTeachers) && initialTeachers.length > 0) {
+      setTeachers(initialTeachers);
+    }
+  }, [initialTeachers]);
 
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -139,6 +147,8 @@ export default function TutorDirectory({
             setTeachers(normalized);
           } else if (Array.isArray(initialTeachers) && initialTeachers.length > 0) {
             setTeachers(initialTeachers);
+          } else {
+            setTeachers(SEED_TEACHERS);
           }
         }
       } else {
@@ -148,6 +158,8 @@ export default function TutorDirectory({
       console.warn('TutorDirectory database fetch notice, using fallback:', err);
       if (Array.isArray(initialTeachers) && initialTeachers.length > 0) {
         setTeachers(initialTeachers);
+      } else {
+        setTeachers(SEED_TEACHERS);
       }
       setFetchError('Unable to refresh live tutor list. Displaying cached records.');
     } finally {
@@ -186,7 +198,7 @@ export default function TutorDirectory({
 
   // Filtering and Sorting Pipeline
   const filteredAndSortedTutors = useMemo(() => {
-    let list = [...(teachers || [])];
+    let list = [...((teachers && teachers.length > 0) ? teachers : SEED_TEACHERS)];
 
     // 0. Filter by Lesson Delivery Mode (home vs online)
     if (selectedMode === 'home') {

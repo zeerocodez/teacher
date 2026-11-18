@@ -235,9 +235,21 @@ export default function BookingModal({
     setCardCvv(value);
   };
 
+  const resolveSlotsData = (activeSlotList) => {
+    let resolved = (activeSlotList || []).map(item => {
+      if (typeof item === 'object' && item !== null && item.day && item.time) return item;
+      return slots.find(s => s.id === item || s.id === Number(item));
+    }).filter(Boolean);
+
+    if (resolved.length === 0 && slots.length > 0) {
+      resolved = [slots[0]];
+    }
+    return resolved;
+  };
+
   const handlePay = () => {
     const activeSlotList = selectedSlots.length > 0 ? selectedSlots : (slots.length > 0 ? [slots[0].id] : []);
-    if (activeSlotList.length === 0) return;
+    if (activeSlotList.length === 0 && slots.length === 0) return;
     
     if (paymentMethod === 'card') {
       setShowCardForm(true);
@@ -245,7 +257,7 @@ export default function BookingModal({
       // Wallet payment
       setIsProcessing(true);
       setTimeout(() => {
-        const slotsData = activeSlotList.map(id => slots.find(s => s.id === id)).filter(Boolean);
+        const slotsData = resolveSlotsData(activeSlotList);
         onBook(totalRateMinor, slotsData, paymentMethod, { 
           subject: selectedSubject, 
           curriculum: selectedCurriculum,
@@ -300,7 +312,7 @@ export default function BookingModal({
       setPaymentStatusText("Securing escrow booking deposit...");
       setTimeout(() => {
         const activeSlotList = selectedSlots.length > 0 ? selectedSlots : (slots.length > 0 ? [slots[0].id] : []);
-        const slotsData = activeSlotList.map(id => slots.find(s => s.id === id)).filter(Boolean);
+        const slotsData = resolveSlotsData(activeSlotList);
         onBook(totalRateMinor, slotsData, 'card', { 
           subject: selectedSubject, 
           curriculum: selectedCurriculum,
@@ -852,13 +864,19 @@ export default function BookingModal({
               </div>
             </div>
 
-            {/* Escrow Guarantee Trust Banner */}
-            <div className="bg-emerald-50/80 border border-emerald-200/90 rounded-2xl p-3.5 mb-5 flex items-start gap-3">
-              <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-              <div className="text-[11px] font-sans leading-relaxed text-emerald-950">
-                <span className="font-bold text-emerald-900 block">100% Escrow Payment Protection</span>
-                Your funds remain safely locked until your lesson is fully completed and confirmed. Full money-back guarantee if any scheduling issue occurs.
+            {/* Escrow Guarantee & 1st Lesson Good Match Trust Banner */}
+            <div className="bg-emerald-50/90 border border-emerald-300 rounded-2xl p-4 mb-5 space-y-2 text-[11px] font-sans text-emerald-950 shadow-xs">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span className="font-heading font-bold text-xs uppercase tracking-wider text-emerald-900">
+                  EduVista 100% Trust Shield Guarantee
+                </span>
               </div>
+              <ul className="space-y-1 text-2xs text-emerald-900/90 pl-1 list-disc list-inside">
+                <li><b>1st Lesson Good Match Guarantee:</b> If your child and tutor don't click after Lesson 1, free replacement or full escrow refund.</li>
+                <li><b>Safeguarded & Audited:</b> Identity NIN, Degree Transcripts & Residential Guarantors verified on file.</li>
+                <li><b>Power/Internet Make-Up Protection:</b> Automated make-up credit for sudden outages.</li>
+              </ul>
             </div>
 
             {/* Payment Processor */}

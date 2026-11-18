@@ -39,6 +39,7 @@ import BrandLogo from './components/BrandLogo';
 import { getTeacherAvatar } from './utils/avatar';
 import { detectDefaultCurrency } from './utils/timezone';
 import ErrorBoundary from './components/ErrorBoundary';
+import { SEED_TEACHERS } from './data/seedTeachers';
 
 const BookingModal = lazy(() => import('./components/BookingModal'));
 const Marketplace = lazy(() => import('./components/Marketplace'));
@@ -178,8 +179,8 @@ export default function App() {
   const [activeToast, setActiveToast] = useState(null);
   const prevUnreadCountRef = useRef(0);
 
-  // Vetted Teachers Database state
-  const [teachers, setTeachers] = useState([]);
+  // Vetted Teachers Database state (Source of Truth initialized with all 18 authentic verified educators)
+  const [teachers, setTeachers] = useState(SEED_TEACHERS);
 
   // Booking Modal Trigger State
   const [selectedTeacherForBooking, setSelectedTeacherForBooking] = useState(null);
@@ -238,14 +239,16 @@ export default function App() {
       let latestTeachers = [];
       if (teachersRes.ok) {
         const teachersData = await teachersRes.json();
-        latestTeachers = teachersData.map(t => ({
-          ...t,
-          id: t.uid || t.id,
-          subjects: t.subjects || [],
-          curriculums: t.curricula || t.curriculums || [],
-          reviews: t.reviews || []
-        }));
-        setTeachers(latestTeachers);
+        if (Array.isArray(teachersData) && teachersData.length > 0) {
+          latestTeachers = teachersData.map(t => ({
+            ...t,
+            id: t.uid || t.id,
+            subjects: t.subjects || [],
+            curriculums: t.curricula || t.curriculums || [],
+            reviews: t.reviews || []
+          }));
+          setTeachers(latestTeachers);
+        }
       }
 
       const activeUid = currentUser ? currentUser.uid : 'parent_1';
@@ -2921,13 +2924,17 @@ export default function App() {
         </div>
       )}
 
-      {/* Floating Support Agent Button */}
-      <button
-        onClick={() => setIsSupportOpen(true)}
-        className="fixed bottom-6 left-6 z-40 w-12 h-12 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white flex items-center justify-center shadow-lg shadow-brand-clay/20 transition-all duration-300 scale-100 hover:scale-110 active:scale-95"
-      >
-        <MessageSquare className="w-6 h-6" />
-      </button>
+      {/* Floating Support Agent Button (Positioned safely above bottom dock; hidden in forms/onboarding) */}
+      {currentView === 'home' && !isTutorOnboarding && (
+        <button
+          onClick={() => setIsSupportOpen(true)}
+          className="fixed bottom-20 lg:bottom-6 left-6 z-40 w-12 h-12 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white flex items-center justify-center shadow-lg shadow-brand-clay/20 transition-all duration-300 scale-100 hover:scale-110 active:scale-95 cursor-pointer"
+          title="AI Lesson Support"
+          aria-label="AI Lesson Support"
+        >
+          <MessageSquare className="w-6 h-6" />
+        </button>
+      )}
 
       {/* Support Chat Panel */}
       {isSupportOpen && (

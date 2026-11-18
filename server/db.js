@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { SEED_TEACHERS } from '../src/data/seedTeachers.js';
 
 mongoose.set('bufferCommands', false);
 
@@ -136,9 +137,14 @@ function loadFromJsonFiles() {
         }
       } catch (err) {
         console.error(`Database Migration: Error reading fallback collection ${col}:`, err);
-        CACHE[col] = [];
+        CACHE[col] = col === 'teachers' ? [...SEED_TEACHERS] : [];
       }
     }
+  }
+
+  // Guarantee teachers collection is never empty
+  if (!Array.isArray(CACHE['teachers']) || CACHE['teachers'].length === 0) {
+    CACHE['teachers'] = [...SEED_TEACHERS];
   }
 }
 

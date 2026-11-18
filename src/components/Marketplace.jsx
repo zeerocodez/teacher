@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Star, ShieldCheck, CheckCircle2, Award, Zap, HelpCircle, Play, ChevronLeft, ChevronRight, RotateCw } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError, isRealTeacherVideo } from '../utils/avatar';
+import { SEED_TEACHERS } from '../data/seedTeachers';
 
 export default function Marketplace({ 
   teachers = [], 
@@ -26,19 +27,19 @@ export default function Marketplace({
         if (Array.isArray(data) && data.length > 0) {
           const valid = data.filter(t => t.name && t.name.trim().length >= 3 && t.bio && t.bio.trim().length >= 25 && Array.isArray(t.subjects) && t.subjects.length > 0);
           setLeaderboard(valid);
-        } else if (Array.isArray(teachers) && teachers.length > 0) {
-          // Fallback to complete verified teachers in props
-          const sorted = [...teachers]
+        } else {
+          // Fallback to complete verified teachers
+          const pool = (Array.isArray(teachers) && teachers.length > 0) ? teachers : SEED_TEACHERS;
+          const sorted = [...pool]
             .filter(t => t.name && t.name.trim().length >= 3 && t.bio && t.bio.trim().length >= 25 && Array.isArray(t.subjects) && t.subjects.length > 0 && (!t.status || t.status === 'verified' || t.status === 'active'))
             .sort((a, b) => (b.rating || 5) - (a.rating || 5));
           setLeaderboard(sorted);
         }
       })
       .catch(err => {
-        console.warn("Failed to fetch leaderboard, falling back to teachers props:", err);
-        if (Array.isArray(teachers) && teachers.length > 0) {
-          setLeaderboard(teachers.filter(t => t.name && t.name.trim().length >= 3 && t.bio && t.bio.trim().length >= 25 && Array.isArray(t.subjects) && t.subjects.length > 0 && (!t.status || t.status === 'verified' || t.status === 'active')));
-        }
+        console.warn("Failed to fetch leaderboard, falling back to seed teachers:", err);
+        const pool = (Array.isArray(teachers) && teachers.length > 0) ? teachers : SEED_TEACHERS;
+        setLeaderboard(pool.filter(t => t.name && t.name.trim().length >= 3 && t.bio && t.bio.trim().length >= 25 && Array.isArray(t.subjects) && t.subjects.length > 0 && (!t.status || t.status === 'verified' || t.status === 'active')));
       });
   }, [teachers]);
 
@@ -89,7 +90,8 @@ export default function Marketplace({
   }, [leaderboard, rotationIndex]);
 
   // Filter teachers based on real completeness and active filter criteria
-  const filteredTeachers = (teachers || []).filter(t => {
+  const basePool = (Array.isArray(teachers) && teachers.length > 0) ? teachers : SEED_TEACHERS;
+  const filteredTeachers = basePool.filter(t => {
     if (!t) return false;
     // Strict completeness gate: only show genuine educators with complete information
     const hasName = t.name && t.name.trim().length >= 3;
