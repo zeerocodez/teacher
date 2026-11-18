@@ -114,26 +114,32 @@ export default function TutorDirectory({
           // Gate to complete, authentic educators with real profiles
           const completeOnly = data.filter(t => 
             t.name && t.name.trim().length >= 3 && 
-            t.bio && t.bio.trim().length >= 25 && t.bio.trim().toLowerCase() !== 'move' &&
             Array.isArray(t.subjects) && t.subjects.length > 0 &&
             Number(t.rate) > 0
           );
-          const normalized = completeOnly.map(t => ({
-            ...t,
-            id: t.uid || t.id,
-            subjects: t.subjects || [],
-            curricula: t.curricula || t.curriculums || [],
-            rate: Number(t.rate) > 0 ? Number(t.rate) : 400000,
-            rating: t.rating || 5.0,
-            reviewsCount: t.reviewsCount || 0
-          }));
-          setTeachers(normalized);
+          if (completeOnly.length > 0) {
+            const normalized = completeOnly.map(t => ({
+              ...t,
+              id: t.uid || t.id,
+              subjects: t.subjects || [],
+              curricula: t.curricula || t.curriculums || [],
+              rate: Number(t.rate) > 0 ? Number(t.rate) : 400000,
+              rating: t.rating || 5.0,
+              reviewsCount: t.reviewsCount || 0
+            }));
+            setTeachers(normalized);
+          } else if (Array.isArray(initialTeachers) && initialTeachers.length > 0) {
+            setTeachers(initialTeachers);
+          }
         }
       } else {
         throw new Error('Failed to load tutors from database');
       }
     } catch (err) {
       console.warn('TutorDirectory database fetch notice, using fallback:', err);
+      if (Array.isArray(initialTeachers) && initialTeachers.length > 0) {
+        setTeachers(initialTeachers);
+      }
       setFetchError('Unable to refresh live tutor list. Displaying cached records.');
     } finally {
       setLoading(false);
