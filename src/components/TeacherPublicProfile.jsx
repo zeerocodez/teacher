@@ -354,9 +354,12 @@ export default function TeacherPublicProfile({
               <span className="font-mono text-[9px] uppercase tracking-widest text-brand-charcoal/60 font-bold block mb-1">STANDARD HOURLY RATE</span>
               <div className="flex items-baseline gap-1">
                 <span className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-moss">
-                  {safeFormatCurrency(safeConvertMinor(Number(teacher?.rate) || 400000, activeCurrency), activeCurrency)}
+                  {Number(teacher?.rate) > 0
+                    ? safeFormatCurrency(safeConvertMinor(Number(teacher.rate), activeCurrency), activeCurrency)
+                    : 'Rate on Inquiry'
+                  }
                 </span>
-                <span className="font-mono text-xs text-brand-charcoal/60">/ hour</span>
+                {Number(teacher?.rate) > 0 && <span className="font-mono text-xs text-brand-charcoal/60">/ hour</span>}
               </div>
             </div>
             <div className="text-right font-sans text-xs text-brand-charcoal/60">
@@ -820,7 +823,13 @@ export default function TeacherPublicProfile({
               {openSections.about && (
                 <div className="pt-3 border-t border-brand-moss/5 space-y-5 animate-fade-in">
                   <p className="font-sans text-brand-charcoal/80 text-sm leading-relaxed whitespace-pre-line">
-                    {teacher.bio || `${teacher.name} is a verified tutor on EduVista specializing in personalized instruction, foundational concepts, and student success.`}
+                    {teacher.bio ? (
+                      teacher.bio
+                    ) : (
+                      <span className="text-brand-charcoal/50 italic">
+                        This educator has not yet published an extended bio. Verified credentials, qualifications, and curriculum background are managed via EduVista registry.
+                      </span>
+                    )}
                   </p>
 
                   {/* Subjects & Curricula tags */}
@@ -828,21 +837,29 @@ export default function TeacherPublicProfile({
                     <div className="bg-brand-cream/20 p-3.5 rounded-2xl border border-brand-moss/5">
                       <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block mb-2">Specialized Subjects</span>
                       <div className="flex gap-1.5 flex-wrap">
-                        {(teacher.subjects && teacher.subjects.length > 0 ? teacher.subjects : ['Private Tutoring']).map(subj => (
-                          <span key={subj} className="bg-white px-2.5 py-1 rounded-lg text-xs font-medium text-brand-moss border border-brand-moss/10">
-                            {subj}
-                          </span>
-                        ))}
+                        {Array.isArray(teacher.subjects) && teacher.subjects.length > 0 ? (
+                          teacher.subjects.map(subj => (
+                            <span key={subj} className="bg-white px-2.5 py-1 rounded-lg text-xs font-medium text-brand-moss border border-brand-moss/10">
+                              {subj}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-xs text-brand-charcoal/40 italic">General Lessons (Specializations pending)</span>
+                        )}
                       </div>
                     </div>
                     <div className="bg-brand-cream/20 p-3.5 rounded-2xl border border-brand-moss/5">
                       <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block mb-2">Curriculum Standards</span>
                       <div className="flex gap-1.5 flex-wrap">
-                        {(teacher.curricula && teacher.curricula.length > 0 ? teacher.curricula : ['Universal Standards']).map(curr => (
-                          <span key={curr} className="bg-white px-2.5 py-1 rounded-lg text-xs font-medium text-brand-clay border border-brand-clay/10">
-                            {curr}
-                          </span>
-                        ))}
+                        {Array.isArray(teacher.curricula) && teacher.curricula.length > 0 ? (
+                          teacher.curricula.map(curr => (
+                            <span key={curr} className="bg-white px-2.5 py-1 rounded-lg text-xs font-medium text-brand-clay border border-brand-clay/10">
+                              {curr}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-xs text-brand-charcoal/40 italic">National Curriculum Standards</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1004,8 +1021,11 @@ export default function TeacherPublicProfile({
           <div>
             <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 block font-bold">Standard Rate</span>
             <span className="font-heading font-extrabold text-base text-brand-moss">
-              {safeFormatCurrency(safeConvertMinor(Number(teacher?.rate) || 400000, activeCurrency), activeCurrency)}
-              <span className="font-sans text-2xs text-brand-charcoal/60 font-normal"> / hr</span>
+              {Number(teacher?.rate) > 0
+                ? safeFormatCurrency(safeConvertMinor(Number(teacher.rate), activeCurrency), activeCurrency)
+                : 'Rate on Inquiry'
+              }
+              {Number(teacher?.rate) > 0 && <span className="font-sans text-2xs text-brand-charcoal/60 font-normal"> / hr</span>}
             </span>
           </div>
           <button

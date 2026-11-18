@@ -691,9 +691,11 @@ export default function TutorDirectory({
                   </div>
 
                   {/* Biography Snippet */}
-                  <p className="font-sans text-xs text-brand-charcoal/75 leading-relaxed line-clamp-2 mb-4">
-                    {tutor.bio || `${tutor.name} is a vetted educator on EduVista specializing in student comprehension, exam confidence, and mastery.`}
-                  </p>
+                  {tutor.bio && (
+                    <p className="font-sans text-xs text-brand-charcoal/75 leading-relaxed line-clamp-2 mb-4">
+                      {tutor.bio}
+                    </p>
+                  )}
 
                   {/* Specialized Subjects List */}
                   <div className="mb-4">
@@ -818,9 +820,11 @@ export default function TutorDirectory({
                     </div>
 
                     {/* Bio snippet */}
-                    <p className="font-sans text-xs text-brand-charcoal/70 line-clamp-1 mb-2 max-w-2xl">
-                      {tutor.bio || `${tutor.name} is a verified educator on EduVista specializing in personalized student instruction.`}
-                    </p>
+                    {tutor.bio && (
+                      <p className="font-sans text-xs text-brand-charcoal/70 line-clamp-1 mb-2 max-w-2xl">
+                        {tutor.bio}
+                      </p>
+                    )}
 
                     {/* Subjects */}
                     <div className="flex flex-wrap gap-1.5 items-center">

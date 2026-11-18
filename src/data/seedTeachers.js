@@ -1,908 +1,75 @@
 export const SEED_TEACHERS = [
   {
-    "id": "f3qayET3XBYgSrPzL9h7nAZUDog2",
-    "uid": "f3qayET3XBYgSrPzL9h7nAZUDog2",
-    "username": "tteacherlaura-phonics",
-    "name": "Laura Elvis Jaja",
+    "id": "01FgVp2ka9S8Kx556FWToI0Jcv23",
+    "uid": "01FgVp2ka9S8Kx556FWToI0Jcv23",
+    "username": "teachermckendra",
+    "name": "Mckendra Asuquo",
     "location": "Nigeria",
-    "subjects": [
-      "English Phonics",
-      "Diction & Pronunciation",
-      "Early Reading & Literacy",
-      "Spelling & Vocabulary"
-    ],
-    "curricula": [
-      "Early Years (EYFS)",
-      "Primary (Ages 6-11)",
-      "British & Nigerian Curriculum"
-    ],
-    "rate": 400000,
+    "subjects": [],
+    "curricula": [],
+    "rate": 0,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
-      "badge-verified"
+      "badge-verified",
+      "badge-grade-b"
     ],
-    "bio": "Certified Early Childhood and Phonics Educator specializing in synthetic phonics, diction, early reading fluency, and vocabulary building. Dedicated to giving young learners the foundational confidence to read, spell, and articulate clearly.",
+    "bio": "",
     "online": true,
     "languages": [
       "English"
     ],
-    "verified": true,
-    "status": "verified",
+    "verified": false,
+    "status": "onboarding",
     "videoUrl": "",
-    "avatar": "",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLRdMJmI8Z6xXMjYKemNtfocff3RBEY6roWPeLzyWBtx38aqUpk=s400-c",
     "leaderboardOptIn": true,
     "whatsapp": "",
+    "linkedin": "",
     "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
+      "Tomorrow": [
         "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
+        "5:00 PM"
       ],
       "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
+        "3:00 PM",
         "4:00 PM"
       ]
     }
   },
   {
-    "id": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
-    "uid": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
-    "username": "chris",
-    "name": "Christian Nwode",
+    "id": "0r5AeYFk25dsfLftgiV5zQBwhh33",
+    "uid": "0r5AeYFk25dsfLftgiV5zQBwhh33",
+    "username": "blessingakpansunday01gmailcom",
+    "name": "Blessing Akpan",
     "location": "Nigeria",
-    "subjects": [
-      "General Studies"
-    ],
-    "curricula": [
-      "WAEC",
-      "JAMB",
-      "NECO",
-      "High School (Ages 15-18)"
-    ],
-    "rate": 500000,
+    "subjects": [],
+    "curricula": [],
+    "rate": 0,
     "rating": 5,
     "reviewsCount": 0,
     "badges": [
-      "badge-verified"
+      "badge-ai-cert"
     ],
-    "bio": "Dedicated Senior Secondary Educator specializing in structured curriculum mastery, effective study techniques, and exam preparation.",
+    "bio": "",
     "online": true,
     "languages": [
       "English"
     ],
-    "verified": true,
-    "status": "verified",
+    "verified": false,
+    "status": "onboarding",
     "videoUrl": "",
     "avatar": "",
     "leaderboardOptIn": true,
     "whatsapp": "",
+    "linkedin": "",
     "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
+      "Tomorrow": [
         "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
+        "5:00 PM"
       ],
       "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
-    "uid": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
-    "username": "aniebietobongimaha",
-    "name": "Aniebietobong Imaha",
-    "location": "Nigeria",
-    "subjects": [
-      "Chemistry",
-      "Basic Science",
-      "General Science"
-    ],
-    "curricula": [
-      "WAEC",
-      "JAMB",
-      "Middle School (Ages 12-14)",
-      "High School (Ages 15-18)"
-    ],
-    "rate": 450000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Dedicated STEM and Chemistry Instructor passionate about simplifying complex chemical equations, periodic trends, stoichiometry, and practical science concepts for secondary school pupils and exam candidates.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "ENjZobEDIcSpxIM240HNXA2sYXr2",
-    "uid": "ENjZobEDIcSpxIM240HNXA2sYXr2",
-    "username": "teachermo",
-    "name": "Modesayo Okeniyi",
-    "location": "Nigeria",
-    "subjects": [
-      "Mathematics",
-      "Quantitative Reasoning",
-      "Basic Science"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "Common Entrance",
-      "Middle School (Ages 12-14)"
-    ],
-    "rate": 400000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Patient Primary and Junior Secondary Educator specializing in foundational numeracy, quantitative problem solving, and science. Helps students overcome math anxiety and build strong academic confidence.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786356757/rrdkhtm35wbzjasdpevw.png",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
-    "uid": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
-    "username": "teacher-eno",
-    "name": "Enobong Edubio",
-    "location": "Nigeria",
-    "subjects": [
-      "Basic Science"
-    ],
-    "curricula": [
-      "WAEC",
-      "NECO",
-      "JAMB",
-      "Junior Secondary (Ages 11-14)"
-    ],
-    "rate": 400000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Dedicated Science and Foundations Educator committed to step-by-step academic mastery, conceptual clarity, and exam success.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "dR7Gw9FFOtcDFEd9rZNcv5058962",
-    "uid": "dR7Gw9FFOtcDFEd9rZNcv5058962",
-    "username": "teacher-eddy",
-    "name": "Edidiong Wilson",
-    "location": "Nigeria",
-    "subjects": [
-      "Coding & Robotics",
-      "Computer Studies",
-      "ICT & Digital Literacy"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "Middle School (Ages 12-14)",
-      "High School (Ages 15-18)"
-    ],
-    "rate": 600000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Hands-on STEM and Computer Studies instructor teaching kids and teens practical coding concepts, scratch, robotics basics, and digital literacy with real-world interactive projects.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
-    "uid": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
-    "username": "tchrjoyu",
-    "name": "Joy Usanga",
-    "location": "Nigeria",
-    "subjects": [
-      "English Language",
-      "Literature-in-English",
-      "Creative Writing"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "Middle School (Ages 12-14)",
-      "WAEC",
-      "NECO"
-    ],
-    "rate": 450000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Accomplished English and Literature Educator dedicated to mastering grammatical accuracy, expressive essay composition, reading comprehension, and literary analysis for school and certificate examinations.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-    "uid": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
-    "username": "adenike",
-    "name": "Adenike Enoch-Salami",
-    "location": "Nigeria",
-    "subjects": [
-      "Mathematics",
-      "Verbal & Quantitative Reasoning",
-      "Primary Numeracy"
-    ],
-    "curricula": [
-      "Primary (Ages 6-11)",
-      "Common Entrance",
-      "Middle School (Ages 12-14)",
-      "WAEC"
-    ],
-    "rate": 350000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Passionate Primary and Secondary Mathematics Teacher experienced in Common Entrance drills, WAEC preparation, and building rock-solid mathematical foundations through interactive practice.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
-    "uid": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
-    "username": "editiedidiong",
-    "name": "Editi Edidiong",
-    "location": "Nigeria",
-    "subjects": [
-      "Economics",
-      "Commerce",
-      "Business Studies",
-      "Financial Accounting"
-    ],
-    "curricula": [
-      "WAEC",
-      "JAMB",
-      "NECO",
-      "High School (Ages 15-18)",
-      "University Prep"
-    ],
-    "rate": 400000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Experienced Commercial and Social Sciences Educator focused on micro and macroeconomics, commerce, and accounting. Prepares students for academic excellence in senior certificate exams.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
-    "uid": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
-    "username": "dorcas-english",
-    "name": "Dorcas Adenigba",
-    "location": "Nigeria",
-    "subjects": [
-      "English Language",
-      "Literature-in-English"
-    ],
-    "curricula": [
-      "WAEC",
-      "JAMB",
-      "Middle School (Ages 12-14)",
-      "High School (Ages 15-18)"
-    ],
-    "rate": 500000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Secondary English and Literature tutor focusing on grammar mastery, reading comprehension, vocabulary development, and preparation for WAEC and JAMB examinations.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ]
-    }
-  },
-  {
-    "id": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
-    "uid": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
-    "username": "daniel-government",
-    "name": "Daniel",
-    "location": "Nigeria",
-    "subjects": [
-      "Government",
-      "Civic Education",
-      "Social Studies"
-    ],
-    "curricula": [
-      "WAEC",
-      "NECO",
-      "JAMB",
-      "High School (Ages 15-18)"
-    ],
-    "rate": 350000,
-    "rating": 5,
-    "reviewsCount": 0,
-    "badges": [
-      "badge-verified"
-    ],
-    "bio": "Secondary Government and Civic Education specialist helping students understand constitutional frameworks, political systems, citizenship, and excel in WAEC/JAMB social science papers.",
-    "online": true,
-    "languages": [
-      "English"
-    ],
-    "verified": true,
-    "status": "verified",
-    "videoUrl": "",
-    "avatar": "",
-    "leaderboardOptIn": true,
-    "whatsapp": "",
-    "availability": {
-      "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Thursday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Friday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Saturday": [
-        "10:00 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "4:00 PM"
-      ],
-      "Sunday": [
-        "12:00 PM",
-        "2:00 PM",
+        "3:00 PM",
         "4:00 PM"
       ]
     }
@@ -912,7 +79,7 @@ export const SEED_TEACHERS = [
     "uid": "4EnoPUNrm9fExrxBczoTBHL1Wg82",
     "username": "nuzz",
     "name": "Nuel Jeff",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "Coding & Robotics"
     ],
@@ -925,7 +92,79 @@ export const SEED_TEACHERS = [
     "badges": [
       "badge-verified"
     ],
-    "bio": "Dedicated Coding and Robotics Instructor specializing in programming fundamentals, computational thinking, and hands-on technology education for secondary school students.",
+    "bio": "Just dey play",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": false,
+    "status": "pending_approval",
+    "videoUrl": "https://res.cloudinary.com/dbyb4c1jq/video/upload/v1794942023/gc1u9aqq0cwyvkmm62ez.mp4",
+    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1794487110/cp2gfwgxeflbcenrqocg.jpg",
+    "leaderboardOptIn": true,
+    "whatsapp": "8184865239",
+    "linkedin": "linked.cik",
+    "availability": {
+      "Tomorrow": [
+        "4:00 PM",
+        "5:00 PM"
+      ],
+      "Monday": [
+        "6:00 PM"
+      ],
+      "Thursday": [],
+      "Friday": [],
+      "Sunday": [],
+      "Wednesday": [],
+      "Tuesday": [],
+      "Saturday": []
+    }
+  },
+  {
+    "id": "8uwu4OqdeRfAPlGPvaGmYSu9nYE2",
+    "uid": "8uwu4OqdeRfAPlGPvaGmYSu9nYE2",
+    "username": "ng",
+    "name": "Ngozi Ibembo",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 1000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified",
+      "badge-grade-a",
+      "badge-ai-cert"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": false,
+    "status": "onboarding",
+    "videoUrl": "",
+    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786353399/vp8lvozl7jcki8jh3qtv.png",
+    "leaderboardOptIn": true,
+    "whatsapp": "08022324656",
+    "linkedin": "",
+    "availability": {}
+  },
+  {
+    "id": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
+    "uid": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
+    "username": "aniebietobongimaha",
+    "name": "Aniebietobong Imaha",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 450000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
     "online": true,
     "languages": [
       "English"
@@ -936,22 +175,9 @@ export const SEED_TEACHERS = [
     "avatar": "",
     "leaderboardOptIn": true,
     "whatsapp": "",
+    "linkedin": "",
     "availability": {
       "Monday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Tuesday": [
-        "9:00 AM",
-        "11:00 AM",
-        "2:00 PM",
-        "4:00 PM",
-        "6:00 PM"
-      ],
-      "Wednesday": [
         "9:00 AM",
         "11:00 AM",
         "2:00 PM",
@@ -972,13 +198,908 @@ export const SEED_TEACHERS = [
         "4:00 PM",
         "6:00 PM"
       ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
       "Saturday": [
         "10:00 AM",
         "12:00 PM",
         "2:00 PM",
         "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "EGIwdC6Qc1YLkg10tWLmgvD1lc13",
+    "uid": "EGIwdC6Qc1YLkg10tWLmgvD1lc13",
+    "username": "ruthiee",
+    "name": "Ruth Uko",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 0,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": false,
+    "status": "onboarding",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Tomorrow": [
+        "4:00 PM",
+        "5:00 PM"
+      ],
+      "Wednesday": [
+        "3:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "ENjZobEDIcSpxIM240HNXA2sYXr2",
+    "uid": "ENjZobEDIcSpxIM240HNXA2sYXr2",
+    "username": "teachermo",
+    "name": "Modesayo Okeniyi",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 400000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786356757/rrdkhtm35wbzjasdpevw.png",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
       ],
       "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
+    "uid": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
+    "username": "teacher-eno",
+    "name": "Enobong Edubio",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 400000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
+    "uid": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
+    "username": "adenike",
+    "name": "Adenike Enoch-Salami",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Tomorrow": [
+        "3:00 PM",
+        "4:00 PM",
+        "5:00 PM"
+      ],
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "LoWGDCMnwgMxERiN7Rak88xCkmw1",
+    "uid": "LoWGDCMnwgMxERiN7Rak88xCkmw1",
+    "username": "desayo",
+    "name": "desayo",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 400000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": false,
+    "status": "onboarding",
+    "videoUrl": "",
+    "avatar": "https://res.cloudinary.com/dbyb4c1jq/image/upload/v1786356757/rrdkhtm35wbzjasdpevw.png",
+    "leaderboardOptIn": true,
+    "whatsapp": "234567345",
+    "linkedin": "",
+    "availability": {}
+  },
+  {
+    "id": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
+    "uid": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
+    "username": "chris",
+    "name": "Christian Nwode",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 500000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
+    "uid": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
+    "username": "daniel-government",
+    "name": "Daniel",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 350000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Tomorrow": [
+        "4:00 PM",
+        "5:00 PM"
+      ],
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "StubTCOEqVfNpSmPMzG4YfcK4pD2",
+    "uid": "StubTCOEqVfNpSmPMzG4YfcK4pD2",
+    "username": "teacher-eminent",
+    "name": "Eminent Umosung",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 0,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": false,
+    "status": "onboarding",
+    "videoUrl": "",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLbMZWzD7Lnc90ESpF39SqEgDrkcq0H-rPCv1EkrGW4c_LgnahP=s400-c",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Tomorrow": [
+        "4:00 PM",
+        "5:00 PM"
+      ],
+      "Wednesday": [
+        "3:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "dR7Gw9FFOtcDFEd9rZNcv5058962",
+    "uid": "dR7Gw9FFOtcDFEd9rZNcv5058962",
+    "username": "teacher-eddy",
+    "name": "Edidiong Wilson",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 600000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "f3qayET3XBYgSrPzL9h7nAZUDog2",
+    "uid": "f3qayET3XBYgSrPzL9h7nAZUDog2",
+    "username": "tteacherlaura-phonics",
+    "name": "Laura Elvis Jaja",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 400000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
+    "uid": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
+    "username": "dorcas-english",
+    "name": "Dorcas Adenigba",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 500000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "teacher_fresh",
+    "uid": "teacher_fresh",
+    "username": "",
+    "name": "Dr. Chidi Johnson",
+    "location": "Enugu, Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 0,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": false,
+    "status": "onboarding",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {}
+  },
+  {
+    "id": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
+    "uid": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
+    "username": "tchrjoyu",
+    "name": "Joy Usanga",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 450000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ]
+    }
+  },
+  {
+    "id": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
+    "uid": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
+    "username": "editiedidiong",
+    "name": "Editi Edidiong",
+    "location": "Nigeria",
+    "subjects": [],
+    "curricula": [],
+    "rate": 400000,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badges": [
+      "badge-verified"
+    ],
+    "bio": "",
+    "online": true,
+    "languages": [
+      "English"
+    ],
+    "verified": true,
+    "status": "verified",
+    "videoUrl": "",
+    "avatar": "",
+    "leaderboardOptIn": true,
+    "whatsapp": "",
+    "linkedin": "",
+    "availability": {
+      "Monday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Thursday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Friday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Sunday": [
+        "12:00 PM",
+        "2:00 PM",
+        "4:00 PM"
+      ],
+      "Wednesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Tuesday": [
+        "9:00 AM",
+        "11:00 AM",
+        "2:00 PM",
+        "4:00 PM",
+        "6:00 PM"
+      ],
+      "Saturday": [
+        "10:00 AM",
         "12:00 PM",
         "2:00 PM",
         "4:00 PM"

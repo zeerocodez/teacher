@@ -516,9 +516,11 @@ export default function Marketplace({
                 </div>
 
                 {/* Bio text excerpt */}
-                <p className="font-sans text-xs text-brand-charcoal/80 leading-relaxed mb-6 line-clamp-2">
-                  "{teacher.bio || 'Professional African educator vetted by EduVista standards.'}"
-                </p>
+                {teacher.bio && (
+                  <p className="font-sans text-xs text-brand-charcoal/80 leading-relaxed mb-6 line-clamp-2">
+                    "{teacher.bio}"
+                  </p>
+                )}
               </div>
 
               {/* Hourly Rate & CTA buttons */}

@@ -13,6 +13,38 @@ const Linkedin = ({ className }) => (
   </svg>
 );
 
+function formatAuthError(err) {
+  if (!err) return '';
+  const code = err.code || '';
+  const raw = typeof err === 'string' ? err : (err.message || '');
+  
+  if (code === 'auth/popup-blocked' || raw.includes('popup-blocked')) {
+    return 'Your browser blocked the Google sign-in popup. Please allow popups for eduvistar.com or log in using your email and password below.';
+  }
+  if (code === 'auth/popup-closed-by-user' || raw.includes('popup-closed-by-user')) {
+    return 'The sign-in popup was closed before completing. Please try again.';
+  }
+  if (code === 'auth/wrong-password' || code === 'auth/invalid-credential' || raw.includes('wrong-password') || raw.includes('invalid-credential')) {
+    return 'Incorrect email or password. Please verify your credentials and try again.';
+  }
+  if (code === 'auth/user-not-found' || raw.includes('user-not-found')) {
+    return 'No account was found with this email. Please check your email or click Sign Up.';
+  }
+  if (code === 'auth/email-already-in-use' || raw.includes('email-already-in-use')) {
+    return 'An account already exists with this email address. Please click Log In instead.';
+  }
+  if (code === 'auth/invalid-email' || raw.includes('invalid-email')) {
+    return 'Please enter a valid email address.';
+  }
+  if (code === 'auth/network-request-failed' || raw.includes('network-request-failed')) {
+    return 'Network connection issue. Please check your internet connection and try again.';
+  }
+  if (code === 'auth/unauthorized-domain' || raw.includes('unauthorized-domain')) {
+    return 'Domain authentication is initializing. Please sign in with your email and password.';
+  }
+  return raw.replace(/^Firebase:\s*Error\s*\([^)]*\)\.?\s*/i, '').trim() || 'Authentication failed. Please verify your details.';
+}
+
 export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'login', initialRole = 'Parent' }) {
   const [activeTab, setActiveTab] = useState(initialTab); // 'login' or 'register'
   const [email, setEmail] = useState('');
@@ -315,7 +347,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
           onSuccess({ uid: 'admin_1', displayName: 'System Admin', role: 'Admin', email });
           onClose();
         } else {
-          setError(err.message || 'Invalid email or password. Please verify your credentials or register for an account.');
+          setError(formatAuthError(err));
         }
       } else {
         const mockUid = firebaseUser?.uid || `user_${Date.now()}`;
@@ -380,15 +412,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
       }
     } catch (err) {
       console.warn('Google Sign-in notice:', err.code, err.message);
-      if (err.code === 'auth/popup-blocked') {
-        setError('Your browser blocked the sign-in popup. Please allow popups for eduvistar.com or log in using your email and password below.');
-      } else if (err.code === 'auth/popup-closed-by-user') {
-        setError('Sign-in popup was closed before completion. Please try again.');
-      } else if (err.code === 'auth/unauthorized-domain') {
-        setError('This domain is currently being verified. Please log in using your email and password.');
-      } else {
-        setError(err.message || 'Unable to complete Google sign-in. Please use your email and password.');
-      }
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
