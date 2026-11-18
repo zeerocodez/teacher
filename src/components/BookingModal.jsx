@@ -21,6 +21,9 @@ export default function BookingModal({
   bookedSessions = [],
   preselectedSlots = []
 }) {
+  const [bookingType, setBookingType] = useState('package'); // 'package' | 'single'
+  const [selectedPackage, setSelectedPackage] = useState('standard'); // 'starter' | 'standard' | 'intensive'
+  const [recurringDays, setRecurringDays] = useState(['Monday', 'Wednesday', 'Friday']);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedCurriculum, setSelectedCurriculum] = useState('');
@@ -183,8 +186,17 @@ export default function BookingModal({
     }
   }, [isOpen, preselectedSlots, slots]);
 
-  const numSelected = selectedSlots.length > 0 ? selectedSlots.length : 1;
-  const totalRateMinor = activeRateMinor * numSelected;
+  const packageSessionsCount = selectedPackage === 'starter' ? 8 : (selectedPackage === 'intensive' ? 16 : 12);
+  const packageMultiplier = selectedPackage === 'starter' ? 1.0 : (selectedPackage === 'intensive' ? 0.90 : 0.95);
+
+  const numSelected = bookingType === 'package' 
+    ? packageSessionsCount 
+    : (selectedSlots.length > 0 ? selectedSlots.length : 1);
+
+  const totalRateMinor = bookingType === 'package'
+    ? Math.round(activeRateMinor * packageSessionsCount * packageMultiplier)
+    : activeRateMinor * (selectedSlots.length > 0 ? selectedSlots.length : 1);
+
   const formattedTotalRate = safeFormatCurrency(safeConvertMinor(totalRateMinor, activeCurrency), activeCurrency);
 
   const isSlotBooked = (slot) => {
@@ -224,7 +236,8 @@ export default function BookingModal({
   };
 
   const handlePay = () => {
-    if (selectedSlots.length === 0) return;
+    const activeSlotList = selectedSlots.length > 0 ? selectedSlots : (slots.length > 0 ? [slots[0].id] : []);
+    if (activeSlotList.length === 0) return;
     
     if (paymentMethod === 'card') {
       setShowCardForm(true);
@@ -232,10 +245,13 @@ export default function BookingModal({
       // Wallet payment
       setIsProcessing(true);
       setTimeout(() => {
-        const slotsData = selectedSlots.map(id => slots.find(s => s.id === id));
+        const slotsData = activeSlotList.map(id => slots.find(s => s.id === id)).filter(Boolean);
         onBook(totalRateMinor, slotsData, paymentMethod, { 
           subject: selectedSubject, 
           curriculum: selectedCurriculum,
+          bookingType,
+          selectedPackage,
+          packageSessionsCount: bookingType === 'package' ? packageSessionsCount : 1,
           isSiblingBundle
         });
         setIsProcessing(false);
@@ -243,7 +259,10 @@ export default function BookingModal({
           slotsData,
           subject: selectedSubject,
           curriculum: selectedCurriculum,
-          rateMinor: totalRateMinor
+          rateMinor: totalRateMinor,
+          bookingType,
+          selectedPackage,
+          packageSessionsCount: bookingType === 'package' ? packageSessionsCount : 1
         });
         resetStates();
       }, 1200);
@@ -280,10 +299,14 @@ export default function BookingModal({
     setTimeout(() => {
       setPaymentStatusText("Securing escrow booking deposit...");
       setTimeout(() => {
-        const slotsData = selectedSlots.map(id => slots.find(s => s.id === id));
+        const activeSlotList = selectedSlots.length > 0 ? selectedSlots : (slots.length > 0 ? [slots[0].id] : []);
+        const slotsData = activeSlotList.map(id => slots.find(s => s.id === id)).filter(Boolean);
         onBook(totalRateMinor, slotsData, 'card', { 
           subject: selectedSubject, 
           curriculum: selectedCurriculum,
+          bookingType,
+          selectedPackage,
+          packageSessionsCount: bookingType === 'package' ? packageSessionsCount : 1,
           isSiblingBundle 
         });
         setIsProcessing(false);
@@ -291,7 +314,10 @@ export default function BookingModal({
           slotsData,
           subject: selectedSubject,
           curriculum: selectedCurriculum,
-          rateMinor: totalRateMinor
+          rateMinor: totalRateMinor,
+          bookingType,
+          selectedPackage,
+          packageSessionsCount: bookingType === 'package' ? packageSessionsCount : 1
         });
         resetStates();
       }, 1000);
@@ -599,13 +625,80 @@ export default function BookingModal({
           /* SCREEN: Standard Lesson Booking & Method Selection Screen */
           <>
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-5">
               <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold block mb-1">Secure Check-out</span>
-              <h3 className="font-heading font-bold text-2xl text-brand-moss">Book Tutoring Session</h3>
+              <h3 className="font-heading font-bold text-2xl text-brand-moss">Book Tutoring with {teacher.name}</h3>
               <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
-                with <span className="font-semibold">{teacher.name}</span>
+                Choose a monthly retainer package or a single test class. All fees held safely in escrow.
               </p>
             </div>
+
+            {/* Booking Plan Model Switcher (Monthly Retainer vs Single Trial) */}
+            <div className="mb-5 p-1.5 bg-brand-moss/5 border border-brand-moss/10 rounded-2xl grid grid-cols-2 gap-1.5 select-none font-sans">
+              <button
+                type="button"
+                onClick={() => setBookingType('package')}
+                className={`py-2.5 px-3 rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                  bookingType === 'package'
+                    ? 'bg-brand-moss text-white shadow-xs'
+                    : 'text-brand-moss hover:bg-brand-moss/5'
+                }`}
+              >
+                📦 Monthly Retainer
+              </button>
+              <button
+                type="button"
+                onClick={() => setBookingType('single')}
+                className={`py-2.5 px-3 rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                  bookingType === 'single'
+                    ? 'bg-brand-moss text-white shadow-xs'
+                    : 'text-brand-moss hover:bg-brand-moss/5'
+                }`}
+              >
+                🗓️ Single Trial Class
+              </button>
+            </div>
+
+            {/* Monthly Retainer Packages Cards */}
+            {bookingType === 'package' && (
+              <div className="mb-5 space-y-2 font-sans">
+                <span className="font-heading font-bold text-2xs uppercase tracking-wider text-brand-moss block">
+                  Select Your Monthly Tuition Package
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {[
+                    { id: 'starter', label: 'Starter Plan', sessions: 8, freq: '2x / week', badge: 'Standard' },
+                    { id: 'standard', label: 'Standard Plan', sessions: 12, freq: '3x / week', badge: '⭐ 5% OFF · Popular' },
+                    { id: 'intensive', label: 'Intensive Prep', sessions: 16, freq: '4x / week', badge: '🚀 10% OFF' }
+                  ].map(pkg => {
+                    const isSelected = selectedPackage === pkg.id;
+                    const mult = pkg.id === 'starter' ? 1.0 : (pkg.id === 'intensive' ? 0.90 : 0.95);
+                    const costMinor = Math.round(activeRateMinor * pkg.sessions * mult);
+                    const formattedPkgCost = safeFormatCurrency(safeConvertMinor(costMinor, activeCurrency), activeCurrency);
+
+                    return (
+                      <div
+                        key={pkg.id}
+                        onClick={() => setSelectedPackage(pkg.id)}
+                        className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-center relative ${
+                          isSelected
+                            ? 'border-brand-clay bg-brand-clay/5 shadow-xs ring-1 ring-brand-clay/30'
+                            : 'border-brand-moss/10 bg-white hover:border-brand-moss/30'
+                        }`}
+                      >
+                        <span className="font-heading font-bold text-xs text-brand-moss block">{pkg.label}</span>
+                        <span className="font-mono text-[10px] text-brand-clay font-bold block mt-0.5">{pkg.freq}</span>
+                        <span className="font-mono text-[9px] text-brand-charcoal/50 block mb-1.5">{pkg.sessions} classes/mo</span>
+                        <div className="pt-1.5 border-t border-brand-moss/5">
+                          <span className="font-heading font-extrabold text-xs text-brand-moss block">{formattedPkgCost}</span>
+                          <span className="font-mono text-[8px] text-emerald-700 block font-bold">{pkg.badge}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Lesson Info */}
             <div className="bg-brand-moss/5 border border-brand-moss/10 rounded-2xl p-4 mb-5 flex justify-between items-center">
@@ -619,12 +712,16 @@ export default function BookingModal({
                   />
                 </div>
                 <div>
-                  <span className="font-heading font-bold text-sm text-brand-moss">{selectedSubject || '1-on-1'} Tutoring Session</span>
-                  <span className="font-sans text-xs text-brand-charcoal/60 block">60 minutes · {selectedCurriculum || 'WAEC/Cambridge'}</span>
+                  <span className="font-heading font-bold text-sm text-brand-moss">
+                    {bookingType === 'package' ? `${packageSessionsCount} Classes · ${selectedPackage.toUpperCase()} Monthly Retainer` : `${selectedSubject || '1-on-1'} Single Session`}
+                  </span>
+                  <span className="font-sans text-xs text-brand-charcoal/60 block">
+                    {bookingType === 'package' ? 'Full Monthly Escrow Protection' : `60 minutes · ${selectedCurriculum || 'WAEC/Cambridge'}`}
+                  </span>
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-heading font-bold text-base text-brand-moss block">{formattedRate}</span>
+                <span className="font-heading font-bold text-base text-brand-moss block">{formattedTotalRate}</span>
                 <span className="font-mono text-[9px] uppercase tracking-widest text-emerald-700 block font-bold">100% Escrow Protected</span>
               </div>
             </div>
@@ -696,7 +793,10 @@ export default function BookingModal({
             {/* Select Slots with Automatic Timezone Localization */}
             <div className="mb-6">
               <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block mb-2 flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-brand-clay" /> 1. Select Availability Slot</span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-brand-clay" /> 
+                  {bookingType === 'package' ? '1. Select First Class Date & Start Slot' : '1. Select Availability Slot'}
+                </span>
                 <span className="font-mono text-[9px] bg-brand-moss/10 px-2 py-0.5 rounded-full text-brand-moss font-bold">
                   🌍 {timezoneAbbr}
                 </span>
@@ -892,22 +992,22 @@ export default function BookingModal({
             <div className="space-y-3">
               <button
                 onClick={handlePay}
-                disabled={selectedSlots.length === 0 || isWalletInsufficient || isProcessing}
-                className={`btn-magnetic w-full py-3.5 rounded-full font-sans font-bold text-xs uppercase tracking-wider text-white shadow-lg transition-all ${
-                  selectedSlots.length === 0 || isWalletInsufficient 
+                disabled={((selectedSlots.length === 0 && bookingType === 'single') || isWalletInsufficient || isProcessing)}
+                className={`btn-magnetic w-full py-3.5 rounded-full font-sans font-bold text-xs uppercase tracking-wider text-white shadow-lg transition-all cursor-pointer ${
+                  ((selectedSlots.length === 0 && bookingType === 'single') || isWalletInsufficient)
                     ? 'bg-brand-moss/40 cursor-not-allowed shadow-none'
                     : 'bg-brand-clay hover:bg-brand-clay/90 shadow-brand-clay/20'
                 }`}
               >
                 {isProcessing 
                   ? "Securing Escrow..." 
-                  : selectedSlots.length > 0
+                  : (selectedSlots.length > 0 || bookingType === 'package')
                     ? paymentMethod === 'card' 
-                      ? "Enter Card Details" 
+                      ? `Pay ${formattedTotalRate} with Card`
                       : paymentMethod === 'bank'
                       ? `I Have Transferred ${formattedTotalRate} · Confirm`
                       : `Pay ${formattedTotalRate} & Lock Escrow`
-                    : "Select at least one slot"
+                    : "Select a Start Slot"
                 }
               </button>
               

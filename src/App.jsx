@@ -27,7 +27,8 @@ import {
   HelpCircle,
   Mail,
   User,
-  Play
+  Play,
+  Search
 } from 'lucide-react';
 
 import heroImage from './assets/hero.jpg';
@@ -53,6 +54,7 @@ const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const TeacherPublicProfile = lazy(() => import('./components/TeacherPublicProfile'));
 const StudentPortal = lazy(() => import('./components/StudentPortal'));
 const PrivacyModal = lazy(() => import('./components/PrivacyModal'));
+const RequestTutorModal = lazy(() => import('./components/RequestTutorModal'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -184,6 +186,7 @@ export default function App() {
   const [selectedStudentForBooking, setSelectedStudentForBooking] = useState(null);
   const [bookingPreselectedSlots, setBookingPreselectedSlots] = useState([]);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isRequestTutorOpen, setIsRequestTutorOpen] = useState(false);
   const [watchingTeacherVideo, setWatchingTeacherVideo] = useState(null);
 
   // Exchange Rates & Display Engine (Integer logic)
@@ -1373,6 +1376,14 @@ export default function App() {
                 <div className="hidden lg:flex items-center gap-3">
                   <button
                     type="button"
+                    onClick={() => setIsRequestTutorOpen(true)}
+                    className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-3.5 rounded-full border border-brand-clay text-brand-clay hover:bg-brand-clay hover:text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    Request a Tutor
+                  </button>
+                  <button
+                    type="button"
                     onClick={handleOpenTeacherSignup}
                     className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-4 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white flex items-center gap-1.5 shadow-md shadow-brand-clay/20 cursor-pointer"
                   >
@@ -1753,22 +1764,30 @@ export default function App() {
             {t('heroSubText')}
           </p>
 
-          <div className="hero-fade flex flex-col sm:flex-row gap-4 justify-start md:justify-end w-full">
+          <div className="hero-fade flex flex-col sm:flex-row gap-3.5 justify-start md:justify-end w-full">
             <a 
-              href="#marketplace"
-              onClick={scrollToSection('marketplace')}
-              className="btn-magnetic group font-sans font-bold text-xs uppercase tracking-wider bg-brand-clay text-white px-8 py-4 rounded-full shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2"
+              href="#directory"
+              onClick={scrollToSection('directory')}
+              className="btn-magnetic group font-sans font-bold text-xs uppercase tracking-wider bg-brand-clay text-white px-7 py-4 rounded-full shadow-lg shadow-brand-clay/20 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>{t('exploreMarketplace')}</span>
+              <span>Find Verified Tutors</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </a>
+            <button
+              type="button"
+              onClick={() => setIsRequestTutorOpen(true)}
+              className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-white text-brand-moss hover:bg-brand-cream px-7 py-4 rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-md"
+            >
+              <BookOpen className="w-4 h-4 text-brand-clay" />
+              <span>Request a Tutor (Matched in 4h)</span>
+            </button>
             <button 
               type="button"
               onClick={handleOpenTeacherSignup}
-              className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-brand-cream/10 backdrop-blur-sm text-brand-cream border border-brand-cream/30 hover:bg-brand-cream hover:text-brand-charcoal px-8 py-4 rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-md"
+              className="btn-magnetic font-sans font-bold text-xs uppercase tracking-wider bg-brand-cream/10 backdrop-blur-sm text-brand-cream border border-brand-cream/30 hover:bg-brand-cream hover:text-brand-charcoal px-6 py-4 rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-md"
             >
               <Sparkles className="w-4 h-4 text-brand-clay" />
-              <span>Register as a Tutor</span>
+              <span>Become a Tutor</span>
             </button>
           </div>
 
@@ -2251,6 +2270,7 @@ export default function App() {
           convertMinor={convertMinor}
           onTeacherSelect={handleTutorProfileSelect}
           onWatchVideo={(teacher) => setWatchingTeacherVideo(teacher)}
+          onRequestTutor={() => setIsRequestTutorOpen(true)}
         />
       </Suspense>
 
@@ -2264,6 +2284,7 @@ export default function App() {
           convertMinor={convertMinor}
           onTeacherSelect={handleTutorProfileSelect}
           onWatchVideo={(teacher) => setWatchingTeacherVideo(teacher)}
+          onRequestTutor={() => setIsRequestTutorOpen(true)}
         />
       </Suspense>
 
@@ -2835,6 +2856,50 @@ export default function App() {
           onClose={() => setIsPrivacyOpen(false)} 
         />
       </Suspense>
+
+      {/* Request a Tutor Concierge Modal */}
+      <Suspense fallback={<ModalLoadingFallback />}>
+        <RequestTutorModal 
+          isOpen={isRequestTutorOpen} 
+          onClose={() => setIsRequestTutorOpen(false)} 
+        />
+      </Suspense>
+
+      {/* Mobile Sticky Floating Action Dock (Public/Home View Only) */}
+      {currentView === 'home' && (
+        <div className="fixed bottom-3 left-3 right-3 z-40 lg:hidden flex items-center justify-between gap-1.5 p-2 bg-brand-charcoal/90 backdrop-blur-md border border-white/15 rounded-full shadow-2xl animate-fade-in font-sans">
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('directory');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="flex-1 py-2 px-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-heading font-bold text-[10px] uppercase tracking-wider text-center flex items-center justify-center gap-1 transition-all cursor-pointer"
+          >
+            <Search className="w-3 h-3 text-brand-clay" />
+            <span>Find Tutors</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsRequestTutorOpen(true)}
+            className="flex-1 py-2 px-2.5 rounded-full bg-brand-clay text-white font-heading font-bold text-[10px] uppercase tracking-wider text-center flex items-center justify-center gap-1 shadow-md shadow-brand-clay/30 active:scale-95 transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>Request Tutor</span>
+          </button>
+
+          <a
+            href="https://wa.me/2348136451607?text=Hello%20EduVista%20Africa!%20I%20would%20like%20to%20inquire%20about%20booking%20a%20vetted%20home%20or%20online%20tutor%20for%20my%20child."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="py-2 px-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-heading font-bold text-[10px] uppercase tracking-wider text-center flex items-center justify-center gap-1 shadow-sm shrink-0 cursor-pointer"
+          >
+            <MessageSquare className="w-3 h-3 fill-current" />
+            <span>WhatsApp</span>
+          </a>
+        </div>
+      )}
 
       {/* Real-time Toast Notifications */}
       {activeToast && (

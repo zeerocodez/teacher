@@ -1098,7 +1098,7 @@ app.get('/api/users/:uid', authenticateToken, requireOwnerOrAdmin, (req, res) =>
 
 // GET vetted teachers list with filter supports
 app.get('/api/teachers', (req, res) => {
-  const { subject, curriculum, rateMax, location, all, status } = req.query;
+  const { subject, curriculum, rateMax, location, mode, city, all, status } = req.query;
   
   let teachers = db.find('teachers');
   if (all === 'true' || all === true) {
@@ -1131,9 +1131,36 @@ app.get('/api/teachers', (req, res) => {
   if (location) {
     teachers = teachers.filter(t => t.location.toLowerCase().includes(location.toLowerCase()));
   }
+
+  // Filter by Lesson Mode (home or online)
+  if (mode === 'home') {
+    teachers = teachers.filter(t => !t.lessonModes || t.lessonModes.includes('home'));
+  } else if (mode === 'online') {
+    teachers = teachers.filter(t => !t.lessonModes || t.lessonModes.includes('online') || t.online !== false);
+  }
+
+  // Filter by City / Area
+  if (city && city !== 'All') {
+    const cityLower = city.toLowerCase();
+    teachers = teachers.filter(t => {
+      const citiesList = Array.isArray(t.cities) ? t.cities.map(c => c.toLowerCase()) : [];
+      const nList = Array.isArray(t.neighborhoods) ? t.neighborhoods.map(n => n.toLowerCase()) : [];
+      const locStr = String(t.location || '').toLowerCase();
+      return citiesList.some(c => c.includes(cityLower)) || nList.some(n => n.includes(cityLower)) || locStr.includes(cityLower);
+    });
+  }
   
   teachers = teachers.map(t => ({
     ...t,
+    lessonModes: Array.isArray(t.lessonModes) && t.lessonModes.length > 0 ? t.lessonModes : ['home', 'online'],
+    cities: Array.isArray(t.cities) && t.cities.length > 0 ? t.cities : (t.location ? [t.location.split(',')[0].trim()] : ['Lagos', 'Online']),
+    neighborhoods: Array.isArray(t.neighborhoods) && t.neighborhoods.length > 0 ? t.neighborhoods : ['Lekki', 'Ikeja', 'Victoria Island'],
+    trustShield: t.trustShield || {
+      identityVerified: !!t.verified,
+      credentialsVerified: !!t.verified,
+      homeLessonCleared: !!t.verified,
+      interviewPassed: !!t.verified
+    },
     availability: (t.availability && Object.keys(t.availability).length > 0) ? t.availability : {
       "Monday": ["9:00 AM", "11:00 AM", "2:00 PM", "4:00 PM", "6:00 PM"],
       "Tuesday": ["9:00 AM", "11:00 AM", "2:00 PM", "4:00 PM", "6:00 PM"],
@@ -1147,6 +1174,47 @@ app.get('/api/teachers', (req, res) => {
   }));
 
   res.json(teachers);
+});
+
+// POST Submit a Concierge Tutor Request (for Parents)
+app.post('/api/tutor-requests', async (req, res) => {
+  const { parentName, phone, email, studentClass, subjects, lessonMode, locationCity, locationArea, frequency, budget, notes } = req.body;
+  if (!parentName || !phone) {
+    return res.status(400).json({ error: "Parent name and phone/WhatsApp number are required." });
+  }
+
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const cleanRequest = {
+    id: requestId,
+    parentName: sanitizeText(parentName),
+    phone: sanitizeText(phone),
+    email: email ? sanitizeText(email) : '',
+    studentClass: studentClass ? sanitizeText(studentClass) : 'Primary / Secondary',
+    subjects: Array.isArray(subjects) ? subjects : (subjects ? [sanitizeText(subjects)] : []),
+    lessonMode: lessonMode ? sanitizeText(lessonMode) : 'Home Tutoring',
+    locationCity: locationCity ? sanitizeText(locationCity) : 'Lagos',
+    locationArea: locationArea ? sanitizeText(locationArea) : '',
+    frequency: frequency ? sanitizeText(frequency) : '3 Days / Week',
+    budget: budget ? sanitizeText(budget) : 'Standard',
+    notes: notes ? sanitizeText(notes) : '',
+    status: 'Pending Match',
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    await db.insert('tutor_requests', cleanRequest);
+    console.log(`[CONCIERGE] New tutor request received from ${cleanRequest.parentName} (${cleanRequest.phone}) for ${cleanRequest.studentClass} - ${cleanRequest.lessonMode}`);
+    res.json({ success: true, requestId, message: "Tutor match request registered successfully. An EduVista advisor will contact you shortly." });
+  } catch (err) {
+    console.error("Failed to save tutor request:", err);
+    res.status(500).json({ error: "Failed to submit request. Please try again or reach out on WhatsApp." });
+  }
+});
+
+// GET View Concierge Tutor Requests (for Admin)
+app.get('/api/tutor-requests', authenticateToken, requireRole(['Admin']), (req, res) => {
+  const requests = db.find('tutor_requests');
+  res.json(requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
 });
 
 // GET single teacher public profile

@@ -14,9 +14,14 @@ import {
   LayoutGrid,
   List,
   BookOpen,
-  Briefcase
+  Briefcase,
+  Home,
+  Laptop,
+  MapPin,
+  Sparkles
 } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError } from '../utils/avatar';
+import TrustShieldModal from './TrustShieldModal';
 
 /**
  * Normalizes and extracts experience level from teacher record.
@@ -73,6 +78,7 @@ export default function TutorDirectory({
   convertMinor,
   onTeacherSelect,
   onWatchVideo,
+  onRequestTutor,
   isNested = false
 }) {
   const [teachers, setTeachers] = useState(initialTeachers);
@@ -81,6 +87,8 @@ export default function TutorDirectory({
 
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedMode, setSelectedMode] = useState('all'); // 'all' | 'home' | 'online'
+  const [selectedCity, setSelectedCity] = useState('All'); // 'All' | 'Lagos_Island' | 'Lagos_Mainland' | 'Abuja' | 'PortHarcourt' | 'Online'
   const [selectedStage, setSelectedStage] = useState('All'); // 'All' | 'Primary' | 'WAEC_JAMB' | 'Phonics' | 'STEM' | 'Commercial'
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [selectedExperience, setSelectedExperience] = useState('All');
@@ -89,6 +97,7 @@ export default function TutorDirectory({
   const [sortBy, setSortBy] = useState('recommended'); // 'recommended' | 'rate_asc' | 'rate_desc' | 'rating' | 'experience'
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+  const [trustModalTutor, setTrustModalTutor] = useState(null);
 
   // Fallback currency formatters if not passed via props
   const safeConvertMinor = (ngnMinor, curr) => {
@@ -178,6 +187,40 @@ export default function TutorDirectory({
   // Filtering and Sorting Pipeline
   const filteredAndSortedTutors = useMemo(() => {
     let list = [...(teachers || [])];
+
+    // 0. Filter by Lesson Delivery Mode (home vs online)
+    if (selectedMode === 'home') {
+      list = list.filter(t => !t.lessonModes || t.lessonModes.includes('home'));
+    } else if (selectedMode === 'online') {
+      list = list.filter(t => !t.lessonModes || t.lessonModes.includes('online') || t.online !== false);
+    }
+
+    // 0.5. Filter by City / Hub
+    if (selectedCity !== 'All') {
+      const cLower = selectedCity.toLowerCase();
+      list = list.filter(t => {
+        const cities = Array.isArray(t.cities) ? t.cities.map(c => c.toLowerCase()) : [];
+        const hoods = Array.isArray(t.neighborhoods) ? t.neighborhoods.map(h => h.toLowerCase()) : [];
+        const loc = String(t.location || '').toLowerCase();
+
+        if (cLower === 'lagos_island') {
+          return hoods.some(h => h.includes('lekki') || h.includes('ikoyi') || h.includes('victoria') || h.includes('ajah')) || loc.includes('island') || cities.includes('lagos');
+        }
+        if (cLower === 'lagos_mainland') {
+          return hoods.some(h => h.includes('ikeja') || h.includes('gbagada') || h.includes('maryland') || h.includes('surulere') || h.includes('yaba')) || loc.includes('mainland') || cities.includes('lagos');
+        }
+        if (cLower === 'abuja') {
+          return cities.includes('abuja') || hoods.some(h => h.includes('wuse') || h.includes('maitama') || h.includes('gwarinpa')) || loc.includes('abuja');
+        }
+        if (cLower === 'portharcourt') {
+          return cities.includes('port harcourt') || hoods.some(h => h.includes('gra') || h.includes('peter odili')) || loc.includes('port harcourt') || loc.includes('rivers');
+        }
+        if (cLower === 'online') {
+          return t.online !== false || cities.includes('online');
+        }
+        return true;
+      });
+    }
 
     // 1. Text Search across name, bio, subjects, curricula, location
     if (searchQuery.trim()) {
@@ -278,11 +321,13 @@ export default function TutorDirectory({
     });
 
     return list;
-  }, [teachers, searchQuery, selectedSubject, selectedExperience, rateFilterTier, maxHourlyRate, sortBy]);
+  }, [teachers, searchQuery, selectedMode, selectedCity, selectedStage, selectedSubject, selectedExperience, rateFilterTier, maxHourlyRate, sortBy]);
 
   // Reset all filters
   const handleResetFilters = () => {
     setSearchQuery('');
+    setSelectedMode('all');
+    setSelectedCity('All');
     setSelectedStage('All');
     setSelectedSubject('All');
     setSelectedExperience('All');
@@ -291,7 +336,7 @@ export default function TutorDirectory({
     setSortBy('recommended');
   };
 
-  const isFiltered = searchQuery !== '' || selectedStage !== 'All' || selectedSubject !== 'All' || selectedExperience !== 'All' || rateFilterTier !== 'All' || maxHourlyRate < 15000;
+  const isFiltered = searchQuery !== '' || selectedMode !== 'all' || selectedCity !== 'All' || selectedStage !== 'All' || selectedSubject !== 'All' || selectedExperience !== 'All' || rateFilterTier !== 'All' || maxHourlyRate < 15000;
 
   return (
     <section id="directory" className={`${isNested ? 'pt-4 pb-16' : 'py-20'} px-4 sm:px-8 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto`}>
@@ -371,6 +416,44 @@ export default function TutorDirectory({
       {/* Control Strip: Search Bar, Filters & Sort */}
       <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-5 sm:p-6 mb-8 shadow-sm space-y-5">
         
+        {/* Primary Delivery Mode Switcher (Home vs Online) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-brand-cream/50 border border-brand-moss/10 rounded-2xl">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/60 font-bold mr-1 hidden sm:inline">
+              Mode:
+            </span>
+            {[
+              { id: 'all', label: '🌐 All Tutors' },
+              { id: 'home', label: '🏡 Home Tutoring (In-Person)' },
+              { id: 'online', label: '💻 Online Classes (Global)' }
+            ].map(mode => (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => setSelectedMode(mode.id)}
+                className={`py-2 px-3.5 rounded-xl font-heading font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
+                  selectedMode === mode.id
+                    ? 'bg-brand-moss text-white shadow-xs'
+                    : 'bg-white text-brand-moss hover:bg-brand-moss/5 border border-brand-moss/10'
+                }`}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Quick Concierge Match Callout Button */}
+          {onRequestTutor && (
+            <button
+              type="button"
+              onClick={onRequestTutor}
+              className="inline-flex items-center justify-center gap-1.5 py-2 px-3.5 bg-brand-clay hover:bg-brand-clay/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-xs transition-all cursor-pointer shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Request a Tutor Match
+            </button>
+          )}
+        </div>
+
         {/* Top Search & Toggle Row */}
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
           
@@ -450,8 +533,8 @@ export default function TutorDirectory({
           ))}
         </div>
 
-        {/* Filter Controls Row (Responsive Grid) */}
-        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-brand-moss/5 ${showFiltersMobile ? 'block' : 'hidden sm:grid'}`}>
+        {/* Filter Controls Row (Responsive Grid: 4 Pillars) */}
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-brand-moss/5 ${showFiltersMobile ? 'block' : 'hidden sm:grid'}`}>
           
           {/* 1. Filter by Subject */}
           <div className="space-y-1.5">
@@ -505,6 +588,25 @@ export default function TutorDirectory({
               <option value="custom">Custom Maximum Slider</option>
             </select>
           </div>
+
+          {/* 4. Filter by City & Neighborhood Hub */}
+          <div className="space-y-1.5">
+            <label className="block font-mono text-[10px] uppercase tracking-wider text-brand-moss font-bold flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-brand-clay" /> Location Hub
+            </label>
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-3 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay cursor-pointer"
+            >
+              <option value="All">All Locations & Hubs</option>
+              <option value="Lagos_Island">Lagos: Island (Lekki / Ikoyi / Ajah)</option>
+              <option value="Lagos_Mainland">Lagos: Mainland (Ikeja / Gbagada / Yaba)</option>
+              <option value="Abuja">Abuja (Wuse / Maitama / Gwarinpa)</option>
+              <option value="PortHarcourt">Port Harcourt (GRA / Peter Odili)</option>
+              <option value="Online">Online Only (Worldwide)</option>
+            </select>
+          </div>
         </div>
 
         {/* Custom Rate Slider Drawer when "custom" is picked */}
@@ -548,6 +650,18 @@ export default function TutorDirectory({
             {isFiltered && (
               <>
                 <span className="text-brand-charcoal/30">·</span>
+                {selectedMode !== 'all' && (
+                  <span className="bg-brand-moss/10 text-brand-moss text-[11px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 font-bold">
+                    Mode: {selectedMode === 'home' ? 'Home Tutoring' : 'Online Classes'}
+                    <button type="button" onClick={() => setSelectedMode('all')} className="hover:text-brand-clay cursor-pointer">×</button>
+                  </span>
+                )}
+                {selectedCity !== 'All' && (
+                  <span className="bg-brand-moss/10 text-brand-moss text-[11px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 font-bold">
+                    Hub: {selectedCity.replace('_', ' ')}
+                    <button type="button" onClick={() => setSelectedCity('All')} className="hover:text-brand-clay cursor-pointer">×</button>
+                  </span>
+                )}
                 {selectedStage !== 'All' && (
                   <span className="bg-brand-moss/10 text-brand-moss text-[11px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 font-bold">
                     Stage: {selectedStage.replace('_', ' & ')}
@@ -685,7 +799,7 @@ export default function TutorDirectory({
                   </div>
 
                   {/* Clean Metadata Line (Anti-Pill Discipline) */}
-                  <div className="flex items-center gap-2 text-xs text-brand-charcoal/60 mb-3 font-sans">
+                  <div className="flex items-center gap-2 text-xs text-brand-charcoal/60 mb-2 font-sans">
                     <span className="flex items-center gap-1 text-amber-700 font-bold">
                       <Star className="w-3.5 h-3.5 fill-current" />
                       {(tutor.rating || 5.0).toFixed(1)}
@@ -694,6 +808,26 @@ export default function TutorDirectory({
                     <span>{tutor.reviewsCount ? `${tutor.reviewsCount} reviews` : 'New Educator'}</span>
                     <span aria-hidden="true" className="text-brand-charcoal/30">·</span>
                     <span className="font-medium text-brand-moss">{exp.label}</span>
+                  </div>
+
+                  {/* Delivery Mode & Trust Shield Badges */}
+                  <div className="flex items-center gap-1.5 flex-wrap mb-3 font-sans">
+                    <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand-moss/5 text-brand-moss font-bold border border-brand-moss/10 flex items-center gap-1">
+                      {tutor.lessonModes?.includes('home') ? '🏡 Home' : ''}
+                      {tutor.lessonModes?.includes('home') && (tutor.lessonModes?.includes('online') || tutor.online !== false) ? ' + ' : ''}
+                      {(tutor.lessonModes?.includes('online') || tutor.online !== false) ? '💻 Online' : ''}
+                      {tutor.location ? ` · ${tutor.location.split(',')[0]}` : ''}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => setTrustModalTutor(tutor)}
+                      className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 flex items-center gap-1 hover:bg-emerald-100 transition-colors cursor-pointer"
+                      title="Click to view 4-tier security audit"
+                    >
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                      <span>Trust Shield 4/4</span>
+                    </button>
                   </div>
 
                   {/* Biography Snippet */}
@@ -825,6 +959,24 @@ export default function TutorDirectory({
                       <span className="text-brand-charcoal/60 truncate">{tutor.location || 'Nigeria'}</span>
                     </div>
 
+                    {/* Delivery & Trust Shield Strip */}
+                    <div className="flex items-center gap-1.5 flex-wrap mb-2 font-sans">
+                      <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand-moss/5 text-brand-moss font-bold border border-brand-moss/10 flex items-center gap-1">
+                        {tutor.lessonModes?.includes('home') ? '🏡 Home' : ''}
+                        {tutor.lessonModes?.includes('home') && (tutor.lessonModes?.includes('online') || tutor.online !== false) ? ' + ' : ''}
+                        {(tutor.lessonModes?.includes('online') || tutor.online !== false) ? '💻 Online' : ''}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setTrustModalTutor(tutor)}
+                        className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 flex items-center gap-1 hover:bg-emerald-100 transition-colors cursor-pointer"
+                        title="Click to view 4-tier security audit"
+                      >
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        <span>Trust Shield 4/4</span>
+                      </button>
+                    </div>
+
                     {/* Bio snippet */}
                     {tutor.bio && (
                       <p className="font-sans text-xs text-brand-charcoal/70 line-clamp-1 mb-2 max-w-2xl">
@@ -901,6 +1053,15 @@ export default function TutorDirectory({
           How It Works →
         </a>
       </div>
+
+      {/* EduVista Trust Shield Modal */}
+      {trustModalTutor && (
+        <TrustShieldModal
+          isOpen={!!trustModalTutor}
+          onClose={() => setTrustModalTutor(null)}
+          tutor={trustModalTutor}
+        />
+      )}
 
     </section>
   );

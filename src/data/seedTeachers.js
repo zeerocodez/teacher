@@ -4,7 +4,7 @@ export const SEED_TEACHERS = [
     "uid": "f3qayET3XBYgSrPzL9h7nAZUDog2",
     "username": "tteacherlaura-phonics",
     "name": "Laura Elvis Jaja",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "English Phonics",
       "Diction & Pronunciation",
@@ -81,6 +81,27 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Lekki Phase 1",
+      "Victoria Island",
+      "Ikoyi",
+      "Ajah",
+      "Chevron"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -88,7 +109,7 @@ export const SEED_TEACHERS = [
     "uid": "pLHfldBc3eWIgpVI9AqahuFCBhV2",
     "username": "dorcas-english",
     "name": "Dorcas Adenigba",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "English Language",
       "Literature-in-English",
@@ -165,6 +186,27 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Ikeja",
+      "Maryland",
+      "Gbagada",
+      "Magodo",
+      "Omole"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -172,7 +214,7 @@ export const SEED_TEACHERS = [
     "uid": "OsY20NfMP7YxFJY29bzfwkdhEzZ2",
     "username": "chris",
     "name": "Christian Nwode",
-    "location": "Nigeria",
+    "location": "Abuja, Nigeria",
     "subjects": [
       "General Studies",
       "Senior Secondary Exam Prep",
@@ -249,6 +291,27 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Abuja",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Wuse 2",
+      "Maitama",
+      "Gwarinpa",
+      "Jabi",
+      "Asokoro"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -256,7 +319,7 @@ export const SEED_TEACHERS = [
     "uid": "GSnOJeHBhAWamEfGRdDpcWgLEwI2",
     "username": "teacher-eno",
     "name": "Enobong Edubio",
-    "location": "Nigeria",
+    "location": "Port Harcourt, Nigeria",
     "subjects": [
       "Basic Science",
       "Integrated Science",
@@ -332,6 +395,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Port Harcourt",
+      "Online"
+    ],
+    "neighborhoods": [
+      "GRA Phase 1 & 2",
+      "Peter Odili Road",
+      "Trans Amadi",
+      "Rumuibekwe"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -339,7 +422,7 @@ export const SEED_TEACHERS = [
     "uid": "dR7Gw9FFOtcDFEd9rZNcv5058962",
     "username": "teacher-eddy",
     "name": "Edidiong Wilson",
-    "location": "Nigeria",
+    "location": "Lagos & Online Worldwide",
     "subjects": [
       "Coding & Robotics",
       "Computer Studies",
@@ -415,6 +498,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Yaba",
+      "Surulere",
+      "Lekki",
+      "Ikeja"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -422,7 +525,7 @@ export const SEED_TEACHERS = [
     "uid": "RkAIhBHRjsYIxVpcFfJlI0ce4oE2",
     "username": "daniel-government",
     "name": "Daniel",
-    "location": "Nigeria",
+    "location": "Abuja, Nigeria",
     "subjects": [
       "Government",
       "Civic Education",
@@ -499,6 +602,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Abuja",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Gwarinpa",
+      "Wuse",
+      "Kubwa",
+      "Maitama"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -581,6 +704,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Lekki",
+      "Victoria Island",
+      "Ajah",
+      "Yaba"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -588,7 +731,7 @@ export const SEED_TEACHERS = [
     "uid": "ENjZobEDIcSpxIM240HNXA2sYXr2",
     "username": "teachermo",
     "name": "Modesayo Okeniyi",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "Mathematics",
       "Quantitative Reasoning",
@@ -664,6 +807,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Surulere",
+      "Yaba",
+      "Gbagada",
+      "Ikeja"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -671,7 +834,7 @@ export const SEED_TEACHERS = [
     "uid": "D8pPIVkcJwNPZI4F7fQ5xj5ueV32",
     "username": "aniebietobongimaha",
     "name": "Aniebietobong Imaha",
-    "location": "Nigeria",
+    "location": "Port Harcourt, Nigeria",
     "subjects": [
       "Chemistry",
       "Basic Science",
@@ -748,6 +911,25 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Port Harcourt",
+      "Online"
+    ],
+    "neighborhoods": [
+      "GRA Phase 2",
+      "Peter Odili",
+      "Trans Amadi"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -755,7 +937,7 @@ export const SEED_TEACHERS = [
     "uid": "Il9kuOicX2a7PEiDwqnLZ9u02A53",
     "username": "adenike",
     "name": "Adenike Enoch-Salami",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "Mathematics",
       "Verbal & Quantitative Reasoning",
@@ -832,6 +1014,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Magodo",
+      "Ikeja GRA",
+      "Maryland",
+      "Omole Phase 1 & 2"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -839,7 +1041,7 @@ export const SEED_TEACHERS = [
     "uid": "z8CdeLMx6jbaGsntgkSSBHf0gMZ2",
     "username": "tchrjoyu",
     "name": "Joy Usanga",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "English Language",
       "Literature-in-English",
@@ -916,6 +1118,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Lekki Phase 1",
+      "Ikoyi",
+      "Victoria Island",
+      "Oniru"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -923,7 +1145,7 @@ export const SEED_TEACHERS = [
     "uid": "zyxvEbB5XbVT08V69TNSUo4jMFw1",
     "username": "editiedidiong",
     "name": "Editi Edidiong",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "Economics",
       "Commerce",
@@ -1002,6 +1224,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Ikeja",
+      "Maryland",
+      "Gbagada",
+      "Surulere"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -1009,7 +1251,7 @@ export const SEED_TEACHERS = [
     "uid": "LoWGDCMnwgMxERiN7Rak88xCkmw1",
     "username": "desayo",
     "name": "desayo",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "Primary Numeracy",
       "Basic Literacy",
@@ -1084,6 +1326,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Surulere",
+      "Yaba",
+      "Anthony",
+      "Ikeja"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -1091,7 +1353,7 @@ export const SEED_TEACHERS = [
     "uid": "8uwu4OqdeRfAPlGPvaGmYSu9nYE2",
     "username": "ng",
     "name": "Ngozi Ibembo",
-    "location": "Nigeria",
+    "location": "Abuja, Nigeria",
     "subjects": [
       "Basic Science",
       "General Studies",
@@ -1166,6 +1428,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Abuja",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Wuse 2",
+      "Maitama",
+      "Gwarinpa",
+      "Utako"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -1173,7 +1455,7 @@ export const SEED_TEACHERS = [
     "uid": "01FgVp2ka9S8Kx556FWToI0Jcv23",
     "username": "teachermckendra",
     "name": "Mckendra Asuquo",
-    "location": "Nigeria",
+    "location": "Calabar & Online Worldwide",
     "subjects": [
       "Primary Education",
       "Basic Numeracy & Literacy",
@@ -1248,6 +1530,25 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Calabar",
+      "Online"
+    ],
+    "neighborhoods": [
+      "State Housing",
+      "Marian",
+      "Diamond Hill"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -1255,7 +1556,7 @@ export const SEED_TEACHERS = [
     "uid": "0r5AeYFk25dsfLftgiV5zQBwhh33",
     "username": "blessingakpansunday01gmailcom",
     "name": "Blessing Akpan",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "Early Childhood Education",
       "Foundational Literacy",
@@ -1330,6 +1631,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Lekki",
+      "Chevron",
+      "Ikota",
+      "Ajah"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -1337,7 +1658,7 @@ export const SEED_TEACHERS = [
     "uid": "EGIwdC6Qc1YLkg10tWLmgvD1lc13",
     "username": "ruthiee",
     "name": "Ruth Uko",
-    "location": "Nigeria",
+    "location": "Lagos, Nigeria",
     "subjects": [
       "Primary Numeracy",
       "Foundational English",
@@ -1412,6 +1733,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Lagos",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Gbagada",
+      "Ogudu",
+      "Maryland",
+      "Ikeja"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   },
   {
@@ -1419,7 +1760,7 @@ export const SEED_TEACHERS = [
     "uid": "StubTCOEqVfNpSmPMzG4YfcK4pD2",
     "username": "teacher-eminent",
     "name": "Eminent Umosung",
-    "location": "Nigeria",
+    "location": "Abuja, Nigeria",
     "subjects": [
       "Civic Education",
       "Social Studies",
@@ -1494,6 +1835,26 @@ export const SEED_TEACHERS = [
         "2:00 PM",
         "4:00 PM"
       ]
+    },
+    "cities": [
+      "Abuja",
+      "Online"
+    ],
+    "neighborhoods": [
+      "Gwarinpa",
+      "Wuse",
+      "Maitama",
+      "Jabi"
+    ],
+    "lessonModes": [
+      "home",
+      "online"
+    ],
+    "trustShield": {
+      "identityVerified": true,
+      "credentialsVerified": true,
+      "homeLessonCleared": true,
+      "interviewPassed": true
     }
   }
 ];

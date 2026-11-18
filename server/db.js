@@ -64,7 +64,8 @@ const collections = [
   'transactions',
   'disputes',
   'reviews',
-  'b2b_schools'
+  'b2b_schools',
+  'tutor_requests'
 ];
 
 // Schema-free dynamic collection models
