@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon } from 'lucide-react';
+import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon, PenLine } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError, isRealTeacherAvatar } from '../utils/avatar';
 
 export default function TeacherDashboard({
@@ -398,7 +398,11 @@ Conclusion: Educational progression actively monitored.`);
         body: JSON.stringify(payload)
       });
       if (response.ok) {
-        setProfileMessage('✓ Profile successfully updated!');
+        const updatedDoc = await response.json().catch(() => null);
+        setProfileMessage('✓ Profile, bio, and subjects successfully updated!');
+        if (updatedDoc) {
+          setTeacherProfile(prev => ({ ...prev, ...(updatedDoc.teacher || updatedDoc) }));
+        }
         fetchData();
       } else {
         setProfileMessage('Error updating profile details.');
@@ -734,99 +738,63 @@ Conclusion: Educational progression actively monitored.`);
           </p>
         </div>
 
-        {/* Pill Navigation Switcher */}
-        {teacherProfile && teacherProfile.verified && (
-          <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-full p-1.5 self-center max-w-full gap-1 scrollbar-none">
-            {[
-              { id: 'overview', label: 'Overview & Bookings' },
-              { id: 'profile', label: 'Faculty Profile' },
-              { id: 'students', label: 'Students & Grading' },
-              { id: 'earnings', label: 'Earnings & Payouts' },
-              { id: 'reputation', label: 'Reputation & Growth' },
-              { id: 'academy', label: 'AI Academy' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-2 px-4 rounded-full font-heading font-bold text-[10px] uppercase tracking-wider shrink-0 transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? 'bg-brand-moss text-white shadow-md'
-                    : 'text-brand-moss hover:bg-brand-moss/5'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Pill Navigation Switcher - Always accessible to all educators */}
+        <div className="flex overflow-x-auto md:flex-wrap whitespace-nowrap bg-brand-moss/5 border border-brand-moss/10 rounded-full p-1.5 self-center max-w-full gap-1 scrollbar-none">
+          {[
+            { id: 'overview', label: 'Overview & Bookings' },
+            { id: 'profile', label: '✏️ Edit Profile & Subjects' },
+            { id: 'students', label: 'Students & Grading' },
+            { id: 'earnings', label: 'Earnings & Payouts' },
+            { id: 'reputation', label: 'Reputation & Growth' },
+            { id: 'academy', label: 'AI Academy' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`py-2 px-4 rounded-full font-heading font-bold text-[10px] uppercase tracking-wider shrink-0 transition-all duration-300 ${
+                activeTab === tab.id
+                  ? 'bg-brand-moss text-white shadow-md'
+                  : 'text-brand-moss hover:bg-brand-moss/5'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-8 animate-fade-up">
         
-        {/* Verification Check checklist for unverified teachers */}
+        {/* Verification Alert Banner for pending teachers */}
         {teacherProfile && !teacherProfile.verified && (
-          <div className="bg-white border border-brand-moss/10 rounded-[3rem] p-8 md:p-12 shadow-xl space-y-8 text-center max-w-2xl mx-auto">
-            <div className="w-16 h-16 bg-brand-clay/10 rounded-full flex items-center justify-center mx-auto text-brand-clay">
-              <Lock className="w-8 h-8 animate-pulse" />
-            </div>
-            
-            <div className="space-y-3">
-              <span className="font-mono text-xs uppercase tracking-widest text-brand-clay font-bold block">
-                Verification & Approval Status: {teacherProfile.status === 'onboarding' ? 'Onboarding Incomplete' : 'Under Review'}
-              </span>
-              <h3 className="font-heading font-bold text-2xl text-brand-moss">Access Gated: Vetting in Progress</h3>
-              <p className="font-sans text-xs text-brand-charcoal/70 leading-relaxed">
-                Welcome to EduVista Africa! You have successfully registered your educator profile. Before you can start taking classes, tutoring students, or earning payouts, our Admin team must manually audit your credentials.
-              </p>
-            </div>
-            
-            {/* Checklist of what was submitted */}
-            <div className="bg-brand-cream/30 border border-brand-moss/10 rounded-2xl p-6 text-left space-y-4 max-w-md mx-auto font-sans text-xs">
-              <h4 className="font-heading font-bold text-brand-moss uppercase tracking-wider text-[10px]">Your Vetting Checklist</h4>
-              <div className="space-y-2.5">
+          <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-amber-800 mt-0.5">
+                <ShieldCheck className="w-5 h-5 text-amber-700" />
+              </div>
+              <div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Profile biography: <b>Completed</b></span>
+                  <span className="font-heading font-bold text-sm text-amber-950">
+                    Vetting & Verification Status: {teacherProfile.status === 'onboarding' ? 'Onboarding In Progress' : 'Under Review'}
+                  </span>
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900 font-bold">
+                    Review In Progress
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Hourly rate configuration: <b>₦{(teacherProfile.rate || 0)/100}/hr</b></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Government-issued ID: <b>{teacherProfile.govId || 'Not uploaded'}</b></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Degree & Qualifications: <b>{teacherProfile.degree || 'Not uploaded'}</b></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {teacherProfile.videoUrl ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  ) : (
-                    <AlertOctagon className="w-4 h-4 text-brand-clay animate-pulse" />
-                  )}
-                  <span>Introductory Vetting Video: <b>{teacherProfile.videoUrl ? 'Uploaded ✓' : 'Awaiting upload'}</b></span>
-                </div>
-                <div className="h-px bg-brand-moss/10 my-3" />
-                <div className="flex items-center gap-2 text-brand-moss font-bold">
-                  <div className="w-2.5 h-2.5 rounded-full bg-brand-clay animate-ping" />
-                  <span>Admin Verification Panel: <b>Review Pending Approval</b></span>
-                </div>
+                <p className="font-sans text-xs text-amber-900/80 mt-1 leading-relaxed max-w-2xl">
+                  Your credentials are being reviewed by the EduVista administration team. You have full privileges to edit and update your bio, taught subjects, hourly rate, and schedule below so you are fully prepared when parent bookings open.
+                </p>
               </div>
             </div>
-
-            <p className="font-mono text-[9px] text-brand-charcoal/50 leading-normal">
-              SLA Standard Window: Applications are vetted within 24 to 48 hours. <br />
-              Once verified, you will be granted full access to your booking calendars and lessons.
-            </p>
+            <button
+              onClick={() => setActiveTab('profile')}
+              className="inline-flex items-center gap-1.5 py-2.5 px-4 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shrink-0 transition-all shadow-xs"
+            >
+              <PenLine className="w-3.5 h-3.5" /> Edit Profile & Subjects
+            </button>
           </div>
         )}
 
-        {/* If verified, show dashboard tabs */}
-        {teacherProfile && teacherProfile.verified && (
-          <>
-        
         {/* TAB 1: OVERVIEW & BOOKINGS */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
@@ -877,9 +845,83 @@ Conclusion: Educational progression actively monitored.`);
               </div>
             </div>
             
+            {/* Quick Profile Summary & Fast Edit Card */}
+            <div className="bg-white border border-brand-moss/10 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-brand-moss/10">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-clay shrink-0 bg-brand-moss/10 shadow-xs">
+                    <img
+                      src={getTeacherAvatar(avatar || teacherProfile?.avatar, name || teacherProfile?.name)}
+                      alt={name || teacherProfile?.name || 'Teacher'}
+                      className="w-full h-full object-cover"
+                      onError={handleAvatarError(name || teacherProfile?.name)}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-heading font-bold text-lg text-brand-moss">{name || teacherProfile?.name || 'Educator Profile'}</h3>
+                      {teacherProfile?.verified ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Verified Tutor
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full">
+                          Review Pending
+                        </span>
+                      )}
+                    </div>
+                    <span className="font-mono text-xs text-brand-clay block mt-0.5">
+                      @{username || teacherProfile?.username || 'tutor'} • {location || teacherProfile?.location || 'Nigeria'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="text-right hidden sm:block">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/50 block">Your Hourly Rate</span>
+                    <span className="font-heading font-bold text-base text-brand-moss">
+                      {currency === 'NGN' ? '₦' : currency} {rate ? rate.toLocaleString() : ((teacherProfile?.rate || 0)/100).toLocaleString()}/hr
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('profile')}
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 py-2.5 px-5 bg-brand-moss hover:bg-brand-clay text-white rounded-xl font-heading font-bold text-xs uppercase tracking-wider shadow-sm transition-all"
+                  >
+                    <PenLine className="w-3.5 h-3.5" /> Edit Profile & Subjects
+                  </button>
+                </div>
+              </div>
+
+              {/* Bio and Subjects snippet */}
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
+                <div className="space-y-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/60 font-bold block">
+                    Taught Subjects ({selectedSubjects?.length || teacherProfile?.subjects?.length || 0})
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(selectedSubjects?.length > 0 ? selectedSubjects : (teacherProfile?.subjects || [])).map((subj, idx) => (
+                      <span key={idx} className="px-2.5 py-1 bg-brand-moss/5 border border-brand-moss/10 rounded-lg text-brand-charcoal font-medium text-[11px]">
+                        {subj}
+                      </span>
+                    ))}
+                    {(!selectedSubjects || selectedSubjects.length === 0) && (!teacherProfile?.subjects || teacherProfile.subjects.length === 0) && (
+                      <span className="text-brand-charcoal/50 italic text-xs">No subjects added yet. Click edit to add your subjects.</span>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-brand-charcoal/60 font-bold block">
+                    Public Biography
+                  </span>
+                  <p className="text-brand-charcoal/80 text-xs leading-relaxed line-clamp-2">
+                    {bio || teacherProfile?.bio || 'No biography written yet. Click edit to introduce yourself to parents.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Teacher Onboarding Checklist */}
             {(() => {
-              const hasSubjects = teacherProfile?.subjects && teacherProfile.subjects.length > 0;
+              const hasSubjects = (selectedSubjects?.length > 0) || (teacherProfile?.subjects && teacherProfile.subjects.length > 0);
               const hasAvailability = Object.values(availabilityGrid).some(slots => slots.length > 0);
               const hasGraded = gradesLog && gradesLog.length > 0;
 
@@ -887,9 +929,11 @@ Conclusion: Educational progression actively monitored.`);
                 {
                   step: 1,
                   title: "Teacher Vetting Status",
-                  desc: "Your profile has been vetted and verified by the administration team.",
-                  completed: true,
-                  actionLabel: "Verified",
+                  desc: teacherProfile?.verified
+                    ? "Your profile has been vetted and verified by the administration team."
+                    : "Your profile is under review. You have full privileges to edit and polish your profile details below.",
+                  completed: !!teacherProfile?.verified,
+                  actionLabel: teacherProfile?.verified ? "Verified" : "Under Review",
                   action: null
                 },
                 {
@@ -1161,7 +1205,10 @@ Conclusion: Educational progression actively monitored.`);
             {/* Profile Builder */}
             <div className="lg:col-span-7 bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
               <span className="font-mono text-2xs uppercase tracking-widest text-brand-charcoal/50 block mb-2">PROFILE BUILDER</span>
-              <h3 className="font-heading font-bold text-2xl text-brand-moss mb-6">Edit Faculty Profile</h3>
+              <h3 className="font-heading font-bold text-2xl text-brand-moss mb-1">Edit Faculty Profile, Bio & Subjects</h3>
+              <p className="font-sans text-xs text-brand-charcoal/70 mb-6">
+                You have full privileges to edit your public name, username, bio, taught subjects, hourly rate, and availability at any time. Changes sync across EduVista immediately.
+              </p>
               
               {profileMessage && (
                 <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs py-3 px-4 rounded-xl mb-6 font-mono animate-pulse">
@@ -2396,8 +2443,6 @@ Conclusion: Educational progression actively monitored.`);
               </button>
             </div>
           </div>
-        )}
-          </>
         )}
 
       </div>

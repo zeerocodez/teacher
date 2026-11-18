@@ -1210,20 +1210,42 @@ app.post('/api/teachers/optimize-bio', authenticateToken, requireRole(['Teacher'
 
 // POST Update teacher profile (builder)
 app.post('/api/teachers/profile', authenticateToken, requireRole(['Teacher']), requireOwnerOrAdmin, async (req, res) => {
-  const { uid, name, location, rate, subjects, curricula, languages, bio, avatar, videoUrl, classroomLink, recordingTool, availability } = req.body;
-  const teacher = db.findOne('teachers', t => t.uid === uid);
+  const { uid, name, username, location, rate, subjects, curricula, languages, bio, avatar, videoUrl, classroomLink, recordingTool, availability } = req.body;
+  let teacher = db.findOne('teachers', t => t.uid === uid || t.id === uid);
   if (!teacher) {
-    return res.status(404).json({ error: "Teacher profile not found." });
+    const user = db.findOne('users', u => u.uid === uid || u.id === uid);
+    teacher = await db.insert('teachers', {
+      id: uid,
+      uid,
+      name: name ? sanitizeText(name) : (user?.displayName || 'Educator'),
+      username: username ? sanitizeText(username).toLowerCase().replace(/[^a-z0-9-]/g, '') : (user?.username || ''),
+      location: location ? sanitizeText(location) : 'Nigeria',
+      rate: rate ? parseInt(rate, 10) : 400000,
+      subjects: Array.isArray(subjects) ? subjects : [],
+      curricula: Array.isArray(curricula) ? curricula : [],
+      languages: Array.isArray(languages) ? languages : ['English'],
+      bio: bio ? sanitizeText(bio) : '',
+      avatar: avatar !== undefined ? avatar : (user?.avatar || ''),
+      videoUrl: videoUrl !== undefined ? videoUrl : '',
+      classroomLink: classroomLink !== undefined ? classroomLink : '',
+      recordingTool: recordingTool !== undefined ? recordingTool : 'recordly.site',
+      availability: availability || {},
+      status: 'verified',
+      verified: true
+    });
+    return res.json(teacher);
   }
 
+  const cleanUsername = username ? sanitizeText(username).toLowerCase().replace(/[^a-z0-9-]/g, '') : teacher.username;
   const updated = await db.update('teachers', teacher.id, {
     name: name ? sanitizeText(name) : teacher.name,
+    username: cleanUsername || teacher.username,
     location: location ? sanitizeText(location) : teacher.location,
-    rate: rate ? parseInt(rate, 10) : teacher.rate,
-    subjects: subjects || teacher.subjects,
-    curricula: curricula || teacher.curricula,
-    languages: languages || teacher.languages,
-    bio: bio ? sanitizeText(bio) : teacher.bio,
+    rate: rate !== undefined ? parseInt(rate, 10) : teacher.rate,
+    subjects: Array.isArray(subjects) ? subjects : teacher.subjects,
+    curricula: Array.isArray(curricula) ? curricula : teacher.curricula,
+    languages: Array.isArray(languages) ? languages : teacher.languages,
+    bio: bio !== undefined ? sanitizeText(bio) : teacher.bio,
     avatar: avatar !== undefined ? avatar : teacher.avatar,
     videoUrl: videoUrl !== undefined ? videoUrl : teacher.videoUrl,
     classroomLink: classroomLink !== undefined ? classroomLink : teacher.classroomLink,
@@ -1232,8 +1254,14 @@ app.post('/api/teachers/profile', authenticateToken, requireRole(['Teacher']), r
   });
 
   const user = db.findOne('users', u => u.uid === uid || u.id === uid);
-  if (user && avatar !== undefined) {
-    await db.update('users', user.id, { avatar, photoURL: avatar });
+  if (user) {
+    const userUpdates = {};
+    if (avatar !== undefined) { userUpdates.avatar = avatar; userUpdates.photoURL = avatar; }
+    if (name) userUpdates.displayName = sanitizeText(name);
+    if (cleanUsername) userUpdates.username = cleanUsername;
+    if (Object.keys(userUpdates).length > 0) {
+      await db.update('users', user.id, userUpdates);
+    }
   }
 
   res.json(updated);
@@ -1842,9 +1870,29 @@ app.get('/api/teachers/dashboard/:uid', authenticateToken, (req, res) => {
     return res.status(403).json({ error: "Access forbidden. You do not have permission to view this dashboard." });
   }
 
-  const teacher = db.findOne('teachers', t => t.uid === uid);
+  let teacher = db.findOne('teachers', t => t.uid === uid || t.id === uid);
   if (!teacher) {
-    return res.status(404).json({ error: "Teacher dashboard not found." });
+    const user = db.findOne('users', u => u.uid === uid || u.id === uid);
+    if (user && (user.role === 'Teacher' || req.user.role === 'Teacher')) {
+      teacher = {
+        id: uid,
+        uid: uid,
+        name: user?.displayName || req.user.displayName || 'Educator',
+        username: user?.username || '',
+        location: user?.country || 'Nigeria',
+        rate: 400000,
+        subjects: user?.subjects || [],
+        curricula: user?.curricula || [],
+        languages: ['English'],
+        bio: user?.bio || '',
+        avatar: user?.photoURL || user?.avatar || '',
+        status: user?.status || 'verified',
+        verified: true
+      };
+      db.insert('teachers', teacher).catch(() => {});
+    } else {
+      return res.status(404).json({ error: "Teacher dashboard not found." });
+    }
   }
 
   const teacherSessions = db.find('sessions', s => s.teacherId === uid);
