@@ -1083,10 +1083,12 @@ export default function App() {
     return () => ctx.revert();
   }, [currentView, currentUser]);
 
-  // Protocol pin ScrollTrigger stacks
+  // Protocol pin ScrollTrigger stacks (Desktop only: disabled on mobile to prevent scroll hijacking)
   useLayoutEffect(() => {
     if (currentView !== 'home') return;
-    let ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 1024px)", () => {
       const cards = gsap.utils.toArray('.protocol-stack');
       if (cards.length === 0) return;
       if (!document.querySelector('#protocol')) return;
@@ -1132,9 +1134,9 @@ export default function App() {
         ease: 'none',
         duration: 1
       }, '<');
-
     });
-    return () => ctx.revert();
+
+    return () => mm.revert();
   }, [currentView, currentUser]);
 
   return (
@@ -2263,34 +2265,21 @@ export default function App() {
         </div>
       </section>
 
-      {/* Tutor Directory Component: Search & Filter Tutors by Subject, Experience, and Hourly Rate */}
-      <Suspense fallback={<LoadingFallback />}>
-        <TutorDirectory 
-          teachers={teachers} 
-          selectedCurrency={selectedCurrency} 
-          onBookClick={handleBookClick}
-          formatCurrency={formatCurrency}
-          convertMinor={convertMinor}
-          onTeacherSelect={handleTutorProfileSelect}
-          onWatchVideo={(teacher) => setWatchingTeacherVideo(teacher)}
-          onRequestTutor={() => setIsRequestTutorOpen(true)}
-        />
-      </Suspense>
-
-      {/* Marketplace Find Teachers Component */}
-      <Suspense fallback={<LoadingFallback />}>
-        <Marketplace 
-          teachers={teachers} 
-          selectedCurrency={selectedCurrency} 
-          onBookClick={handleBookClick}
-          formatCurrency={formatCurrency}
-          convertMinor={convertMinor}
-          onTeacherSelect={handleTutorProfileSelect}
-          onWatchVideo={(teacher) => setWatchingTeacherVideo(teacher)}
-          onRequestTutor={() => setIsRequestTutorOpen(true)}
-        />
-      </Suspense>
-
+      {/* Tutor Directory Discovery Engine (Pillars 1, 2, 3, 4, 7) */}
+      <div id="marketplace" className="scroll-mt-24">
+        <Suspense fallback={<LoadingFallback />}>
+          <TutorDirectory 
+            teachers={teachers} 
+            selectedCurrency={selectedCurrency} 
+            onBookClick={handleBookClick}
+            formatCurrency={formatCurrency}
+            convertMinor={convertMinor}
+            onTeacherSelect={handleTutorProfileSelect}
+            onWatchVideo={(teacher) => setWatchingTeacherVideo(teacher)}
+            onRequestTutor={() => setIsRequestTutorOpen(true)}
+          />
+        </Suspense>
+      </div>
 
       {/* AI Academy */}
       <Suspense fallback={<LoadingFallback />}>
@@ -2308,34 +2297,34 @@ export default function App() {
       </Suspense>
 
       {/* Manifesto */}
-      <section id="manifesto" className="relative py-32 bg-brand-charcoal text-brand-cream overflow-hidden">
+      <section id="manifesto" className="relative py-16 sm:py-24 md:py-32 bg-brand-charcoal text-brand-cream overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-10 mix-blend-overlay pointer-events-none"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1545167622-3a6ac756afa4?q=80&w=1600&auto=format&fit=crop')` }}
         />
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <p className="font-heading text-lg sm:text-2xl text-brand-cream/60 tracking-wide uppercase mb-12">
+          <p className="font-heading text-lg sm:text-2xl text-brand-cream/60 tracking-wide uppercase mb-8 sm:mb-12">
             Most online home tutoring sites focus on: basic tutor matching.
           </p>
-          <div className="h-px w-24 bg-brand-cream/15 mx-auto mb-12" />
-          <h2 className="font-drama italic text-3xl sm:text-6xl md:text-7xl leading-tight text-white font-light">
+          <div className="h-px w-24 bg-brand-cream/15 mx-auto mb-8 sm:mb-12" />
+          <h2 className="font-drama italic text-3xl sm:text-5xl md:text-7xl leading-tight text-white font-light">
             We focus on: verified <span className="text-brand-clay not-italic font-heading font-bold">instructional excellence and private lessons.</span>
           </h2>
         </div>
       </section>
 
-      {/* Stacking protocol cards */}
-      <section id="protocol" className="relative bg-brand-moss text-brand-cream min-h-screen flex flex-col justify-between py-16 overflow-hidden">
+      {/* Stacking protocol cards (Fluid natural scroll on mobile; GSAP scrub stack on desktop) */}
+      <section id="protocol" className="relative bg-brand-moss text-brand-cream py-16 sm:py-20 lg:min-h-screen flex flex-col justify-between overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 w-full mb-8">
           <h2 className="font-heading font-bold text-3xl sm:text-5xl tracking-tight text-white mb-2">
             Vetting Protocol for Home Tutoring & Lessons
           </h2>
         </div>
 
-        <div className="relative flex-1 w-full max-w-6xl mx-auto px-6 min-h-[70vh]">
+        <div className="relative flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-6 lg:gap-0 lg:block min-h-0 lg:min-h-[70vh]">
           {/* Card 1 */}
-          <div className="protocol-stack absolute inset-0 flex items-center justify-center">
-            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] w-full p-8 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
+          <div className="protocol-stack relative lg:absolute lg:inset-0 flex items-center justify-center w-full">
+            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-3xl lg:rounded-[3rem] w-full p-6 sm:p-10 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:min-h-[70vh] shadow-xl">
               <div className="space-y-6">
                 <span className="font-mono text-xs text-brand-clay tracking-widest block">01 // VERIFICATION</span>
                 <h3 className="font-heading font-bold text-3xl sm:text-5xl text-white">Background Vetting & ID Verification</h3>
@@ -2343,15 +2332,15 @@ export default function App() {
                   Every private tutor undergoes strict ID validation, degree credential checks, and background vetting to ensure maximum safety for child home tutoring.
                 </p>
               </div>
-              <div className="flex items-center justify-center h-full min-h-[300px]">
-                <div className="relative w-64 h-64 flex items-center justify-center">
+              <div className="flex items-center justify-center h-full min-h-[220px] sm:min-h-[300px]">
+                <div className="relative w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center">
                   <div className="absolute inset-0 border-2 border-dashed border-brand-clay/30 rounded-full animate-[spin_20s_linear_infinite]" />
-                  <div className="absolute w-48 h-48 border border-brand-cream/20 rounded-full flex items-center justify-center animate-[spin_12s_linear_infinite_reverse]">
+                  <div className="absolute w-36 h-36 sm:w-48 sm:h-48 border border-brand-cream/20 rounded-full flex items-center justify-center animate-[spin_12s_linear_infinite_reverse]">
                     <div className="w-full h-1 border-t border-brand-clay/40" />
                   </div>
-                  <div className="absolute w-32 h-32 border border-brand-clay/35 rounded-full flex items-center justify-center animate-pulse-slow">
-                    <div className="w-16 h-16 rounded-full bg-brand-clay/10 flex items-center justify-center">
-                      <BookOpen className="w-6 h-6 text-brand-clay" />
+                  <div className="absolute w-24 h-24 sm:w-32 sm:h-32 border border-brand-clay/35 rounded-full flex items-center justify-center animate-pulse-slow">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-brand-clay/10 flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-brand-clay" />
                     </div>
                   </div>
                 </div>
@@ -2360,8 +2349,8 @@ export default function App() {
           </div>
 
           {/* Card 2 */}
-          <div className="protocol-stack absolute inset-0 flex items-center justify-center">
-            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] w-full p-8 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
+          <div className="protocol-stack relative lg:absolute lg:inset-0 flex items-center justify-center w-full">
+            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-3xl lg:rounded-[3rem] w-full p-6 sm:p-10 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:min-h-[70vh] shadow-xl">
               <div className="space-y-6">
                 <span className="font-mono text-xs text-brand-clay tracking-widest block">02 // INSTRUCTION</span>
                 <h3 className="font-heading font-bold text-3xl sm:text-5xl text-white">Pedagogical & AI Instruction Training</h3>
@@ -2369,8 +2358,8 @@ export default function App() {
                   Our educators undergo continuous training in digital class instruction, curriculum alignment, and leveraging AI tools for adaptive private lessons.
                 </p>
               </div>
-              <div className="flex items-center justify-center h-full min-h-[300px] w-full">
-                <div className="relative w-64 h-48 bg-brand-moss/10 border border-brand-cream/10 rounded-2xl overflow-hidden flex flex-col justify-between p-4">
+              <div className="flex items-center justify-center h-full min-h-[220px] sm:min-h-[300px] w-full">
+                <div className="relative w-full max-w-xs sm:w-64 h-44 sm:h-48 bg-brand-moss/10 border border-brand-cream/10 rounded-2xl overflow-hidden flex flex-col justify-between p-4">
                   <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 gap-2 p-4 opacity-20 pointer-events-none">
                     {Array.from({ length: 24 }).map((_, i) => (
                       <div key={i} className="w-1.5 h-1.5 rounded-full bg-brand-cream mx-auto my-auto" />
@@ -2399,8 +2388,8 @@ export default function App() {
           </div>
 
           {/* Card 3 */}
-          <div className="protocol-stack absolute inset-0 flex items-center justify-center">
-            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-[3rem] w-full p-8 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
+          <div className="protocol-stack relative lg:absolute lg:inset-0 flex items-center justify-center w-full">
+            <div className="bg-brand-charcoal border border-brand-cream/10 rounded-3xl lg:rounded-[3rem] w-full p-6 sm:p-10 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:min-h-[70vh] shadow-xl">
               <div className="space-y-6">
                 <span className="font-mono text-xs text-brand-clay tracking-widest block">03 // SETTLEMENT</span>
                 <h3 className="font-heading font-bold text-3xl sm:text-5xl text-white">Secure Payment & Escrow Settlement</h3>
@@ -2408,8 +2397,8 @@ export default function App() {
                   Escrowed funds are released safely to the tutor's account only after successful lesson delivery, ensuring absolute trust and financial safety.
                 </p>
               </div>
-              <div className="flex items-center justify-center h-full min-h-[300px] w-full">
-                <div className="relative w-64 h-48 flex items-center justify-center bg-brand-moss/10 border border-brand-cream/10 rounded-2xl p-4 overflow-hidden">
+              <div className="flex items-center justify-center h-full min-h-[220px] sm:min-h-[300px] w-full">
+                <div className="relative w-full max-w-xs sm:w-64 h-44 sm:h-48 flex items-center justify-center bg-brand-moss/10 border border-brand-cream/10 rounded-2xl p-4 overflow-hidden">
                   <svg viewBox="0 0 200 100" className="w-full h-full">
                     <path
                       d="M0 50 L40 50 L50 30 L60 70 L70 50 L100 50 L110 20 L120 80 L130 50 L150 50"
@@ -2924,11 +2913,11 @@ export default function App() {
         </div>
       )}
 
-      {/* Floating Support Agent Button (Positioned safely above bottom dock; hidden in forms/onboarding) */}
+      {/* Floating Support Agent Button (Positioned cleanly on desktop; hidden on mobile to avoid blocking content and dock) */}
       {currentView === 'home' && !isTutorOnboarding && (
         <button
           onClick={() => setIsSupportOpen(true)}
-          className="fixed bottom-20 lg:bottom-6 left-6 z-40 w-12 h-12 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white flex items-center justify-center shadow-lg shadow-brand-clay/20 transition-all duration-300 scale-100 hover:scale-110 active:scale-95 cursor-pointer"
+          className="hidden lg:flex fixed bottom-6 left-6 z-40 w-12 h-12 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white items-center justify-center shadow-lg shadow-brand-clay/20 transition-all duration-300 scale-100 hover:scale-110 active:scale-95 cursor-pointer"
           title="AI Lesson Support"
           aria-label="AI Lesson Support"
         >

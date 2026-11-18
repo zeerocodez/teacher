@@ -351,7 +351,7 @@ export default function TutorDirectory({
   const isFiltered = searchQuery !== '' || selectedMode !== 'all' || selectedCity !== 'All' || selectedStage !== 'All' || selectedSubject !== 'All' || selectedExperience !== 'All' || rateFilterTier !== 'All' || maxHourlyRate < 15000;
 
   return (
-    <section id="directory" className={`${isNested ? 'pt-4 pb-16' : 'py-20'} px-4 sm:px-8 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto`}>
+    <section id="directory" className={`${isNested ? 'pt-4 pb-16' : 'py-20'} px-4 sm:px-8 md:px-16 lg:px-24 bg-brand-cream max-w-7xl mx-auto scroll-mt-24`}>
       
       {/* Directory Header Banner */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-brand-moss/10">
