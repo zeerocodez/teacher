@@ -56,6 +56,7 @@ const TeacherPublicProfile = lazy(() => import('./components/TeacherPublicProfil
 const StudentPortal = lazy(() => import('./components/StudentPortal'));
 const PrivacyModal = lazy(() => import('./components/PrivacyModal'));
 const RequestTutorModal = lazy(() => import('./components/RequestTutorModal'));
+const DiagnosticTestModal = lazy(() => import('./components/DiagnosticTestModal'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -123,6 +124,7 @@ export default function App() {
     return match ? match[1] : '';
   });
   const [pendingBooking, setPendingBooking] = useState(null);
+  const [bookingInitialType, setBookingInitialType] = useState('single');
   const [isTutorOnboarding, setIsTutorOnboarding] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -188,6 +190,7 @@ export default function App() {
   const [bookingPreselectedSlots, setBookingPreselectedSlots] = useState([]);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isRequestTutorOpen, setIsRequestTutorOpen] = useState(false);
+  const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
   const [watchingTeacherVideo, setWatchingTeacherVideo] = useState(null);
 
   // Exchange Rates & Display Engine (Integer logic)
@@ -526,11 +529,12 @@ export default function App() {
   };
 
   // State handlers: Booking Modal opens immediately with selected educator
-  const handleBookClick = (teacher, student, preselectedSlots = []) => {
+  const handleBookClick = (teacher, student, preselectedSlots = [], bookingType = 'single') => {
     if (!teacher) return;
     setSelectedTeacherForBooking(teacher);
     setSelectedStudentForBooking(student || null);
     setBookingPreselectedSlots(preselectedSlots || []);
+    setBookingInitialType(bookingType || 'single');
     setIsBookingOpen(true);
   };
 
@@ -1361,6 +1365,14 @@ export default function App() {
                 <div className="hidden lg:flex items-center gap-3">
                   <button
                     type="button"
+                    onClick={() => setIsDiagnosticOpen(true)}
+                    className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-3.5 rounded-full border border-emerald-500/30 text-emerald-800 bg-emerald-50/60 hover:bg-emerald-600 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                    Free Diagnostic Test
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setIsRequestTutorOpen(true)}
                     className="btn-magnetic font-sans text-[10px] uppercase tracking-wider font-bold py-2 px-3.5 rounded-full border border-brand-clay text-brand-clay hover:bg-brand-clay hover:text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                   >
@@ -1748,6 +1760,20 @@ export default function App() {
           <p className="hero-fade font-sans font-light text-brand-cream/80 text-base sm:text-lg md:text-xl max-w-xl md:ml-auto mb-8 leading-relaxed">
             {t('heroSubText')}
           </p>
+
+          {/* Diagnostic Placement Test Trust Banner */}
+          <div className="hero-fade mb-6 md:ml-auto">
+            <button
+              type="button"
+              onClick={() => setIsDiagnosticOpen(true)}
+              className="inline-flex items-center gap-2.5 py-2 px-4 rounded-full bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-400/40 text-emerald-200 transition-all text-xs font-sans backdrop-blur-md cursor-pointer hover-lift shadow-md"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-heading font-bold uppercase tracking-wider text-[11px]">Free Assessment:</span>
+              <span className="font-light">Take 3-Min Curriculum Diagnostic (Primary, Checkpoint & WAEC)</span>
+              <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
+            </button>
+          </div>
 
           <div className="hero-fade flex flex-col sm:flex-row gap-3.5 justify-start md:justify-end w-full">
             <a 
@@ -2796,6 +2822,7 @@ export default function App() {
             convertMinor={convertMinor}
             bookedSessions={bookedSessions}
             preselectedSlots={bookingPreselectedSlots}
+            initialBookingType={bookingInitialType}
           />
         </Suspense>
       </ErrorBoundary>
@@ -2834,6 +2861,18 @@ export default function App() {
         <RequestTutorModal 
           isOpen={isRequestTutorOpen} 
           onClose={() => setIsRequestTutorOpen(false)} 
+        />
+      </Suspense>
+
+      {/* Free Curriculum Diagnostic Placement Test Modal */}
+      <Suspense fallback={<ModalLoadingFallback />}>
+        <DiagnosticTestModal 
+          isOpen={isDiagnosticOpen} 
+          onClose={() => setIsDiagnosticOpen(false)}
+          onMatchTutor={(track) => {
+            setIsDiagnosticOpen(false);
+            setIsRequestTutorOpen(true);
+          }}
         />
       </Suspense>
 

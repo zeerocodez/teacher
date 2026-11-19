@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon, PenLine } from 'lucide-react';
+import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon, PenLine, MapPin, KeyRound } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError, isRealTeacherAvatar } from '../utils/avatar';
 
 export default function TeacherDashboard({
@@ -24,6 +24,11 @@ export default function TeacherDashboard({
   const [transactions, setTransactions] = useState([]);
   const [classLinkInputs, setClassLinkInputs] = useState({});
   const [submittingClassLink, setSubmittingClassLink] = useState(null);
+
+  // In-Person Home Lesson Arrival PIN Handshake state
+  const [handshakeInputSessionId, setHandshakeInputSessionId] = useState(null);
+  const [handshakePin, setHandshakePin] = useState('');
+  const [isVerifyingHandshake, setIsVerifyingHandshake] = useState(false);
 
   // Tab State
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'profile' | 'students' | 'earnings' | 'reputation' | 'academy'
@@ -577,6 +582,38 @@ Conclusion: Educational progression actively monitored.`);
       console.error(err);
       alert("Session marked complete (Sandbox Mode).");
       fetchData();
+    }
+  };
+
+  const handleVerifyHandshake = async (sessionId, pin) => {
+    if (!pin || pin.trim().length !== 4) {
+      alert("Please enter the 4-digit Arrival PIN provided by the parent.");
+      return;
+    }
+    setIsVerifyingHandshake(true);
+    try {
+      const res = await fetch(`${API_BASE}/sessions/${sessionId}/handshake/verify`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ pin: pin.trim() })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("✓ Arrival Handshake Confirmed! Lesson clock-in started successfully.");
+        setHandshakeInputSessionId(null);
+        setHandshakePin('');
+        fetchData();
+      } else {
+        alert(data.error || "Invalid PIN. Please check with parent.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Arrival Handshake verified in sandbox mode!");
+      setHandshakeInputSessionId(null);
+      setHandshakePin('');
+      fetchData();
+    } finally {
+      setIsVerifyingHandshake(false);
     }
   };
 
@@ -1154,70 +1191,129 @@ Conclusion: Educational progression actively monitored.`);
               ) : (
                 <div className="space-y-4">
                   {activeSessions.map((session) => (
-                    <div key={session.id} className="bg-brand-cream/20 border border-brand-moss/5 rounded-2xl p-4 flex justify-between items-center gap-4 hover-lift">
-                      <div>
-                        <h4 className="font-heading font-bold text-sm text-brand-moss">
-                          {session.studentName} (Parent: Ngozi A.)
-                        </h4>
-                        <span className="font-mono text-[9px] text-brand-charcoal/50 block mt-0.5 uppercase">
-                          {session.slot.day} · {session.slot.time} · Value: {formatCurrency(convertMinor(session.cost, selectedCurrency), selectedCurrency)}
-                        </span>
-                        <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-1 uppercase">
-                          ✓ {session.status}
-                        </span>
-                        
-                        <div className="mt-3 w-full sm:w-80">
-                          {(!session.classLink && session.status !== 'Completed') ? (
-                            <div className="flex gap-2">
-                              <input
-                                type="url"
-                                placeholder="Paste Class Link (e.g. Zoom/Meet)"
-                                value={classLinkInputs[session.id] || ''}
-                                onChange={e => setClassLinkInputs({ ...classLinkInputs, [session.id]: e.target.value })}
-                                className="flex-1 text-[10px] px-3 py-2 bg-white border border-brand-moss/20 rounded-xl outline-none focus:border-brand-moss"
-                              />
+                    <div key={session.id} className="bg-brand-cream/20 border border-brand-moss/5 rounded-2xl p-4 flex flex-col justify-between items-stretch gap-4 hover-lift">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                          <h4 className="font-heading font-bold text-sm text-brand-moss">
+                            {session.studentName} {session.parentName ? `(Parent: ${session.parentName})` : ''}
+                          </h4>
+                          <span className="font-mono text-[9px] text-brand-charcoal/50 block mt-0.5 uppercase">
+                            {session.slot.day} · {session.slot.time} · Value: {formatCurrency(convertMinor(session.cost, selectedCurrency), selectedCurrency)}
+                          </span>
+                          <span className="font-mono text-[9px] text-emerald-600 font-bold block mt-1 uppercase">
+                            ✓ {session.status}
+                          </span>
+                          
+                          <div className="mt-3 w-full sm:w-80">
+                            {(!session.classLink && session.status !== 'Completed') ? (
+                              <div className="flex gap-2">
+                                <input
+                                  type="url"
+                                  placeholder="Paste Class Link (e.g. Zoom/Meet)"
+                                  value={classLinkInputs[session.id] || ''}
+                                  onChange={e => setClassLinkInputs({ ...classLinkInputs, [session.id]: e.target.value })}
+                                  className="flex-1 text-[10px] px-3 py-2 bg-white border border-brand-moss/20 rounded-xl outline-none focus:border-brand-moss"
+                                />
+                                <button
+                                  onClick={() => handleSubmitClassLink(session.id)}
+                                  disabled={submittingClassLink === session.id}
+                                  className="px-3 py-2 bg-brand-moss hover:bg-brand-clay text-white rounded-xl text-[9px] uppercase tracking-wider font-bold shrink-0 disabled:opacity-50"
+                                >
+                                  Submit Link
+                                </button>
+                              </div>
+                            ) : session.classLink ? (
+                              <div className="w-full text-[10px] text-brand-moss bg-brand-moss/5 border border-brand-moss/10 px-3 py-2 rounded-xl truncate">
+                                <b>Class Link:</b> <a href={session.classLink} target="_blank" rel="noreferrer" className="underline font-mono">{session.classLink}</a>
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 self-start md:self-center flex-wrap items-center">
+                          {/* In-Person Home Lesson Arrival Handshake PIN */}
+                          {session.status !== 'Completed' && session.status !== 'Disputed' && (
+                            session.handshakeVerified ? (
+                              <span className="py-2 px-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-heading font-bold text-2xs flex items-center gap-1.5 shadow-2xs">
+                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Arrival Handshake Verified ✓
+                              </span>
+                            ) : (
                               <button
-                                onClick={() => handleSubmitClassLink(session.id)}
-                                disabled={submittingClassLink === session.id}
-                                className="px-3 py-2 bg-brand-moss hover:bg-brand-clay text-white rounded-xl text-[9px] uppercase tracking-wider font-bold shrink-0 disabled:opacity-50"
+                                onClick={() => {
+                                  setHandshakeInputSessionId(handshakeInputSessionId === session.id ? null : session.id);
+                                  setHandshakePin('');
+                                }}
+                                className="py-2 px-3.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
+                                title="Ask parent for the 4-digit arrival PIN to clock in"
                               >
-                                Submit Link
+                                <KeyRound className="w-3.5 h-3.5" /> 📍 Enter Arrival PIN
                               </button>
-                            </div>
-                          ) : session.classLink ? (
-                            <div className="w-full text-[10px] text-brand-moss bg-brand-moss/5 border border-brand-moss/10 px-3 py-2 rounded-xl truncate">
-                              <b>Class Link:</b> <a href={session.classLink} target="_blank" rel="noreferrer" className="underline font-mono">{session.classLink}</a>
-                            </div>
-                          ) : null}
+                            )
+                          )}
+
+                          {session.status !== 'Completed' && session.status !== 'Disputed' && (
+                            <button
+                              onClick={() => handleCompleteSession(session.id)}
+                              className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" /> Complete & Claim Escrow
+                            </button>
+                          )}
+                          {session.status === 'Completed' && (
+                            <button
+                              onClick={() => {
+                                setSelectedClockSession(session);
+                                setIsClockLogOpen(true);
+                              }}
+                              className="py-2 px-4 bg-brand-moss/5 border border-brand-moss/10 rounded-xl font-heading font-bold text-2xs text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center gap-1.5"
+                            >
+                              <Clock className="w-3.5 h-3.5" /> Session Clock Log
+                            </button>
+                          )}
+                          <button
+                            onClick={() => onOpenChat(session)}
+                            className="btn-magnetic w-9 h-9 rounded-full bg-brand-moss/5 border border-brand-moss/10 flex items-center justify-center text-brand-moss hover:bg-brand-clay hover:text-white transition-colors"
+                          >
+                            <MessageSquare className="w-4.5 h-4.5" />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex gap-2 self-start md:self-center flex-wrap">
-                        {session.status !== 'Completed' && session.status !== 'Disputed' && (
-                          <button
-                            onClick={() => handleCompleteSession(session.id)}
-                            className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
-                          >
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Complete & Claim Escrow
-                          </button>
-                        )}
-                        {session.status === 'Completed' && (
-                          <button
-                            onClick={() => {
-                              setSelectedClockSession(session);
-                              setIsClockLogOpen(true);
-                            }}
-                            className="py-2 px-4 bg-brand-moss/5 border border-brand-moss/10 rounded-xl font-heading font-bold text-2xs text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center gap-1.5"
-                          >
-                            <Clock className="w-3.5 h-3.5" /> Session Clock Log
-                          </button>
-                        )}
-                        <button
-                          onClick={() => onOpenChat(session)}
-                          className="btn-magnetic w-9 h-9 rounded-full bg-brand-moss/5 border border-brand-moss/10 flex items-center justify-center text-brand-moss hover:bg-brand-clay hover:text-white transition-colors"
-                        >
-                          <MessageSquare className="w-4.5 h-4.5" />
-                        </button>
-                      </div>
+
+                      {/* Inline Arrival PIN Verification Input Box */}
+                      {handshakeInputSessionId === session.id && (
+                        <div className="w-full p-3 bg-amber-50/90 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in font-sans">
+                          <div className="text-left">
+                            <span className="font-heading font-bold text-xs text-amber-900 block flex items-center gap-1.5">
+                              <KeyRound className="w-3.5 h-3.5 text-amber-600" /> In-Person Home Lesson Clock-In
+                            </span>
+                            <span className="text-[10px] text-amber-800/80">
+                              Ask the parent for their 4-digit Arrival PIN shown on their dashboard or sent via WhatsApp.
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <input
+                              type="text"
+                              maxLength={4}
+                              value={handshakePin}
+                              onChange={(e) => setHandshakePin(e.target.value.replace(/\D/g, ''))}
+                              placeholder="4-digit PIN"
+                              className="w-28 text-center font-mono font-bold tracking-widest text-xs px-2.5 py-1.5 bg-white border border-amber-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-500"
+                            />
+                            <button
+                              onClick={() => handleVerifyHandshake(session.id, handshakePin)}
+                              disabled={isVerifyingHandshake || handshakePin.length !== 4}
+                              className="px-3.5 py-1.5 bg-brand-moss hover:bg-brand-moss/90 text-white rounded-lg text-2xs font-heading font-bold disabled:opacity-50 cursor-pointer"
+                            >
+                              {isVerifyingHandshake ? 'Verifying...' : 'Clock In'}
+                            </button>
+                            <button
+                              onClick={() => setHandshakeInputSessionId(null)}
+                              className="p-1.5 text-xs text-brand-charcoal/60 hover:text-brand-charcoal cursor-pointer"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

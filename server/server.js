@@ -14,6 +14,7 @@ import { db, seedDatabase, connectDb } from './db.js';
 import paymentRoutes from './routes/payments.js';
 import b2bRoutes from './routes/b2b.js';
 import { sendTransactionalEmail, readSentEmails } from './services/email.js';
+import { sendWhatsAppNotification } from './services/whatsapp.js';
 import { SEED_TEACHERS } from '../src/data/seedTeachers.js';
 
 dotenv.config();
@@ -2368,10 +2369,11 @@ app.post('/api/sessions/book', authenticateToken, requireRole(['Parent']), requi
   const defaultCurriculum = (teacherProfile && teacherProfile.curricula && teacherProfile.curricula[0]) || "Standard";
   const teacherClassLink = (teacherProfile && teacherProfile.classroomLink && teacherProfile.classroomLink.trim()) || "https://eduvistar.com/classroom";
 
-  // 3. Create Session Records
+  // 3. Create Session Records with Secure Handshake PIN
   const createdSessions = [];
   let lastSession = null;
   for (const slot of slots) {
+    const arrivalPin = Math.floor(1000 + Math.random() * 9000).toString();
     const newSession = await db.insert('sessions', {
       teacherId,
       teacherName,
@@ -2381,6 +2383,9 @@ app.post('/api/sessions/book', authenticateToken, requireRole(['Parent']), requi
       cost: costPerSession,
       slot,
       status: "Pending Confirmation",
+      arrivalPin,
+      handshakeVerified: false,
+      clockedIn: false,
       clockLog: [],
       recordingConsent: { teacher: true, parent: true },
       subject: subject || defaultSubject,
@@ -2447,6 +2452,36 @@ app.post('/api/sessions/book', authenticateToken, requireRole(['Parent']), requi
     }
   } catch (err) {
     console.error("Failed to send booking notification email to teacher:", err);
+  }
+
+  // Instant WhatsApp Transactional Dispatch
+  try {
+    const parentPhone = parentUser.phone || parentUser.whatsapp;
+    if (parentPhone) {
+      sendWhatsAppNotification(parentPhone, 'booking_confirmed_parent', {
+        parentName: parentUser.displayName || 'Parent',
+        teacherName,
+        subject: subject || defaultSubject,
+        slotDate: slot.day,
+        slotTime: slot.time,
+        arrivalPin: lastSession?.arrivalPin
+      });
+    }
+
+    const teacherUser = db.findOne('users', u => u.uid === teacherId);
+    const teacherPhone = teacherUser?.phone || teacherUser?.whatsapp || teacherProfile?.whatsapp;
+    if (teacherPhone) {
+      sendWhatsAppNotification(teacherPhone, 'lesson_booked_teacher', {
+        teacherName,
+        parentName: parentUser.displayName || 'Parent',
+        subject: subject || defaultSubject,
+        slotDate: slot.day,
+        slotTime: slot.time,
+        lessonMode: teacherProfile?.lessonModes?.includes('home') ? 'In-Person Home Tutoring' : 'Online Global'
+      });
+    }
+  } catch (waErr) {
+    console.warn("WhatsApp notification dispatch notice:", waErr.message);
   }
 
   res.json({
@@ -2614,6 +2649,89 @@ app.post('/api/sessions/clock', authenticateToken, async (req, res) => {
 
   const updated = await db.update('sessions', sessionId, { clockLog });
   res.json({ success: true, clockLog: updated.clockLog });
+});
+
+// POST Verify Arrival Handshake PIN (In-Person Home Lesson Clock-In)
+app.post('/api/sessions/:id/handshake/verify', authenticateToken, requireRole(['Teacher']), async (req, res) => {
+  const { id } = req.params;
+  const { pin } = req.body;
+  const session = db.findOne('sessions', s => s.id === id);
+  if (!session) return res.status(404).json({ error: "Session not found." });
+
+  if (session.teacherId !== req.user.uid) {
+    return res.status(403).json({ error: "Access denied. Not the assigned educator." });
+  }
+
+  if (String(session.arrivalPin || '1234').trim() !== String(pin).trim()) {
+    return res.status(400).json({ error: "Invalid Handshake PIN. Please ask parent for the 4-digit code." });
+  }
+
+  const clockLog = session.clockLog || [];
+  clockLog.push({ event: "handshake_clock_in", timestamp: new Date().toISOString() });
+
+  const updated = await db.update('sessions', id, {
+    handshakeVerified: true,
+    clockedIn: true,
+    clockInTime: new Date().toISOString(),
+    status: 'In Progress',
+    clockLog
+  });
+
+  // Notify parent on WhatsApp that tutor has safely arrived and started class
+  const parentUser = db.findOne('users', u => u.uid === session.parentId);
+  if (parentUser && (parentUser.phone || parentUser.whatsapp)) {
+    sendWhatsAppNotification(parentUser.phone || parentUser.whatsapp, 'lesson_arrival_handshake', {
+      teacherName: session.teacherName,
+      studentName: session.studentName,
+      arrivalPin: session.arrivalPin
+    });
+  }
+
+  res.json({ success: true, message: "Arrival handshake verified! Lesson clock started.", session: updated });
+});
+
+// POST Parent Departure Sign-off & Instant Escrow Release
+app.post('/api/sessions/:id/departure/signoff', authenticateToken, requireRole(['Parent']), async (req, res) => {
+  const { id } = req.params;
+  const { rating, feedback } = req.body;
+  const session = db.findOne('sessions', s => s.id === id);
+  if (!session) return res.status(404).json({ error: "Session not found." });
+
+  if (session.parentId !== req.user.uid) {
+    return res.status(403).json({ error: "Access denied. Not the parent on this booking." });
+  }
+
+  const clockLog = session.clockLog || [];
+  clockLog.push({ event: "parent_departure_signoff", timestamp: new Date().toISOString() });
+
+  const updated = await db.update('sessions', id, {
+    status: 'Completed',
+    parentSignedOff: true,
+    completedAt: new Date().toISOString(),
+    rating: rating || 5,
+    parentFeedback: feedback || '',
+    clockLog
+  });
+
+  // Release escrow from parent wallet to teacher wallet
+  const cost = session.cost || 0;
+  const parentWallet = db.findOne('wallets', w => w.uid === session.parentId);
+  if (parentWallet && parentWallet.escrow >= cost) {
+    await db.update('wallets', parentWallet.id, {
+      escrow: Math.max(0, parentWallet.escrow - cost)
+    });
+  }
+
+  const teacherWallet = db.findOne('wallets', w => w.uid === session.teacherId);
+  const commission = Math.round(cost * 0.15); // 15% platform fee
+  const teacherShare = cost - commission;
+  if (teacherWallet) {
+    await db.update('wallets', teacherWallet.id, {
+      balance: teacherWallet.balance + teacherShare
+    });
+  }
+
+  res.json({ success: true, message: "Lesson signed off successfully! Escrow released to educator.", session: updated });
 });
 
 // POST Update session class link

@@ -554,29 +554,59 @@ export default function TeacherPublicProfile({
             )}
           </div>
 
-          {/* Direct CTA button to check booking triggers */}
-          <button
-            type="button"
-            onClick={() => {
-              if (selectedSlots.length > 0) {
-                onBookClick(teacher, null, selectedSlots);
-              } else {
-                const targetDate = selectedDate || new Date();
-                const available = getSlotsForDate(targetDate);
-                const firstSlotTime = available[0] || '10:00 AM';
-                const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-                const dateString = targetDate.toISOString().split('T')[0];
-                onBookClick(teacher, null, [{ day: dayName, time: firstSlotTime, dateString }]);
-              }
-            }}
-            className="btn-magnetic w-full py-4 font-heading font-bold text-xs uppercase tracking-wider rounded-full shadow-lg flex items-center justify-center gap-2 bg-brand-clay hover:bg-brand-clay/95 text-white shadow-brand-clay/20 transition-all cursor-pointer"
-          >
-            <CheckCircle2 className="w-4.5 h-4.5" /> 
-            {selectedSlots.length > 0 
-              ? `Book Selected Sessions (${selectedSlots.length})` 
-              : 'Book 1-on-1 Session Now'
-            }
-          </button>
+          {/* Dual CTAs: 1-Hour Test Drive vs Monthly Retainer */}
+          <div className="space-y-2.5 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (selectedSlots.length > 0) {
+                  onBookClick(teacher, null, selectedSlots, 'single');
+                } else {
+                  const targetDate = selectedDate || new Date();
+                  const available = getSlotsForDate(targetDate);
+                  const firstSlotTime = available[0] || '10:00 AM';
+                  const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                  const dateString = targetDate.toISOString().split('T')[0];
+                  onBookClick(teacher, null, [{ day: dayName, time: firstSlotTime, dateString }], 'single');
+                }
+              }}
+              className="btn-magnetic w-full py-3.5 font-heading font-bold text-xs uppercase tracking-wider rounded-2xl shadow-lg flex items-center justify-center gap-2 bg-brand-clay hover:bg-brand-clay/95 text-white shadow-brand-clay/20 transition-all cursor-pointer"
+            >
+              <CheckCircle2 className="w-4 h-4" /> 
+              <span>Book 1-Hour Test Drive (Trial)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (selectedSlots.length > 0) {
+                  onBookClick(teacher, null, selectedSlots, 'package');
+                } else {
+                  const targetDate = selectedDate || new Date();
+                  const available = getSlotsForDate(targetDate);
+                  const firstSlotTime = available[0] || '10:00 AM';
+                  const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                  const dateString = targetDate.toISOString().split('T')[0];
+                  onBookClick(teacher, null, [{ day: dayName, time: firstSlotTime, dateString }], 'package');
+                }
+              }}
+              className="w-full py-3 font-heading font-bold text-xs uppercase tracking-wider rounded-2xl border-2 border-brand-moss/20 hover:border-brand-moss hover:bg-brand-moss/5 text-brand-moss transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Book Monthly Retainer (Save up to 10%)</span>
+            </button>
+          </div>
+
+          {/* 100% Tutor Fit Guarantee Badge */}
+          <div className="p-3 bg-emerald-50 border border-emerald-200/90 rounded-2xl text-center font-sans space-y-1">
+            <div className="flex items-center justify-center gap-1.5 text-emerald-900 font-bold text-[11px]">
+              <ShieldCheck className="w-4 h-4 text-emerald-700" />
+              <span>100% Tutor Fit & Peace-of-Mind Guarantee</span>
+            </div>
+            <p className="text-[10px] text-emerald-800/80 leading-relaxed">
+              If your test drive session isn't exceptional, we will re-match your child with another elite tutor and credit your wallet.
+            </p>
+          </div>
         </div>
       )}
     </div>

@@ -15,7 +15,8 @@ import {
   ShieldCheck, 
   ArrowRight, 
   ArrowLeft,
-  MessageSquare
+  MessageSquare,
+  Users
 } from 'lucide-react';
 
 export default function RequestTutorModal({ isOpen, onClose }) {
@@ -28,6 +29,11 @@ export default function RequestTutorModal({ isOpen, onClose }) {
   const [studentClass, setStudentClass] = useState('Primary (Ages 6–11)');
   const [selectedSubjects, setSelectedSubjects] = useState(['Mathematics']);
   const [customSubjectInput, setCustomSubjectInput] = useState('');
+
+  // Sibling Bundle State (10% Discount)
+  const [isSiblingBundle, setIsSiblingBundle] = useState(false);
+  const [siblingGrade, setSiblingGrade] = useState('Primary (Ages 6–11)');
+  const [siblingSubjects, setSiblingSubjects] = useState('');
   
   const [lessonMode, setLessonMode] = useState('home'); // 'home' | 'online' | 'both'
   const [locationCity, setLocationCity] = useState('Lagos');
@@ -84,6 +90,9 @@ export default function RequestTutorModal({ isOpen, onClose }) {
       email,
       studentClass,
       subjects: selectedSubjects,
+      isSiblingBundle,
+      siblingGrade: isSiblingBundle ? siblingGrade : null,
+      siblingSubjects: isSiblingBundle ? siblingSubjects : null,
       lessonMode: lessonMode === 'home' ? 'Home Tutoring (In-Person)' : (lessonMode === 'online' ? 'Online Tutoring (Global)' : 'Home or Online'),
       locationCity,
       locationArea,
@@ -118,8 +127,9 @@ export default function RequestTutorModal({ isOpen, onClose }) {
   const whatsappMessage = encodeURIComponent(
     `Hello EduVista Africa! I just submitted a tutor request on eduvistar.com:\n\n` +
     `• Parent: ${parentName || 'Parent'}\n` +
-    `• Student Level: ${studentClass}\n` +
-    `• Subjects: ${selectedSubjects.join(', ')}\n` +
+    `• Student 1 Level: ${studentClass}\n` +
+    `• Student 1 Subjects: ${selectedSubjects.join(', ')}\n` +
+    (isSiblingBundle ? `• Sibling Bundle (10% Off): Yes (${siblingGrade}${siblingSubjects ? ` - ${siblingSubjects}` : ''})\n` : '') +
     `• Delivery: ${lessonMode === 'home' ? `Home Lesson in ${locationCity} (${locationArea || 'Nearby'})` : 'Online Classes'}\n` +
     `• Schedule: ${frequency}\n\n` +
     `Please help connect me with 2 vetted tutors.`
@@ -166,6 +176,12 @@ export default function RequestTutorModal({ isOpen, onClose }) {
                 <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold">Class & Subjects</span>
                 <span className="font-heading font-bold text-brand-moss">{studentClass}</span>
               </div>
+              {isSiblingBundle && (
+                <div className="flex justify-between items-center pb-2 border-b border-brand-moss/5">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-brand-clay font-bold">Sibling Bundle (10% Off)</span>
+                  <span className="font-heading font-bold text-brand-clay">{siblingGrade} {siblingSubjects ? `(${siblingSubjects})` : ''}</span>
+                </div>
+              )}
               <div className="flex justify-between items-center pb-2 border-b border-brand-moss/5">
                 <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold">Delivery Mode</span>
                 <span className="font-heading font-bold text-brand-moss">
@@ -307,6 +323,67 @@ export default function RequestTutorModal({ isOpen, onClose }) {
                       Add
                     </button>
                   </div>
+                </div>
+
+                {/* Sibling Bundle Option (10% Discount) */}
+                <div className="p-3.5 rounded-2xl border border-dashed border-brand-clay/40 bg-brand-clay/5">
+                  <div 
+                    className="flex items-center justify-between cursor-pointer"
+                    onClick={() => setIsSiblingBundle(!isSiblingBundle)}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors ${
+                        isSiblingBundle ? 'bg-brand-clay text-white' : 'border border-brand-moss/30 bg-white'
+                      }`}>
+                        {isSiblingBundle && <CheckCircle2 className="w-3.5 h-3.5" />}
+                      </div>
+                      <div>
+                        <span className="font-heading font-bold text-xs text-brand-moss block">
+                          👨‍👩‍👧 Sibling Bundle (2+ Learners)
+                        </span>
+                        <span className="text-[10px] text-brand-charcoal/70">
+                          One vetted home/online tutor for multiple siblings & save 10% on monthly tuition
+                        </span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-brand-clay/10 text-brand-clay font-mono text-[9px] font-bold shrink-0">
+                      SAVE 10%
+                    </span>
+                  </div>
+
+                  {isSiblingBundle && (
+                    <div className="mt-3 pt-3 border-t border-brand-clay/20 grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fade-in font-sans">
+                      <div>
+                        <label className="text-[10px] font-bold text-brand-moss block mb-1">
+                          Sibling Grade / Level
+                        </label>
+                        <select
+                          value={siblingGrade}
+                          onChange={(e) => setSiblingGrade(e.target.value)}
+                          className="w-full bg-white border border-brand-moss/10 rounded-lg px-2.5 py-1.5 text-xs text-brand-charcoal outline-none focus:border-brand-clay"
+                        >
+                          <option value="Early Childhood (Ages 3–5)">Early Childhood & Pre-School</option>
+                          <option value="Primary (Ages 6–11)">Primary School (Primary 1–6)</option>
+                          <option value="Common Entrance & Checkpoint">Common Entrance Prep</option>
+                          <option value="Junior Secondary (JSS 1–3)">Junior Secondary (JSS 1–3)</option>
+                          <option value="Senior Secondary (SSS 1–3)">Senior Secondary (SSS 1–3)</option>
+                          <option value="Cambridge IGCSE">British / Cambridge IGCSE</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-brand-moss block mb-1">
+                          Sibling Subjects Needed
+                        </label>
+                        <input
+                          type="text"
+                          value={siblingSubjects}
+                          onChange={(e) => setSiblingSubjects(e.target.value)}
+                          placeholder="e.g. Phonics, Basic Maths"
+                          className="w-full bg-white border border-brand-moss/10 rounded-lg px-2.5 py-1.5 text-xs text-brand-charcoal outline-none focus:border-brand-clay"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4 flex justify-end">
