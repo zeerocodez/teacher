@@ -251,43 +251,45 @@ export default function App() {
         }
       }
 
-      const activeUid = currentUser ? currentUser.uid : 'parent_1';
-      const dashboardRes = await fetch(`${API_BASE}/parents/dashboard/${activeUid}`, {
-        headers: getAuthHeaders()
-      });
-      if (dashboardRes.ok) {
-        const d = await dashboardRes.json();
-        setWalletBalance(d.walletBalance);
-        setEscrowBalance(d.escrowBalance);
-        if (d.sessions) {
-          setBookedSessions(d.sessions.map(s => {
-            const matchedTeacher = latestTeachers.find(t => t.id === s.teacherId || t.uid === s.teacherId) || teachers.find(t => t.id === s.teacherId || t.uid === s.teacherId);
-            return {
-              ...s,
-              id: s.id,
-              teacherId: s.teacherId,
-              teacherName: s.teacherName,
-              avatar: getTeacherAvatar(s.avatar || matchedTeacher?.avatar, s.teacherName || matchedTeacher?.name),
-              subject: s.subject,
-              slot: s.slot,
-              cost: s.cost,
-              status: s.status
-            };
-          }));
-        }
-        if (d.gradesLog) {
-          setGradesLog(d.gradesLog.map(g => ({
-            id: g.id,
-            student: g.studentName || 'Tunde',
-            title: g.title,
-            score: g.grade?.score || 0,
-            feedback: g.grade?.feedback || "",
-            date: g.grade?.date || "3 days ago"
-          })));
-        }
-        if (d.pendingAssignments) {
+      const activeUid = currentUser ? currentUser.uid : null;
+      if (activeUid) {
+        const dashboardRes = await fetch(`${API_BASE}/parents/dashboard/${activeUid}`, {
+          headers: getAuthHeaders()
+        });
+        if (dashboardRes.ok) {
+          const d = await dashboardRes.json();
+          setWalletBalance(d.walletBalance || 0);
+          setEscrowBalance(d.escrowBalance || 0);
+          if (d.sessions) {
+            setBookedSessions(d.sessions.map(s => {
+              const matchedTeacher = latestTeachers.find(t => t.id === s.teacherId || t.uid === s.teacherId) || teachers.find(t => t.id === s.teacherId || t.uid === s.teacherId);
+              return {
+                ...s,
+                id: s.id,
+                teacherId: s.teacherId,
+                teacherName: s.teacherName,
+                avatar: getTeacherAvatar(s.avatar || matchedTeacher?.avatar, s.teacherName || matchedTeacher?.name),
+                subject: s.subject,
+                slot: s.slot,
+                cost: s.cost,
+                status: s.status
+              };
+            }));
+          }
+          if (d.gradesLog) {
+            setGradesLog(d.gradesLog.map(g => ({
+              id: g.id,
+              student: g.studentName || 'Student',
+              title: g.title,
+              score: g.grade?.score || 0,
+              feedback: g.grade?.feedback || "",
+              date: g.grade?.date || "Recently"
+            })));
+          }
+          if (d.pendingAssignments) {
             setPendingAssignments(d.pendingAssignments);
           }
+        }
       }
 
       // Check onboarding status if user is a teacher
@@ -656,7 +658,7 @@ export default function App() {
       if (authTab === 'login') {
         const lowerEmail = authEmail.toLowerCase();
         if (lowerEmail.includes('parent')) {
-          const u = { uid: 'parent_1', displayName: 'Ngozi Adeleke', role: 'Parent', email: authEmail, country: 'Nigeria' };
+          const u = { uid: `parent_${Date.now()}`, displayName: authEmail.split('@')[0], role: 'Parent', email: authEmail, country: 'Nigeria' };
           handleAuthSuccess(u);
         } else if (lowerEmail.includes('teacher')) {
           const u = { uid: 'teacher_1', displayName: 'Mr. Adebayo Okafor', role: 'Teacher', email: authEmail, country: 'Nigeria' };
@@ -715,8 +717,8 @@ export default function App() {
   };
 
   const handleBookingConfirm = async (costNgnMinor, slots, paymentMethod = 'wallet', options = {}) => {
-    const activeStudentId = selectedStudentForBooking ? (selectedStudentForBooking.uid || selectedStudentForBooking.id) : 'student_1';
-    const activeStudentName = selectedStudentForBooking ? selectedStudentForBooking.name : 'Tunde';
+    const activeStudentId = selectedStudentForBooking ? (selectedStudentForBooking.uid || selectedStudentForBooking.id) : (currentUser ? `std_${currentUser.uid}` : 'guest_student');
+    const activeStudentName = selectedStudentForBooking ? selectedStudentForBooking.name : (currentUser?.displayName ? `${currentUser.displayName.split(' ')[0]}'s Learner` : 'Student');
     try {
       if (paymentMethod === 'card') {
         const provider = 'paystack';
@@ -724,7 +726,7 @@ export default function App() {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({
-            parentId: currentUser ? currentUser.uid : 'parent_1',
+            parentId: currentUser ? currentUser.uid : 'guest_parent',
             amount: convertMinor(costNgnMinor, selectedCurrency),
             currency: selectedCurrency,
             provider,
@@ -773,7 +775,7 @@ export default function App() {
           teacherName: selectedTeacherForBooking.name,
           studentId: activeStudentId,
           studentName: activeStudentName,
-          parentId: currentUser ? currentUser.uid : 'parent_1',
+          parentId: currentUser ? currentUser.uid : 'guest_parent',
           costPerSession: Math.floor(costNgnMinor / slots.length),
           slots,
           subject: options.subject || (selectedTeacherForBooking.subjects && selectedTeacherForBooking.subjects[0]) || 'General',
@@ -855,7 +857,7 @@ export default function App() {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({
-            parentId: currentUser ? currentUser.uid : 'parent_1',
+            parentId: currentUser ? currentUser.uid : 'guest_parent',
             amount: amountMinor, // Pass amount in selected currency minor units
             currency: currency, // Pass selected currency
             provider,
@@ -886,7 +888,7 @@ export default function App() {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({
-          parentId: currentUser ? currentUser.uid : 'parent_1',
+          parentId: currentUser ? currentUser.uid : 'guest_parent',
           amount: amountNgnMinor
         })
       });
