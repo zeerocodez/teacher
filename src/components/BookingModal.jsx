@@ -19,10 +19,9 @@ export default function BookingModal({
   formatCurrency, 
   convertMinor,
   bookedSessions = [],
-  preselectedSlots = [],
-  initialBookingType = 'single'
+  preselectedSlots = []
 }) {
-  const [bookingType, setBookingType] = useState(initialBookingType === 'package' ? 'package' : 'single'); // 'single' (test drive) | 'package'
+  const [bookingType, setBookingType] = useState('package'); // 'package' | 'single'
   const [selectedPackage, setSelectedPackage] = useState('standard'); // 'starter' | 'standard' | 'intensive'
   const [recurringDays, setRecurringDays] = useState(['Monday', 'Wednesday', 'Friday']);
   const [selectedSlots, setSelectedSlots] = useState([]);
@@ -646,19 +645,8 @@ export default function BookingModal({
               </p>
             </div>
 
-            {/* Booking Plan Model Switcher (1-Hour Test Drive vs Monthly Retainer) */}
+            {/* Booking Plan Model Switcher (Monthly Retainer vs Single Lesson) */}
             <div className="mb-5 p-1.5 bg-brand-moss/5 border border-brand-moss/10 rounded-2xl grid grid-cols-2 gap-1.5 select-none font-sans">
-              <button
-                type="button"
-                onClick={() => setBookingType('single')}
-                className={`py-2.5 px-3 rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                  bookingType === 'single'
-                    ? 'bg-brand-clay text-white shadow-sm'
-                    : 'text-brand-moss hover:bg-brand-moss/5'
-                }`}
-              >
-                <span>🚗 1-Hour Test Drive (Trial)</span>
-              </button>
               <button
                 type="button"
                 onClick={() => setBookingType('package')}
@@ -668,7 +656,18 @@ export default function BookingModal({
                     : 'text-brand-moss hover:bg-brand-moss/5'
                 }`}
               >
-                <span>📦 Monthly Retainers (Save up to 10%)</span>
+                <span>📦 Monthly Retainers</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setBookingType('single')}
+                className={`py-2.5 px-3 rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  bookingType === 'single'
+                    ? 'bg-brand-moss text-white shadow-sm'
+                    : 'text-brand-moss hover:bg-brand-moss/5'
+                }`}
+              >
+                <span>🗓️ Single Lesson</span>
               </button>
             </div>
 
@@ -874,7 +873,7 @@ export default function BookingModal({
                 </span>
               </div>
               <ul className="space-y-1.5 text-2xs text-emerald-900/90 pl-1 list-disc list-inside">
-                <li><b>1-Hour Test Drive Fit Guarantee:</b> If your child and tutor don't click during the first lesson, we will re-assign another vetted educator and credit your wallet for a free replacement lesson.</li>
+                <li><b>1st Lesson Fit Guarantee:</b> If your child and tutor don't click during the first lesson, we will re-assign another vetted educator and credit your wallet for a free replacement lesson.</li>
                 <li><b>100% Escrow Protection:</b> Lesson fees are securely locked in platform escrow and released to the tutor only after verified session completion.</li>
                 <li><b>Vetted & Audited Security:</b> NIN identity checked, university degrees audited, and 2 professional guarantors on file for child safety.</li>
               </ul>

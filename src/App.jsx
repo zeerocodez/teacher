@@ -124,7 +124,6 @@ export default function App() {
     return match ? match[1] : '';
   });
   const [pendingBooking, setPendingBooking] = useState(null);
-  const [bookingInitialType, setBookingInitialType] = useState('single');
   const [isTutorOnboarding, setIsTutorOnboarding] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -529,12 +528,11 @@ export default function App() {
   };
 
   // State handlers: Booking Modal opens immediately with selected educator
-  const handleBookClick = (teacher, student, preselectedSlots = [], bookingType = 'single') => {
+  const handleBookClick = (teacher, student, preselectedSlots = []) => {
     if (!teacher) return;
     setSelectedTeacherForBooking(teacher);
     setSelectedStudentForBooking(student || null);
     setBookingPreselectedSlots(preselectedSlots || []);
-    setBookingInitialType(bookingType || 'single');
     setIsBookingOpen(true);
   };
 
@@ -2822,7 +2820,6 @@ export default function App() {
             convertMinor={convertMinor}
             bookedSessions={bookedSessions}
             preselectedSlots={bookingPreselectedSlots}
-            initialBookingType={bookingInitialType}
           />
         </Suspense>
       </ErrorBoundary>
