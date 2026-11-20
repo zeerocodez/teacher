@@ -2746,6 +2746,15 @@ export default function App() {
             <p className="font-sans text-xs text-brand-cream/60 leading-relaxed">
               Africa's Best Teachers. The World's Best Students. Connecting local educators with international tutoring standards.
             </p>
+            {/* Legal Entity & Registration Badge */}
+            <div className="p-3 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+              <span className="font-heading font-bold text-xs text-brand-cream flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Morichcare Educational Enterprise
+              </span>
+              <span className="font-mono text-[10px] text-brand-cream/70 block">
+                Official Registration: <strong className="text-brand-clay">RC 2819279</strong>
+              </span>
+            </div>
             <div className="pt-2 font-mono text-[11px] text-brand-cream/70 flex items-center gap-1.5">
               <span>💬 WhatsApp:</span>
               <a href="https://wa.me/2348136451607" target="_blank" rel="noopener noreferrer" className="text-brand-clay hover:underline font-bold">+234 813 645 1607</a>
@@ -2800,8 +2809,10 @@ export default function App() {
             </span>
           </div>
           
-          <div className="flex gap-6 font-sans text-[11px] text-brand-cream/50">
-            <span>© 2026 EduVista Africa. A product of Zeerocodes Automation Limited. All rights reserved.</span>
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6 font-sans text-[11px] text-brand-cream/60 text-center md:text-left">
+            <span>© 2026 EduVista Africa · Morichcare Educational Enterprise (RC 2819279). All rights reserved.</span>
+            <span className="hidden md:inline">•</span>
+            <span className="text-brand-cream/40">Registered Private Educational & Tutoring Services</span>
           </div>
         </div>
       </footer>

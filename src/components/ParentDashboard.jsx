@@ -26,7 +26,8 @@ import {
   Gift,
   ArrowUpRight,
   ChevronDown,
-  Check
+  Check,
+  BookOpen
 } from 'lucide-react';
 import Marketplace from './Marketplace';
 import TutorDirectory from './TutorDirectory';
@@ -53,11 +54,12 @@ export default function ParentDashboard({
   onTeacherSelect,
   onBack
 }) {
-  const [activeTab, setActiveTab] = useState('progress'); // 'progress' | 'marketplace' | 'billing' | 'disputes' | 'affiliate'
+  const [activeTab, setActiveTab] = useState('progress'); // 'progress' | 'communication_book' | 'marketplace' | 'billing' | 'disputes' | 'affiliate'
   const [tutorBrowseView, setTutorBrowseView] = useState('directory'); // 'directory' | 'leaderboard'
   const localT = t || ((key) => translations[lang]?.[key] || translations['en']?.[key] || key);
 
   const [copied, setCopied] = useState(false);
+  const [communicationBookEntries, setCommunicationBookEntries] = useState([]);
   const [referralsList, setReferralsList] = useState([]);
   const [referralStats, setReferralStats] = useState({
     hits: 0,
@@ -235,6 +237,19 @@ export default function ParentDashboard({
           setReferralStats(data.referralStats);
         }
       }
+
+      // Fetch Communication Book records
+      try {
+        const commRes = await fetch(`${API_BASE}/communication-books`, { headers: getAuthHeaders() });
+        if (commRes.ok) {
+          const commData = await commRes.json();
+          if (Array.isArray(commData.entries)) {
+            setCommunicationBookEntries(commData.entries);
+          }
+        }
+      } catch (e) {
+        console.warn("Communication books endpoint failed, using session records fallback:", e);
+      }
     } catch (err) {
       console.warn("Failed to fetch live parent dashboard:", err);
     }
@@ -271,6 +286,8 @@ export default function ParentDashboard({
     const handleHashChange = () => {
       if (window.location.hash === '#marketplace') {
         setActiveTab('marketplace');
+      } else if (window.location.hash === '#communication-book' || window.location.hash === '#notes') {
+        setActiveTab('communication_book');
       } else if (window.location.hash === '#billing' || window.location.hash === '#topup') {
         setActiveTab('billing');
       } else if (window.location.hash === '#dashboard' || window.location.hash === '' || window.location.hash === '#progress') {
@@ -582,7 +599,7 @@ export default function ParentDashboard({
 
         {/* Primary Dashboard Navigation Bar: Standout Full-Width Card Grid */}
         <nav aria-label="Dashboard Navigation" className="mt-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               {
                 id: 'progress',
@@ -590,6 +607,13 @@ export default function ParentDashboard({
                 subtitle: `${attendanceRate}% Attendance`,
                 icon: BarChart2,
                 badge: `${studentSessions.length} Classes`
+              },
+              {
+                id: 'communication_book',
+                label: 'Communication Book',
+                subtitle: 'Daily Notes & Homework',
+                icon: BookOpen,
+                badge: 'Every Class'
               },
               {
                 id: 'marketplace',
@@ -622,7 +646,6 @@ export default function ParentDashboard({
             ].map((tab, idx) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
-              const isLast = idx === 4;
               return (
                 <button
                   key={tab.id}
@@ -631,11 +654,11 @@ export default function ParentDashboard({
                     setActiveTab(tab.id);
                     if (tab.id === 'progress') {
                       window.location.hash = '#dashboard';
+                    } else if (tab.id === 'communication_book') {
+                      window.location.hash = '#communication-book';
                     }
                   }}
                   className={`group relative p-3 sm:p-4 rounded-2xl text-left transition-all duration-200 cursor-pointer flex flex-col justify-between border ${
-                    isLast ? 'col-span-2 sm:col-span-1' : ''
-                  } ${
                     isActive
                       ? 'bg-brand-moss text-white border-brand-moss shadow-xl shadow-brand-moss/20 ring-2 ring-brand-clay -translate-y-0.5'
                       : 'bg-white hover:bg-white text-brand-charcoal border-brand-moss/10 hover:border-brand-clay/40 shadow-xs hover:shadow-md hover:-translate-y-0.5'
@@ -1332,6 +1355,16 @@ export default function ParentDashboard({
                             >
                               <AlertOctagon className="w-3 h-3" /> Dispute
                             </button>
+                            {session.communicationBook && (
+                              <button
+                                type="button"
+                                onClick={() => setActiveTab('communication_book')}
+                                className="font-heading font-bold text-2xs uppercase tracking-wider text-brand-clay bg-brand-clay/10 border border-brand-clay/20 hover:bg-brand-clay hover:text-white px-3 py-1.5 rounded-full transition-all flex items-center gap-1 cursor-pointer"
+                                title="View tutor's class review and homework note"
+                              >
+                                <BookOpen className="w-3 h-3" /> 📖 Class Note
+                              </button>
+                            )}
                           </>
                         )}
   
@@ -1380,6 +1413,23 @@ export default function ParentDashboard({
                           </div>
                         )}
                       </div>
+
+                      {/* Communication Book Summary Snippet */}
+                      {session.communicationBook && (
+                        <div className="mt-3 p-3 bg-brand-moss/5 border border-brand-moss/10 rounded-xl space-y-1 text-left w-full animate-fade-in">
+                          <span className="font-heading font-bold text-2xs uppercase tracking-wider text-brand-moss flex items-center gap-1">
+                            <BookOpen className="w-3 h-3 text-brand-clay" /> Communication Book Note
+                          </span>
+                          <p className="text-2xs text-brand-charcoal/80 italic leading-snug">
+                            "{session.communicationBook.classSummary}"
+                          </p>
+                          {session.communicationBook.homework && (
+                            <p className="text-[10px] text-amber-900 bg-amber-50/90 border border-amber-200/80 rounded-lg p-1.5 font-medium mt-1">
+                              ✍️ <b>Extra Work:</b> {session.communicationBook.homework}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -1554,6 +1604,241 @@ export default function ParentDashboard({
                 ))}
               </div>
             )}
+          </div>
+
+        </div>
+      )}
+
+      {/* ACTIVE SECTION: COMMUNICATION BOOK & HOMEWORK DIARY */}
+      {activeTab === 'communication_book' && (
+        <div className="space-y-8 animate-fade-up">
+          
+          {/* Header Banner */}
+          <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-mono text-2xs uppercase tracking-widest text-brand-clay font-bold px-2.5 py-0.5 rounded-full bg-brand-clay/10 border border-brand-clay/20">
+                    MORICHCARE REGISTRATION RC 2819279 · DAILY REPORTING
+                  </span>
+                </div>
+                <h2 className="font-heading font-bold text-2xl sm:text-3xl text-brand-moss tracking-tight flex items-center gap-2.5">
+                  <BookOpen className="w-7 h-7 text-brand-clay shrink-0" />
+                  <span>Student Communication Book & Homework Diary</span>
+                </h2>
+                <p className="font-sans text-xs text-brand-charcoal/70 mt-1.5 max-w-2xl leading-relaxed">
+                  After every completed lesson, your verified tutor logs how the class went, your child's engagement, and specific extra homework assigned. All notes are saved to this permanent diary and dispatched to your WhatsApp.
+                </p>
+              </div>
+
+              {/* Student Filter Pills (if more than 1 student) */}
+              {students.length > 1 && (
+                <div className="flex items-center gap-2 bg-brand-cream/30 p-1.5 rounded-2xl border border-brand-moss/10 self-start md:self-center">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold px-2">Child:</span>
+                  {students.map(s => (
+                    <button
+                      key={s.uid || s.id}
+                      onClick={() => setSelectedChild(s.uid || s.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-heading font-bold transition-all cursor-pointer ${
+                        selectedChild === (s.uid || s.id)
+                          ? 'bg-brand-moss text-white shadow-xs'
+                          : 'text-brand-moss hover:bg-brand-moss/10'
+                      }`}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Metrics Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-brand-moss/10 font-sans">
+              <div className="bg-brand-cream/20 p-3.5 rounded-2xl border border-brand-moss/5">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block">
+                  Class Notes Logged
+                </span>
+                <span className="font-heading font-extrabold text-xl text-brand-moss mt-0.5 block">
+                  {communicationBookEntries.length || parentBookedSessions.filter(s => s.communicationBook).length} Notes
+                </span>
+              </div>
+              <div className="bg-amber-50/50 p-3.5 rounded-2xl border border-amber-200/50">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-amber-800/70 font-bold block">
+                  Homework Tasks Assigned
+                </span>
+                <span className="font-heading font-extrabold text-xl text-amber-900 mt-0.5 block">
+                  {(communicationBookEntries.filter(e => e.homework).length) || (parentBookedSessions.filter(s => s.communicationBook?.homework).length)} Tasks
+                </span>
+              </div>
+              <div className="bg-brand-cream/20 p-3.5 rounded-2xl border border-brand-moss/5">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-charcoal/50 font-bold block">
+                  Active Student
+                </span>
+                <span className="font-heading font-bold text-sm text-brand-moss mt-0.5 block truncate">
+                  {activeStudent.name || 'All Students'}
+                </span>
+              </div>
+              <div className="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-200/50">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-800/70 font-bold block">
+                  WhatsApp Delivery
+                </span>
+                <span className="font-heading font-bold text-xs text-emerald-700 mt-1 block flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Instant Dispatch Active
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Communication Book Entries Timeline */}
+          <div className="space-y-4">
+            {(() => {
+              // Aggregate entries from dedicated API table or session records
+              let allEntries = [...communicationBookEntries];
+              parentBookedSessions.forEach(s => {
+                if (s.communicationBook && !allEntries.some(e => e.sessionId === s.id || e.id === s.communicationBook?.id)) {
+                  allEntries.push({ ...s.communicationBook, slot: s.slot, sessionId: s.id });
+                }
+              });
+
+              // Filter by selected child if specified
+              if (selectedChild) {
+                const activeChildName = activeStudent.name?.toLowerCase() || '';
+                const childMatches = allEntries.filter(e => 
+                  e.studentName?.toLowerCase() === activeChildName || 
+                  e.studentName?.toLowerCase().includes(activeChildName)
+                );
+                if (childMatches.length > 0) {
+                  allEntries = childMatches;
+                }
+              }
+
+              if (allEntries.length === 0) {
+                return (
+                  <div className="bg-white border border-brand-moss/10 rounded-[2.5rem] p-12 text-center shadow-sm font-sans space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-brand-moss/10 text-brand-moss flex items-center justify-center mx-auto">
+                      <BookOpen className="w-8 h-8 text-brand-clay" />
+                    </div>
+                    <div className="max-w-md mx-auto">
+                      <h3 className="font-heading font-bold text-lg text-brand-moss">No Communication Book Entries Yet</h3>
+                      <p className="text-xs text-brand-charcoal/70 mt-1 leading-relaxed">
+                        As your booked lessons conclude, your tutor will submit what was taught, student comprehension observations, and specific extra homework for {activeStudent.name || 'your child'}.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('marketplace')}
+                      className="py-2.5 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer"
+                    >
+                      Browse & Book Verified Tutors
+                    </button>
+                  </div>
+                );
+              }
+
+              return allEntries.map((entry, idx) => {
+                const shareText = encodeURIComponent(
+                  `📖 EduVista Daily Communication Book Note for ${entry.studentName || 'Student'}:\n\n` +
+                  `• Subject: ${entry.subject || 'Lesson'}\n` +
+                  `• How Class Went: ${entry.classSummary || 'Completed'}\n` +
+                  (entry.homework ? `• ✍️ Homework: ${entry.homework}\n` : '') +
+                  (entry.topicsCovered ? `• Topics: ${entry.topicsCovered}\n` : '') +
+                  (entry.nextFocus ? `• Next Focus: ${entry.nextFocus}\n` : '') +
+                  `\nView full diary on EduVista: https://eduvistar.com/#communication-book`
+                );
+
+                return (
+                  <div key={entry.id || idx} className="bg-white border border-brand-moss/10 rounded-[2rem] p-6 shadow-sm hover-lift transition-all space-y-4 font-sans">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brand-moss/5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-brand-moss/10 text-brand-moss flex items-center justify-center font-heading font-bold text-sm shrink-0">
+                          {entry.teacherName ? entry.teacherName.charAt(0) : 'E'}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-heading font-bold text-sm text-brand-moss">{entry.teacherName || 'Verified Educator'}</span>
+                            <span className="text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                              Verified Tutor ✓
+                            </span>
+                          </div>
+                          <span className="font-mono text-2xs text-brand-charcoal/50 block mt-0.5 uppercase">
+                            {entry.slot?.day || 'Scheduled'} {entry.slot?.time ? `· ${entry.slot.time}` : ''} · Student: <strong className="text-brand-moss">{entry.studentName}</strong>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-start sm:self-center flex-wrap">
+                        {entry.studentEngagement && (
+                          <span className="py-1 px-3 rounded-full text-[11px] font-bold bg-brand-moss/5 text-brand-moss border border-brand-moss/15">
+                            {entry.studentEngagement}
+                          </span>
+                        )}
+                        <span className="py-1 px-3 rounded-full text-[11px] font-bold bg-brand-clay/10 text-brand-clay">
+                          {entry.subject || 'Tutoring'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* How the Class Went */}
+                    <div className="space-y-1">
+                      <span className="font-heading font-bold text-xs uppercase tracking-wider text-brand-moss block flex items-center gap-1.5">
+                        <MessageSquare className="w-3.5 h-3.5 text-brand-clay" />
+                        How the Class Went (Teacher's Lesson Summary):
+                      </span>
+                      <div className="p-3.5 bg-brand-cream/30 border border-brand-moss/10 rounded-2xl text-xs text-brand-charcoal leading-relaxed italic">
+                        "{entry.classSummary || 'Class completed successfully.'}"
+                      </div>
+                    </div>
+
+                    {/* Topics Covered */}
+                    {entry.topicsCovered && (
+                      <div className="flex items-center gap-2 text-2xs">
+                        <span className="font-heading font-bold uppercase tracking-wider text-brand-charcoal/60">Topics Covered:</span>
+                        <span className="font-mono font-semibold text-brand-moss bg-brand-moss/5 border border-brand-moss/10 px-2.5 py-1 rounded-lg">
+                          {entry.topicsCovered}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Specific Extra Work / Homework Highlight */}
+                    {entry.homework && (
+                      <div className="p-4 bg-amber-50/90 border border-amber-300 rounded-2xl space-y-1 text-xs">
+                        <span className="font-heading font-bold text-xs uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
+                          <FileText className="w-4 h-4 text-amber-700 shrink-0" />
+                          <span>✍️ Specific Extra Work / Homework Assigned:</span>
+                        </span>
+                        <p className="text-amber-950 font-medium leading-relaxed pl-5">
+                          {entry.homework}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Next Class Focus */}
+                    {entry.nextFocus && (
+                      <div className="p-3 bg-brand-moss/5 border border-brand-moss/10 rounded-xl text-2xs text-brand-charcoal flex items-center gap-2">
+                        <span className="font-heading font-bold uppercase tracking-wider text-brand-moss">🎯 Next Class Focus:</span>
+                        <span>{entry.nextFocus}</span>
+                      </div>
+                    )}
+
+                    {/* Card Actions */}
+                    <div className="pt-2 flex items-center justify-between gap-3 text-2xs">
+                      <span className="font-mono text-brand-charcoal/40 text-[10px]">
+                        {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Verified Session'}
+                      </span>
+                      <a
+                        href={`https://wa.me/?text=${shareText}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-1.5 px-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-heading font-bold uppercase tracking-wider text-[10px] flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                        title="Forward this homework note to your child or another parent"
+                      >
+                        <span>📲 Share to Child on WhatsApp</span>
+                      </a>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
           </div>
 
         </div>

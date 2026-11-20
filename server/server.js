@@ -4101,9 +4101,10 @@ app.post('/api/disputes/create', authenticateToken, requireRole(['Parent']), asy
   res.json({ success: true, dispute });
 });
 
-// POST Complete Session & Trigger Escrow Release Countdown
+// POST Complete Session & Trigger Escrow Release Countdown + Communication Book Note
 app.post('/api/sessions/:id/complete', authenticateToken, async (req, res) => {
   const { id } = req.params;
+  const { classSummary, homework, topicsCovered, studentEngagement, nextFocus } = req.body || {};
   const session = db.findOne('sessions', s => s.id === id);
   if (!session) {
     return res.status(404).json({ error: "Session not found." });
@@ -4116,21 +4117,157 @@ app.post('/api/sessions/:id/complete', authenticateToken, async (req, res) => {
   const now = new Date();
   const autoReleaseAt = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
 
+  // Create Communication Book Diary Entry
+  const communicationBook = {
+    id: `cb_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    sessionId: session.id,
+    parentId: session.parentId,
+    teacherId: session.teacherId,
+    teacherName: session.teacherName || req.user.displayName || 'Educator',
+    studentName: session.studentName || 'Student',
+    subject: session.subject || 'Class',
+    slot: session.slot,
+    classSummary: classSummary ? sanitizeText(classSummary) : 'Class completed successfully. Good participation and curriculum focus.',
+    homework: homework ? sanitizeText(homework) : '',
+    topicsCovered: topicsCovered ? sanitizeText(topicsCovered) : (session.subject || 'Standard curriculum'),
+    studentEngagement: studentEngagement || 'Attentive & Engaged',
+    nextFocus: nextFocus ? sanitizeText(nextFocus) : '',
+    createdAt: now.toISOString()
+  };
+
   await db.update('sessions', session.id, {
     status: "Completed",
     completedAt: now.toISOString(),
-    autoReleaseAt
+    autoReleaseAt,
+    communicationBook
   });
 
-  // Notify Parent to rate and review
+  // Store entry in communication_books table for aggregate parent diary
+  try {
+    await db.insert('communication_books', communicationBook);
+  } catch (e) {
+    console.warn("Could not insert communication_books record:", e);
+  }
+
+  // Notify Parent on WhatsApp with full Communication Book details
+  const parentUser = db.findOne('users', u => u.uid === session.parentId);
+  if (parentUser && (parentUser.phone || parentUser.whatsapp)) {
+    try {
+      sendWhatsAppNotification(parentUser.phone || parentUser.whatsapp, 'communication_book_entry', {
+        parentName: parentUser.displayName || 'Parent',
+        teacherName: communicationBook.teacherName,
+        studentName: communicationBook.studentName,
+        classSummary: communicationBook.classSummary,
+        homework: communicationBook.homework,
+        topicsCovered: communicationBook.topicsCovered,
+        studentEngagement: communicationBook.studentEngagement,
+        nextFocus: communicationBook.nextFocus
+      });
+    } catch (err) {
+      console.error("WhatsApp dispatch error:", err);
+    }
+  }
+
+  // Notify Parent in-app to rate, review, and view Communication Book
   await createNotification(
     session.parentId,
     "session_completed",
-    "Session Marked Completed",
-    `Your session on ${session.slot?.day || 'scheduled slot'} with ${session.teacherName || 'your tutor'} is complete. Please leave a rating and review!`
+    "Session Completed & Communication Book Note Logged",
+    `Your session with ${session.teacherName || 'your tutor'} is complete. The teacher logged today's Communication Book note & homework. Tap to view!`
   );
 
-  res.json({ success: true, message: "Session marked as completed. Escrow 24-hour clearance initiated.", autoReleaseAt });
+  res.json({ 
+    success: true, 
+    message: "Session marked as completed & Communication Book note sent to parent.", 
+    communicationBook,
+    autoReleaseAt 
+  });
+});
+
+// GET Communication Book entries for authenticated Parent or Teacher
+app.get('/api/communication-books', authenticateToken, async (req, res) => {
+  try {
+    const userUid = req.user.uid;
+    let entries = db.findAll('communication_books', cb => 
+      cb.parentId === userUid || cb.teacherId === userUid || req.user.role === 'Admin'
+    );
+    // Also include any sessions with communicationBook that might not be in standalone table
+    const sessionsWithNotes = db.findAll('sessions', s => 
+      (s.parentId === userUid || s.teacherId === userUid || req.user.role === 'Admin') && s.communicationBook
+    );
+    for (const s of sessionsWithNotes) {
+      if (!entries.some(e => e.sessionId === s.id)) {
+        entries.push(s.communicationBook);
+      }
+    }
+
+    entries.sort((a, b) => new Date(b.createdAt || b.submittedAt || 0) - new Date(a.createdAt || a.submittedAt || 0));
+    res.json({ success: true, entries });
+  } catch (err) {
+    console.error("Failed to fetch communication books:", err);
+    res.status(500).json({ error: "Failed to fetch communication book records." });
+  }
+});
+
+// POST / Update Communication Book Entry specifically for a session
+app.post('/api/sessions/:id/communication-book', authenticateToken, requireRole(['Teacher', 'Admin']), async (req, res) => {
+  const { id } = req.params;
+  const { classSummary, homework, topicsCovered, studentEngagement, nextFocus } = req.body || {};
+  const session = db.findOne('sessions', s => s.id === id);
+  if (!session) return res.status(404).json({ error: "Session not found." });
+  if (session.teacherId !== req.user.uid && req.user.role !== 'Admin') {
+    return res.status(403).json({ error: "Access denied. Not the assigned tutor." });
+  }
+
+  const now = new Date();
+  const communicationBook = {
+    ...(session.communicationBook || {}),
+    id: session.communicationBook?.id || `cb_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    sessionId: session.id,
+    parentId: session.parentId,
+    teacherId: session.teacherId,
+    teacherName: session.teacherName || req.user.displayName || 'Educator',
+    studentName: session.studentName || 'Student',
+    subject: session.subject || 'Class',
+    slot: session.slot,
+    classSummary: classSummary ? sanitizeText(classSummary) : (session.communicationBook?.classSummary || 'Class conducted successfully.'),
+    homework: homework !== undefined ? sanitizeText(homework) : (session.communicationBook?.homework || ''),
+    topicsCovered: topicsCovered ? sanitizeText(topicsCovered) : (session.communicationBook?.topicsCovered || session.subject || 'Curriculum topics'),
+    studentEngagement: studentEngagement || session.communicationBook?.studentEngagement || 'Attentive & Engaged',
+    nextFocus: nextFocus !== undefined ? sanitizeText(nextFocus) : (session.communicationBook?.nextFocus || ''),
+    updatedAt: now.toISOString(),
+    createdAt: session.communicationBook?.createdAt || now.toISOString()
+  };
+
+  await db.update('sessions', session.id, { communicationBook });
+
+  const existingEntry = db.findOne('communication_books', cb => cb.sessionId === session.id);
+  if (existingEntry) {
+    await db.update('communication_books', existingEntry.id, communicationBook);
+  } else {
+    await db.insert('communication_books', communicationBook);
+  }
+
+  // Send WhatsApp to Parent
+  const parentUser = db.findOne('users', u => u.uid === session.parentId);
+  if (parentUser && (parentUser.phone || parentUser.whatsapp)) {
+    try {
+      sendWhatsAppNotification(parentUser.phone || parentUser.whatsapp, 'communication_book_entry', {
+        parentName: parentUser.displayName || 'Parent',
+        teacherName: communicationBook.teacherName,
+        studentName: communicationBook.studentName,
+        classSummary: communicationBook.classSummary,
+        homework: communicationBook.homework,
+        topicsCovered: communicationBook.topicsCovered,
+        studentEngagement: communicationBook.studentEngagement,
+        nextFocus: communicationBook.nextFocus
+      });
+    } catch (err) {
+      console.error("WhatsApp dispatch error:", err);
+    }
+  }
+
+  res.json({ success: true, message: "Communication book entry updated and sent to parent.", communicationBook });
 });
 
 // POST Admin Dispute Resolution (Refund Parent or Release to Teacher)

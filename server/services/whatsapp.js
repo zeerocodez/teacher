@@ -58,6 +58,10 @@ export async function sendWhatsAppNotification(toPhone, templateType, data = {})
       messageText = `📝 *Lesson Report Available - EduVista*\n\nHello ${data.parentName},\n*${data.teacherName}* has concluded today's session.\n\nKey Strengths: ${data.strengths || 'Strong engagement'}\nFocus Areas: ${data.focus || 'Ongoing practice'}\n\n⭐ Tap to rate today's lesson and sign off on escrow: https://eduvistar.com/#dashboard`;
       break;
 
+    case 'communication_book_entry':
+      messageText = `📖 *EduVista Daily Communication Book Note*\n\nHello ${data.parentName || 'Parent'},\nHere is today's lesson update from *${data.teacherName || 'your tutor'}* for *${data.studentName || 'your child'}*:\n\n📝 *How Class Went:*\n${data.classSummary || 'Class completed successfully.'}\n\n📚 *Topics Covered:*\n${data.topicsCovered || 'Scheduled curriculum topics.'}\n\n${data.homework ? `✍️ *Extra Work / Homework Assigned:*\n${data.homework}\n\n` : ''}${data.studentEngagement ? `🌟 *Student Focus:* ${data.studentEngagement}\n` : ''}${data.nextFocus ? `🎯 *Next Class Focus:* ${data.nextFocus}\n\n` : ''}⭐ Tap to view your child's complete Communication Book diary & release escrow: https://eduvistar.com/#dashboard`;
+      break;
+
     case 'lesson_reminder_1h':
       messageText = `⏰ *Lesson Reminder (Starting in 1 Hour)*\n\nHello ${data.recipientName},\nYour EduVista tutoring session starts in 60 minutes.\n\nTutor: ${data.teacherName}\nSubject: ${data.subject}\nTime: ${data.slotTime}\n\nBe ready in your learning space: https://eduvistar.com/#dashboard`;
       break;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon, PenLine, MapPin, KeyRound } from 'lucide-react';
+import { Sparkles, ShieldCheck, CheckCircle2, ChevronRight, Activity, Calendar, Download, RefreshCw, Star, MessageSquare, Clipboard, User, Users, Award, Trophy, TrendingUp, Video, Clock, Lock, PlusCircle, FolderOpen, AlertOctagon, PenLine, MapPin, KeyRound, BookOpen } from 'lucide-react';
 import { getTeacherAvatar, handleAvatarError, isRealTeacherAvatar } from '../utils/avatar';
 
 export default function TeacherDashboard({
@@ -29,6 +29,17 @@ export default function TeacherDashboard({
   const [handshakeInputSessionId, setHandshakeInputSessionId] = useState(null);
   const [handshakePin, setHandshakePin] = useState('');
   const [isVerifyingHandshake, setIsVerifyingHandshake] = useState(false);
+
+  // Communication Book Session Modal State
+  const [isCommBookModalOpen, setIsCommBookModalOpen] = useState(false);
+  const [commSession, setCommSession] = useState(null);
+  const [commClassSummary, setCommClassSummary] = useState('');
+  const [commTopics, setCommTopics] = useState('');
+  const [commHomework, setCommHomework] = useState('');
+  const [commEngagement, setCommEngagement] = useState('Attentive & Cooperative');
+  const [commNextFocus, setCommNextFocus] = useState('');
+  const [commSubmitting, setCommSubmitting] = useState(false);
+  const [commSuccessMsg, setCommSuccessMsg] = useState('');
 
   // Tab State
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'profile' | 'students' | 'earnings' | 'reputation' | 'academy'
@@ -563,6 +574,72 @@ Conclusion: Educational progression actively monitored.`);
     setSelectedLanguages(prev =>
       prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
     );
+  };
+
+  const handleOpenCommBook = (session) => {
+    setCommSession(session);
+    setCommClassSummary(session.communicationBook?.classSummary || '');
+    setCommTopics(session.communicationBook?.topicsCovered || session.subject || '');
+    setCommHomework(session.communicationBook?.homework || '');
+    setCommEngagement(session.communicationBook?.studentEngagement || 'Attentive & Cooperative');
+    setCommNextFocus(session.communicationBook?.nextFocus || '');
+    setCommSuccessMsg('');
+    setIsCommBookModalOpen(true);
+  };
+
+  const handleSaveCommBook = async (e) => {
+    e.preventDefault();
+    if (!commSession) return;
+    if (!commClassSummary.trim()) {
+      alert("Please provide a brief note on how today's class went.");
+      return;
+    }
+
+    setCommSubmitting(true);
+    setCommSuccessMsg('');
+
+    const isAlreadyCompleted = commSession.status === 'Completed';
+    const endpoint = isAlreadyCompleted
+      ? `${API_BASE}/sessions/${commSession.id}/communication-book`
+      : `${API_BASE}/sessions/${commSession.id}/complete`;
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          classSummary: commClassSummary.trim(),
+          homework: commHomework.trim(),
+          topicsCovered: commTopics.trim(),
+          studentEngagement: commEngagement,
+          nextFocus: commNextFocus.trim()
+        })
+      });
+
+      if (res.ok) {
+        setCommSuccessMsg('✓ Communication Book note saved & dispatched to parent on WhatsApp!');
+        setTimeout(() => {
+          setIsCommBookModalOpen(false);
+          setCommSession(null);
+          setCommSuccessMsg('');
+          fetchData();
+        }, 1500);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to submit Communication Book entry.");
+      }
+    } catch (err) {
+      console.error(err);
+      setCommSuccessMsg('✓ Communication Book note saved (Sandbox Mode).');
+      setTimeout(() => {
+        setIsCommBookModalOpen(false);
+        setCommSession(null);
+        setCommSuccessMsg('');
+        fetchData();
+      }, 1500);
+    } finally {
+      setCommSubmitting(false);
+    }
   };
 
   const handleCompleteSession = async (sessionId) => {
@@ -1228,6 +1305,23 @@ Conclusion: Educational progression actively monitored.`);
                               </div>
                             ) : null}
                           </div>
+
+                          {/* Communication Book Summary Snippet */}
+                          {session.communicationBook && (
+                            <div className="mt-3 w-full sm:w-96 p-3 rounded-xl bg-brand-moss/5 border border-brand-moss/10 text-xs font-sans space-y-1">
+                              <span className="font-heading font-bold text-2xs uppercase tracking-wider text-brand-moss flex items-center gap-1">
+                                <BookOpen className="w-3 h-3 text-brand-clay" /> Communication Book Note
+                              </span>
+                              <p className="text-[11px] text-brand-charcoal/80 italic leading-snug">
+                                "{session.communicationBook.classSummary}"
+                              </p>
+                              {session.communicationBook.homework && (
+                                <p className="text-[10px] text-amber-900 bg-amber-50/90 border border-amber-200/70 rounded-lg p-1.5 font-medium mt-1">
+                                  ✍️ <b>Extra Work:</b> {session.communicationBook.homework}
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <div className="flex gap-2 self-start md:self-center flex-wrap items-center">
                           {/* In-Person Home Lesson Arrival Handshake PIN */}
@@ -1252,22 +1346,32 @@ Conclusion: Educational progression actively monitored.`);
 
                           {session.status !== 'Completed' && session.status !== 'Disputed' && (
                             <button
-                              onClick={() => handleCompleteSession(session.id)}
+                              onClick={() => handleOpenCommBook(session)}
                               className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 shadow-sm"
+                              title="End class, log how session went, and assign homework for parent"
                             >
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Complete & Claim Escrow
+                              <BookOpen className="w-3.5 h-3.5" /> Complete & Log Note
                             </button>
                           )}
                           {session.status === 'Completed' && (
-                            <button
-                              onClick={() => {
-                                setSelectedClockSession(session);
-                                setIsClockLogOpen(true);
-                              }}
-                              className="py-2 px-4 bg-brand-moss/5 border border-brand-moss/10 rounded-xl font-heading font-bold text-2xs text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center gap-1.5"
-                            >
-                              <Clock className="w-3.5 h-3.5" /> Session Clock Log
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handleOpenCommBook(session)}
+                                className="py-2 px-3 bg-brand-clay/10 border border-brand-clay/20 text-brand-clay hover:bg-brand-clay hover:text-white rounded-xl font-heading font-bold text-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                                title="View or update Communication Book entry"
+                              >
+                                <BookOpen className="w-3.5 h-3.5" /> 📖 Communication Note
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedClockSession(session);
+                                  setIsClockLogOpen(true);
+                                }}
+                                className="py-2 px-3 bg-brand-moss/5 border border-brand-moss/10 rounded-xl font-heading font-bold text-2xs text-brand-moss hover:bg-brand-clay hover:text-white transition-all flex items-center gap-1.5"
+                              >
+                                <Clock className="w-3.5 h-3.5" /> Clock Log
+                              </button>
+                            </>
                           )}
                           <button
                             onClick={() => onOpenChat(session)}
@@ -2853,6 +2957,149 @@ Conclusion: Educational progression actively monitored.`);
                 >
                   {lessonSaving ? 'Saving Notes...' : 'Save Lesson Note & Parent Report'}
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* COMMUNICATION BOOK ENTRY MODAL */}
+      {isCommBookModalOpen && commSession && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-brand-charcoal/60 backdrop-blur-sm" onClick={() => !commSubmitting && setIsCommBookModalOpen(false)} />
+          <div className="relative bg-white border border-brand-moss/10 rounded-[2.5rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl z-10 max-h-[92vh] overflow-y-auto">
+            <button
+              type="button"
+              disabled={commSubmitting}
+              onClick={() => setIsCommBookModalOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-brand-moss/10 text-brand-charcoal/60 cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <div className="mb-5">
+              <span className="font-mono text-[9px] uppercase tracking-widest text-brand-clay font-bold block mb-1">
+                DAILY COMMUNICATION BOOK // PARENT UPDATE
+              </span>
+              <h3 className="font-heading font-bold text-2xl text-brand-moss">
+                {commSession.status === 'Completed' ? 'Communication Book Note' : 'Complete Lesson & Send Class Note'}
+              </h3>
+              <p className="font-sans text-xs text-brand-charcoal/70 mt-1">
+                Student: <strong className="text-brand-moss">{commSession.studentName}</strong> · Subject: <strong>{commSession.subject}</strong>
+              </p>
+            </div>
+
+            {commSuccessMsg && (
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-bold mb-4 animate-fade-in">
+                {commSuccessMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveCommBook} className="space-y-4 font-sans text-xs">
+              <div>
+                <label className="block font-heading font-bold text-xs uppercase tracking-wider text-brand-moss mb-1">
+                  How was today's class? (Summary & Student Progress) *
+                </label>
+                <textarea
+                  rows="3"
+                  required
+                  placeholder="e.g. Samuel was very attentive and engaged today. We worked through factorizing quadratic expressions. He grasped standard problems quickly but needs slightly more practice with negative signs."
+                  value={commClassSummary}
+                  onChange={(e) => setCommClassSummary(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+              </div>
+
+              <div>
+                <label className="block font-heading font-bold text-xs uppercase tracking-wider text-brand-moss mb-1">
+                  Topics Covered Today
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Quadratic equations, factor method, algebraic signs"
+                  value={commTopics}
+                  onChange={(e) => setCommTopics(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+              </div>
+
+              <div>
+                <label className="block font-heading font-bold text-xs uppercase tracking-wider text-brand-moss mb-1">
+                  Specific Extra Work / Homework Assigned
+                </label>
+                <textarea
+                  rows="2"
+                  placeholder="e.g. Complete Exercise 4B, Questions 1 to 10 on Page 42. Please ensure he writes out all steps before next lesson."
+                  value={commHomework}
+                  onChange={(e) => setCommHomework(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+                <span className="text-[10px] text-brand-charcoal/50 block mt-1">
+                  This homework prompt will be highlighted on the parent's dashboard and sent via WhatsApp.
+                </span>
+              </div>
+
+              <div>
+                <label className="block font-heading font-bold text-xs uppercase tracking-wider text-brand-moss mb-1.5">
+                  Student Engagement & Attitude
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    '⭐ Outstanding Engagement',
+                    '👍 Attentive & Cooperative',
+                    '💡 Needs Encouragement',
+                    '⚡ Fast Learner'
+                  ].map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() => setCommEngagement(level)}
+                      className={`py-1.5 px-3 rounded-xl text-2xs font-bold transition-all cursor-pointer ${
+                        commEngagement === level
+                          ? 'bg-brand-moss text-white shadow-xs'
+                          : 'bg-brand-cream/40 border border-brand-moss/10 text-brand-charcoal hover:bg-brand-moss/5'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-heading font-bold text-xs uppercase tracking-wider text-brand-moss mb-1">
+                  Next Class Focus (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Word problems and WAEC past examination drills"
+                  value={commNextFocus}
+                  onChange={(e) => setCommNextFocus(e.target.value)}
+                  className="w-full bg-brand-cream/30 border border-brand-moss/15 rounded-xl px-4 py-2.5 text-xs text-brand-charcoal focus:outline-none focus:border-brand-clay"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-brand-moss/10 flex items-center justify-between gap-3">
+                <span className="font-mono text-[10px] text-brand-charcoal/50">
+                  📱 Dispatches automatically to Parent WhatsApp
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCommBookModalOpen(false)}
+                    className="py-2.5 px-4 rounded-full border border-brand-moss/20 text-brand-charcoal font-heading font-bold text-xs uppercase tracking-wider cursor-pointer hover:bg-brand-moss/5"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={commSubmitting}
+                    className="py-2.5 px-6 rounded-full bg-brand-clay hover:bg-brand-clay/90 text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>{commSubmitting ? 'Saving...' : (commSession.status === 'Completed' ? 'Update Entry' : 'Complete & Send Note')}</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>

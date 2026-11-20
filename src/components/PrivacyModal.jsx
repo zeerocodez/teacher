@@ -36,7 +36,7 @@ export default function PrivacyModal({ isOpen, onClose }) {
         {/* Content */}
         <div className="space-y-6 text-xs text-brand-charcoal/85 pr-2">
           <p className="italic text-brand-charcoal/70">
-            Last Updated: July 10, 2026. EduVista Africa is a product of **Zeerocodes Automation Limited**. We are committed to safeguarding your personal data in compliance with the General Data Protection Regulation (GDPR) and the Nigeria Data Protection Regulation (NDPR).
+            Last Updated: July 10, 2026. EduVista Africa is operated by **Morichcare Educational Enterprise** (RC 2819279). We are committed to safeguarding your personal data in compliance with the General Data Protection Regulation (GDPR) and the Nigeria Data Protection Act (NDPR).
           </p>
 
           {/* Section 1 */}
