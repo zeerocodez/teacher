@@ -221,10 +221,11 @@ export default function ParentDashboard({
           setStudents(data.students);
           if (data.students.length > 0) {
             setSelectedChild(prev => {
-              if (prev && data.students.some(s => s.uid === prev || s.id === prev || s.name.toLowerCase() === prev.toLowerCase())) {
+              if (prev && data.students.some(s => s && (s.uid === prev || s.id === prev || (s.name && String(s.name).toLowerCase() === String(prev).toLowerCase())))) {
                 return prev;
               }
-              return data.students[0].uid || data.students[0].id || data.students[0].name.toLowerCase();
+              const firstStudent = data.students[0];
+              return firstStudent?.uid || firstStudent?.id || (firstStudent?.name ? String(firstStudent.name).toLowerCase() : 'student_1');
             });
           } else {
             setSelectedChild('');
@@ -427,38 +428,40 @@ export default function ParentDashboard({
   };
 
   // Attendance rate calculation based on progress database
-  // Attendance rate calculation based on progress database
-  const activeStudent = students.find(s => s.uid === selectedChild || s.id === selectedChild || s.name.toLowerCase() === selectedChild.toLowerCase()) || students[0] || {
-    name: selectedChild ? (selectedChild.charAt(0).toUpperCase() + selectedChild.slice(1)) : 'Student',
+  const activeStudent = (students || []).find(s => s && (s.uid === selectedChild || s.id === selectedChild || (s.name && String(s.name).toLowerCase() === String(selectedChild || '').toLowerCase()))) || (students && students[0]) || {
+    name: selectedChild ? (String(selectedChild).charAt(0).toUpperCase() + String(selectedChild).slice(1)) : 'Student',
     uid: 'student_1',
     xp: 0,
     badges: []
   };
 
-  const studentSessions = (dashboardData?.sessions || parentBookedSessions).filter(s => {
-    const sNameLower = s.studentName ? s.studentName.toLowerCase() : '';
-    const activeNameLower = activeStudent.name ? activeStudent.name.toLowerCase() : '';
+  const studentSessions = (dashboardData?.sessions || parentBookedSessions || []).filter(s => {
+    if (!s) return false;
+    const sNameLower = s.studentName ? String(s.studentName).toLowerCase() : '';
+    const activeNameLower = activeStudent?.name ? String(activeStudent.name).toLowerCase() : '';
     const selectedChildLower = typeof selectedChild === 'string' ? selectedChild.toLowerCase() : '';
-    return sNameLower === activeNameLower || sNameLower === selectedChildLower;
+    return Boolean(sNameLower && (sNameLower === activeNameLower || sNameLower === selectedChildLower));
   });
   
   const totalBooked = studentSessions.length;
-  const totalAttended = studentSessions.filter(s => s.status === 'Completed').length;
+  const totalAttended = studentSessions.filter(s => s && s.status === 'Completed').length;
   const attendanceRate = totalBooked > 0 ? Math.round((totalAttended / totalBooked) * 100) : 0;
 
   // Assignments filter per student
-  const studentGrades = (dashboardData?.gradesLog || parentGradesLog).filter(g => {
-    const gNameLower = g.student ? g.student.toLowerCase() : '';
-    const activeNameLower = activeStudent.name ? activeStudent.name.toLowerCase() : '';
+  const studentGrades = (dashboardData?.gradesLog || parentGradesLog || []).filter(g => {
+    if (!g) return false;
+    const gNameLower = g.student ? String(g.student).toLowerCase() : '';
+    const activeNameLower = activeStudent?.name ? String(activeStudent.name).toLowerCase() : '';
     const selectedChildLower = typeof selectedChild === 'string' ? selectedChild.toLowerCase() : '';
-    return gNameLower === activeNameLower || gNameLower === selectedChildLower;
+    return Boolean(gNameLower && (gNameLower === activeNameLower || gNameLower === selectedChildLower));
   });
 
-  const studentPending = (dashboardData?.pendingAssignments || parentPendingAssignments).filter(p => {
-    const pNameLower = p.studentName ? p.studentName.toLowerCase() : '';
-    const activeNameLower = activeStudent.name ? activeStudent.name.toLowerCase() : '';
+  const studentPending = (dashboardData?.pendingAssignments || parentPendingAssignments || []).filter(p => {
+    if (!p) return false;
+    const pNameLower = p.studentName ? String(p.studentName).toLowerCase() : '';
+    const activeNameLower = activeStudent?.name ? String(activeStudent.name).toLowerCase() : '';
     const selectedChildLower = typeof selectedChild === 'string' ? selectedChild.toLowerCase() : '';
-    return pNameLower === activeNameLower || pNameLower === selectedChildLower;
+    return Boolean(pNameLower && (pNameLower === activeNameLower || pNameLower === selectedChildLower));
   });
 
   const avgGrade = studentGrades.length > 0
@@ -1018,9 +1021,11 @@ export default function ParentDashboard({
                 )}
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {students.map((student) => {
-                    const sId = student.uid || student.id || student.name.toLowerCase();
-                    const isSelected = selectedChild === sId || selectedChild === student.name.toLowerCase();
+                  {(students || []).map((student, sIdx) => {
+                    if (!student) return null;
+                    const sId = student.uid || student.id || (student.name ? String(student.name).toLowerCase() : `student_${sIdx}`);
+                    const sName = student.name ? String(student.name) : 'Student';
+                    const isSelected = selectedChild === sId || (student.name && selectedChild === String(student.name).toLowerCase());
                     return (
                       <button
                         key={sId}
@@ -1031,7 +1036,7 @@ export default function ParentDashboard({
                             : 'border-brand-moss/10 hover:border-brand-moss/20 text-brand-charcoal'
                         }`}
                       >
-                        {student.name.toLowerCase().includes('zara') || student.name.toLowerCase().includes('yinka') ? '👧' : '👦'} {student.name}
+                        {sName.toLowerCase().includes('zara') || sName.toLowerCase().includes('yinka') ? '👧' : '👦'} {sName}
                       </button>
                     );
                   })}
@@ -1659,7 +1664,7 @@ export default function ParentDashboard({
                   Class Notes Logged
                 </span>
                 <span className="font-heading font-extrabold text-xl text-brand-moss mt-0.5 block">
-                  {communicationBookEntries.length || parentBookedSessions.filter(s => s.communicationBook).length} Notes
+                  {(communicationBookEntries || []).length || (parentBookedSessions || []).filter(s => s && s.communicationBook).length} Notes
                 </span>
               </div>
               <div className="bg-amber-50/50 p-3.5 rounded-2xl border border-amber-200/50">
@@ -1667,7 +1672,7 @@ export default function ParentDashboard({
                   Homework Tasks Assigned
                 </span>
                 <span className="font-heading font-extrabold text-xl text-amber-900 mt-0.5 block">
-                  {(communicationBookEntries.filter(e => e.homework).length) || (parentBookedSessions.filter(s => s.communicationBook?.homework).length)} Tasks
+                  {((communicationBookEntries || []).filter(e => e && e.homework).length) || ((parentBookedSessions || []).filter(s => s && s.communicationBook?.homework).length)} Tasks
                 </span>
               </div>
               <div className="bg-brand-cream/20 p-3.5 rounded-2xl border border-brand-moss/5">
@@ -1675,7 +1680,7 @@ export default function ParentDashboard({
                   Active Student
                 </span>
                 <span className="font-heading font-bold text-sm text-brand-moss mt-0.5 block truncate">
-                  {activeStudent.name || 'All Students'}
+                  {activeStudent?.name || 'All Students'}
                 </span>
               </div>
               <div className="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-200/50">
@@ -1693,20 +1698,21 @@ export default function ParentDashboard({
           <div className="space-y-4">
             {(() => {
               // Aggregate entries from dedicated API table or session records
-              let allEntries = [...communicationBookEntries];
-              parentBookedSessions.forEach(s => {
-                if (s.communicationBook && !allEntries.some(e => e.sessionId === s.id || e.id === s.communicationBook?.id)) {
+              let allEntries = [...(communicationBookEntries || [])];
+              (parentBookedSessions || []).forEach(s => {
+                if (s && s.communicationBook && !allEntries.some(e => e && (e.sessionId === s.id || e.id === s.communicationBook?.id))) {
                   allEntries.push({ ...s.communicationBook, slot: s.slot, sessionId: s.id });
                 }
               });
 
               // Filter by selected child if specified
               if (selectedChild) {
-                const activeChildName = activeStudent.name?.toLowerCase() || '';
-                const childMatches = allEntries.filter(e => 
-                  e.studentName?.toLowerCase() === activeChildName || 
-                  e.studentName?.toLowerCase().includes(activeChildName)
-                );
+                const activeChildName = (activeStudent?.name || '').toLowerCase();
+                const childMatches = allEntries.filter(e => {
+                  if (!e) return false;
+                  const sName = (e.studentName || '').toLowerCase();
+                  return Boolean(activeChildName && (sName === activeChildName || sName.includes(activeChildName)));
+                });
                 if (childMatches.length > 0) {
                   allEntries = childMatches;
                 }
@@ -2200,8 +2206,8 @@ export default function ParentDashboard({
                   <span className="text-brand-charcoal/40 text-xs font-sans block text-center py-8">No billing records found.</span>
                 ) : (
                   [...parentTransactions].reverse().map((t, idx) => {
-                    const tType = t.type || t.paymentProcessor || 'transaction';
-                    const tDate = t.date || t.createdAt || '';
+                    const tType = String(t.type || t.paymentProcessor || 'transaction');
+                    const tDate = String(t.date || t.createdAt || '');
                     const isTopup = tType.toLowerCase().includes('topup') || tType.toLowerCase().includes('deposit');
                     return (
                       <div key={idx} className="border-b border-brand-moss/5 pb-2 text-[10px] flex justify-between items-start gap-4">

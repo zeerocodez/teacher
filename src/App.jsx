@@ -414,10 +414,16 @@ export default function App() {
       } else {
         const savedUserStr = localStorage.getItem('eduvista_user');
         if (savedUserStr) {
-          const savedUser = JSON.parse(savedUserStr);
-          if (savedUser.uid && (savedUser.uid.startsWith('user_') || savedUser.uid.includes('_1'))) {
-            // Keep local mock profile
-          } else {
+          try {
+            const savedUser = JSON.parse(savedUserStr);
+            if (savedUser && savedUser.uid && (String(savedUser.uid).startsWith('user_') || String(savedUser.uid).includes('_1'))) {
+              // Keep local mock profile
+            } else {
+              localStorage.removeItem('eduvista_user');
+              localStorage.removeItem('eduvista_token');
+              setCurrentUser(null);
+            }
+          } catch (e) {
             localStorage.removeItem('eduvista_user');
             localStorage.removeItem('eduvista_token');
             setCurrentUser(null);
@@ -1684,57 +1690,59 @@ export default function App() {
             </Suspense>
           ) : (
             <div className="py-6 min-h-[75vh]">
-              <Suspense fallback={<LoadingFallback />}>
-                {currentUser.role === 'Admin' ? (
-                  <AdminDashboard
-                    currentUser={currentUser}
-                    selectedCurrency={selectedCurrency}
-                    formatCurrency={formatCurrency}
-                    convertMinor={convertMinor}
-                    onBack={() => setCurrentView('home')}
-                  />
-                ) : currentUser.role === 'Teacher' ? (
-                  <TeacherDashboard
-                    currentUser={currentUser}
-                    selectedCurrency={selectedCurrency}
-                    formatCurrency={formatCurrency}
-                    convertMinor={convertMinor}
-                    onOpenChat={handleOpenChat}
-                    onGradeHomework={handleGradeHomework}
-                    gradesLog={gradesLog}
-                    onBack={() => setCurrentView('home')}
-                  />
-                ) : currentUser.role === 'Student' ? (
-                  <StudentPortal
-                    currentUser={currentUser}
-                    selectedCurrency={selectedCurrency}
-                    formatCurrency={formatCurrency}
-                    convertMinor={convertMinor}
-                    onBack={() => setCurrentView('home')}
-                  />
-                ) : (
-                  <ParentDashboard 
-                    currentUser={currentUser}
-                    lang={lang}
-                    t={t}
-                    selectedCurrency={selectedCurrency}
-                    formatCurrency={formatCurrency}
-                    convertMinor={convertMinor}
-                    gradesLog={gradesLog}
-                    onGradeHomework={handleGradeHomework}
-                    walletBalance={walletBalance}
-                    escrowBalance={escrowBalance}
-                    bookedSessions={bookedSessions}
-                    onOpenChat={handleOpenChat}
-                    pendingAssignments={pendingAssignments}
-                    onTopupWallet={handleTopupWallet}
-                    teachers={teachers}
-                    onBookClick={handleBookClick}
-                    onTeacherSelect={handleTutorProfileSelect}
-                    onBack={() => setCurrentView('home')}
-                  />
-                )}
-              </Suspense>
+              <ErrorBoundary onReset={() => setCurrentView('home')}>
+                <Suspense fallback={<LoadingFallback />}>
+                  {currentUser.role === 'Admin' ? (
+                    <AdminDashboard
+                      currentUser={currentUser}
+                      selectedCurrency={selectedCurrency}
+                      formatCurrency={formatCurrency}
+                      convertMinor={convertMinor}
+                      onBack={() => setCurrentView('home')}
+                    />
+                  ) : currentUser.role === 'Teacher' ? (
+                    <TeacherDashboard
+                      currentUser={currentUser}
+                      selectedCurrency={selectedCurrency}
+                      formatCurrency={formatCurrency}
+                      convertMinor={convertMinor}
+                      onOpenChat={handleOpenChat}
+                      onGradeHomework={handleGradeHomework}
+                      gradesLog={gradesLog}
+                      onBack={() => setCurrentView('home')}
+                    />
+                  ) : currentUser.role === 'Student' ? (
+                    <StudentPortal
+                      currentUser={currentUser}
+                      selectedCurrency={selectedCurrency}
+                      formatCurrency={formatCurrency}
+                      convertMinor={convertMinor}
+                      onBack={() => setCurrentView('home')}
+                    />
+                  ) : (
+                    <ParentDashboard 
+                      currentUser={currentUser}
+                      lang={lang}
+                      t={t}
+                      selectedCurrency={selectedCurrency}
+                      formatCurrency={formatCurrency}
+                      convertMinor={convertMinor}
+                      gradesLog={gradesLog}
+                      onGradeHomework={handleGradeHomework}
+                      walletBalance={walletBalance}
+                      escrowBalance={escrowBalance}
+                      bookedSessions={bookedSessions}
+                      onOpenChat={handleOpenChat}
+                      pendingAssignments={pendingAssignments}
+                      onTopupWallet={handleTopupWallet}
+                      teachers={teachers}
+                      onBookClick={handleBookClick}
+                      onTeacherSelect={handleTutorProfileSelect}
+                      onBack={() => setCurrentView('home')}
+                    />
+                  )}
+                </Suspense>
+              </ErrorBoundary>
             </div>
           )
         )}
